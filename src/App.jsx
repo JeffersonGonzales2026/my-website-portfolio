@@ -558,7 +558,7 @@ export default function App() {
               <p><strong className="text-zinc-100 uppercase text-[10px] block text-emerald-500">// Dashboard Design & Architectural Process</strong> {selectedDashboard.prc}</p>
               <p><strong className="text-zinc-100 uppercase text-[10px] block text-emerald-500">// Tracked Performance KPIs Used</strong> {selectedDashboard.kpi}</p>
               <p><strong className="text-zinc-100 uppercase text-[10px] block text-emerald-500">// Strategic Business Insights Extracted</strong> {selectedDashboard.ins}</p>
-              <p className="text-zinc-300 bg-zinc-900/60 p-3 rounded border border-zinc-800><strong className="text-emerald-400 uppercase text-[10px] block">// Final Analytical System Outcome</strong> {selectedDashboard.out}</p>
+              <p className="text-zinc-300 bg-zinc-900/60 p-3 rounded border border-zinc-800"><strong className="text-emerald-400 uppercase text-[10px] block">// Final Analytical System Outcome</strong> {selectedDashboard.out}</p>
             </div>
             <div className="pt-2 flex justify-end"><button onClick={() => setSelectedDashboard(null)} className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-bold font-sans rounded text-xs transition">Close Telemetry Console</button></div>
           </div>
