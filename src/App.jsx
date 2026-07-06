@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from 'react';
-// import { supabase } from './supabaseClient'; // Keep your original supabase client import here
 
 export default function App() {
-  // Check path to ensure admin logic doesn't conflict with single-page scroll layout
   const [isAdminRoute, setIsAdminRoute] = useState(window.location.pathname === '/admin');
   const [creativeTab, setCreativeTab] = useState('Overview');
   const [creativeFilter, setCreativeFilter] = useState('All');
   const [analystFilter, setAnalystFilter] = useState('All');
   const [selectedDashboard, setSelectedDashboard] = useState(null);
   
-  // Admin System States
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [messages, setMessages] = useState([
+  const [messages] = useState([
     { id: 1, created_at: '2026-07-06', full_name: 'Jane Doe', email: 'jane@company.com', subject: 'Data Analytics Pipeline', message: 'Hello Jefferson, I viewed your automated cross-platform sync case study. We would love to consult with you regarding a business intelligence overhaul.' }
   ]);
 
-  // Sync route detection for navigation links
   useEffect(() => {
     const handlePopState = () => {
       setIsAdminRoute(window.location.pathname === '/admin');
@@ -50,7 +46,6 @@ export default function App() {
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
-    // Re-link your standard supabase auth sign-in method here when ready
     if (email === 'jeffersonguzmangonzales03@gmail.com' && password === 'password123') {
       setIsAdminLoggedIn(true);
     } else {
@@ -58,9 +53,6 @@ export default function App() {
     }
   };
 
-  // =========================================================================
-  // 🔒 ROUTE CONDITION A: RENDER SECURE ADMIN DESK ONLY
-  // =========================================================================
   if (isAdminRoute) {
     return (
       <div className="bg-[#09090b] text-zinc-100 min-h-screen font-sans flex flex-col justify-between">
@@ -103,7 +95,7 @@ export default function App() {
               </div>
               <div className="space-y-4">
                 {messages.map((msg) => (
-                  <div key={msg.id} className="bg-zinc-950 border border-zinc-800 p-5 rounded-xl space-y-2 font-mono text-xs animate-fadeIn">
+                  <div key={msg.id} className="bg-zinc-950 border border-zinc-800 p-5 rounded-xl space-y-2 font-mono text-xs">
                     <div className="flex justify-between border-b border-zinc-900 pb-2">
                       <div>
                         <span className="text-white font-bold text-sm block font-sans">{msg.full_name}</span>
@@ -124,14 +116,10 @@ export default function App() {
     );
   }
 
-  // =========================================================================
-  // 🌐 ROUTE CONDITION B: RENDER THE 3-IN-1 FULL PORTFOLIO STREAM
-  // =========================================================================
   return (
     <div className="bg-[#09090b] text-zinc-100 min-h-screen font-sans selection:bg-indigo-500 selection:text-white scroll-smooth">
       
-      {/* GLOBAL MASTER HEADER */}
-      <nav className="fixed w-full bg-[#09090b]/80 backdrop-blur-md border-b border-zinc-800 z-40 transition-all">
+      <nav className="fixed w-full bg-[#09090b]/80 backdrop-blur-md border-b border-zinc-800 z-40">
         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="text-xl font-bold tracking-tighter cursor-pointer select-none" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             Jefferson<span className="text-indigo-500">.</span>
@@ -146,11 +134,9 @@ export default function App() {
         </div>
       </nav>
 
-      {/* =========================================================================
-          🏠 HOME MICRO-SITE (Style Profile: Clean, Premium Minimalist Lineage)
-          ========================================================================= */}
+      {/* 🏠 HOME MICRO-SITE */}
       <section id="home" className="min-h-screen flex flex-col justify-center items-center px-6 max-w-5xl mx-auto border-b border-zinc-900 pt-20">
-        <div className="text-center space-y-6 max-w-3xl animate-fadeIn">
+        <div className="text-center space-y-6 max-w-3xl">
           <div className="w-20 h-20 bg-gradient-to-b from-zinc-700 to-zinc-900 rounded-full mx-auto flex items-center justify-center text-xl font-extrabold border border-zinc-600 text-white shadow-xl">
             JG
           </div>
@@ -164,24 +150,22 @@ export default function App() {
             Synthesizing visual production concepts, structured enterprise data modeling insights, and autonomous artificial intelligence engineering pipelines into unified web system frameworks.
           </p>
           
-          {/* Career Journey Decision Matrix */}
           <div className="pt-8 space-y-3">
             <p className="text-xs font-mono text-zinc-500 uppercase tracking-widest">Explore My Professional Journey</p>
             <div className="flex flex-wrap justify-center gap-4">
-              <button onClick={(e) => smoothScroll('dream-creations', e)} className="px-5 py-2.5 bg-zinc-900 border border-zinc-800 text-sm font-medium rounded-md hover:border-purple-500 hover:text-purple-400 transition duration-300">
+              <button onClick={(e) => smoothScroll('dream-creations', e)} className="px-5 py-2.5 bg-zinc-900 border border-zinc-800 text-sm font-medium rounded-md hover:border-purple-500 hover:text-purple-400 transition">
                 [ Dream Creations ]
               </button>
-              <button onClick={(e) => smoothScroll('data-analyst', e)} className="px-5 py-2.5 bg-zinc-900 border border-zinc-800 text-sm font-medium rounded-md hover:border-emerald-500 hover:text-emerald-400 transition duration-300">
+              <button onClick={(e) => smoothScroll('data-analyst', e)} className="px-5 py-2.5 bg-zinc-900 border border-zinc-800 text-sm font-medium rounded-md hover:border-emerald-500 hover:text-emerald-400 transition">
                 [ Data Analyst ]
               </button>
-              <button onClick={(e) => smoothScroll('ai-developer', e)} className="px-5 py-2.5 bg-zinc-900 border border-zinc-800 text-sm font-medium rounded-md hover:border-cyan-500 hover:text-cyan-400 transition duration-300">
+              <button onClick={(e) => smoothScroll('ai-developer', e)} className="px-5 py-2.5 bg-zinc-900 border border-zinc-800 text-sm font-medium rounded-md hover:border-cyan-500 hover:text-cyan-400 transition">
                 [ AI-Assisted Developer ]
               </button>
             </div>
           </div>
         </div>
 
-        {/* Master Baseline Timeline Component */}
         <div className="mt-24 w-full max-w-4xl border-t border-zinc-900 pt-12">
           <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-widest mb-8 text-center">Core Career Timeline</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -202,9 +186,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* =========================================================================
-          🎨 DREAM CREATIONS MICRO-SITE (Style Profile: Bold Visual Agency Aesthetics)
-          ========================================================================= */}
+      {/* 🎨 DREAM CREATIONS MICRO-SITE */}
       <section id="dream-creations" className="min-h-screen bg-gradient-to-b from-[#09090b] via-[#0d091a] to-[#09090b] py-24 px-6 border-b border-zinc-900">
         <div className="max-w-6xl mx-auto space-y-12">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-purple-900/30 pb-4">
@@ -213,7 +195,6 @@ export default function App() {
               <p className="text-zinc-500 text-xs font-mono mt-0.5">High-Fidelity Visual Systems & Creative Agency Framework</p>
             </div>
             
-            {/* Blueprint Requested Sub-Nav Navigation Tabs */}
             <div className="flex flex-wrap gap-1 mt-4 md:mt-0 bg-zinc-950 p-1 rounded border border-zinc-800">
               {['Overview', 'Our Team', 'Services', 'Portfolio', 'Testimonials'].map(tab => (
                 <button key={tab} onClick={() => setCreativeTab(tab)} className={`px-3 py-1.5 text-[11px] font-mono uppercase tracking-wider rounded transition ${creativeTab === tab ? 'bg-purple-600 text-white' : 'text-zinc-400 hover:text-white'}`}>
@@ -223,22 +204,21 @@ export default function App() {
             </div>
           </div>
 
-          {/* Tab Render Views */}
           {creativeTab === 'Overview' && (
-            <div className="bg-zinc-900/40 p-6 rounded-xl border border-purple-500/10 backdrop-blur-md animate-fadeIn">
+            <div className="bg-zinc-900/40 p-6 rounded-xl border border-purple-500/10 backdrop-blur-md">
               <h3 className="text-xl font-bold mb-2 text-zinc-100">Visual Impact Engineering</h3>
               <p className="text-zinc-400 text-sm font-light leading-relaxed">Dream Creations functions as a structural digital laboratory handling premium asset positioning. We organize high-concept artwork guidelines, identity restoration mechanics, and multi-channel asset blueprints.</p>
             </div>
           )}
 
           {creativeTab === 'Our Team' && (
-            <div className="bg-zinc-900/20 p-6 rounded-xl border border-zinc-800 text-center text-xs font-mono text-zinc-400 animate-fadeIn">
+            <div className="bg-zinc-900/20 p-6 rounded-xl border border-zinc-800 text-center text-xs font-mono text-zinc-400">
               Managed and scaled autonomously by Jefferson Gonzales alongside elite freelance technical and artistic networks.
             </div>
           )}
 
           {creativeTab === 'Services' && (
-            <div className="grid md:grid-cols-3 gap-4 animate-fadeIn">
+            <div className="grid md:grid-cols-3 gap-4">
               {[
                 { title: 'Premium Branding Systems', desc: 'Developing clean design language models, typography structures, and vectorized guidelines.' },
                 { title: 'Advanced Photo Manipulation', desc: 'Composing complex digital art layout elements, exposure structures, and visual compositions.' },
@@ -253,8 +233,7 @@ export default function App() {
           )}
 
           {creativeTab === 'Portfolio' && (
-            <div className="space-y-6 animate-fadeIn">
-              {/* Category Filters */}
+            <div className="space-y-6">
               <div className="flex flex-wrap gap-1.5">
                 {['All', 'Branding', 'Social Media', 'Logo Design', 'Photo Restoration', 'Marketing Materials', 'Photo Manipulation'].map(cat => (
                   <button key={cat} onClick={() => setCreativeFilter(cat)} className={`px-2.5 py-1 text-[10px] font-mono rounded-full border transition ${creativeFilter === cat ? 'bg-purple-600 text-white border-purple-500' : 'border-zinc-800 text-zinc-400 hover:border-zinc-700'}`}>
@@ -263,7 +242,6 @@ export default function App() {
                 ))}
               </div>
               
-              {/* Filterable Portfolio Grid Array */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {[
                   { id: 1, c: 'Branding', t: 'Aether Corporate Guide System', img: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80' },
@@ -286,16 +264,14 @@ export default function App() {
           )}
 
           {creativeTab === 'Testimonials' && (
-            <div className="bg-zinc-900/20 p-6 rounded-xl border border-zinc-800 text-center text-xs font-mono text-zinc-500 animate-fadeIn">
+            <div className="bg-zinc-900/20 p-6 rounded-xl border border-zinc-800 text-center text-xs font-mono text-zinc-500">
               Pristine agency testimonials framework pipeline ready to receive client feedback schemas.
             </div>
           )}
         </div>
       </section>
 
-      {/* =========================================================================
-          📊 DATA ANALYST MICRO-SITE (Style Profile: Corporate Bloomberg Dashboard)
-          ========================================================================= */}
+      {/* 📊 DATA ANALYST MICRO-SITE */}
       <section id="data-analyst" className="min-h-screen py-24 px-6 border-b border-zinc-900">
         <div className="max-w-6xl mx-auto space-y-12">
           <div className="border-l-4 border-emerald-500 pl-4">
@@ -308,7 +284,6 @@ export default function App() {
             Resourceful Data Analyst specializing in converting unstructured corporate data stores into responsive business intelligence frameworks. Proven track record deploying automated pipeline models, clean statistical normalization workflows, and interactive tracking metrics to support continuous corporate decision-making.
           </div>
 
-          {/* Experience Grid Block */}
           <div className="space-y-4">
             <h3 className="text-sm font-mono text-emerald-400 uppercase tracking-wider">// Experience & Operational History</h3>
             <div className="bg-zinc-900/20 border border-zinc-800 p-5 rounded-xl space-y-3">
@@ -327,7 +302,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Segmented Skill Grid Array */}
           <div className="space-y-4">
             <h3 className="text-sm font-mono text-emerald-400 uppercase tracking-wider">// Technical Skill Matrix Groups</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -347,7 +321,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Clickable Dashboard Array Module */}
           <div className="space-y-4">
             <h3 className="text-sm font-mono text-emerald-400 uppercase tracking-wider">// Core Interactive Dashboard Showcases</h3>
             <div className="grid md:grid-cols-2 gap-4">
@@ -376,7 +349,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Analytical Automation Block with Flow Design Text Indicator */}
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <h3 className="text-sm font-mono text-emerald-400 uppercase tracking-wider">// Process Automation Arrays</h3>
@@ -394,7 +366,6 @@ export default function App() {
               ))}
             </div>
 
-            {/* Case Studies Segment */}
             <div className="space-y-4">
               <h3 className="text-sm font-mono text-emerald-400 uppercase tracking-wider">// Advanced System Case Studies</h3>
               {[
@@ -410,7 +381,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Filterable Analysis Projects Grid */}
           <div className="space-y-4">
             <h3 className="text-sm font-mono text-emerald-400 uppercase tracking-wider">// Repository Analytics Index</h3>
             <div className="flex flex-wrap gap-1.5">
@@ -427,7 +397,7 @@ export default function App() {
                 <div key={i} className="bg-zinc-950 p-4 rounded border border-zinc-900 font-mono text-xs">
                   <span className="text-[10px] bg-zinc-900 text-emerald-400 border border-zinc-800 px-1.5 py-0.5 rounded uppercase font-bold">{p.c}</span>
                   <h4 className="font-sans font-bold text-sm text-zinc-200 mt-2">{p.n}</h4>
-                  <p className="text-zinc-500 mt-1 text-[11px] font-light leading-relaxed">{p.p.d || p.d}</p>
+                  <p className="text-zinc-500 mt-1 text-[11px] font-light leading-relaxed">{p.d}</p>
                 </div>
               ))}
             </div>
@@ -435,9 +405,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* =========================================================================
-          💻 AI DEVELOPER MICRO-SITE (Style Profile: Futuristic Glassmorphic Terminal)
-          ========================================================================= */}
+      {/* 💻 AI DEVELOPER MICRO-SITE */}
       <section id="ai-developer" className="min-h-screen bg-gradient-to-b from-[#09090b] via-[#050914] to-[#09090b] py-24 px-6 border-b border-zinc-900">
         <div className="max-w-6xl mx-auto space-y-12">
           <div>
@@ -445,7 +413,6 @@ export default function App() {
             <p className="text-zinc-500 text-xs font-mono mt-0.5">Glassmorphic Framework Matrix // Autonomous Architectures // Prompt Engineering Pipelines</p>
           </div>
 
-          {/* Narrative Journey Timeline */}
           <div className="space-y-4">
             <h3 className="text-sm font-mono text-cyan-400 uppercase tracking-wider">// Storytelling Transition Track</h3>
             <div className="bg-zinc-900/30 border border-cyan-500/10 rounded-xl p-5 font-mono text-xs text-zinc-400 space-y-2 max-w-3xl">
@@ -457,7 +424,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Development Philosophy Matrix */}
           <div className="grid md:grid-cols-2 gap-4">
             {[
               { t: 'Learn By Continuous Execution', d: 'Technical frameworks remain superficial until validated inside functional code spaces. True comprehension is forged through active software development deployment cycles.' },
@@ -470,7 +436,6 @@ export default function App() {
             ))}
           </div>
 
-          {/* Blueprint Requested Interactive Flowchart Mapping Block */}
           <div className="space-y-4">
             <h3 className="text-sm font-mono text-cyan-400 uppercase tracking-wider">// AI-Assisted Logic Delivery Architecture</h3>
             <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-900 overflow-x-auto">
@@ -485,7 +450,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Tech Stack Indicator Grids */}
           <div className="space-y-4">
             <h3 className="text-sm font-mono text-cyan-400 uppercase tracking-wider">// System Engine Dependency Profiles</h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -505,7 +469,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Automation Projects Space */}
           <div className="space-y-4">
             <h3 className="text-sm font-mono text-cyan-400 uppercase tracking-wider">// Autonomous Automation Repositories</h3>
             <div className="bg-zinc-900/30 p-5 rounded-xl border border-zinc-800 max-w-xl text-xs font-mono text-zinc-400 space-y-1">
@@ -514,7 +477,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Feature Roadmap Assembly Checklist */}
           <div className="space-y-4">
             <h3 className="text-sm font-mono text-cyan-400 uppercase tracking-wider">// Long-Term Structural Growth Blueprint</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 font-mono text-xs">
@@ -534,13 +496,10 @@ export default function App() {
         </div>
       </section>
 
-      {/* =========================================================================
-          📞 CONTACT & SOCIAL CHANNELS (Complete 11-Platform Interactive Suite)
-          ========================================================================= */}
+      {/* 📞 CONTACT & SOCIAL CHANNELS */}
       <section id="contact" className="py-24 px-6 bg-black">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
           
-          {/* Submission Module */}
           <div className="space-y-4">
             <div>
               <h3 className="text-2xl font-black">Let's Secure Your System Goals</h3>
@@ -557,7 +516,6 @@ export default function App() {
             </form>
           </div>
 
-          {/* 11-Platform Social Connects Index Matrix */}
           <div className="space-y-4">
             <div>
               <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-widest">// Direct Telemetry Channels Index</h3>
@@ -588,9 +546,8 @@ export default function App() {
         </div>
       </section>
 
-      {/* COMPREHENSIVE BUSINESS INTELLIGENCE PROJECT OVERLAY MODAL */}
       {selectedDashboard && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex justify-center items-center p-4 z-50 animate-fadeIn font-mono text-xs">
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex justify-center items-center p-4 z-50 font-mono text-xs">
           <div className="bg-[#09090b] border border-zinc-800 max-w-3xl w-full rounded-xl overflow-hidden shadow-2xl relative p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <button onClick={() => setSelectedDashboard(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white text-sm">✕ CLOSE</button>
             <h3 className="text-lg font-bold text-emerald-400 border-b border-zinc-800 pb-2 uppercase tracking-tight font-sans">{selectedDashboard.t}</h3>
@@ -601,14 +558,13 @@ export default function App() {
               <p><strong className="text-zinc-100 uppercase text-[10px] block text-emerald-500">// Dashboard Design & Architectural Process</strong> {selectedDashboard.prc}</p>
               <p><strong className="text-zinc-100 uppercase text-[10px] block text-emerald-500">// Tracked Performance KPIs Used</strong> {selectedDashboard.kpi}</p>
               <p><strong className="text-zinc-100 uppercase text-[10px] block text-emerald-500">// Strategic Business Insights Extracted</strong> {selectedDashboard.ins}</p>
-              <p className="text-zinc-300 bg-zinc-900/60 p-3 rounded border border-zinc-800"><strong className="text-emerald-400 uppercase text-[10px] block">// Final Analytical System Outcome</strong> {selectedDashboard.out}</p>
+              <p className="text-zinc-300 bg-zinc-900/60 p-3 rounded border border-zinc-800><strong className="text-emerald-400 uppercase text-[10px] block">// Final Analytical System Outcome</strong> {selectedDashboard.out}</p>
             </div>
             <div className="pt-2 flex justify-end"><button onClick={() => setSelectedDashboard(null)} className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-bold font-sans rounded text-xs transition">Close Telemetry Console</button></div>
           </div>
         </div>
       )}
 
-      {/* CORE CONTROL ACCESS FLOATING TOGGLE NODE */}
       <div className="fixed bottom-4 left-4 z-50">
         <button onClick={(e) => navigateTo('/admin', e)} className="px-3 py-1.5 bg-zinc-900/40 hover:bg-zinc-900 text-zinc-600 hover:text-zinc-400 border border-zinc-900 hover:border-zinc-800 font-mono text-[9px] uppercase tracking-widest rounded-md backdrop-blur-md transition duration-200">
           ⚙️ Console Link
