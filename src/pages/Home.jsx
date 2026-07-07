@@ -4,8 +4,8 @@ import Hero from '../sections/home/Hero';
 import QuickStats from '../sections/home/QuickStats';
 import AboutMe from '../sections/home/AboutMe';
 import CareerTimeline from '../sections/home/CareerTimeline';
-// The components below will be built next:
-// import SkillsOverview from '../sections/home/SkillsOverview';
+import SkillsOverview from '../sections/home/SkillsOverview';
+// The component below will be built next:
 // import JourneySelector from '../sections/home/JourneySelector';
 
 export default function Home() {
@@ -15,7 +15,7 @@ export default function Home() {
       <QuickStats />
       <AboutMe />
       <CareerTimeline />
-      {/* <SkillsOverview /> */}
+      <SkillsOverview />
       {/* <JourneySelector /> */}
     </div>
   );
