@@ -84,7 +84,7 @@ export default function DreamCreations() {
       </div>
 
       {/* ================= HERO SECTION ================= */}
-      <section className="relative pt-40 pb-20 px-6 min-h-[70vh] flex flex-col items-center justify-center text-center z-10">
+      <section className="mt-16 relative pt-40 pb-20 px-6 min-h-[70vh] flex flex-col items-center justify-center text-center z-10">
         
         <motion.div 
           initial={{ scaleX: 0, opacity: 0 }}

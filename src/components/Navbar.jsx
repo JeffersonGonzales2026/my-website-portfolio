@@ -24,7 +24,7 @@ export default function Navbar({ isScrolled }) {
         isScrolled ? 'h-16' : 'h-24'
       }`}>
         <Link to="/" className="text-xl font-bold tracking-tight text-text-primary z-10">
-          Jefferson<span className="text-text-muted">.</span>
+          Jefferson Gonzales<span className="text-text-muted">.</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-2">
