@@ -50,13 +50,13 @@ export default function Hero() {
             <p className="mt-8 text-lg md:text-xl font-medium text-text-secondary">
               I'm <span className="text-white font-bold">Jefferson Gonzales</span>, your specialized{' '}
               {/* Rotating Title text color using explicit hex */}
-              <span className="text-[#acacac] transition-all duration-500 font-mono font-bold">
+              <span className="text-[#ffffff] transition-all duration-500 font-mono font-bold">
                 {titles[currentTitleIndex]}
               </span>
             </p>
           </div>
 
-          <p className="mt-4 text-base text-text-secondary max-w-xl leading-relaxed">
+          <p className="mt-8 text-base text-text-secondary max-w-xl leading-relaxed">
             A multidisciplinary technology professional passionate about combining creativity, 
             business, analytics, automation, and software engineering to solve real-world problems.
           </p>
