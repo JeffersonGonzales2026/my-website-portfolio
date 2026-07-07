@@ -26,7 +26,7 @@ const starsData = Array.from({ length: 60 }).map((_, i) => ({
 const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
   id: i,
   top: `${10 + i * 15}%`,
-  delay: -(Math.random() * 30), // Starts animation midway so they are already on screen
+  delay: -(Math.random() * 30),
   duration: 40 + Math.random() * 20,
   scale: 0.8 + Math.random() * 1.5
 }));
@@ -40,10 +40,10 @@ export default function DreamCreations() {
     offset: ["start start", "end end"]
   });
 
-  // Maps the scroll progression to drive the spaceship slant flight path dynamically
-  const spaceshipX = useTransform(scrollYProgress, [0, 1], ["-15vw", "105vw"]);
-  const spaceshipY = useTransform(scrollYProgress, [0, 1], ["65vh", "-10vh"]);
-  const spaceshipRotate = useTransform(scrollYProgress, [0, 1], [-20, -10]);
+  // MULTI-WAYPOINT TRAJECTORY: The ship now changes direction dynamically based on scroll depth
+  const spaceshipX = useTransform(scrollYProgress, [0, 0.4, 0.7, 1], ["-10vw", "40vw", "75vw", "120vw"]);
+  const spaceshipY = useTransform(scrollYProgress, [0, 0.4, 0.7, 1], ["85vh", "40vh", "55vh", "-10vh"]);
+  const spaceshipRotate = useTransform(scrollYProgress, [0, 0.4, 0.7, 1], [35, -5, 15, -25]);
 
   return (
     <div 
@@ -51,7 +51,7 @@ export default function DreamCreations() {
       className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-nightSkyCycle"
     >
       
-      {/* 6 PM to 4 AM Sky Cycle */}
+      {/* 6 PM to 4 AM Pure Dark Sky Cycle */}
       <style>{`
         @keyframes nightSkyCycle {
           0%   { background-color: #1e1b4b; } /* 6 PM - Deep Twilight */
@@ -82,7 +82,6 @@ export default function DreamCreations() {
         {cloudsData.map((cloud) => (
           <motion.div
             key={cloud.id}
-            // Increased opacity and blur to make them clearly visible as cloud banks
             className="absolute bg-white/10 blur-[40px] rounded-[100%]"
             style={{
               top: cloud.top,
@@ -95,10 +94,10 @@ export default function DreamCreations() {
         ))}
       </div>
 
-      {/* Scroll-Bound Animated Single-Color Astronaut Spaceship */}
+      {/* Scroll-Bound Animated Single-Color Astronaut Spaceship on Complex Trajectory */}
       <motion.div 
         style={{ x: spaceshipX, y: spaceshipY, rotate: spaceshipRotate }}
-        className="fixed w-28 h-28 z-20 pointer-events-none drop-shadow-[0_10px_20px_rgba(16,149,210,0.25)]"
+        className="fixed w-32 h-32 z-20 pointer-events-none drop-shadow-[0_10px_20px_rgba(16,149,210,0.3)]"
       >
         <svg viewBox="0 0 100 100" className="w-full h-full text-[#1095d2]" fill="currentColor">
           <path d="M25,50 C40,25 65,25 88,50 C65,75 40,75 25,50 Z" />
@@ -108,7 +107,7 @@ export default function DreamCreations() {
           <circle cx="56" cy="50" r="13" fill="#020617" opacity="0.5" />
           <circle cx="56" cy="48" r="8" fill="white" opacity="0.9" />
           <rect x="51" y="54" width="10" height="7" rx="2" fill="white" opacity="0.9" />
-          <path d="M22,50 C12,44 6,46 2,50 C6,54 12,56 22,50 Z" className="text-purple-400/50" />
+          <path d="M22,50 C12,44 6,46 2,50 C6,54 12,56 22,50 Z" className="text-cyan-400/60" />
         </svg>
       </motion.div>
 
@@ -122,29 +121,43 @@ export default function DreamCreations() {
           className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10"
         />
 
-        {/* Realistic Div-Based Crescent Blue Moon */}
+        {/* Realistic SVG Procedural Crescent Blue Moon */}
         <motion.div
           initial={{ y: 150, scale: 0.5, opacity: 0 }}
           animate={{ y: 0, scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }}
-          className="w-32 h-32 relative mb-8 flex items-center justify-center drop-shadow-[0_0_35px_rgba(16,149,210,0.5)]"
+          className="mb-8"
         >
-          {/* This div uses the exact same crater logic as your original orange moon. 
-            The 'maskImage' CSS cuts out the left side to create the perfect crescent, 
-            allowing the stars and background to shine straight through the missing half!
-          */}
-          <div 
-            className="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan-100 via-[#1095d2] to-blue-900 overflow-hidden"
-            style={{
-              WebkitMaskImage: "radial-gradient(circle at 25% 50%, transparent 48%, black 50%)",
-              maskImage: "radial-gradient(circle at 25% 50%, transparent 48%, black 50%)"
-            }}
-          >
-            {/* The Realistic Craters */}
-            <div className="absolute top-6 right-8 w-6 h-6 rounded-full bg-blue-950/40 shadow-inner" />
-            <div className="absolute bottom-8 right-12 w-8 h-8 rounded-full bg-blue-950/30 shadow-inner" />
-            <div className="absolute top-14 right-4 w-4 h-4 rounded-full bg-blue-950/20 shadow-inner" />
-          </div>
+          <svg viewBox="0 0 200 200" className="w-40 h-40 drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]">
+            <defs>
+              {/* Procedural SVG Filter to create realistic crater/lunar surface texture */}
+              <filter id="moon-texture" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="5" result="noise" />
+                <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.6 0" in="noise" result="coloredNoise" />
+                <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="texture" />
+                <feBlend mode="multiply" in="texture" in2="SourceGraphic" />
+              </filter>
+              
+              {/* Mask to carve out the crescent shape (Facing left as requested) */}
+              <mask id="crescent-mask">
+                <circle cx="100" cy="100" r="95" fill="white" />
+                {/* Black circle placed on the RIGHT to eat away the right side */}
+                <circle cx="130" cy="90" r="85" fill="black" />
+              </mask>
+
+              {/* Glowing Blue Gradient base */}
+              <radialGradient id="moon-glow" cx="40%" cy="40%" r="60%">
+                <stop offset="0%" stopColor="#cffafe" />
+                <stop offset="40%" stopColor="#1095d2" />
+                <stop offset="100%" stopColor="#1e3a8a" />
+              </radialGradient>
+            </defs>
+            
+            {/* Apply the mask and texture directly to the circle */}
+            <g mask="url(#crescent-mask)">
+              <circle cx="100" cy="100" r="95" fill="url(#moon-glow)" filter="url(#moon-texture)" />
+            </g>
+          </svg>
         </motion.div>
 
         <motion.div
