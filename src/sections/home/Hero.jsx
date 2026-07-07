@@ -57,7 +57,7 @@ export default function Hero() {
             </p>
           </div>
 
-          <p className="text-base text-text-secondary max-w-xl leading-relaxed">
+          <p className="mt-8 text-base text-text-secondary max-w-xl leading-relaxed">
             A multidisciplinary technology professional passionate about combining creativity, 
             business, analytics, automation, and software engineering to solve real-world problems.
           </p>
