@@ -11,7 +11,7 @@ export default function Hero() {
     "Graphic Designer",
     "Owner & Team Manager",
     "Data Analyst",
-    "AI Full-Stack Developer",
+    "AI Full-Stack Dev",
   ];
 
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
