@@ -44,7 +44,7 @@ export default function Hero() {
               
               Welcome!
             </p>
-            <h1 className="text-3.5xl sm:text-4.5xl md:text-5.5xl font-black tracking-tight text-white leading-none">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white leading-none">
               Designing Creativity.<br />
               Analyzing Data.<br />
               Building Future with AI.
