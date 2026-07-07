@@ -1,7 +1,7 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
-import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone } from 'lucide-react';
+import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay } from 'lucide-react';
 
 const services = [
   { id: 1, title: "Brand Identity", icon: <PenTool size={24} />, desc: "Crafting cohesive visual identities, logos, and brand guidelines that resonate with target audiences." },
@@ -10,9 +10,18 @@ const services = [
   { id: 4, title: "Marketing Materials", icon: <MonitorSmartphone size={24} />, desc: "High-conversion social media assets, print layouts, and digital campaign aesthetics." },
 ];
 
+// Placeholder data for your diverse client portfolio
+const featuredClients = [
+  { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
+  { id: 2, name: "Real Estate Partners", industry: "Property Development", icon: <Building2 size={32} /> },
+  { id: 3, name: "Rich Ams Global", industry: "E-Commerce", icon: <ShoppingBag size={32} /> },
+  { id: 4, name: "CapCut Creators", industry: "Digital Media", icon: <MonitorPlay size={32} /> },
+  { id: 5, name: "Tech Startups", industry: "SaaS & Technology", icon: <Globe size={32} /> },
+  { id: 6, name: "Corporate B2B", industry: "Consulting & Finance", icon: <Briefcase size={32} /> },
+];
+
 const portfolioPlaceholders = [1, 2, 3, 4, 5, 6];
 
-// 60 Randomized stars with independent twinkling variables
 const starsData = Array.from({ length: 60 }).map((_, i) => ({
   id: i,
   top: `${Math.random() * 100}%`,
@@ -22,7 +31,6 @@ const starsData = Array.from({ length: 60 }).map((_, i) => ({
   size: Math.random() * 2.5 + 1
 }));
 
-// Floating atmospheric night clouds (Visible opacity and predefined movement)
 const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
   id: i,
   top: `${10 + i * 15}%`,
@@ -40,20 +48,18 @@ export default function DreamCreations() {
       className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-nightSkyCycle"
     >
       
-      {/* 6 PM to 4 AM Pure Dark Sky Cycle */}
       <style>{`
         @keyframes nightSkyCycle {
-          0%   { background-color: #1e1b4b; } /* 6 PM - Deep Twilight */
-          33%  { background-color: #0f172a; } /* 9 PM - Night */
-          66%  { background-color: #020617; } /* 2 AM - Pitch Black */
-          100% { background-color: #050508; } /* 4 AM - Deep Abyss */
+          0%   { background-color: #1e1b4b; } 
+          33%  { background-color: #0f172a; } 
+          66%  { background-color: #020617; } 
+          100% { background-color: #050508; } 
         }
         .animate-nightSkyCycle {
           animation: nightSkyCycle 25s ease-in-out infinite alternate;
         }
       `}</style>
 
-      {/* Twinkling Stars Matrix Field */}
       <div className="absolute inset-0 z-0 opacity-80 pointer-events-none">
         {starsData.map((star) => (
           <motion.div
@@ -66,7 +72,6 @@ export default function DreamCreations() {
         ))}
       </div>
 
-      {/* Visible Drifting Night Clouds / Fog */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         {cloudsData.map((cloud) => (
           <motion.div
@@ -93,16 +98,14 @@ export default function DreamCreations() {
           className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10"
         />
 
-        {/* Realistic SVG Procedural Crescent Blue Moon - Flipped to Opposite Side */}
         <motion.div
           initial={{ y: 150, scale: 0.5, opacity: 0 }}
           animate={{ y: 0, scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }}
-          className="-mt-16 mb-8"
+          className="-mt-12 mb-16" 
         >
           <svg viewBox="0 0 200 200" className="w-40 h-40 drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]">
             <defs>
-              {/* Procedural SVG Filter for moon texture */}
               <filter id="moon-texture" x="0%" y="0%" width="100%" height="100%">
                 <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="5" result="noise" />
                 <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.6 0" in="noise" result="coloredNoise" />
@@ -110,14 +113,11 @@ export default function DreamCreations() {
                 <feBlend mode="multiply" in="texture" in2="SourceGraphic" />
               </filter>
               
-              {/* Mask carved on the LEFT side to flip the crescent to face right */}
               <mask id="crescent-mask">
                 <circle cx="100" cy="100" r="95" fill="white" />
-                {/* Moved black masking circle to the left (cx=70) to reveal opposite face */}
                 <circle cx="70" cy="95" r="85" fill="black" />
               </mask>
 
-              {/* Glowing Blue Radial Gradient */}
               <radialGradient id="moon-glow" cx="60%" cy="40%" r="60%">
                 <stop offset="0%" stopColor="#cffafe" />
                 <stop offset="40%" stopColor="#1095d2" />
@@ -125,7 +125,6 @@ export default function DreamCreations() {
               </radialGradient>
             </defs>
             
-            {/* Render clipped texture mesh */}
             <g mask="url(#crescent-mask)">
               <circle cx="100" cy="100" r="95" fill="url(#moon-glow)" filter="url(#moon-texture)" />
             </g>
@@ -178,6 +177,95 @@ export default function DreamCreations() {
         </div>
       </section>
 
+      {/* ================= MEET THE FOUNDER SECTION ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-5 flex justify-center"
+          >
+            <div className="relative w-full max-w-md aspect-square rounded-3xl border border-white/10 bg-black/40 overflow-hidden flex items-center justify-center group">
+               <div className="absolute inset-0 bg-gradient-to-tr from-[#1095d2]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+               
+               <div className="w-32 h-32 rounded-full border border-[#1095d2]/50 bg-black/50 flex items-center justify-center text-4xl font-bold text-white shadow-[0_0_30px_rgba(16,149,210,0.3)] z-10 group-hover:scale-105 transition-transform duration-500">
+                 JG
+               </div>
+               
+               <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 z-10">
+                 <p className="text-[#1095d2] text-xs font-bold uppercase tracking-wider mb-1">Founder & Creative Director</p>
+                 <h4 className="text-white font-bold text-lg">Jefferson Gonzales</h4>
+               </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="lg:col-span-7 space-y-6"
+          >
+            <div className="mb-6">
+              <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">The Mind Behind the Studio</h3>
+              <div className="w-20 h-1 bg-[#1095d2] rounded-full" />
+            </div>
+            
+            <p className="text-base md:text-lg text-white/70 leading-relaxed">
+              Dream Creations was born out of a passion for visual storytelling and a relentless drive for perfection. What started as an independent graphic design practice has evolved into a structured creative agency serving global clients.
+            </p>
+            <p className="text-base md:text-lg text-white/70 leading-relaxed">
+              With over a decade of experience across print, digital, and corporate design sectors, I bridge the gap between pure artistic creativity and structured business strategy. My goal is simple: to make your dream artworks a reality while ensuring they drive measurable impact for your brand.
+            </p>
+            
+            <div className="grid grid-cols-2 gap-4 pt-4">
+              <div className="p-4 rounded-xl border border-white/10 bg-black/20 hover:border-[#1095d2]/30 transition-colors">
+                <div className="text-2xl font-bold text-[#1095d2] mb-1">10+</div>
+                <div className="text-xs text-white/60 uppercase tracking-wider">Years Experience</div>
+              </div>
+              <div className="p-4 rounded-xl border border-white/10 bg-black/20 hover:border-[#1095d2]/30 transition-colors">
+                <div className="text-2xl font-bold text-[#1095d2] mb-1">200+</div>
+                <div className="text-xs text-white/60 uppercase tracking-wider">Projects Delivered</div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ================= FEATURED CLIENTS SECTION ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
+        <div className="mb-16 text-center">
+          <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Trusted By</h3>
+          <div className="w-16 h-1 bg-[#1095d2] rounded-full mx-auto" />
+          <p className="text-sm text-white/60 mt-4 max-w-2xl mx-auto">
+            Delivering premium visual solutions across diverse industries, from healthcare and real estate to e-commerce and corporate tech.
+          </p>
+        </div>
+
+        {/* Client Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {featuredClients.map((client, index) => (
+            <motion.div
+              key={client.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+              className="group flex flex-col items-center justify-center p-6 rounded-2xl border border-white/5 bg-black/20 hover:bg-black/40 hover:border-[#1095d2]/30 transition-all duration-300 text-center"
+            >
+              <div className="text-white/40 group-hover:text-[#1095d2] transition-colors duration-300 mb-3">
+                {client.icon}
+              </div>
+              <h4 className="text-sm font-bold text-white mb-1 leading-tight">{client.name}</h4>
+              <p className="text-[10px] text-white/50 uppercase tracking-wider">{client.industry}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
       {/* ================= PORTFOLIO GALLERY PREVIEW ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="flex justify-between items-end mb-12">
@@ -185,7 +273,7 @@ export default function DreamCreations() {
             <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Selected Works</h3>
             <div className="w-16 h-1 bg-[#1095d2] rounded-full" />
           </div>
-          <button className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-white/20 transition-all">
+          <button className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all">
             View Full Archive
           </button>
         </div>
