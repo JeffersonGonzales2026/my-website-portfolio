@@ -1,3 +1,5 @@
+// src/components/Navbar.jsx
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
@@ -9,18 +11,22 @@ const navLinks = [
   { name: 'Contact', path: '/contact' },
 ];
 
-export default function Navbar() {
+export default function Navbar({ isScrolled }) {
   const location = useLocation();
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-background-primary/70 backdrop-blur-md border-b border-glass-border">
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        {/* Logo / Brand Name */}
+    <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+      isScrolled 
+        ? 'bg-[#09090b]/70 backdrop-blur-md border-b border-glass-border shadow-lg shadow-black/20' 
+        : 'bg-transparent border-b border-transparent'
+    }`}>
+      <div className={`max-w-7xl mx-auto px-6 flex items-center justify-between transition-all duration-300 ${
+        isScrolled ? 'h-16' : 'h-24'
+      }`}>
         <Link to="/" className="text-xl font-bold tracking-tight text-text-primary z-10">
           Jefferson<span className="text-text-muted">.</span>
         </Link>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-2">
           {navLinks.map((link) => {
             const isActive = location.pathname === link.path;
@@ -47,7 +53,6 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Mobile Menu Button (Placeholder for now) */}
         <button className="md:hidden p-2 text-text-secondary hover:text-text-primary">
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
