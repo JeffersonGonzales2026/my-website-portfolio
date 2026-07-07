@@ -1,3 +1,4 @@
+// tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -7,23 +8,23 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Global Theme Variables utilized inside your components
         background: {
-          primary: '#09090b',    // Deep Dark Zinc Base
-          secondary: '#121214',  // Card Elevating Fills
+          primary: '#09090b',    
+          secondary: '#121214',  
         },
         text: {
-          primary: '#f4f4f5',    // High-contrast primary zinc
-          secondary: '#a1a1aa',  // Muted descriptive body tone
-          muted: '#71717a',      // Low-contrast captions/rules
+          primary: '#f4f4f5',    
+          secondary: '#a1a1aa',  
+          muted: '#71717a',      
         },
         glass: {
           card: 'rgba(24, 24, 27, 0.4)',
           border: 'rgba(63, 63, 70, 0.4)',
         },
         
-        // Microsite Dedicated Palettes mapped straight from your PRD
+        // Official Dream Creations Identity
         dreamCreations: {
+          brandBlue: '#1095d2',  // Updated to your exact official logo hex!
           skySunset: '#FDBA74',
           skyOrange: '#F97316',
           skyPink: '#F472B6',
@@ -31,13 +32,15 @@ export default {
           skyPurple: '#7C3AED',
           skyBlue: '#1E3A8A',
           skyDeep: '#0B1026',
-          brandBlue: '#1094D2',  // Official agency identity hex
         },
+
+        // Official Data Analyst Identity
         dataAnalyst: {
+          mainGreen: '#5bc96d',  // Your new requested dashboard green
           corporateBlue: '#1d4ed8',
           executiveNavy: '#1e3a8a',
-          kpiGreen: '#34d399',
         },
+
         aiDeveloper: {
           deepBlack: '#000000',
           darkNavy: '#020617',
@@ -47,7 +50,7 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'], // Emulating clean modern technology brands
+        sans: ['Inter', 'sans-serif'], 
       }
     },
   },

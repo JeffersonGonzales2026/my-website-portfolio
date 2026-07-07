@@ -6,7 +6,6 @@ import { Palette, BarChart2, Code, ArrowRight } from 'lucide-react';
 export default function Hero() {
   const navigate = useNavigate();
   
-  // Rotating Titles array defined exactly from Section 10 of your PRD
   const titles = [
     "Graphic Designer",
     "Owner & Team Manager",
@@ -19,29 +18,26 @@ export default function Hero() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTitleIndex((prevIndex) => (prevIndex + 1) % titles.length);
-    }, 3000); // Transitions automatically every 3 seconds
+    }, 3000); 
     return () => clearInterval(interval);
   }, [titles.length]);
 
   return (
     <section className="relative min-h-[85vh] flex items-center justify-center pt-4 px-6">
       
-      {/* Background Ambient Mesh Layer */}
       <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-30 pointer-events-none">
         <div className="w-[500px] h-[500px] bg-aiDeveloper-neonPurple rounded-full blur-[140px] absolute -top-20 -left-20 animate-pulse" />
         <div className="w-[600px] h-[600px] bg-aiDeveloper-neonCyan rounded-full blur-[160px] absolute -bottom-20 -right-20" />
       </div>
 
-      {/* Responsive Two-Column Grid Setup Layout Container */}
       <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         
-        {/* Left Column Structure: Text Copywrite & CTAs */}
         <div className="lg:col-span-7 space-y-6 text-left">
           <div className="space-y-2">
-            <p className="mt-18 text-sm font-semibold tracking-widest uppercase text-aiDeveloper-neonCyan">
+            <p className="mt-16 text-sm font-semibold tracking-widest uppercase text-aiDeveloper-neonCyan">
               Welcome!
             </p>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-none">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-none">
               Designing Creativity.<br />
               Analyzing Data.<br />
               Building with AI.
@@ -51,19 +47,19 @@ export default function Hero() {
           <div className="h-8 flex items-center">
             <p className="mt-8 text-lg md:text-xl font-medium text-text-secondary">
               I'm <span className="text-white font-bold">Jefferson Gonzales</span>, your specialized{' '}
-              <span className="text-aiDeveloper-neonPurple transition-all duration-500 font-mono underline decoration-wavy">
+              <span className="text-aiDeveloper-neonPurple transition-all duration-500 font-mono font-bold">
                 {titles[currentTitleIndex]}
               </span>
             </p>
           </div>
 
-          <p className="mt-8 text-base text-text-secondary max-w-xl leading-relaxed">
+          <p className="mt-4 text-base text-text-secondary max-w-xl leading-relaxed">
             A multidisciplinary technology professional passionate about combining creativity, 
             business, analytics, automation, and software engineering to solve real-world problems.
           </p>
 
-          {/* Primary Buttons Route Navigation CTA Grid */}
           <div className="pt-4 flex flex-col sm:flex-row flex-wrap gap-4">
+            {/* Dream Creations Button - Updated to your custom logo blue */}
             <button 
               onClick={() => navigate('/dream-creations')}
               className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-dreamCreations-brandBlue text-white font-medium hover:bg-opacity-90 transition-all shadow-lg"
@@ -73,15 +69,17 @@ export default function Hero() {
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
 
+            {/* Data Analyst Button - Updated to your custom data green */}
             <button 
               onClick={() => navigate('/data-analyst')}
-              className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-700 text-white font-medium hover:bg-blue-600 transition-all shadow-lg"
+              className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-dataAnalyst-mainGreen text-zinc-950 font-bold hover:bg-opacity-90 transition-all shadow-lg"
             >
               <BarChart2 size={18} />
               Data Analyst
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
 
+            {/* AI Developer Button */}
             <button 
               onClick={() => navigate('/ai-developer')}
               className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-800 border border-zinc-700 text-white font-medium hover:bg-zinc-700 transition-all shadow-lg"
@@ -93,14 +91,10 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Right Column Structure: Portfolio Presentation Graphic Asset Window */}
         <div className="lg:col-span-5 flex justify-center relative">
           <div className="w-full max-w-[400px] aspect-square rounded-2xl border border-glass-border bg-glass-card backdrop-blur-md flex flex-col items-center justify-center p-8 text-center relative overflow-hidden group hover:border-zinc-700 transition-colors">
-            
-            {/* Minimal background grid graphic design details */}
             <div className="absolute inset-0 opacity-5 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px]" />
             
-            {/* Animated Code Snippet Overlays inside Hero Background Layout */}
             <div className="absolute top-4 left-4 font-mono text-[10px] text-zinc-600 select-none text-left leading-tight hidden sm:block">
               const profile = &#123;<br />
               &nbsp;&nbsp;exp: '10+ Years',<br />
