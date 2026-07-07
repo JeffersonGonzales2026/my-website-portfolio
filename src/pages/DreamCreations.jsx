@@ -1,6 +1,6 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone } from 'lucide-react';
 
 const services = [
@@ -22,7 +22,7 @@ const starsData = Array.from({ length: 60 }).map((_, i) => ({
   size: Math.random() * 2.5 + 1
 }));
 
-// Floating atmospheric night clouds (Higher opacity and negative delays so they appear immediately)
+// Floating atmospheric night clouds (Visible opacity and predefined movement)
 const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
   id: i,
   top: `${10 + i * 15}%`,
@@ -33,17 +33,6 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
 
 export default function DreamCreations() {
   const containerRef = useRef(null);
-  
-  // Hook directly into browser scroll progression metrics
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
-  // MULTI-WAYPOINT TRAJECTORY: The ship now changes direction dynamically based on scroll depth
-  const spaceshipX = useTransform(scrollYProgress, [0, 0.4, 0.7, 1], ["-10vw", "40vw", "75vw", "120vw"]);
-  const spaceshipY = useTransform(scrollYProgress, [0, 0.4, 0.7, 1], ["85vh", "40vh", "55vh", "-10vh"]);
-  const spaceshipRotate = useTransform(scrollYProgress, [0, 0.4, 0.7, 1], [35, -5, 15, -25]);
 
   return (
     <div 
@@ -94,23 +83,6 @@ export default function DreamCreations() {
         ))}
       </div>
 
-      {/* Scroll-Bound Animated Single-Color Astronaut Spaceship on Complex Trajectory */}
-      <motion.div 
-        style={{ x: spaceshipX, y: spaceshipY, rotate: spaceshipRotate }}
-        className="fixed w-32 h-32 z-20 pointer-events-none drop-shadow-[0_10px_20px_rgba(16,149,210,0.3)]"
-      >
-        <svg viewBox="0 0 100 100" className="w-full h-full text-[#1095d2]" fill="currentColor">
-          <path d="M25,50 C40,25 65,25 88,50 C65,75 40,75 25,50 Z" />
-          <path d="M35,34 C25,18 15,22 26,38 Z" opacity="0.85" />
-          <path d="M35,66 C25,82 15,78 26,62 Z" opacity="0.85" />
-          <path d="M76,42 C82,50 82,50 76,58 C72,53 72,47 76,42 Z" fill="#020617" opacity="0.4" />
-          <circle cx="56" cy="50" r="13" fill="#020617" opacity="0.5" />
-          <circle cx="56" cy="48" r="8" fill="white" opacity="0.9" />
-          <rect x="51" y="54" width="10" height="7" rx="2" fill="white" opacity="0.9" />
-          <path d="M22,50 C12,44 6,46 2,50 C6,54 12,56 22,50 Z" className="text-cyan-400/60" />
-        </svg>
-      </motion.div>
-
       {/* ================= HERO SECTION ================= */}
       <section className="relative pt-40 pb-20 px-6 min-h-[70vh] flex flex-col items-center justify-center text-center z-10">
         
@@ -121,7 +93,7 @@ export default function DreamCreations() {
           className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10"
         />
 
-        {/* Realistic SVG Procedural Crescent Blue Moon */}
+        {/* Realistic SVG Procedural Crescent Blue Moon - Flipped to Opposite Side */}
         <motion.div
           initial={{ y: 150, scale: 0.5, opacity: 0 }}
           animate={{ y: 0, scale: 1, opacity: 1 }}
@@ -130,7 +102,7 @@ export default function DreamCreations() {
         >
           <svg viewBox="0 0 200 200" className="w-40 h-40 drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]">
             <defs>
-              {/* Procedural SVG Filter to create realistic crater/lunar surface texture */}
+              {/* Procedural SVG Filter for moon texture */}
               <filter id="moon-texture" x="0%" y="0%" width="100%" height="100%">
                 <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="5" result="noise" />
                 <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.6 0" in="noise" result="coloredNoise" />
@@ -138,22 +110,22 @@ export default function DreamCreations() {
                 <feBlend mode="multiply" in="texture" in2="SourceGraphic" />
               </filter>
               
-              {/* Mask to carve out the crescent shape (Facing left as requested) */}
+              {/* Mask carved on the LEFT side to flip the crescent to face right */}
               <mask id="crescent-mask">
                 <circle cx="100" cy="100" r="95" fill="white" />
-                {/* Black circle placed on the RIGHT to eat away the right side */}
-                <circle cx="130" cy="90" r="85" fill="black" />
+                {/* Moved black masking circle to the left (cx=70) to reveal opposite face */}
+                <circle cx="70" cy="95" r="85" fill="black" />
               </mask>
 
-              {/* Glowing Blue Gradient base */}
-              <radialGradient id="moon-glow" cx="40%" cy="40%" r="60%">
+              {/* Glowing Blue Radial Gradient */}
+              <radialGradient id="moon-glow" cx="60%" cy="40%" r="60%">
                 <stop offset="0%" stopColor="#cffafe" />
                 <stop offset="40%" stopColor="#1095d2" />
                 <stop offset="100%" stopColor="#1e3a8a" />
               </radialGradient>
             </defs>
             
-            {/* Apply the mask and texture directly to the circle */}
+            {/* Render clipped texture mesh */}
             <g mask="url(#crescent-mask)">
               <circle cx="100" cy="100" r="95" fill="url(#moon-glow)" filter="url(#moon-texture)" />
             </g>
