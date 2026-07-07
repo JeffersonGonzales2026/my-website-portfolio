@@ -1,3 +1,5 @@
+// src/pages/AIDeveloper.jsx
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Code2, Cpu, Rocket, Layers, GitMerge, Sparkles } from 'lucide-react';
 
@@ -12,10 +14,8 @@ export default function AIDeveloper() {
   return (
     <div className="flex flex-col min-h-screen bg-background-primary overflow-x-hidden">
       
-      {/* ================= HERO SECTION ================= */}
       <section className="relative pt-32 pb-20 px-6 min-h-[60vh] flex flex-col items-center justify-center text-center">
         
-        {/* Cyber/AI Glow Effects */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[150px] -z-10 pointer-events-none" />
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80vw] h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
 
@@ -31,7 +31,10 @@ export default function AIDeveloper() {
           </div>
 
           <h1 className="text-4xl md:text-6xl font-extrabold text-text-primary tracking-tight mb-6">
-            AI-Assisted <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">Full-Stack Developer</span>
+            {/* THIS LINE ADDS THE EXACT PURPLE TO BLUE GRADIENT FROM YOUR SCREENSHOT */}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-aiDeveloper-neonPurple to-blue-400">
+              AI-Assisted Full-Stack Developer
+            </span>
           </h1>
           
           <p className="text-lg md:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto">
@@ -40,11 +43,9 @@ export default function AIDeveloper() {
         </motion.div>
       </section>
 
-      {/* ================= THE STACK & CAPABILITIES ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-24">
         <div className="flex flex-col md:flex-row gap-12 items-center">
           
-          {/* Text Content */}
           <div className="flex-1 space-y-6">
             <h2 className="text-3xl md:text-4xl font-bold text-text-primary">Engineering at the Speed of Thought</h2>
             <p className="text-text-secondary leading-relaxed text-lg">
@@ -56,7 +57,6 @@ export default function AIDeveloper() {
             </div>
           </div>
 
-          {/* Tech Stack Grid */}
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
             {stack.map((tech, index) => (
               <motion.div

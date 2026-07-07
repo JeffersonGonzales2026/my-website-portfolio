@@ -12,7 +12,6 @@ const services = [
 
 const portfolioPlaceholders = [1, 2, 3, 4, 5, 6];
 
-// Star coordinate generators for the twinkling background effect
 const stars = Array.from({ length: 40 }).map((_, i) => ({
   id: i,
   top: `${Math.random() * 100}%`,
@@ -23,21 +22,19 @@ const stars = Array.from({ length: 40 }).map((_, i) => ({
 
 export default function DreamCreations() {
   return (
-    // Dynamic Sky Cycle Background Transitioning smoothly from Sunset -> Night -> Dawn
     <div className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-skyCycle">
       
-      {/* Dynamic Keyframe Injection for PRD Sky Sequence colors */}
       <style>{`
         @keyframes skyCycle {
-          0%   { background-color: #FDBA74; } /* Sunset Beginning */
+          0%   { background-color: #FDBA74; } 
           15%  { background-color: #F97316; } 
-          30%  { background-color: #F472B6; } /* Shift to twilight */
+          30%  { background-color: #F472B6; } 
           45%  { background-color: #A78BFA; } 
           60%  { background-color: #7C3AED; } 
-          75%  { background-color: #1E3A8A; } /* Deep Night sky */
+          75%  { background-color: #1E3A8A; } 
           85%  { background-color: #0B1026; } 
           90%  { background-color: #312E81; } 
-          95%  { background-color: #60A5FA; } /* Bukang-liwayway Dawn break */
+          95%  { background-color: #60A5FA; } 
           98%  { background-color: #BAE6FD; }
           100% { background-color: #FDE68A; }
         }
@@ -46,7 +43,6 @@ export default function DreamCreations() {
         }
       `}</style>
 
-      {/* Twinkling Star Matrix Background Layer */}
       <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
         {stars.map((star) => (
           <motion.div
@@ -59,7 +55,6 @@ export default function DreamCreations() {
         ))}
       </div>
 
-      {/* Gentle Floating Spaceships Animations */}
       <motion.div 
         className="absolute text-blue-300/30 top-1/4 left-10 z-10 pointer-events-none hidden md:block"
         animate={{ y: [0, -25, 0], x: [0, 15, 0], rotate: [0, 5, 0] }}
@@ -76,17 +71,14 @@ export default function DreamCreations() {
         <Rocket size={24} className="transform rotate-12" />
       </motion.div>
 
-      {/* ================= HERO & TRANSITION SECTION ================= */}
       <section className="relative pt-40 pb-20 px-6 min-h-[70vh] flex flex-col items-center justify-center text-center z-10">
         
-        {/* Smooth Pop-up Moon Animation Component Element */}
         <motion.div
           initial={{ y: 150, scale: 0.5, opacity: 0 }}
           animate={{ y: 0, scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }}
           className="w-28 h-28 rounded-full bg-gradient-to-tr from-amber-100 to-amber-300 shadow-[0_0_50px_rgba(253,230,138,0.6)] mb-8 border border-amber-200/40 relative overflow-hidden"
         >
-          {/* Subtle Moon craters details graphic visual pattern */}
           <div className="absolute top-4 left-6 w-5 h-5 rounded-full bg-amber-400/20 shadow-inner" />
           <div className="absolute bottom-6 left-12 w-7 h-7 rounded-full bg-amber-400/20 shadow-inner" />
           <div className="absolute top-12 right-4 w-4 h-4 rounded-full bg-amber-400/10 shadow-inner" />
@@ -98,7 +90,7 @@ export default function DreamCreations() {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="max-w-3xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl bg-black/10 border border-white/5"
         >
-          <h1 className="text-xs font-bold tracking-[0.4em] text-amber-200 uppercase mb-4">
+          <h1 className="text-xs font-bold tracking-[0.4em] text-dreamCreations-brandBlue uppercase mb-4">
             Creative Agency Experience
           </h1>
           <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-6">
@@ -111,11 +103,10 @@ export default function DreamCreations() {
         </motion.div>
       </section>
 
-      {/* ================= SERVICES SECTION ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative">
         <div className="mb-16">
           <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Core Competencies</h3>
-          <div className="w-16 h-1 bg-white/40 rounded-full" />
+          <div className="w-16 h-1 bg-dreamCreations-brandBlue rounded-full" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -126,9 +117,9 @@ export default function DreamCreations() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="p-6 rounded-2xl bg-black/20 border border-white/10 backdrop-blur-md hover:border-white/30 transition-all duration-300 group"
+              className="p-6 rounded-2xl bg-black/20 border border-white/10 backdrop-blur-md hover:border-dreamCreations-brandBlue/30 transition-all duration-300 group"
             >
-              <div className="w-12 h-12 rounded-xl bg-white/10 text-white flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-dreamCreations-brandBlue/10 text-dreamCreations-brandBlue flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                 {service.icon}
               </div>
               <h4 className="text-lg font-bold text-white mb-2">{service.title}</h4>
@@ -138,14 +129,13 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= PORTFOLIO GALLERY PREVIEW ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="flex justify-between items-end mb-12">
           <div>
             <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Selected Works</h3>
-            <div className="w-16 h-1 bg-white/40 rounded-full" />
+            <div className="w-16 h-1 bg-dreamCreations-brandBlue rounded-full" />
           </div>
-          <button className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-white/20 transition-all">
+          <button className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:text-dreamCreations-brandBlue hover:border-dreamCreations-brandBlue/40 transition-all">
             View Full Archive
           </button>
         </div>
@@ -164,14 +154,13 @@ export default function DreamCreations() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/20 group-hover:scale-105 transition-transform duration-700" />
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                <span className="text-amber-200 text-xs font-bold uppercase tracking-wider mb-1">Production Project</span>
+                <span className="text-dreamCreations-brandBlue text-xs font-bold uppercase tracking-wider mb-1">Production Project</span>
                 <h4 className="text-white font-bold text-lg">Creative Asset Archive {item}</h4>
               </div>
             </motion.div>
           ))}
         </div>
       </section>
-
     </div>
   );
 }

@@ -25,29 +25,32 @@ export default function Hero() {
   return (
     <section className="relative min-h-[85vh] flex items-center justify-center pt-4 px-6">
       
+      {/* Background Ambient Mesh Layer */}
       <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-30 pointer-events-none">
-        <div className="w-[500px] h-[500px] bg-aiDeveloper-neonPurple rounded-full blur-[140px] absolute -top-20 -left-20 animate-pulse" />
-        <div className="w-[600px] h-[600px] bg-aiDeveloper-neonCyan rounded-full blur-[160px] absolute -bottom-20 -right-20" />
+        <div className="w-[500px] h-[500px] bg-[#a855f7] rounded-full blur-[140px] absolute -top-20 -left-20 animate-pulse" />
+        <div className="w-[600px] h-[600px] bg-[#06b6d4] rounded-full blur-[160px] absolute -bottom-20 -right-20" />
       </div>
 
       <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         
+        {/* Left Column Structure */}
         <div className="lg:col-span-7 space-y-6 text-left">
           <div className="space-y-2">
-            <p className="mt-16 text-sm font-semibold tracking-widest uppercase text-aiDeveloper-neonCyan">
+            <p className="mt-16 text-sm font-semibold tracking-widest uppercase text-[#ffffff]">
               Welcome!
             </p>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-none">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-none">
               Designing Creativity.<br />
               Analyzing Data.<br />
-              Building with AI.
+              Building Future w AI.
             </h1>
           </div>
 
           <div className="h-8 flex items-center">
             <p className="mt-8 text-lg md:text-xl font-medium text-text-secondary">
               I'm <span className="text-white font-bold">Jefferson Gonzales</span>, your specialized{' '}
-              <span className="text-aiDeveloper-neonPurple transition-all duration-500 font-mono font-bold">
+              {/* Rotating Title text color using explicit hex */}
+              <span className="text-[#acacac] transition-all duration-500 font-mono font-bold">
                 {titles[currentTitleIndex]}
               </span>
             </p>
@@ -59,30 +62,30 @@ export default function Hero() {
           </p>
 
           <div className="pt-4 flex flex-col sm:flex-row flex-wrap gap-4">
-            {/* Dream Creations Button - Updated to your custom logo blue */}
+            {/* Dream Creations Button - Dark background, Blue text & icon */}
             <button 
               onClick={() => navigate('/dream-creations')}
-              className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-dreamCreations-brandBlue text-white font-medium hover:bg-opacity-90 transition-all shadow-lg"
+              className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#1095d2]/40 text-[#1095d2] font-medium transition-all shadow-lg"
             >
               <Palette size={18} />
               Dream Creations
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
 
-            {/* Data Analyst Button - Updated to your custom data green */}
+            {/* Data Analyst Button - Dark background, Green text & icon */}
             <button 
               onClick={() => navigate('/data-analyst')}
-              className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-dataAnalyst-mainGreen text-zinc-950 font-bold hover:bg-opacity-90 transition-all shadow-lg"
+              className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#5bc96d]/40 text-[#5bc96d] font-medium transition-all shadow-lg"
             >
               <BarChart2 size={18} />
               Data Analyst
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
 
-            {/* AI Developer Button */}
+            {/* AI Developer Button - Dark background, Purple text & icon */}
             <button 
               onClick={() => navigate('/ai-developer')}
-              className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-800 border border-zinc-700 text-white font-medium hover:bg-zinc-700 transition-all shadow-lg"
+              className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#a855f7]/40 text-[#a855f7] font-medium transition-all shadow-lg"
             >
               <Code size={18} />
               AI Developer
@@ -91,6 +94,7 @@ export default function Hero() {
           </div>
         </div>
 
+        {/* Right Column Structure */}
         <div className="lg:col-span-5 flex justify-center relative">
           <div className="w-full max-w-[400px] aspect-square rounded-2xl border border-glass-border bg-glass-card backdrop-blur-md flex flex-col items-center justify-center p-8 text-center relative overflow-hidden group hover:border-zinc-700 transition-colors">
             <div className="absolute inset-0 opacity-5 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px]" />
@@ -113,7 +117,7 @@ export default function Hero() {
               Flagship Software Engineering Project Portfolio System Placeholder
             </p>
             
-            <div className="mt-6 text-[11px] font-mono tracking-wider text-aiDeveloper-neonCyan uppercase bg-zinc-900/80 px-3 py-1 rounded-full border border-zinc-800 relative z-10 animate-pulse">
+            <div className="mt-6 text-[11px] font-mono tracking-wider text-[#06b6d4] uppercase bg-zinc-900/80 px-3 py-1 rounded-full border border-zinc-800 relative z-10 animate-pulse">
               System Live &middot; 2026
             </div>
           </div>
