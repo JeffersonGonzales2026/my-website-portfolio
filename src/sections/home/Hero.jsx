@@ -49,7 +49,7 @@ export default function Hero() {
           </div>
 
           <div className="h-8 flex items-center">
-            <p className="text-lg md:text-xl font-medium text-text-secondary">
+            <p className="mt-8 text-lg md:text-xl font-medium text-text-secondary">
               I'm <span className="text-white font-bold">Jefferson Gonzales</span>, your specialized{' '}
               <span className="text-aiDeveloper-neonPurple transition-all duration-500 font-mono underline decoration-wavy">
                 {titles[currentTitleIndex]}
