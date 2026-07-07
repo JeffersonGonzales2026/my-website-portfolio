@@ -5,8 +5,7 @@ import QuickStats from '../sections/home/QuickStats';
 import AboutMe from '../sections/home/AboutMe';
 import CareerTimeline from '../sections/home/CareerTimeline';
 import SkillsOverview from '../sections/home/SkillsOverview';
-// The component below will be built next:
-// import JourneySelector from '../sections/home/JourneySelector';
+import JourneySelector from '../sections/home/JourneySelector';
 
 export default function Home() {
   return (
@@ -16,7 +15,7 @@ export default function Home() {
       <AboutMe />
       <CareerTimeline />
       <SkillsOverview />
-      {/* <JourneySelector /> */}
+      <JourneySelector />
     </div>
   );
 }
