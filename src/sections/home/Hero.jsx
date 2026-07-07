@@ -38,7 +38,7 @@ export default function Hero() {
         {/* Left Column Structure: Text Copywrite & CTAs */}
         <div className="lg:col-span-7 space-y-6 text-left">
           <div className="space-y-2">
-            <p className="mt-8 text-sm font-semibold tracking-widest uppercase text-aiDeveloper-neonCyan">
+            <p className="mt-18 text-sm font-semibold tracking-widest uppercase text-aiDeveloper-neonCyan">
               Welcome!
             </p>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-none">
