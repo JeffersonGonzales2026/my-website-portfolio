@@ -11,8 +11,7 @@ export default function Hero() {
     "Graphic Designer",
     "Owner & Team Manager",
     "Data Analyst",
-    "AI-Assisted Full-Stack Developer",
-    "Entrepreneur"
+    "AI Full-Stack Developer",
   ];
 
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
@@ -40,12 +39,15 @@ export default function Hero() {
         <div className="lg:col-span-7 space-y-6 text-left">
           <div className="space-y-2">
             <p className="text-sm font-semibold tracking-widest uppercase text-aiDeveloper-neonCyan">
-              Hello!
+              
+              
+              
+              Welcome!
             </p>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-none">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-none">
               Designing Creativity.<br />
               Analyzing Data.<br />
-              Building the Future with AI.
+              Building Future with AI.
             </h1>
           </div>
 
