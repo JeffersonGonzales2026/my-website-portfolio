@@ -84,7 +84,7 @@ export default function DreamCreations() {
       </div>
 
       {/* ================= HERO SECTION ================= */}
-      <section className="mt-16 relative pt-40 pb-20 px-6 min-h-[70vh] flex flex-col items-center justify-center text-center z-10">
+      <section className="relative pt-40 pb-20 px-6 min-h-[70vh] flex flex-col items-center justify-center text-center z-10">
         
         <motion.div 
           initial={{ scaleX: 0, opacity: 0 }}
@@ -98,7 +98,7 @@ export default function DreamCreations() {
           initial={{ y: 150, scale: 0.5, opacity: 0 }}
           animate={{ y: 0, scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }}
-          className="mb-8"
+          className="-mt-16 mb-8"
         >
           <svg viewBox="0 0 200 200" className="w-40 h-40 drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]">
             <defs>
