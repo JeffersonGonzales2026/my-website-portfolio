@@ -22,3 +22,20 @@
     -moz-osx-font-smoothing: grayscale;
   }
 }
+/* Add to src/index.css */
+@keyframes slowGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-slowGradient {
+  background-size: 200% 200%;
+  animation: slowGradient 20s ease infinite;
+}
+
+/* Spaceshift Cursor trail interactive utility configuration links */
+.spaceshift-cursor-glow {
+  pointer-events: none;
+  background: radial-gradient(600px circle at var(--x, 0px) var(--y, 0px), rgba(16, 149, 210, 0.08), transparent 40%);
+}
