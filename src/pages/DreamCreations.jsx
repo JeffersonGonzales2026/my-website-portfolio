@@ -98,7 +98,7 @@ export default function DreamCreations() {
   const processScrollRef = useRef(null);
   const { scrollYProgress: processProgress } = useScroll({
     target: processScrollRef,
-    offset: ["start 55%", "end end"]
+    offset: ["start 70%", "end end"]
   });
   
   // Increased transform distance to -82% so it reaches Phase 13
