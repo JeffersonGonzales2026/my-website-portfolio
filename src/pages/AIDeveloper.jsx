@@ -23,10 +23,10 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
     }
   }, [value, inView, suffix]);
 
-  return <span ref={ref} className="text-3xl md:text-4xl font-black text-white tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">0{suffix}</span>;
+  return <span ref={ref} className="text-3xl md:text-4xl font-black text-white tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">0{suffix}</span>;
 };
 
-// ================= VARIED ANIMATION VARIANTS =================
+// ================= VARIED ANIMATION VARIANTS (KEPT INTACT AS REQUESTED) =================
 const fadeSlideUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -133,46 +133,39 @@ export default function AiDeveloper() {
   };
 
   return (
-    <div ref={containerRef} className="flex flex-col min-h-screen text-slate-100 overflow-x-hidden relative selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div ref={containerRef} className="flex flex-col min-h-screen bg-[#02040a] text-slate-100 overflow-x-hidden relative selection:bg-emerald-500/30 selection:text-emerald-200">
       
-      {/* ================= HIGH-PERFORMANCE FUTURISTIC BACKGROUND ================= */}
+      {/* ================= HIGH-PERFORMANCE CSS BACKGROUND (NO LAG & FOOTER SAFE) ================= */}
       <style>{`
-        /* Deep space cyber background animation */
+        /* Futuristic AI Data Rain & Neural Grid */
         @keyframes digital-rain {
-          0% { background-position: 0 0; }
-          100% { background-position: 0 1000px; }
+          0% { background-position: 0 0, 0 0; }
+          100% { background-position: 0 1000px, 0 0; }
         }
         @keyframes pan-neural {
-          0% { background-position: 0% 0%; }
-          100% { background-position: 100px 100px; }
+          0% { background-position: 0 0, 30px 30px; }
+          100% { background-position: 120px 120px, 150px 150px; }
         }
         @keyframes ambient-pulse {
           0%, 100% { opacity: 0.15; transform: scale(1); }
-          50% { opacity: 0.25; transform: scale(1.05); }
-        }
-        
-        .bg-cyber-base {
-          background-color: #02040a;
+          50% { opacity: 0.3; transform: scale(1.1); }
         }
 
         .digital-rain-layer {
-          background-image: repeating-linear-gradient(
-            180deg,
-            transparent 0%,
-            rgba(6, 182, 212, 0.05) 50%,
-            transparent 100%
-          );
-          background-size: 100% 200px;
-          animation: digital-rain 15s linear infinite;
+          background-image: 
+            repeating-linear-gradient(180deg, transparent 0%, rgba(6, 182, 212, 0.3) 50%, transparent 100%),
+            repeating-linear-gradient(90deg, rgba(6, 182, 212, 0.15) 0px, transparent 1px, transparent 60px);
+          background-size: 100% 250px, 100% 100%;
+          animation: digital-rain 6s linear infinite;
         }
 
         .neural-network-layer {
           background-image: 
-            radial-gradient(rgba(168, 85, 247, 0.2) 1.5px, transparent 1.5px),
-            radial-gradient(rgba(6, 182, 212, 0.2) 1.5px, transparent 1.5px);
+            radial-gradient(rgba(16, 185, 129, 0.6) 2px, transparent 2px),
+            radial-gradient(rgba(6, 182, 212, 0.4) 2px, transparent 2px);
           background-size: 60px 60px;
           background-position: 0 0, 30px 30px;
-          animation: pan-neural 20s linear infinite;
+          animation: pan-neural 25s linear infinite;
         }
 
         .ambient-glow { 
@@ -181,343 +174,351 @@ export default function AiDeveloper() {
         }
       `}</style>
 
-      {/* Background Layers - Fixed z-[-10] to ensure the footer is NEVER covered */}
-      <div className="fixed inset-0 z-[-10] bg-cyber-base pointer-events-none" />
-      <div className="fixed inset-0 z-[-10] digital-rain-layer pointer-events-none opacity-60" />
-      <div className="fixed inset-0 z-[-10] neural-network-layer pointer-events-none opacity-40" />
+      {/* The STICKY Wrapper: Keeps background locked to screen but stops at footer! */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
+          
+          <div className="absolute inset-0 bg-[#02040a]" />
+          <div className="absolute inset-0 digital-rain-layer opacity-70" />
+          <div className="absolute inset-0 neural-network-layer opacity-50" />
 
-      {/* Hardware-Accelerated Ambient Neural Glows */}
-      <div className="fixed inset-0 z-[-10] pointer-events-none overflow-hidden">
-        <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] bg-cyan-600/30 rounded-full blur-[120px] ambient-glow" style={{ animationDuration: '10s' }} />
-        <div className="absolute bottom-[10%] right-[5%] w-[600px] h-[600px] bg-purple-600/30 rounded-full blur-[140px] ambient-glow" style={{ animationDuration: '14s', animationDelay: '2s' }} />
-        <div className="absolute top-[40%] right-[30%] w-[400px] h-[400px] bg-blue-600/20 rounded-full blur-[100px] ambient-glow" style={{ animationDuration: '12s', animationDelay: '5s' }} />
+          {/* Deep Ambient Glows */}
+          <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] bg-emerald-600/30 rounded-full blur-[120px] ambient-glow" style={{ animationDuration: '8s' }} />
+          <div className="absolute bottom-[10%] right-[5%] w-[600px] h-[600px] bg-cyan-600/30 rounded-full blur-[140px] ambient-glow" style={{ animationDuration: '12s', animationDelay: '2s' }} />
+          <div className="absolute top-[40%] right-[30%] w-[400px] h-[400px] bg-purple-600/20 rounded-full blur-[100px] ambient-glow" style={{ animationDuration: '10s', animationDelay: '5s' }} />
+          
+        </div>
       </div>
 
-      {/* ================= 59. HERO SECTION ================= */}
-      <section className="relative pt-44 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center z-10">
-        <div className="max-w-5xl mx-auto text-center relative">
-          
-          <motion.div variants={fadeSlideUp} initial="hidden" animate="visible"
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold mb-8 backdrop-blur-md">
-            <Terminal size={14} /> AI-Assisted Full-Stack Engineering
-          </motion.div>
+      {/* ================= PAGE CONTENT WRAPPER ================= */}
+      <div className="relative z-10">
 
-          <motion.h1 variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8 leading-tight">
-            Building the Future with <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">
-              Code, AI, & Continuous Learning.
-            </span>
-          </motion.h1>
-
-          <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }}
-            className="text-base md:text-lg text-slate-400 leading-relaxed max-w-3xl mx-auto space-y-4 mb-16">
-            <p><strong>Software engineering is more than writing code.</strong> It is understanding problems, designing scalable solutions, collaborating with intelligent tools, and continuously improving through real-world experience.</p>
-            <p>As an aspiring AI-Assisted Full-Stack Developer, I am building practical applications while learning modern technologies, software architecture, automation, and best development practices.</p>
-            <p className="text-cyan-400/80 font-medium">This portfolio is my first flagship software engineering project—and the beginning of a much larger journey.</p>
-          </motion.div>
-
-          {/* Quick Statistics Counter System */}
-          <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-16">
-            {developerStats.map((stat, idx) => (
-              <motion.div variants={cardPop} key={idx} className="p-5 rounded-2xl bg-black/60 border border-slate-800 backdrop-blur-md flex flex-col items-center justify-center hover:border-cyan-500/60 transition-colors group relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                <span className="text-[10px] text-slate-500 uppercase tracking-widest text-center mt-1 font-bold">{stat.label}</span>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Call-to-Action Controls */}
-          <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.4 }} className="flex flex-wrap justify-center gap-4 relative z-20">
-            <button onClick={() => scrollToSection('current-projects')} className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-black text-sm hover:opacity-90 transition-opacity shadow-[0_0_25px_rgba(6,182,212,0.4)] cursor-pointer">
-              View Projects
-            </button>
-            <button onClick={() => scrollToSection('learning-timeline')} className="px-6 py-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-sm hover:bg-slate-800 hover:border-cyan-500/50 transition-colors flex items-center gap-2 cursor-pointer">
-              Explore My Journey <ChevronRight size={16} />
-            </button>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="px-6 py-3.5 rounded-xl bg-black border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600 transition-colors flex items-center gap-2 text-sm font-semibold">
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-              GitHub
-            </a>
-          </motion.div>
-
-        </div>
-      </section>
-
-      {/* ================= 61. LEARNING PHILOSOPHY ================= */}
-      <section className="py-24 px-6 relative z-10 border-t border-slate-800/50 bg-black/40 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        {/* ================= 59. HERO SECTION ================= */}
+        <section className="relative pt-44 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center">
+          <div className="max-w-5xl mx-auto text-center relative">
             
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-5 space-y-6">
-              <h3 className="text-3xl font-black text-white">Learning by Building.</h3>
-              <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
-              <div className="text-slate-400 space-y-4 text-sm leading-relaxed">
-                <p>I believe the most effective way to learn software engineering is through practical application.</p>
-                <p>Rather than relying solely on tutorials or theoretical exercises, I build complete projects that challenge me to solve real problems, make architectural decisions, debug unexpected issues, and continuously improve my understanding.</p>
-                <p>Artificial Intelligence plays an important role in this process—not as a replacement for learning, but as a mentor, assistant, reviewer, and productivity tool.</p>
-                <p>Every feature I build is an opportunity to deepen my understanding of software engineering principles while producing something meaningful.</p>
-              </div>
+            <motion.div variants={fadeSlideUp} initial="hidden" animate="visible"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-8 backdrop-blur-md">
+              <Terminal size={14} /> AI-Assisted Full-Stack Engineering
             </motion.div>
 
-            {/* Custom List Animation: Check zooms out, text slides down from right */}
-            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-7">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {[
-                  "Build real projects.", "Understand the code.", "Learn continuously.", "Solve business problems.",
-                  "Write maintainable software.", "Design scalable systems.", "Use AI responsibly.", "Embrace debugging.",
-                  "Document everything.", "Improve every iteration."
-                ].map((principle, idx) => (
-                  <motion.div key={idx} className="p-4 rounded-xl bg-slate-950/50 border border-slate-800 flex items-center gap-3 overflow-hidden shadow-lg">
-                    <motion.div variants={{ hidden: { scale: 3, opacity: 0 }, visible: { scale: 1, opacity: 1, transition: { type: "spring", stiffness: 200, damping: 15 } } }}>
-                      <CheckCircle2 size={18} className="text-cyan-400 shrink-0 drop-shadow-[0_0_8px_rgba(6,182,212,0.6)]" />
-                    </motion.div>
-                    <motion.div variants={{ hidden: { x: 40, y: -20, opacity: 0 }, visible: { x: 0, y: 0, opacity: 1, transition: { type: "spring", stiffness: 120, damping: 14 } } }}>
-                      <span className="text-sm text-slate-300 font-medium">{principle}</span>
-                    </motion.div>
-                  </motion.div>
-                ))}
-              </div>
+            <motion.h1 variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}
+              className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8 leading-tight">
+              Building the Future with <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-500 drop-shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                Code, AI, & Continuous Learning.
+              </span>
+            </motion.h1>
+
+            <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }}
+              className="text-base md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto space-y-4 mb-16">
+              <p><strong>Software engineering is more than writing code.</strong> It is understanding problems, designing scalable solutions, collaborating with intelligent tools, and continuously improving through real-world experience.</p>
+              <p>As an aspiring AI-Assisted Full-Stack Developer, I am building practical applications while learning modern technologies, software architecture, automation, and best development practices.</p>
+              <p className="text-emerald-400/80 font-medium">This portfolio is my first flagship software engineering project—and the beginning of a much larger journey.</p>
             </motion.div>
 
-          </div>
-        </div>
-      </section>
-
-      {/* ================= 62. DEVELOPMENT JOURNEY TIMELINE ================= */}
-      <section id="learning-timeline" className="py-24 px-6 relative z-10 border-t border-slate-800/50">
-        <div className="max-w-4xl mx-auto">
-          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-            <h3 className="text-3xl font-black text-white mb-4">Development Journey Timeline</h3>
-            <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
-          </motion.div>
-
-          <div className="relative border-l border-slate-800 ml-4 md:ml-32 space-y-12">
-            {learningTimeline.map((item, idx) => (
-              <motion.div variants={timelineSlide} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} transition={{ delay: idx * 0.1 }} key={idx} className="relative pl-8 group">
-                <div className="absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full bg-slate-900 group-hover:bg-cyan-400 transition-colors border border-cyan-500/50 z-20 shadow-[0_0_10px_rgba(6,182,212,0)] group-hover:shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
-                
-                <div className="md:absolute md:left-[-140px] md:top-0 md:w-32 md:text-right font-black text-sm text-slate-500 group-hover:text-cyan-400 transition-colors mb-2 md:mb-0">
-                  {item.year}
-                </div>
-
-                <div className="p-5 rounded-xl bg-slate-950/40 border border-slate-900 group-hover:border-cyan-500/40 group-hover:bg-cyan-500/5 transition-all duration-300 shadow-lg">
-                  <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line group-hover:text-slate-200 transition-colors">
-                    {item.desc}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW ================= */}
-      <section className="py-24 px-6 relative z-10 border-t border-slate-800/50 bg-black/40 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
-          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-6 space-y-6">
-            <h3 className="text-3xl font-black text-white">AI is a Partner, <br/>Not a Replacement.</h3>
-            <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.4)]" />
-            <div className="text-slate-400 space-y-4 text-sm leading-relaxed">
-              <p>Artificial Intelligence is transforming software development. Rather than fearing this change, I embrace AI as a productivity tool that accelerates learning, improves code quality, and helps solve complex technical challenges.</p>
-              <p>However, I believe true software engineering requires understanding the code being written. AI can generate ideas, explain concepts, suggest improvements, and accelerate implementation, but developers remain responsible for architecture, design decisions, debugging, testing, security, maintainability, and long-term scalability.</p>
-              <p className="text-purple-400 font-semibold bg-purple-500/10 p-4 rounded-xl border border-purple-500/20">
-                My goal is to combine human creativity, critical thinking, and engineering principles with AI-assisted productivity to build better software.
-              </p>
-            </div>
-          </motion.div>
-
-          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
-            className="lg:col-span-6 h-[450px] overflow-y-auto pr-2 border border-slate-800 bg-slate-950/60 p-6 rounded-2xl hide-scrollbar relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-            <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-[#02040a] to-transparent pointer-events-none z-10" />
-            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2"><Cpu size={14} className="text-purple-400" /> Interactive Prompts Workflow</h4>
-            <div className="space-y-3 relative border-l border-purple-500/30 ml-2">
-              {aiWorkflowSteps.map((step, idx) => (
-                <div key={idx} className="flex items-center gap-3 pl-4 relative group cursor-default">
-                  <div className="absolute left-[-4.5px] top-2 w-2 h-2 rounded-full bg-slate-800 group-hover:bg-purple-400 transition-colors shadow-[0_0_10px_rgba(168,85,247,0)] group-hover:shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
-                  <span className="text-xs font-mono text-slate-600 group-hover:text-purple-400 transition-colors">[{idx+1}]</span>
-                  <span className="text-sm font-semibold text-slate-400 group-hover:text-white transition-colors">{step}</span>
-                </div>
+            {/* Quick Statistics Counter System */}
+            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-16">
+              {developerStats.map((stat, idx) => (
+                <motion.div variants={cardPop} key={idx} className="p-5 rounded-2xl bg-black/60 border border-slate-800 backdrop-blur-md flex flex-col items-center justify-center hover:border-emerald-500/60 transition-colors group relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                  <span className="text-[10px] text-slate-400 uppercase tracking-widest text-center mt-1 font-bold group-hover:text-slate-300">{stat.label}</span>
+                </motion.div>
               ))}
-            </div>
-          </motion.div>
+            </motion.div>
 
-        </div>
-      </section>
+            {/* Call-to-Action Controls */}
+            <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.4 }} className="flex flex-wrap justify-center gap-4 relative z-20">
+              <button onClick={() => scrollToSection('current-projects')} className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-black text-sm hover:opacity-90 transition-opacity shadow-[0_0_25px_rgba(16,185,129,0.4)] cursor-pointer">
+                View Projects
+              </button>
+              <button onClick={() => scrollToSection('learning-timeline')} className="px-6 py-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-sm hover:bg-slate-800 hover:border-emerald-500/50 transition-colors flex items-center gap-2 cursor-pointer">
+                Explore My Journey <ChevronRight size={16} />
+              </button>
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="px-6 py-3.5 rounded-xl bg-black border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600 transition-colors flex items-center gap-2 text-sm font-semibold">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+                GitHub
+              </a>
+            </motion.div>
 
-      {/* ================= 65. AI ECOSYSTEM (WITH LOGOS) ================= */}
-      <section className="py-24 px-6 relative z-10 border-t border-slate-800/50">
-        <div className="max-w-7xl mx-auto">
-          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-            <h3 className="text-3xl font-black text-white mb-4">Current AI Ecosystem</h3>
-            <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
-          </motion.div>
+          </div>
+        </section>
 
-          <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {aiEcosystem.map((ai, idx) => (
-              <motion.div variants={cardPop} key={idx} className="p-6 rounded-2xl bg-black/40 border border-slate-900 flex flex-col hover:border-purple-500/60 hover:bg-purple-500/5 transition-all group shadow-lg">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-xl border border-slate-800 bg-black flex items-center justify-center relative overflow-hidden shrink-0 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-                    <img src={ai.imageSrc} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto" 
-                         onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
-                    <Cpu size={20} className="text-slate-700 hidden" />
-                  </div>
-                  <h4 className="text-base font-bold text-white group-hover:text-purple-400 transition-colors">{ai.name}</h4>
+        {/* ================= 61. LEARNING PHILOSOPHY ================= */}
+        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              
+              <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-5 space-y-6">
+                <h3 className="text-3xl font-black text-white">Learning by Building.</h3>
+                <div className="w-16 h-1 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
+                <div className="text-slate-300 space-y-4 text-sm leading-relaxed">
+                  <p>I believe the most effective way to learn software engineering is through practical application.</p>
+                  <p>Rather than relying solely on tutorials or theoretical exercises, I build complete projects that challenge me to solve real problems, make architectural decisions, debug unexpected issues, and continuously improve my understanding.</p>
+                  <p>Artificial Intelligence plays an important role in this process—not as a replacement for learning, but as a mentor, assistant, reviewer, and productivity tool.</p>
+                  <p>Every feature I build is an opportunity to deepen my understanding of software engineering principles while producing something meaningful.</p>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed flex-grow group-hover:text-slate-300 transition-colors">{ai.role}</p>
               </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
 
-      {/* ================= 67. TECH STACK (WITH LOGOS) ================= */}
-      <section className="py-24 px-6 relative z-10 border-t border-slate-800/50 bg-black/40 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto">
-          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-            <h3 className="text-3xl font-black text-white mb-4">Development Architecture</h3>
-            <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
-          </motion.div>
-
-          <div className="space-y-16">
-            {techStackData.map((stack, idx) => (
-              <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} key={idx}>
-                <h4 className="text-xs text-cyan-500 uppercase tracking-widest font-black mb-6 border-b border-slate-800 pb-2">{stack.category}</h4>
-                <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                  {stack.items.map((tool, i) => (
-                    <motion.div variants={cardPop} key={i} className="p-4 rounded-xl bg-slate-950/50 border border-slate-900 flex flex-col items-center justify-center text-center hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-300 group shadow-lg">
-                      <div className="w-14 h-14 rounded-xl border border-slate-800 bg-black flex items-center justify-center mb-3 relative overflow-hidden group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all">
-                        <img src={tool.imageSrc} alt={tool.name} className="w-8 h-8 object-contain opacity-60 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto"
-                             onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
-                        <Settings size={20} className="text-slate-700 hidden" />
-                      </div>
-                      <span className="text-[11px] font-semibold text-slate-400 group-hover:text-cyan-400 transition-colors">{tool.name}</span>
+              {/* Custom Animation: Zoom checkmark, Slide text */}
+              <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-7">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    "Build real projects.", "Understand the code.", "Learn continuously.", "Solve business problems.",
+                    "Write maintainable software.", "Design scalable systems.", "Use AI responsibly.", "Embrace debugging.",
+                    "Document everything.", "Improve every iteration."
+                  ].map((principle, idx) => (
+                    <motion.div key={idx} className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center gap-3 overflow-hidden shadow-lg hover:border-emerald-500/30 transition-colors">
+                      <motion.div variants={{ hidden: { scale: 3, opacity: 0 }, visible: { scale: 1, opacity: 1, transition: { type: "spring", stiffness: 200, damping: 15 } } }}>
+                        <CheckCircle2 size={18} className="text-emerald-400 shrink-0 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+                      </motion.div>
+                      <motion.div variants={{ hidden: { x: 40, y: -20, opacity: 0 }, visible: { x: 0, y: 0, opacity: 1, transition: { type: "spring", stiffness: 120, damping: 14 } } }}>
+                        <span className="text-sm text-slate-200 font-medium">{principle}</span>
+                      </motion.div>
                     </motion.div>
                   ))}
-                </motion.div>
+                </div>
               </motion.div>
-            ))}
+
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ================= 68. CURRENT PROJECTS ================= */}
-      <section id="current-projects" className="py-24 px-6 relative z-10 border-t border-slate-800/50">
-        <div className="max-w-7xl mx-auto">
-          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-            <h3 className="text-3xl font-black text-white mb-4">Engineering Showcase</h3>
-            <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
-          </motion.div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Core Project Card */}
-            <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
-              className="lg:col-span-2 p-8 rounded-3xl bg-slate-950/60 border border-slate-800 flex flex-col h-full relative overflow-hidden hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] transition-all group">
-              <div className="absolute top-4 right-4 px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] uppercase font-black tracking-wider rounded shadow-[0_0_10px_rgba(6,182,212,0.2)]">In Progress</div>
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2 block">Flagship Software Engineering v1</span>
-              <h4 className="text-2xl font-black text-white mb-4 group-hover:text-cyan-300 transition-colors">Personal Portfolio Website</h4>
-              <p className="text-sm text-slate-400 leading-relaxed mb-6">
-                A premium, custom-architected portfolio platform built entirely from scratch to showcase graphic design archives, data analytics systems, and modular web software while serving as an active production codebase.
-              </p>
-              
-              <h5 className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-3">Technologies Managed</h5>
-              <div className="flex flex-wrap gap-2 mb-8">
-                {["React", "Vite", "Tailwind CSS", "Git", "GitHub", "VS Code", "AI Assistant Workflow"].map((tech, i) => (
-                  <span key={i} className="px-2.5 py-1 rounded bg-black border border-slate-800 text-xs text-slate-300 font-medium group-hover:border-cyan-500/50 transition-colors">{tech}</span>
-                ))}
-              </div>
-              <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-800">
-                 <span className="text-xs text-cyan-400 font-bold">Role: Frontend Architect</span>
-                 <button className="text-xs text-white/80 hover:text-cyan-400 flex items-center gap-1 font-bold">Inspect Source <ExternalLink size={14}/></button>
-              </div>
+        {/* ================= 62. DEVELOPMENT JOURNEY TIMELINE ================= */}
+        <section id="learning-timeline" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
+          <div className="max-w-4xl mx-auto">
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
+              <h3 className="text-3xl font-black text-white mb-4">Development Journey Timeline</h3>
+              <div className="w-16 h-1 bg-emerald-500 rounded-full mx-auto shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
             </motion.div>
 
-            {/* Automation Pipeline Placeholder Card */}
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.2 }}
-              className="p-6 rounded-3xl border border-dashed border-slate-700 bg-black/40 flex flex-col justify-between h-full opacity-70 hover:opacity-100 hover:border-purple-500/50 transition-all">
-              <div>
-                <Layers className="text-purple-400 mb-4" size={28} />
-                <h4 className="text-lg font-bold text-white mb-2">Future AI Automation Pipelines</h4>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                   Upcoming systems for centralizing enterprise data layers, processing natural language document pipelines, lead routing rules, and automated business flow orchestration.
+            <div className="relative border-l border-slate-800 ml-4 md:ml-32 space-y-12">
+              {learningTimeline.map((item, idx) => (
+                <motion.div variants={timelineSlide} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} transition={{ delay: idx * 0.1 }} key={idx} className="relative pl-8 group">
+                  <div className="absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full bg-slate-900 group-hover:bg-emerald-400 transition-colors border border-emerald-500/50 z-20 shadow-[0_0_10px_rgba(16,185,129,0)] group-hover:shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+                  
+                  <div className="md:absolute md:left-[-140px] md:top-0 md:w-32 md:text-right font-black text-sm text-slate-500 group-hover:text-emerald-400 transition-colors mb-2 md:mb-0">
+                    {item.year}
+                  </div>
+
+                  <div className="p-5 rounded-xl bg-slate-950/60 border border-slate-900 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/5 transition-all duration-300 shadow-lg backdrop-blur-sm">
+                    <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line group-hover:text-slate-200 transition-colors">
+                      {item.desc}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW ================= */}
+        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-6 space-y-6">
+              <h3 className="text-3xl font-black text-white">AI is a Partner, <br/>Not a Replacement.</h3>
+              <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
+              <div className="text-slate-300 space-y-4 text-sm leading-relaxed">
+                <p>Artificial Intelligence is transforming software development. Rather than fearing this change, I embrace AI as a productivity tool that accelerates learning, improves code quality, and helps solve complex technical challenges.</p>
+                <p>However, I believe true software engineering requires understanding the code being written. AI can generate ideas, explain concepts, suggest improvements, and accelerate implementation, but developers remain responsible for architecture, design decisions, debugging, testing, security, maintainability, and long-term scalability.</p>
+                <p className="text-cyan-400 font-semibold bg-cyan-500/10 p-4 rounded-xl border border-cyan-500/20">
+                  My goal is to combine human creativity, critical thinking, and engineering principles with AI-assisted productivity to build better software.
                 </p>
               </div>
-              <div className="pt-6 border-t border-slate-800/60 text-[11px] text-purple-400/80 font-mono flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" /> STATUS: WAITING_ON_DEPS
+            </motion.div>
+
+            <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
+              className="lg:col-span-6 h-[450px] overflow-y-auto pr-2 border border-slate-800 bg-slate-950/80 p-6 rounded-2xl hide-scrollbar relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+              <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-[#02040a] to-transparent pointer-events-none z-10" />
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2"><Cpu size={14} className="text-cyan-400" /> Interactive Prompts Workflow</h4>
+              <div className="space-y-3 relative border-l border-cyan-500/30 ml-2">
+                {aiWorkflowSteps.map((step, idx) => (
+                  <div key={idx} className="flex items-center gap-3 pl-4 relative group cursor-default">
+                    <div className="absolute left-[-4.5px] top-2 w-2 h-2 rounded-full bg-slate-800 group-hover:bg-cyan-400 transition-colors shadow-[0_0_10px_rgba(6,182,212,0)] group-hover:shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
+                    <span className="text-xs font-mono text-slate-600 group-hover:text-cyan-400 transition-colors">[{idx+1}]</span>
+                    <span className="text-sm font-semibold text-slate-400 group-hover:text-white transition-colors">{step}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+          </div>
+        </section>
+
+        {/* ================= 65. AI ECOSYSTEM (WITH LOGOS) ================= */}
+        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/20">
+          <div className="max-w-7xl mx-auto">
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
+              <h3 className="text-3xl font-black text-white mb-4">Current AI Ecosystem</h3>
+              <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
+            </motion.div>
+
+            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {aiEcosystem.map((ai, idx) => (
+                <motion.div variants={cardPop} key={idx} className="p-6 rounded-2xl bg-slate-950/60 border border-slate-900 flex flex-col hover:border-cyan-500/60 hover:bg-cyan-500/5 transition-all group shadow-lg backdrop-blur-sm">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl border border-slate-800 bg-black flex items-center justify-center relative overflow-hidden shrink-0 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                      <img src={ai.imageSrc} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto" 
+                           onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                      <Cpu size={20} className="text-slate-700 hidden" />
+                    </div>
+                    <h4 className="text-base font-bold text-white group-hover:text-cyan-400 transition-colors">{ai.name}</h4>
+                  </div>
+                  <p className="text-xs text-slate-400 leading-relaxed flex-grow group-hover:text-slate-300 transition-colors">{ai.role}</p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ================= 67. TECH STACK (WITH LOGOS) ================= */}
+        <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/50 backdrop-blur-md">
+          <div className="max-w-7xl mx-auto">
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
+              <h3 className="text-3xl font-black text-white mb-4">Development Architecture</h3>
+              <div className="w-16 h-1 bg-emerald-500 rounded-full mx-auto shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
+            </motion.div>
+
+            <div className="space-y-16">
+              {techStackData.map((stack, idx) => (
+                <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} key={idx}>
+                  <h4 className="text-xs text-emerald-500 uppercase tracking-widest font-black mb-6 border-b border-slate-800 pb-2">{stack.category}</h4>
+                  <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {stack.items.map((tool, i) => (
+                      <motion.div variants={cardPop} key={i} className="p-4 rounded-xl bg-slate-950/70 border border-slate-900 flex flex-col items-center justify-center text-center hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all duration-300 group shadow-lg">
+                        <div className="w-14 h-14 rounded-xl border border-slate-800 bg-black flex items-center justify-center mb-3 relative overflow-hidden group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all">
+                          <img src={tool.imageSrc} alt={tool.name} className="w-8 h-8 object-contain opacity-60 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto"
+                               onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                          <Settings size={20} className="text-slate-700 hidden" />
+                        </div>
+                        <span className="text-[11px] font-semibold text-slate-400 group-hover:text-emerald-400 transition-colors">{tool.name}</span>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ================= 68. CURRENT PROJECTS ================= */}
+        <section id="current-projects" className="py-24 px-6 relative border-t border-slate-900 bg-black/20">
+          <div className="max-w-7xl mx-auto">
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
+              <h3 className="text-3xl font-black text-white mb-4">Engineering Showcase</h3>
+              <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
+            </motion.div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Core Project Card */}
+              <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
+                className="lg:col-span-2 p-8 rounded-3xl bg-slate-950/80 border border-slate-800 flex flex-col h-full relative overflow-hidden hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] transition-all group backdrop-blur-md">
+                <div className="absolute top-4 right-4 px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] uppercase font-black tracking-wider rounded shadow-[0_0_10px_rgba(6,182,212,0.2)]">In Progress</div>
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2 block">Flagship Software Engineering v1</span>
+                <h4 className="text-2xl font-black text-white mb-4 group-hover:text-cyan-300 transition-colors">Personal Portfolio Website</h4>
+                <p className="text-sm text-slate-300 leading-relaxed mb-6">
+                  A premium, custom-architected portfolio platform built entirely from scratch to showcase graphic design archives, data analytics systems, and modular web software while serving as an active production codebase.
+                </p>
+                
+                <h5 className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-3">Technologies Managed</h5>
+                <div className="flex flex-wrap gap-2 mb-8">
+                  {["React", "Vite", "Tailwind CSS", "Git", "GitHub", "VS Code", "AI Assistant Workflow"].map((tech, i) => (
+                    <span key={i} className="px-2.5 py-1 rounded bg-black border border-slate-800 text-xs text-slate-300 font-medium group-hover:border-cyan-500/50 transition-colors">{tech}</span>
+                  ))}
+                </div>
+                <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-800">
+                   <span className="text-xs text-cyan-400 font-bold">Role: Frontend Architect</span>
+                   <button className="text-xs text-white/80 hover:text-cyan-400 flex items-center gap-1 font-bold">Inspect Source <ExternalLink size={14}/></button>
+                </div>
+              </motion.div>
+
+              {/* Automation Pipeline Placeholder Card */}
+              <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.2 }}
+                className="p-6 rounded-3xl border border-dashed border-slate-700 bg-black/60 flex flex-col justify-between h-full opacity-80 hover:opacity-100 hover:border-emerald-500/50 transition-all backdrop-blur-md">
+                <div>
+                  <Layers className="text-emerald-400 mb-4" size={28} />
+                  <h4 className="text-lg font-bold text-white mb-2">Future AI Automation Pipelines</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                     Upcoming systems for centralizing enterprise data layers, processing natural language document pipelines, lead routing rules, and automated business flow orchestration.
+                  </p>
+                </div>
+                <div className="pt-6 border-t border-slate-800/60 text-[11px] text-emerald-400/80 font-mono flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" /> STATUS: WAITING_ON_DEPS
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= 69. GITHUB SYSTEM ================= */}
+        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
+          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+             <div className="flex flex-col sm:flex-row items-center gap-5 justify-between mb-6">
+                <div className="flex items-center gap-4">
+                   <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-white font-bold text-lg border border-slate-700 shadow-inner">JG</div>
+                   <div>
+                      <h4 className="text-base font-bold text-white flex items-center gap-2">
+                        Jefferson Gonzales 
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" className="text-slate-500"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+                      </h4>
+                      <p className="text-xs text-slate-500">github.com/jeffersongonzales</p>
+                   </div>
+                </div>
+                <span className="text-[10px] px-2 py-1 border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 rounded uppercase font-mono shadow-[0_0_10px_rgba(6,182,212,0.2)]">Live Sync Standard ready</span>
+             </div>
+             <div className="h-32 bg-black border border-slate-900 rounded-xl flex items-center justify-center text-xs text-slate-700 font-mono relative overflow-hidden">
+                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #334155 1px, transparent 1px), linear-gradient(to bottom, #334155 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
+                <span className="relative z-10">[Simulated GitHub Contribution Matrix Grid Placeholder]</span>
+             </div>
+          </motion.div>
+        </section>
+
+        {/* ================= 71. VISION STATEMENT ================= */}
+        <section className="py-24 px-6 relative border-t border-slate-900/80 text-center bg-black/20">
+          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto">
+             <Quote size={40} className="text-emerald-500/30 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
+             <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Vision Statement</h2>
+             <p className="text-base md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto">
+               My long-term goal is to become a software engineer who combines creativity, business understanding, data analytics, automation, and artificial intelligence to build meaningful digital products. 
+               <br/><br/>
+               Rather than specializing in only one discipline, I aim to bridge multiple fields and create solutions that are technically sound, visually polished, data-informed, and genuinely valuable to businesses and communities.
+             </p>
+          </motion.div>
+        </section>
+
+        {/* ================= 72. TRANSITION TO CONTACT ================= */}
+        <section className="w-full relative border-t border-slate-900 mt-16 pt-32 pb-24 px-6 overflow-hidden">
+          
+          {/* Aesthetic Shift Gradient: Futuristic neon fades into elegant neutral/charcoal form */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/90 to-[#0c0c0e] z-[-1]" />
+
+          <div className="max-w-4xl mx-auto text-center relative z-20">
+            <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
+                Every Project Begins with a Conversation.
+              </h2>
+              <p className="text-base md:text-lg text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+                Elegant neutral tones welcome you into the final hub. Animated code environments give way to a personal invitation. Connect with Jefferson Gonzales to transform creative and analytical inspiration into measurable operational opportunity.
+              </p>
+              
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                <button onClick={() => window.location.href = '/contact'}
+                  className="px-8 py-4 rounded-xl bg-white text-black font-black text-sm hover:bg-slate-200 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] flex items-center gap-2 cursor-pointer relative z-20">
+                  Contact Us <Mail size={16} />
+                </button>
+                
+                <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  className="px-8 py-4 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-white font-bold text-sm transition-colors flex items-center gap-2 backdrop-blur-md cursor-pointer relative z-20">
+                  <ArrowUp size={16} /> Back to Top 
+                </button>
               </div>
             </motion.div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ================= 69. GITHUB SYSTEM ================= */}
-      <section className="py-24 px-6 relative z-10 border-t border-slate-800/50 bg-black/40 backdrop-blur-sm">
-        <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
-           <div className="flex flex-col sm:flex-row items-center gap-5 justify-between mb-6">
-              <div className="flex items-center gap-4">
-                 <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-white font-bold text-lg border border-slate-700 shadow-inner">JG</div>
-                 <div>
-                    <h4 className="text-base font-bold text-white flex items-center gap-2">
-                      Jefferson Gonzales 
-                      <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" className="text-slate-500"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-                    </h4>
-                    <p className="text-xs text-slate-500">github.com/jeffersongonzales</p>
-                 </div>
-              </div>
-              <span className="text-[10px] px-2 py-1 border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 rounded uppercase font-mono shadow-[0_0_10px_rgba(6,182,212,0.2)]">Live Sync Standard ready</span>
-           </div>
-           <div className="h-32 bg-black border border-slate-900 rounded-xl flex items-center justify-center text-xs text-slate-700 font-mono relative overflow-hidden">
-              <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #334155 1px, transparent 1px), linear-gradient(to bottom, #334155 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
-              <span className="relative z-10">[Simulated GitHub Contribution Matrix Grid Placeholder]</span>
-           </div>
-        </motion.div>
-      </section>
-
-      {/* ================= 71. VISION STATEMENT ================= */}
-      <section className="py-24 px-6 relative z-10 border-t border-slate-800/50 text-center">
-        <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto">
-           <Quote size={40} className="text-cyan-500/20 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
-           <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Vision Statement</h2>
-           <p className="text-base md:text-lg text-slate-400 leading-relaxed max-w-3xl mx-auto">
-             My long-term goal is to become a software engineer who combines creativity, business understanding, data analytics, automation, and artificial intelligence to build meaningful digital products. 
-             <br/><br/>
-             Rather than specializing in only one discipline, I aim to bridge multiple fields and create solutions that are technically sound, visually polished, data-informed, and genuinely valuable to businesses and communities.
-           </p>
-        </motion.div>
-      </section>
-
-      {/* ================= 72. TRANSITION TO CONTACT ================= */}
-      <section className="w-full relative border-t border-slate-800 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
-        
-        {/* Aesthetic Shift Gradient: Futuristic neon fades into elegant neutral/charcoal form */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/90 to-[#0c0c0e] z-[-5]" />
-
-        <div className="max-w-4xl mx-auto text-center relative z-20">
-          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
-              Every Project Begins with a Conversation.
-            </h2>
-            <p className="text-base md:text-lg text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Elegant neutral tones welcome you into the final hub. Animated code environments give way to a personal invitation. Connect with Jefferson Gonzales to transform creative and analytical inspiration into measurable operational opportunity.
-            </p>
-            
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <button onClick={() => window.location.href = '/contact'}
-                className="px-8 py-4 rounded-xl bg-white text-black font-black text-sm hover:bg-slate-200 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] flex items-center gap-2 cursor-pointer relative z-20">
-                Contact Us <Mail size={16} />
-              </button>
-              
-              <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="px-8 py-4 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-white font-bold text-sm transition-colors flex items-center gap-2 backdrop-blur-md cursor-pointer relative z-20">
-                <ArrowUp size={16} /> Back to Top 
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
+      </div>
     </div>
   );
 }
