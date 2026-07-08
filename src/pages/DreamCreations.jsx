@@ -299,7 +299,29 @@ export default function DreamCreations() {
           ))}
         </div>
       </section>
-
+{/* ================= CALL TO ACTION SECTION ================= */}
+      <section className="max-w-4xl mx-auto w-full px-6 py-24 z-10 relative text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="p-10 md:p-14 rounded-3xl border border-[#1095d2]/20 bg-gradient-to-b from-[#1095d2]/10 to-black/40 backdrop-blur-md relative overflow-hidden"
+        >
+          {/* Subtle background glow */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-[#1095d2]/20 blur-[80px] -z-10 pointer-events-none" />
+          
+          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">
+            Ready to build something <span className="text-[#1095d2]">extraordinary?</span>
+          </h2>
+          <p className="text-base text-white/70 mb-8 max-w-xl mx-auto">
+            Let's collaborate to transform your vision into a compelling digital reality. Whether it's a complete brand overhaul or a targeted marketing campaign, the studio is ready.
+          </p>
+          <button className="px-8 py-4 rounded-xl bg-[#1095d2] text-white font-bold text-sm hover:bg-[#0c7ab0] transition-colors shadow-[0_0_20px_rgba(16,149,210,0.4)] hover:shadow-[0_0_30px_rgba(16,149,210,0.6)] group">
+            Start a Project
+          </button>
+        </motion.div>
+      </section>
     </div>
   );
 }
