@@ -26,7 +26,7 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
   return <span ref={ref} className="text-3xl md:text-4xl font-black text-white tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">0{suffix}</span>;
 };
 
-// ================= VARIED ANIMATION VARIANTS (KEPT INTACT AS REQUESTED) =================
+// ================= VARIED ANIMATION VARIANTS (NO BLUR, ZOOM CHECKS INTACT) =================
 const fadeSlideUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -133,61 +133,46 @@ export default function AiDeveloper() {
   };
 
   return (
-    <div ref={containerRef} className="flex flex-col min-h-screen bg-[#02040a] text-slate-100 overflow-x-hidden relative selection:bg-emerald-500/30 selection:text-emerald-200">
+    <div ref={containerRef} className="flex flex-col min-h-screen text-slate-100 overflow-x-hidden relative selection:bg-emerald-500/30 selection:text-emerald-200">
       
-      {/* ================= HIGH-PERFORMANCE CSS BACKGROUND (NO LAG & FOOTER SAFE) ================= */}
+      {/* ================= HIGH-PERFORMANCE CSS BACKGROUND (DATA STREAMS + FOOTER FIX) ================= */}
       <style>{`
-        /* Futuristic AI Data Rain & Neural Grid */
-        @keyframes digital-rain {
-          0% { background-position: 0 0, 0 0; }
-          100% { background-position: 0 1000px, 0 0; }
+        @keyframes data-stream-y {
+          0% { transform: translateY(-200px); }
+          100% { transform: translateY(120vh); }
         }
-        @keyframes pan-neural {
-          0% { background-position: 0 0, 30px 30px; }
-          100% { background-position: 120px 120px, 150px 150px; }
+        @keyframes data-stream-x {
+          0% { transform: translateX(-200px); }
+          100% { transform: translateX(120vw); }
         }
         @keyframes ambient-pulse {
           0%, 100% { opacity: 0.15; transform: scale(1); }
-          50% { opacity: 0.3; transform: scale(1.1); }
+          50% { opacity: 0.25; transform: scale(1.05); }
         }
-
-        .digital-rain-layer {
-          background-image: 
-            repeating-linear-gradient(180deg, transparent 0%, rgba(6, 182, 212, 0.3) 50%, transparent 100%),
-            repeating-linear-gradient(90deg, rgba(6, 182, 212, 0.15) 0px, transparent 1px, transparent 60px);
-          background-size: 100% 250px, 100% 100%;
-          animation: digital-rain 6s linear infinite;
-        }
-
-        .neural-network-layer {
-          background-image: 
-            radial-gradient(rgba(16, 185, 129, 0.6) 2px, transparent 2px),
-            radial-gradient(rgba(6, 182, 212, 0.4) 2px, transparent 2px);
-          background-size: 60px 60px;
-          background-position: 0 0, 30px 30px;
-          animation: pan-neural 25s linear infinite;
-        }
-
-        .ambient-glow { 
-          animation: ambient-pulse ease-in-out infinite; 
-          will-change: opacity, transform; 
-        }
+        .stream-y { animation: data-stream-y linear infinite; will-change: transform; }
+        .stream-x { animation: data-stream-x linear infinite; will-change: transform; }
+        .ambient-glow { animation: ambient-pulse ease-in-out infinite; will-change: opacity, transform; }
       `}</style>
 
-      {/* The STICKY Wrapper: Keeps background locked to screen but stops at footer! */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="sticky top-0 h-screen w-full overflow-hidden">
-          
-          <div className="absolute inset-0 bg-[#02040a]" />
-          <div className="absolute inset-0 digital-rain-layer opacity-70" />
-          <div className="absolute inset-0 neural-network-layer opacity-50" />
+      {/* Deep Space Base - Using z-[-10] to ensure footer stays on top */}
+      <div className="fixed inset-0 z-[-10] pointer-events-none bg-[#02040a]" />
 
-          {/* Deep Ambient Glows */}
-          <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] bg-emerald-600/30 rounded-full blur-[120px] ambient-glow" style={{ animationDuration: '8s' }} />
-          <div className="absolute bottom-[10%] right-[5%] w-[600px] h-[600px] bg-cyan-600/30 rounded-full blur-[140px] ambient-glow" style={{ animationDuration: '12s', animationDelay: '2s' }} />
-          <div className="absolute top-[40%] right-[30%] w-[400px] h-[400px] bg-purple-600/20 rounded-full blur-[100px] ambient-glow" style={{ animationDuration: '10s', animationDelay: '5s' }} />
-          
-        </div>
+      {/* Hardware-Accelerated Ambient Neural Glows */}
+      <div className="fixed inset-0 z-[-10] pointer-events-none overflow-hidden">
+        <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] bg-cyan-600/30 rounded-full blur-[120px] ambient-glow" style={{ animationDuration: '10s' }} />
+        <div className="absolute bottom-[10%] right-[5%] w-[600px] h-[600px] bg-purple-600/30 rounded-full blur-[140px] ambient-glow" style={{ animationDuration: '14s', animationDelay: '2s' }} />
+        <div className="absolute top-[40%] right-[30%] w-[400px] h-[400px] bg-blue-600/20 rounded-full blur-[100px] ambient-glow" style={{ animationDuration: '12s', animationDelay: '5s' }} />
+      </div>
+
+      {/* Hardware-Accelerated High-Speed Data Streams (Fiber Optics) */}
+      <div className="fixed inset-0 z-[-10] pointer-events-none overflow-hidden">
+        <div className="absolute top-0 w-[2px] h-[150px] bg-gradient-to-b from-transparent via-cyan-400 to-transparent opacity-40 stream-y" style={{ left: '15%', animationDuration: '2.5s', animationDelay: '0s' }} />
+        <div className="absolute top-0 w-[2px] h-[200px] bg-gradient-to-b from-transparent via-purple-500 to-transparent opacity-40 stream-y" style={{ left: '45%', animationDuration: '3s', animationDelay: '1.2s' }} />
+        <div className="absolute top-0 w-[2px] h-[100px] bg-gradient-to-b from-transparent via-cyan-300 to-transparent opacity-50 stream-y" style={{ left: '85%', animationDuration: '2s', animationDelay: '0.5s' }} />
+        <div className="absolute top-0 w-[2px] h-[250px] bg-gradient-to-b from-transparent via-blue-500 to-transparent opacity-30 stream-y" style={{ left: '25%', animationDuration: '4s', animationDelay: '2s' }} />
+        
+        <div className="absolute left-0 h-[2px] w-[200px] bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-40 stream-x" style={{ top: '20%', animationDuration: '4.5s', animationDelay: '1.5s' }} />
+        <div className="absolute left-0 h-[2px] w-[150px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-40 stream-x" style={{ top: '75%', animationDuration: '3.5s', animationDelay: '0.8s' }} />
       </div>
 
       {/* ================= PAGE CONTENT WRAPPER ================= */}
@@ -492,6 +477,7 @@ export default function AiDeveloper() {
         <section className="w-full relative border-t border-slate-900 mt-16 pt-32 pb-24 px-6 overflow-hidden">
           
           {/* Aesthetic Shift Gradient: Futuristic neon fades into elegant neutral/charcoal form */}
+          {/* Maintained z-[-1] to ensure global footers stay on top */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/90 to-[#0c0c0e] z-[-1]" />
 
           <div className="max-w-4xl mx-auto text-center relative z-20">
