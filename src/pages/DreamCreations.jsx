@@ -102,7 +102,7 @@ export default function DreamCreations() {
   });
   
   // Increased transform distance to -82% so it reaches Phase 13
-  const processX = useTransform(processProgress, [0, 1], ["5%", "-88%"]);
+  const processX = useTransform(processProgress, [0, 1], ["5%", "-95%"]);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
