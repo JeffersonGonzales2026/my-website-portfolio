@@ -394,7 +394,7 @@ export default function DreamCreations() {
 
       {/* ================= 35. CREATIVE PROCESS (AUTO-SCROLLING HORIZONTAL TRACK) ================= */}
       {/* Reduced height from 150vh to 120vh so it resolves faster and leaves no gap */}
-      <section ref={processScrollRef} className="w-full h-[120vh] z-10 relative bg-transparent">
+      <section ref={processScrollRef} className="w-full h-[70vh] z-10 relative bg-transparent">
         
         {/* Changed from h-screen to py-12 top-24 to fix the empty gap bug */}
         <div className="sticky top-24 overflow-hidden border-y border-white/10 bg-black/10 backdrop-blur-sm py-12">
