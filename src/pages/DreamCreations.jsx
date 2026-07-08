@@ -1,7 +1,7 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder } from 'lucide-react';
 
 const featuredClients = [
   { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
@@ -60,18 +60,6 @@ const testimonials = [
   { id: 3, name: "Elena Rostova", company: "Tech Startups Inc.", project: "UI/UX & Motion Graphics", rating: 5, feedback: "We needed a complete overhaul of our app interface and explainer videos. The team delivered a sleek, modern aesthetic that our users love." }
 ];
 
-// Sections 30 & 31: Portfolio Categories & Creations Showcase Data
-const portfolioCategories = ["All", "Brand Identity", "Marketing Materials", "Social Media", "Motion Graphics", "Web Design"];
-
-const portfolioWorks = [
-  { id: 1, title: "Responsive Health Rebrand", category: "Brand Identity", desc: "Complete visual identity and brand guidelines for a major healthcare provider.", image: "bg-gradient-to-br from-[#1095d2]/20 to-blue-900/40" },
-  { id: 2, title: "Tech Startups Pitch Deck", category: "Marketing Materials", desc: "High-conversion sales presentation design.", image: "bg-gradient-to-tr from-purple-500/20 to-pink-900/40" },
-  { id: 3, title: "E-Commerce Promo Campaign", category: "Social Media", desc: "Instagram and Facebook ad creatives.", image: "bg-gradient-to-tl from-emerald-500/20 to-teal-900/40" },
-  { id: 4, title: "App Explainer Video", category: "Motion Graphics", desc: "Sleek animated advertisement for iOS application.", image: "bg-gradient-to-bl from-orange-500/20 to-red-900/40" },
-  { id: 5, title: "Modern Real Estate UI", category: "Web Design", desc: "Landing page graphics and UI assets.", image: "bg-gradient-to-t from-cyan-500/20 to-blue-900/40" },
-  { id: 6, title: "Urban Streetwear Mockups", category: "Brand Identity", desc: "Premium apparel designs and clothing labels.", image: "bg-gradient-to-b from-zinc-500/20 to-zinc-900/40" },
-];
-
 const starsData = Array.from({ length: 60 }).map((_, i) => ({
   id: i,
   top: `${Math.random() * 100}%`,
@@ -92,17 +80,10 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
 export default function DreamCreations() {
   const containerRef = useRef(null);
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
-  const [activeCategory, setActiveCategory] = useState("All");
-
-  // Adjusted Scroll Tracking for Creative Process
-  const processScrollRef = useRef(null);
-  const { scrollYProgress: processProgress } = useScroll({
-    target: processScrollRef,
-    offset: ["start 50%", "end end"]
-  });
   
-  // Increased transform distance to -82% so it reaches Phase 13
-  const processX = useTransform(processProgress, [0, 1], ["5%", "-88%"]);
+  // State for the Unified Portfolio Directory
+  const [activePortfolioCategory, setActivePortfolioCategory] = useState("Branding & Identity");
+  const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -122,22 +103,29 @@ export default function DreamCreations() {
     }
   };
 
-  const handleSubtitleClick = (subtitleName) => {
+  // Upgraded: When a subtitle in the modal is clicked, it sets the directory states and scrolls to it!
+  const handleSubtitleModalClick = (categoryObj, subtitleName) => {
     setActiveCreationPopup(null);
+    setActivePortfolioCategory(categoryObj.category);
+    setActivePortfolioSubtitle(subtitleName);
+    
     setTimeout(() => {
-      scrollToSection('portfolio-gallery');
+      const targetElement = document.getElementById('portfolio-directory');
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }, 300);
   };
 
-  const filteredWorks = activeCategory === "All" 
-    ? portfolioWorks 
-    : portfolioWorks.filter(work => work.category === activeCategory);
+  // Helper to get the currently selected category object for the Portfolio section
+  const currentCategoryData = creationsCategories.find(c => c.category === activePortfolioCategory) || creationsCategories[0];
 
   return (
     <div 
       ref={containerRef}
       className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-nightSkyCycle"
     >
+      
       <div 
         className="fixed inset-0 z-50 pointer-events-none mix-blend-screen"
         style={{ background: 'radial-gradient(600px circle at var(--x, 50vw) var(--y, 50vh), rgba(16, 149, 210, 0.08), transparent 40%)' }}
@@ -153,6 +141,8 @@ export default function DreamCreations() {
         .animate-nightSkyCycle {
           animation: nightSkyCycle 25s ease-in-out infinite alternate;
         }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
       {/* Background Elements */}
@@ -392,51 +382,54 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 35. CREATIVE PROCESS (AUTO-SCROLLING HORIZONTAL TRACK) ================= */}
-      {/* Reduced height from 150vh to 120vh so it resolves faster and leaves no gap */}
-      <section ref={processScrollRef} className="w-full h-[70vh] z-10 relative bg-transparent">
-        
-        {/* Changed from h-screen to py-12 top-24 to fix the empty gap bug */}
-        <div className="sticky top-24 overflow-hidden border-y border-white/10 bg-black/10 backdrop-blur-sm py-12">
-          
-          <div className="mb-10 px-6 text-center">
-            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
-            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
-            <p className="text-base text-white/70 mt-4 max-w-2xl mx-auto">
-              Scroll down to journey through our structured, transparent workflow.
-            </p>
-          </div>
+      {/* ================= 35. CREATIVE PROCESS (MANUAL HORIZONTAL SCROLL) ================= */}
+      {/* Scroll-jacking removed! Now it's a simple, sleek manual scroll container that fixes the layout gap */}
+      <section className="w-full py-20 z-10 relative border-t border-white/10">
+        <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+          <p className="text-base text-white/70 mt-4 max-w-2xl">
+            Swipe to journey through our structured, transparent workflow.
+          </p>
+        </div>
 
-          <motion.div style={{ x: processX }} className="flex gap-4 md:gap-6 px-6 w-max items-center pr-24">
-            {creativeProcess.map((item, index) => (
-              <React.Fragment key={item.step}>
-                <div className="shrink-0 w-44 md:w-56 p-5 md:p-6 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/60 hover:border-[#1095d2]/50 transition-colors group shadow-lg">
-                  <div className="w-8 h-8 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-xs font-black mb-4 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all shadow-[0_0_15px_rgba(16,149,210,0.3)]">
-                    {item.step}
-                  </div>
-                  <h4 className="text-sm md:text-base font-bold text-white mb-2 leading-tight group-hover:text-[#1095d2] transition-colors">
-                    {item.title}
-                  </h4>
-                  <p className="text-xs text-white/50 leading-tight">
-                    {item.desc}
-                  </p>
+        {/* Manual Native Horizontal Scroll Container */}
+        <div className="flex overflow-x-auto gap-4 px-6 md:px-12 pb-8 hide-scrollbar snap-x snap-mandatory">
+          {creativeProcess.map((item, index) => (
+            <React.Fragment key={item.step}>
+              <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                className="shrink-0 w-64 snap-center p-6 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group shadow-lg"
+              >
+                <div className="w-10 h-10 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-sm font-black mb-4 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all shadow-[0_0_15px_rgba(16,149,210,0.3)]">
+                  {item.step}
                 </div>
+                <h4 className="text-base font-bold text-white mb-2 leading-tight group-hover:text-[#1095d2] transition-colors">
+                  {item.title}
+                </h4>
+                <p className="text-xs text-white/50 leading-snug">
+                  {item.desc}
+                </p>
+              </motion.div>
 
-                {index < creativeProcess.length - 1 && (
-                  <div className="shrink-0 text-[#1095d2]/30 flex items-center justify-center">
-                    <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}>
-                      <ArrowRight size={24} />
-                    </motion.div>
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
-          </motion.div>
+              {/* Animated connector arrow */}
+              {index < creativeProcess.length - 1 && (
+                <div className="shrink-0 text-[#1095d2]/30 flex items-center justify-center px-2">
+                  <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}>
+                    <ArrowRight size={24} />
+                  </motion.div>
+                </div>
+              )}
+            </React.Fragment>
+          ))}
         </div>
       </section>
 
       {/* ================= 36. TESTIMONIALS ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative">
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-16 text-center">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Client Feedback</h3>
           <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
@@ -508,67 +501,121 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      <div id="portfolio-gallery" className="scroll-mt-24" />
+      {/* Anchor Target for the Unified Showcase */}
+      <div id="portfolio-directory" className="scroll-mt-24" />
 
-      {/* ================= 30 & 31. CREATIONS SHOWCASE & CATEGORIES ================= */}
+      {/* ================= 30 & 31. UNIFIED PORTFOLIO DIRECTORY ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
-        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-10 gap-6">
-          <div className="text-center md:text-left">
-            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Selected Works</h3>
-            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-            <p className="text-sm text-white/60 mt-4">
-              Explore our recent projects tailored by specific creative categories.
-            </p>
-          </div>
-          <button className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20">
-            View Full Archive
-          </button>
+        <div className="mb-10 text-center md:text-left">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Archive</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+          <p className="text-sm text-white/60 mt-4">
+            Select a category below to explore specific visual solutions and featured artworks.
+          </p>
         </div>
 
-        {/* Dynamic Category Filter Row */}
+        {/* Level 1: Category Filter Pills */}
         <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-10 relative z-20">
-          {portfolioCategories.map((category) => (
+          {creationsCategories.map((cat) => (
             <button
-              key={category}
-              onClick={() => setActiveCategory(category)}
+              key={cat.id}
+              onClick={() => {
+                setActivePortfolioCategory(cat.category);
+                setActivePortfolioSubtitle(null); // Reset subtitle when category changes
+              }}
               className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                activeCategory === category 
+                activePortfolioCategory === cat.category 
                   ? 'bg-[#1095d2] text-white shadow-[0_0_15px_rgba(16,149,210,0.4)]' 
                   : 'bg-black/30 border border-white/10 text-white/60 hover:text-white hover:border-[#1095d2]/40'
               }`}
             >
-              {category}
+              {cat.category}
             </button>
           ))}
         </div>
 
-        {/* Dynamic Filtered Grid */}
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[300px]">
-          <AnimatePresence>
-            {filteredWorks.map((work) => (
-              <motion.div
-                key={work.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4 }}
-                className={`rounded-2xl border border-white/10 overflow-hidden group relative cursor-pointer z-20 ${work.image}`}
+        {/* Drill-down View Logic */}
+        <AnimatePresence mode="wait">
+          {!activePortfolioSubtitle ? (
+            /* Level 2: Subtitle Toggle Boxes (with Placeholder Cover Photos) */
+            <motion.div 
+              key="subtitle-grid"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 relative z-20"
+            >
+              {currentCategoryData.items.map((subtitle, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActivePortfolioSubtitle(subtitle)}
+                  className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left"
+                >
+                  {/* Background Image Placeholder - Ready for your actual cover photos! */}
+                  <img 
+                    src={`/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`} 
+                    alt={subtitle} 
+                    className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700"
+                    onError={(e) => {
+                      // Fallback gradient if image isn't loaded yet
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'block';
+                    }}
+                  />
+                  {/* Fallback Gradient if image is missing */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
+                  
+                  {/* Dark Overlay for text readability */}
+                  <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors duration-300" />
+                  
+                  {/* Box Content */}
+                  <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                    <span className="text-[#1095d2] text-[10px] font-black uppercase tracking-wider mb-2">View Works</span>
+                    <h4 className="text-white font-bold text-xl group-hover:text-[#1095d2] transition-colors">{subtitle}</h4>
+                  </div>
+                </button>
+              ))}
+            </motion.div>
+          ) : (
+            /* Level 3: Actual Artworks Grid for the selected Subtitle */
+            <motion.div
+              key="works-grid"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="relative z-20"
+            >
+              {/* Back Button */}
+              <button 
+                onClick={() => setActivePortfolioSubtitle(null)}
+                className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer"
               >
-                {/* Simulated Image Placeholder (Can be replaced with standard <img> tags later) */}
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
-                
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                  <span className="text-[#1095d2] text-[10px] font-black uppercase tracking-wider mb-2 block">
-                    {work.category}
-                  </span>
-                  <h4 className="text-white font-bold text-xl mb-1">{work.title}</h4>
-                  <p className="text-xs text-white/70 line-clamp-2">{work.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+                <ArrowLeft size={16} /> Back to {activePortfolioCategory}
+              </button>
+
+              <h4 className="text-2xl font-bold text-white mb-6">
+                Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span>
+              </h4>
+
+              {/* Grid of Actual Final Works (Placeholders ready for CMS integration) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[1, 2, 3, 4].map((work) => (
+                  <div key={work} className="relative h-64 rounded-xl border border-white/10 bg-black/40 overflow-hidden group">
+                     {/* Your actual design images will go here */}
+                     <div className="absolute inset-0 flex items-center justify-center text-white/20 group-hover:scale-110 transition-transform duration-500">
+                       <ImagePlaceholder size={48} />
+                     </div>
+                     <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
+                        <p className="text-xs font-semibold text-white">Project Feature {work}</p>
+                     </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
 
       {/* ================= 38. PRICING / PROJECT INVESTMENT ================= */}
@@ -647,7 +694,7 @@ export default function DreamCreations() {
                 {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
                     <button 
-                      onClick={() => handleSubtitleClick(item)}
+                      onClick={() => handleSubtitleModalClick(activeCreationPopup, item)}
                       className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group cursor-pointer"
                     >
                       <span className="text-[#1095d2] group-hover:translate-x-1 transition-transform">▹</span>
