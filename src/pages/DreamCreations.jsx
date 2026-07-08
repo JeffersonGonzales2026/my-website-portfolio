@@ -1,7 +1,7 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, Sparkles, ArrowRight, Star, Quote } from 'lucide-react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator } from 'lucide-react';
 
 const featuredClients = [
   { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
@@ -54,7 +54,6 @@ const creativeProcess = [
   { step: 13, title: "Post-Project Support", desc: "Ongoing assistance." }
 ];
 
-// Section 36: Testimonials Placeholders
 const testimonials = [
   { id: 1, name: "Sarah Jenkins", company: "Responsive Health", project: "Brand Identity", rating: 5, feedback: "Dream Creations completely transformed our visual identity. The level of professionalism and the quality of the final assets exceeded our expectations." },
   { id: 2, name: "Mark Tolentino", company: "Real Estate Partners", project: "Marketing Materials", rating: 5, feedback: "Fast, reliable, and incredibly creative. The brochures and social media assets they produced helped us close three major properties this quarter." },
@@ -83,6 +82,15 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
 export default function DreamCreations() {
   const containerRef = useRef(null);
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
+
+  // Scroll Tracking for the Creative Process horizontal movement
+  const processScrollRef = useRef(null);
+  const { scrollYProgress: processProgress } = useScroll({
+    target: processScrollRef,
+    offset: ["start start", "end end"]
+  });
+  // Transform vertical scroll into horizontal movement (moves left as you scroll down)
+  const processX = useTransform(processProgress, [0, 1], ["5%", "-65%"]);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -126,7 +134,6 @@ export default function DreamCreations() {
         style={{ background: 'radial-gradient(600px circle at var(--x, 50vw) var(--y, 50vh), rgba(16, 149, 210, 0.08), transparent 40%)' }}
       />
 
-      {/* Added class to hide the scrollbar for the horizontal process flow */}
       <style>{`
         @keyframes nightSkyCycle {
           0%   { background-color: #1e1b4b; } 
@@ -136,13 +143,6 @@ export default function DreamCreations() {
         }
         .animate-nightSkyCycle {
           animation: nightSkyCycle 25s ease-in-out infinite alternate;
-        }
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
         }
       `}</style>
 
@@ -383,62 +383,53 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 35. CREATIVE PROCESS (HORIZONTAL COMPACT FLOW) ================= */}
-      <section className="max-w-7xl mx-auto w-full py-20 z-10 relative border-t border-white/10 overflow-hidden">
-        <div className="mb-12 px-6 text-center">
-          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
-          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
-          <p className="text-base text-white/70 mt-4 max-w-2xl mx-auto">
-            Every project follows a structured, transparent workflow to ensure your vision is executed flawlessly.
-          </p>
-        </div>
+      {/* ================= 35. CREATIVE PROCESS (AUTO-SCROLLING HORIZONTAL TRACK) ================= */}
+      {/* We apply a massive height (150vh) so there is room to scroll vertically while the track moves horizontally */}
+      <section ref={processScrollRef} className="w-full h-[150vh] z-10 relative bg-transparent">
+        
+        {/* Sticky container pins to the viewport as you scroll down */}
+        <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden border-y border-white/10 bg-black/10 backdrop-blur-sm">
+          
+          <div className="mb-12 px-6 text-center">
+            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
+            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
+            <p className="text-base text-white/70 mt-4 max-w-2xl mx-auto">
+              Scroll down to journey through our structured, transparent workflow.
+            </p>
+          </div>
 
-        {/* Ultra-compact horizontal scrolling track with animated arrows */}
-        <div className="px-6 flex overflow-x-auto hide-scrollbar gap-4 md:gap-6 pb-8 items-center cursor-ew-resize">
-          {creativeProcess.map((item, index) => (
-            <React.Fragment key={item.step}>
-              {/* Step Card */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="shrink-0 w-36 md:w-44 p-4 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group"
-              >
-                <div className="w-6 h-6 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-[10px] font-black mb-3 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all">
-                  {item.step}
+          {/* The motion div translates left based on vertical scroll */}
+          <motion.div style={{ x: processX }} className="flex gap-4 md:gap-6 px-6 w-max items-center pb-12 pt-4">
+            {creativeProcess.map((item, index) => (
+              <React.Fragment key={item.step}>
+                <div className="shrink-0 w-44 md:w-56 p-5 md:p-6 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/60 hover:border-[#1095d2]/50 transition-colors group shadow-lg">
+                  <div className="w-8 h-8 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-xs font-black mb-4 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all shadow-[0_0_15px_rgba(16,149,210,0.3)]">
+                    {item.step}
+                  </div>
+                  <h4 className="text-sm md:text-base font-bold text-white mb-2 leading-tight group-hover:text-[#1095d2] transition-colors">
+                    {item.title}
+                  </h4>
+                  <p className="text-xs text-white/50 leading-tight">
+                    {item.desc}
+                  </p>
                 </div>
-                <h4 className="text-xs md:text-sm font-bold text-white mb-1.5 leading-tight group-hover:text-[#1095d2] transition-colors">
-                  {item.title}
-                </h4>
-                <p className="text-[10px] text-white/50 leading-tight">
-                  {item.desc}
-                </p>
-              </motion.div>
 
-              {/* Animating Arrow (Between cards, skipping the last one) */}
-              {index < creativeProcess.length - 1 && (
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  className="shrink-0 text-[#1095d2]/40 flex items-center justify-center"
-                >
-                  <motion.div
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <ArrowRight size={20} />
-                  </motion.div>
-                </motion.div>
-              )}
-            </React.Fragment>
-          ))}
+                {/* Animated connector arrow */}
+                {index < creativeProcess.length - 1 && (
+                  <div className="shrink-0 text-[#1095d2]/30 flex items-center justify-center">
+                    <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}>
+                      <ArrowRight size={24} />
+                    </motion.div>
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </motion.div>
         </div>
       </section>
 
       {/* ================= 36. TESTIMONIALS (CMS PLACEHOLDER) ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative">
         <div className="mb-16 text-center">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Client Feedback</h3>
           <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
@@ -458,17 +449,14 @@ export default function DreamCreations() {
               className="p-8 rounded-3xl bg-black/20 border border-white/10 backdrop-blur-md flex flex-col relative group hover:border-[#1095d2]/40 transition-colors"
             >
               <Quote size={40} className="text-[#1095d2]/10 absolute top-6 right-6 group-hover:text-[#1095d2]/20 transition-colors" />
-              
               <div className="flex gap-1 mb-6 text-[#1095d2]">
                 {[...Array(testimonial.rating)].map((_, i) => (
                   <Star key={i} size={14} fill="currentColor" />
                 ))}
               </div>
-              
               <p className="text-sm text-white/80 leading-relaxed mb-8 flex-grow italic">
                 "{testimonial.feedback}"
               </p>
-              
               <div className="flex items-center gap-4 mt-auto">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 border border-white/5">
                   {testimonial.name.charAt(0)}
@@ -553,8 +541,13 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= CALL TO ACTION SECTION ================= */}
-      <section className="max-w-4xl mx-auto w-full px-6 py-24 z-10 relative text-center">
+      {/* ================= 38. PRICING / PROJECT INVESTMENT ================= */}
+      <section className="max-w-4xl mx-auto w-full px-6 pt-24 pb-12 z-10 relative text-center border-t border-white/10 mt-10">
+        <div className="mb-12">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Investment</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
+        </div>
+        
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -564,17 +557,21 @@ export default function DreamCreations() {
         >
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-[#1095d2]/20 blur-[80px] -z-10 pointer-events-none" />
           
+          <div className="w-16 h-16 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center mx-auto mb-6">
+            <Calculator size={32} />
+          </div>
+
           <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">
-            Ready to build something <span className="text-[#1095d2]">extraordinary?</span>
+            Custom Tailored <span className="text-[#1095d2]">Quotations</span>
           </h2>
           <p className="text-base text-white/70 mb-8 max-w-xl mx-auto">
-            Let's collaborate to transform your vision into a compelling digital reality. Whether it's a complete brand overhaul or a targeted marketing campaign, the studio is ready.
+            Every dream is unique. Rather than offering rigid pricing tiers, we provide tailored quotations based exactly on your specific project requirements, timeline, and requested deliverables. Let's discuss your vision.
           </p>
           <button 
             onClick={() => window.location.href = '/contact'}
             className="px-8 py-4 rounded-xl bg-[#1095d2] text-white font-bold text-sm hover:bg-[#0c7ab0] transition-colors shadow-[0_0_20px_rgba(16,149,210,0.4)] hover:shadow-[0_0_30px_rgba(16,149,210,0.6)] group cursor-pointer relative z-20"
           >
-            Start a Project
+            Request a Quote
           </button>
         </motion.div>
       </section>
