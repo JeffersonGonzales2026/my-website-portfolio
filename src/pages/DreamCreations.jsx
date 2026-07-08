@@ -13,17 +13,17 @@ const featuredClients = [
 ];
 
 const creationsCategories = [
-  { id: 1, category: "Branding & Identity", icon: <Fingerprint size={16} />, items: ["Logo Design", "Brand Guidelines", "Visual Identity", "Brand Refresh", "Brand Assets", "Business Identity Systems"] },
-  { id: 2, category: "Graphic Design", icon: <PenTool size={16} />, items: ["Marketing Graphics", "Corporate Graphics", "Advertising Materials", "Print Design", "Creative Campaigns", "Promotional Graphics"] },
-  { id: 3, category: "Social Media Design", icon: <Share2 size={16} />, items: ["Facebook Graphics", "Instagram Posts", "Carousel Posts", "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"] },
-  { id: 4, category: "Marketing Materials", icon: <FileText size={16} />, items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Product Sheets", "Sales Kits", "Business Presentations"] },
-  { id: 5, category: "Motion Graphics", icon: <Video size={16} />, items: ["Animated Ads", "Product Promotions", "Marketing Videos", "Social Media Motion Graphics", "Explainer Videos", "Logo Animation", "Video Thumbnails"] },
-  { id: 6, category: "Web Graphics", icon: <MousePointerClick size={16} />, items: ["Website Banners", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"] },
-  { id: 7, category: "Photo Editing", icon: <ImageIcon size={16} />, items: ["Photo Retouching", "Photo Restoration", "Watercolor Portraits", "Background Removal", "Image Manipulation", "Color Correction", "Composite Editing"] },
-  { id: 8, category: "Apparel Design", icon: <Shirt size={16} />, items: ["Shirt Designs", "Streetwear Graphics", "Mockups", "Print-ready Artwork"] },
-  { id: 9, category: "Print Production", icon: <Printer size={16} />, items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards"] },
-  { id: 10, category: "Packaging", icon: <Box size={16} />, items: ["Packaging Graphics", "Clothing Labels", "Product Labels"] },
-  { id: 11, category: "Illustration", icon: <Pencil size={16} />, items: ["Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"] }
+  { id: 1, category: "Branding & Identity", icon: <Fingerprint size={14} />, items: ["Logo Design", "Brand Guidelines", "Visual Identity", "Brand Refresh", "Brand Assets", "Business Identity Systems"] },
+  { id: 2, category: "Graphic Design", icon: <PenTool size={14} />, items: ["Marketing Graphics", "Corporate Graphics", "Advertising Materials", "Print Design", "Creative Campaigns", "Promotional Graphics"] },
+  { id: 3, category: "Social Media Design", icon: <Share2 size={14} />, items: ["Facebook Graphics", "Instagram Posts", "Carousel Posts", "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"] },
+  { id: 4, category: "Marketing Materials", icon: <FileText size={14} />, items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Product Sheets", "Sales Kits", "Business Presentations"] },
+  { id: 5, category: "Motion Graphics", icon: <Video size={14} />, items: ["Animated Ads", "Product Promotions", "Marketing Videos", "Social Media Motion Graphics", "Explainer Videos", "Logo Animation", "Video Thumbnails"] },
+  { id: 6, category: "Web Graphics", icon: <MousePointerClick size={14} />, items: ["Website Banners", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"] },
+  { id: 7, category: "Photo Editing", icon: <ImageIcon size={14} />, items: ["Photo Retouching", "Photo Restoration", "Watercolor Portraits", "Background Removal", "Image Manipulation", "Color Correction", "Composite Editing"] },
+  { id: 8, category: "Apparel Design", icon: <Shirt size={14} />, items: ["Shirt Designs", "Streetwear Graphics", "Mockups", "Print-ready Artwork"] },
+  { id: 9, category: "Print Production", icon: <Printer size={14} />, items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards"] },
+  { id: 10, category: "Packaging", icon: <Box size={14} />, items: ["Packaging Graphics", "Clothing Labels", "Product Labels"] },
+  { id: 11, category: "Illustration", icon: <Pencil size={14} />, items: ["Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"] }
 ];
 
 const softwareExpertise = [
@@ -74,6 +74,20 @@ const teamMembers = [
     status: "Active",
     portfolioUrl: "https://www.behance.net/gallery/190745335/PORTFOLIO-V2",
     socialUrl: "#"
+  },
+  {
+    id: 2,
+    name: "Open Position",
+    photo: "", 
+    positions: ["-"],
+    bio: "Waiting for the next talented individual to fill this space. If you are driven by design and innovation, there might be a seat for you here.",
+    skills: ["-", "-", "-"],
+    software: ["-", "-", "-"],
+    experience: "-",
+    availability: "-",
+    status: "Hiring",
+    portfolioUrl: "#",
+    socialUrl: "#"
   }
 ];
 
@@ -96,6 +110,7 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
 
 export default function DreamCreations() {
   const containerRef = useRef(null);
+  const processScrollRef = useRef(null); 
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
 
@@ -117,7 +132,17 @@ export default function DreamCreations() {
     }
   };
 
-  // Fixed the jump bug! Increased timeout to outlast the Framer Motion AnimatePresence fade out.
+  const scrollProcess = (direction) => {
+    if (processScrollRef.current) {
+      const scrollAmount = 320; 
+      processScrollRef.current.scrollBy({ 
+        left: direction === 'left' ? -scrollAmount : scrollAmount, 
+        behavior: 'smooth' 
+      });
+    }
+  };
+
+  // Restored the exact, perfectly timed 350ms smooth scroll logic that fixed the bug
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
     setTimeout(() => {
@@ -289,7 +314,7 @@ export default function DreamCreations() {
 
       <div id="creations-grid" className="scroll-mt-24" />
 
-      {/* ================= 29. CREATIONS SECTION ================= */}
+      {/* ================= 29. CREATIONS SECTION (SUPER SMALLER BOXES) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative">
         <div className="mb-12 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
@@ -299,7 +324,8 @@ export default function DreamCreations() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        {/* Shrunk the gap, height, padding, and text for ultra-dense premium layout */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
           {creationsCategories.map((category, index) => (
             <motion.button
               key={category.id}
@@ -308,12 +334,12 @@ export default function DreamCreations() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: (index % 6) * 0.05 }}
-              className="p-3 h-28 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md hover:-translate-y-1 hover:border-[#1095d2]/50 hover:bg-[#1095d2]/10 transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer relative z-20"
+              className="p-2 h-20 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md hover:-translate-y-1 hover:border-[#1095d2]/50 hover:bg-[#1095d2]/10 transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer relative z-20"
             >
-              <div className="text-white/60 group-hover:text-[#1095d2] transition-colors duration-300 mb-2 group-hover:scale-110">
+              <div className="text-white/60 group-hover:text-[#1095d2] transition-colors duration-300 mb-1 group-hover:scale-110">
                 {category.icon}
               </div>
-              <h4 className="text-[11px] font-bold text-white/90 group-hover:text-white transition-colors leading-tight px-1">
+              <h4 className="text-[10px] font-bold text-white/90 group-hover:text-white transition-colors leading-tight px-1">
                 {category.category}
               </h4>
             </motion.button>
@@ -392,7 +418,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 28. OUR TEAM (CMS-Ready Profile Cards) ================= */}
+      {/* ================= 28. OUR TEAM ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-16 text-center">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Team</h3>
@@ -410,18 +436,22 @@ export default function DreamCreations() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="rounded-3xl bg-black/30 border border-white/10 backdrop-blur-md overflow-hidden hover:border-[#1095d2]/40 transition-all group flex flex-col h-full"
+              className={`rounded-3xl bg-black/30 border border-white/10 backdrop-blur-md overflow-hidden hover:border-[#1095d2]/40 transition-all group flex flex-col h-full ${member.status === 'Hiring' ? 'border-dashed opacity-60 hover:opacity-100' : ''}`}
             >
               <div className="p-6 pb-4 border-b border-white/5 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#1095d2]/20 to-transparent opacity-50" />
                 <div className="flex gap-5 relative z-10">
-                  <div className="w-24 h-24 rounded-2xl bg-black/50 border border-white/10 overflow-hidden shrink-0">
-                    <img src={member.photo} alt={member.name} className="w-full h-full object-cover" 
-                         onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }} />
+                  <div className="w-24 h-24 rounded-2xl bg-black/50 border border-white/10 overflow-hidden shrink-0 flex items-center justify-center">
+                    {member.photo ? (
+                       <img src={member.photo} alt={member.name} className="w-full h-full object-cover" 
+                            onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }} />
+                    ) : (
+                       <UserCheck size={32} className="text-white/20" />
+                    )}
                   </div>
                   <div className="flex flex-col justify-center">
                     <div className="flex items-center gap-2 mb-1">
-                       <UserCheck size={14} className="text-[#1095d2]" />
+                       <UserCheck size={14} className={member.status === 'Hiring' ? 'text-white/40' : 'text-[#1095d2]'} />
                        <span className="text-[10px] text-white/60 uppercase tracking-wider">{member.status}</span>
                     </div>
                     <h4 className="text-xl font-bold text-white mb-1 leading-tight">{member.name}</h4>
@@ -439,7 +469,7 @@ export default function DreamCreations() {
               </div>
 
               <div className="px-6 py-2">
-                <p className="text-sm text-white/70 leading-relaxed">
+                <p className={`text-sm leading-relaxed ${member.status === 'Hiring' ? 'text-white/30 italic' : 'text-white/70'}`}>
                   {member.bio}
                 </p>
               </div>
@@ -512,15 +542,27 @@ export default function DreamCreations() {
 
       {/* ================= 35. CREATIVE PROCESS ================= */}
       <section className="w-full py-20 z-10 relative border-t border-white/10">
-        <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left">
-          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
-          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-          <p className="text-base text-white/70 mt-4 max-w-2xl">
-            Swipe to journey through our structured, transparent workflow.
-          </p>
+        <div className="max-w-7xl mx-auto mb-10 px-6 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left">
+          <div>
+            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
+            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+            <p className="text-base text-white/70 mt-4 max-w-2xl">
+              Journey through our structured, transparent workflow.
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-3 relative z-20">
+             <button onClick={() => scrollProcess('left')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
+               <ArrowLeft size={16} />
+             </button>
+             <span className="text-[10px] text-white/40 uppercase tracking-widest px-2">(Use arrows or swipe)</span>
+             <button onClick={() => scrollProcess('right')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
+               <ArrowRight size={16} />
+             </button>
+          </div>
         </div>
 
-        <div className="flex overflow-x-auto gap-4 px-6 md:px-12 pb-8 hide-scrollbar snap-x snap-mandatory">
+        <div ref={processScrollRef} className="flex overflow-x-auto gap-4 px-6 md:px-12 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth">
           {creativeProcess.map((item, index) => (
             <React.Fragment key={item.step}>
               <motion.div 
@@ -629,7 +671,8 @@ export default function DreamCreations() {
       <div id="portfolio-directory" className="scroll-mt-24" />
 
       {/* ================= 30 & 31. UNIFIED PORTFOLIO DIRECTORY ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-[100vh]">
+      {/* Retained rock-solid min-h-[120vh] layer to maintain stable layout height boundaries */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-[120vh]">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
           <div className="text-center md:text-left">
             <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Archive</h3>
@@ -701,8 +744,11 @@ export default function DreamCreations() {
                 onClick={() => {
                    setActivePortfolioSubtitle(null);
                    setTimeout(() => {
-                      document.getElementById('portfolio-directory').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }, 50);
+                      const targetElement = document.getElementById('portfolio-directory');
+                      if (targetElement) {
+                          targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                   }, 350);
                 }}
                 className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer"
               >
@@ -767,8 +813,6 @@ export default function DreamCreations() {
 
       {/* ================= 40. TRANSITION TO THE NEXT JOURNEY ================= */}
       <section className="w-full relative border-t border-white/10 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
-        
-        {/* Aesthetic Shift Gradient: Fading from Dream Creations blue to clean Corporate Slate */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-800/60 to-slate-950 -z-10" />
 
         <div className="max-w-4xl mx-auto text-center relative z-20">
