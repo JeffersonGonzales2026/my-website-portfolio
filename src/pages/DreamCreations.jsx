@@ -60,7 +60,17 @@ const testimonials = [
   { id: 3, name: "Elena Rostova", company: "Tech Startups Inc.", project: "UI/UX & Motion Graphics", rating: 5, feedback: "We needed a complete overhaul of our app interface and explainer videos. The team delivered a sleek, modern aesthetic that our users love." }
 ];
 
-const portfolioPlaceholders = [1, 2, 3, 4, 5, 6];
+// Sections 30 & 31: Portfolio Categories & Creations Showcase Data
+const portfolioCategories = ["All", "Brand Identity", "Marketing Materials", "Social Media", "Motion Graphics", "Web Design"];
+
+const portfolioWorks = [
+  { id: 1, title: "Responsive Health Rebrand", category: "Brand Identity", desc: "Complete visual identity and brand guidelines for a major healthcare provider.", image: "bg-gradient-to-br from-[#1095d2]/20 to-blue-900/40" },
+  { id: 2, title: "Tech Startups Pitch Deck", category: "Marketing Materials", desc: "High-conversion sales presentation design.", image: "bg-gradient-to-tr from-purple-500/20 to-pink-900/40" },
+  { id: 3, title: "E-Commerce Promo Campaign", category: "Social Media", desc: "Instagram and Facebook ad creatives.", image: "bg-gradient-to-tl from-emerald-500/20 to-teal-900/40" },
+  { id: 4, title: "App Explainer Video", category: "Motion Graphics", desc: "Sleek animated advertisement for iOS application.", image: "bg-gradient-to-bl from-orange-500/20 to-red-900/40" },
+  { id: 5, title: "Modern Real Estate UI", category: "Web Design", desc: "Landing page graphics and UI assets.", image: "bg-gradient-to-t from-cyan-500/20 to-blue-900/40" },
+  { id: 6, title: "Urban Streetwear Mockups", category: "Brand Identity", desc: "Premium apparel designs and clothing labels.", image: "bg-gradient-to-b from-zinc-500/20 to-zinc-900/40" },
+];
 
 const starsData = Array.from({ length: 60 }).map((_, i) => ({
   id: i,
@@ -82,15 +92,17 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
 export default function DreamCreations() {
   const containerRef = useRef(null);
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
+  const [activeCategory, setActiveCategory] = useState("All");
 
-  // Scroll Tracking for the Creative Process horizontal movement
+  // Adjusted Scroll Tracking for Creative Process
   const processScrollRef = useRef(null);
   const { scrollYProgress: processProgress } = useScroll({
     target: processScrollRef,
     offset: ["start start", "end end"]
   });
-  // Transform vertical scroll into horizontal movement (moves left as you scroll down)
-  const processX = useTransform(processProgress, [0, 1], ["5%", "-65%"]);
+  
+  // Increased transform distance to -82% so it reaches Phase 13
+  const processX = useTransform(processProgress, [0, 1], ["5%", "-82%"]);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -112,23 +124,20 @@ export default function DreamCreations() {
 
   const handleSubtitleClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
     setTimeout(() => {
-      const targetElement = document.getElementById(targetId);
-      if (targetElement) {
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else {
-        scrollToSection('portfolio-gallery');
-      }
+      scrollToSection('portfolio-gallery');
     }, 300);
   };
+
+  const filteredWorks = activeCategory === "All" 
+    ? portfolioWorks 
+    : portfolioWorks.filter(work => work.category === activeCategory);
 
   return (
     <div 
       ref={containerRef}
       className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-nightSkyCycle"
     >
-      
       <div 
         className="fixed inset-0 z-50 pointer-events-none mix-blend-screen"
         style={{ background: 'radial-gradient(600px circle at var(--x, 50vw) var(--y, 50vh), rgba(16, 149, 210, 0.08), transparent 40%)' }}
@@ -384,13 +393,13 @@ export default function DreamCreations() {
       </section>
 
       {/* ================= 35. CREATIVE PROCESS (AUTO-SCROLLING HORIZONTAL TRACK) ================= */}
-      {/* We apply a massive height (150vh) so there is room to scroll vertically while the track moves horizontally */}
-      <section ref={processScrollRef} className="w-full h-[150vh] z-10 relative bg-transparent">
+      {/* Reduced height from 150vh to 120vh so it resolves faster and leaves no gap */}
+      <section ref={processScrollRef} className="w-full h-[120vh] z-10 relative bg-transparent">
         
-        {/* Sticky container pins to the viewport as you scroll down */}
-        <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden border-y border-white/10 bg-black/10 backdrop-blur-sm">
+        {/* Changed from h-screen to py-12 top-24 to fix the empty gap bug */}
+        <div className="sticky top-24 overflow-hidden border-y border-white/10 bg-black/10 backdrop-blur-sm py-12">
           
-          <div className="mb-12 px-6 text-center">
+          <div className="mb-10 px-6 text-center">
             <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
             <p className="text-base text-white/70 mt-4 max-w-2xl mx-auto">
@@ -398,8 +407,7 @@ export default function DreamCreations() {
             </p>
           </div>
 
-          {/* The motion div translates left based on vertical scroll */}
-          <motion.div style={{ x: processX }} className="flex gap-4 md:gap-6 px-6 w-max items-center pb-12 pt-4">
+          <motion.div style={{ x: processX }} className="flex gap-4 md:gap-6 px-6 w-max items-center pr-24">
             {creativeProcess.map((item, index) => (
               <React.Fragment key={item.step}>
                 <div className="shrink-0 w-44 md:w-56 p-5 md:p-6 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/60 hover:border-[#1095d2]/50 transition-colors group shadow-lg">
@@ -414,7 +422,6 @@ export default function DreamCreations() {
                   </p>
                 </div>
 
-                {/* Animated connector arrow */}
                 {index < creativeProcess.length - 1 && (
                   <div className="shrink-0 text-[#1095d2]/30 flex items-center justify-center">
                     <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}>
@@ -428,7 +435,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 36. TESTIMONIALS (CMS PLACEHOLDER) ================= */}
+      {/* ================= 36. TESTIMONIALS ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative">
         <div className="mb-16 text-center">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Client Feedback</h3>
@@ -471,13 +478,13 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= FEATURED CLIENTS SECTION ================= */}
+      {/* ================= FEATURED CLIENTS ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-16 text-center">
           <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Trusted By</h3>
           <div className="w-16 h-1 bg-[#1095d2] rounded-full mx-auto" />
           <p className="text-sm text-white/60 mt-4 max-w-2xl mx-auto">
-            Delivering premium visual solutions across diverse industries, from healthcare and real estate to e-commerce and corporate tech.
+            Delivering premium visual solutions across diverse industries.
           </p>
         </div>
 
@@ -503,14 +510,14 @@ export default function DreamCreations() {
 
       <div id="portfolio-gallery" className="scroll-mt-24" />
 
-      {/* ================= PORTFOLIO GALLERY PREVIEW ================= */}
+      {/* ================= 30 & 31. CREATIONS SHOWCASE & CATEGORIES ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
-        <div className="flex justify-between items-end mb-12">
-          <div>
-            <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Selected Works</h3>
-            <div className="w-16 h-1 bg-[#1095d2] rounded-full" />
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-10 gap-6">
+          <div className="text-center md:text-left">
+            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Selected Works</h3>
+            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
             <p className="text-sm text-white/60 mt-4">
-              (Links from the pop-up will scroll directly to these targeted sections once the CMS is connected)
+              Explore our recent projects tailored by specific creative categories.
             </p>
           </div>
           <button className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20">
@@ -518,27 +525,50 @@ export default function DreamCreations() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[240px]">
-          {portfolioPlaceholders.map((item, index) => (
-            <motion.div
-              key={item}
-              id={index === 0 ? "logo-design" : index === 1 ? "marketing-graphics" : ""}
-              initial={{ opacity: 0, scale: 0.96 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.05 }}
-              className={`rounded-2xl border border-white/10 bg-black/20 overflow-hidden group relative cursor-pointer z-20 ${
-                index === 0 || index === 3 ? 'md:col-span-2' : ''
+        {/* Dynamic Category Filter Row */}
+        <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-10 relative z-20">
+          {portfolioCategories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setActiveCategory(category)}
+              className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                activeCategory === category 
+                  ? 'bg-[#1095d2] text-white shadow-[0_0_15px_rgba(16,149,210,0.4)]' 
+                  : 'bg-black/30 border border-white/10 text-white/60 hover:text-white hover:border-[#1095d2]/40'
               }`}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/20 group-hover:scale-105 transition-transform duration-700" />
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                <span className="text-[#1095d2] text-xs font-bold uppercase tracking-wider mb-1">Production Project</span>
-                <h4 className="text-white font-bold text-lg">Creative Asset Archive {item}</h4>
-              </div>
-            </motion.div>
+              {category}
+            </button>
           ))}
         </div>
+
+        {/* Dynamic Filtered Grid */}
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[300px]">
+          <AnimatePresence>
+            {filteredWorks.map((work) => (
+              <motion.div
+                key={work.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.4 }}
+                className={`rounded-2xl border border-white/10 overflow-hidden group relative cursor-pointer z-20 ${work.image}`}
+              >
+                {/* Simulated Image Placeholder (Can be replaced with standard <img> tags later) */}
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
+                
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                  <span className="text-[#1095d2] text-[10px] font-black uppercase tracking-wider mb-2 block">
+                    {work.category}
+                  </span>
+                  <h4 className="text-white font-bold text-xl mb-1">{work.title}</h4>
+                  <p className="text-xs text-white/70 line-clamp-2">{work.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       </section>
 
       {/* ================= 38. PRICING / PROJECT INVESTMENT ================= */}
