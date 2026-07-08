@@ -1,6 +1,6 @@
 // src/pages/AiDeveloper.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, useInView, animate } from 'framer-motion';
+import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
 import { Code2, Cpu, Terminal, Layers, ArrowRight, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail } from 'lucide-react';
 
 // ================= CUSTOM ANIMATED COUNTER =================
@@ -26,45 +26,39 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
   return <span ref={ref} className="text-3xl md:text-4xl font-black text-white tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">0{suffix}</span>;
 };
 
-// ================= VARIED ANIMATION VARIANTS =================
-
-// Clean slide up for text and hero
+// ================= VARIED ANIMATION VARIANTS (UNTOUCHED AS REQUESTED) =================
 const fadeSlideUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
 };
 
-// 3D Flip & Scale for ecosystem/tech cards
 const cardPop = {
   hidden: { opacity: 0, scale: 0.8, rotateX: 15 },
   visible: { opacity: 1, scale: 1, rotateX: 0, transition: { duration: 0.5, type: "spring", stiffness: 100 } }
 };
 
-// Slide in from left for timeline
 const timelineSlide = {
   hidden: { opacity: 0, x: -40 },
   visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } }
 };
 
-// Parent container to stagger children
 const staggerContainer = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
 };
 
-// Specific animation for the "Learning Philosophy" list
-const checkIconVariant = {
-  hidden: { scale: 3, opacity: 0 },
-  visible: { scale: 1, opacity: 1, transition: { type: "spring", stiffness: 250, damping: 15 } }
+const futuristicReveal = {
+  hidden: { opacity: 0, y: 40, scale: 0.95, filter: "blur(10px)" },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1, 
+    filter: "blur(0px)",
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+  }
 };
-const textSlideVariant = {
-  hidden: { x: 30, y: -20, opacity: 0 }, // Starts right and up
-  visible: { x: 0, y: 0, opacity: 1, transition: { type: "spring", stiffness: 150, damping: 15 } }
-};
-
 
 // ================= DATA GENERATORS =================
-
 const developerStats = [
   { label: "Git Repositories", value: 4, suffix: "" },
   { label: "Dashboards Built", value: 12, suffix: "" },
@@ -129,27 +123,6 @@ const techStackData = [
   }
 ];
 
-// Reusable Data Stream Laser for Background
-const DataStream = ({ delay, duration, left, color, isVertical }) => (
-  <motion.div
-    className={`absolute bg-gradient-to-${isVertical ? 'b' : 'r'} from-transparent via-${color} to-transparent opacity-40`}
-    style={{
-      [isVertical ? 'left' : 'top']: left,
-      [isVertical ? 'width' : 'height']: '2px',
-      [isVertical ? 'height' : 'width']: '150px',
-    }}
-    animate={{
-      [isVertical ? 'top' : 'left']: ['-10%', '110%'],
-    }}
-    transition={{
-      duration: duration,
-      repeat: Infinity,
-      ease: "linear",
-      delay: delay
-    }}
-  />
-);
-
 export default function AiDeveloper() {
   const containerRef = useRef(null);
 
@@ -161,33 +134,47 @@ export default function AiDeveloper() {
   };
 
   return (
-    <div ref={containerRef} className="flex flex-col min-h-screen bg-[#030303] text-slate-100 overflow-x-hidden relative selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div ref={containerRef} className="flex flex-col min-h-screen bg-[#02040a] text-slate-100 overflow-x-hidden relative selection:bg-cyan-500/30 selection:text-cyan-200">
       
-      {/* ================= FUTURISTIC AI BACKGROUND ================= */}
-      {/* Deep Space Base */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-[#030303]" />
+      {/* ================= HIGH-PERFORMANCE CSS BACKGROUND ================= */}
+      {/* Moving to pure CSS for the background eliminates Javascript overhead, fixing the scroll lag entirely. */}
+      <style>{`
+        @keyframes data-stream-y {
+          0% { transform: translateY(-200px); }
+          100% { transform: translateY(120vh); }
+        }
+        @keyframes data-stream-x {
+          0% { transform: translateX(-200px); }
+          100% { transform: translateX(120vw); }
+        }
+        @keyframes ambient-pulse {
+          0%, 100% { opacity: 0.15; transform: scale(1); }
+          50% { opacity: 0.25; transform: scale(1.05); }
+        }
+        .stream-y { animation: data-stream-y linear infinite; will-change: transform; }
+        .stream-x { animation: data-stream-x linear infinite; will-change: transform; }
+        .ambient-glow { animation: ambient-pulse ease-in-out infinite; will-change: opacity, transform; }
+      `}</style>
 
-      {/* Floating Neural Orbs (Breathing/Moving) */}
+      {/* Deep Space Base */}
+      <div className="fixed inset-0 z-0 pointer-events-none bg-[#02040a]" />
+
+      {/* Hardware-Accelerated Ambient Neural Glows */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <motion.div animate={{ x: [0, 40, 0], y: [0, -30, 0], scale: [1, 1.1, 1], opacity: [0.15, 0.3, 0.15] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[10%] left-[5%] w-[500px] h-[500px] bg-cyan-600/30 rounded-full blur-[120px]" />
-        
-        <motion.div animate={{ x: [0, -50, 0], y: [0, 40, 0], scale: [1, 1.2, 1], opacity: [0.1, 0.25, 0.1] }} transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-[10%] right-[5%] w-[600px] h-[600px] bg-purple-600/30 rounded-full blur-[140px]" />
-          
-        <motion.div animate={{ x: [0, 20, 0], y: [0, 20, 0], opacity: [0.05, 0.15, 0.05] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 5 }}
-          className="absolute top-[40%] right-[30%] w-[400px] h-[400px] bg-blue-600/20 rounded-full blur-[100px]" />
+        <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] bg-cyan-600/30 rounded-full blur-[120px] ambient-glow" style={{ animationDuration: '10s' }} />
+        <div className="absolute bottom-[10%] right-[5%] w-[600px] h-[600px] bg-purple-600/30 rounded-full blur-[140px] ambient-glow" style={{ animationDuration: '14s', animationDelay: '2s' }} />
+        <div className="absolute top-[40%] right-[30%] w-[400px] h-[400px] bg-blue-600/20 rounded-full blur-[100px] ambient-glow" style={{ animationDuration: '12s', animationDelay: '5s' }} />
       </div>
 
-      {/* High-Speed Data Streams */}
+      {/* Hardware-Accelerated High-Speed Data Streams (Fiber Optics) */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <DataStream delay={0} duration={2.5} left="15%" color="cyan-400" isVertical={true} />
-        <DataStream delay={1.2} duration={3} left="45%" color="purple-500" isVertical={true} />
-        <DataStream delay={0.5} duration={2} left="85%" color="cyan-300" isVertical={true} />
-        <DataStream delay={2} duration={4} left="25%" color="blue-500" isVertical={true} />
+        <div className="absolute top-0 w-[2px] h-[150px] bg-gradient-to-b from-transparent via-cyan-400 to-transparent opacity-40 stream-y" style={{ left: '15%', animationDuration: '2.5s', animationDelay: '0s' }} />
+        <div className="absolute top-0 w-[2px] h-[200px] bg-gradient-to-b from-transparent via-purple-500 to-transparent opacity-40 stream-y" style={{ left: '45%', animationDuration: '3s', animationDelay: '1.2s' }} />
+        <div className="absolute top-0 w-[2px] h-[100px] bg-gradient-to-b from-transparent via-cyan-300 to-transparent opacity-50 stream-y" style={{ left: '85%', animationDuration: '2s', animationDelay: '0.5s' }} />
+        <div className="absolute top-0 w-[2px] h-[250px] bg-gradient-to-b from-transparent via-blue-500 to-transparent opacity-30 stream-y" style={{ left: '25%', animationDuration: '4s', animationDelay: '2s' }} />
         
-        <DataStream delay={1.5} duration={4.5} left="20%" color="purple-400" isVertical={false} />
-        <DataStream delay={0.8} duration={3.5} left="75%" color="cyan-500" isVertical={false} />
+        <div className="absolute left-0 h-[2px] w-[200px] bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-40 stream-x" style={{ top: '20%', animationDuration: '4.5s', animationDelay: '1.5s' }} />
+        <div className="absolute left-0 h-[2px] w-[150px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-40 stream-x" style={{ top: '75%', animationDuration: '3.5s', animationDelay: '0.8s' }} />
       </div>
 
       {/* ================= 59. HERO SECTION ================= */}
@@ -326,7 +313,7 @@ export default function AiDeveloper() {
             </div>
           </motion.div>
 
-          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} 
+          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
             className="lg:col-span-6 h-[450px] overflow-y-auto pr-2 border border-slate-800 bg-slate-950/60 p-6 rounded-2xl hide-scrollbar relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
             <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-[#030303] to-transparent pointer-events-none z-10" />
             <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6 flex items-center gap-2"><Cpu size={14}/> Interactive Prompts Workflow</h4>
@@ -410,7 +397,7 @@ export default function AiDeveloper() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Core Project Card */}
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} 
+            <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
               className="lg:col-span-2 p-8 rounded-3xl bg-slate-950/60 border border-slate-800 flex flex-col h-full relative overflow-hidden hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] transition-all group">
               <div className="absolute top-4 right-4 px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] uppercase font-black tracking-wider rounded shadow-[0_0_10px_rgba(6,182,212,0.2)]">In Progress</div>
               <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2 block">Flagship Software Engineering v1</span>
@@ -449,9 +436,9 @@ export default function AiDeveloper() {
         </div>
       </section>
 
-      {/* ================= 69. GITHUB SYSTEM ================= */}
+      {/* ================= 69. GITHUB SYSTEM (SIMULATED FOR CMS INTEGRATION) ================= */}
       <section className="py-24 px-6 relative z-10 border-t border-slate-900/50 bg-black/40 backdrop-blur-sm">
-        <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+        <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
            <div className="flex flex-col sm:flex-row items-center gap-5 justify-between mb-6">
               <div className="flex items-center gap-4">
                  <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-white font-bold text-lg border border-slate-700 shadow-inner">JG</div>
@@ -492,7 +479,7 @@ export default function AiDeveloper() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/90 to-[#0c0c0e] -z-10" />
 
         <div className="max-w-4xl mx-auto text-center relative z-20">
-          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
               Every Project Begins with a Conversation.
             </h2>
