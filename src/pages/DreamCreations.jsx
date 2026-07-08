@@ -1,7 +1,7 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder } from 'lucide-react';
+import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp } from 'lucide-react';
 
 const featuredClients = [
   { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
@@ -60,6 +60,23 @@ const testimonials = [
   { id: 3, name: "Elena Rostova", company: "Tech Startups Inc.", project: "UI/UX & Motion Graphics", rating: 5, feedback: "We needed a complete overhaul of our app interface and explainer videos. The team delivered a sleek, modern aesthetic that our users love." }
 ];
 
+const teamMembers = [
+  {
+    id: 1,
+    name: "Dexter Joy D. Bautista",
+    photo: "/images/dexter.jpg", 
+    positions: ["Multimedia Designer", "Graphic Designer", "Portrait Artist"],
+    bio: "A Graphic Designer who loves turning ideas into visually striking and meaningful designs. Creativity is more than just a skill for me, it's my lifestyle. From sketching as a hobby to crafting unique, eye-catching visuals, I bring originality and heart into every task.",
+    skills: ["Package Design", "UI/UX Design", "Brand Identity", "Photo Manipulation"],
+    software: ["Photoshop", "Illustrator", "Premiere Pro", "Figma", "SketchUp"],
+    experience: "7+ Years",
+    availability: "Full-Time",
+    status: "Active",
+    portfolioUrl: "https://www.behance.net/gallery/190745335/PORTFOLIO-V2",
+    socialUrl: "#"
+  }
+];
+
 const starsData = Array.from({ length: 60 }).map((_, i) => ({
   id: i,
   top: `${Math.random() * 100}%`,
@@ -80,9 +97,6 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
 export default function DreamCreations() {
   const containerRef = useRef(null);
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
-  
-  // State for the Unified Portfolio Directory
-  const [activePortfolioCategory, setActivePortfolioCategory] = useState("Branding & Identity");
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
 
   useEffect(() => {
@@ -103,22 +117,37 @@ export default function DreamCreations() {
     }
   };
 
-  // Upgraded: When a subtitle in the modal is clicked, it sets the directory states and scrolls to it!
-  const handleSubtitleModalClick = (categoryObj, subtitleName) => {
-    setActiveCreationPopup(null);
-    setActivePortfolioCategory(categoryObj.category);
-    setActivePortfolioSubtitle(subtitleName);
-    
+  // Fixed the jump bug! Increased timeout to outlast the Framer Motion AnimatePresence fade out.
+  const openPortfolioGallery = (subtitle) => {
+    setActivePortfolioSubtitle(subtitle);
     setTimeout(() => {
       const targetElement = document.getElementById('portfolio-directory');
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 300);
+    }, 350); 
   };
 
-  // Helper to get the currently selected category object for the Portfolio section
-  const currentCategoryData = creationsCategories.find(c => c.category === activePortfolioCategory) || creationsCategories[0];
+  const handleSubtitleModalClick = (subtitleName) => {
+    setActiveCreationPopup(null);
+    setActivePortfolioSubtitle(null);
+    
+    const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
+    setTimeout(() => {
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        targetElement.classList.add('ring-4', 'ring-[#1095d2]', 'scale-[1.02]');
+        setTimeout(() => {
+           targetElement.classList.remove('ring-4', 'ring-[#1095d2]', 'scale-[1.02]');
+        }, 1500); 
+
+      } else {
+        scrollToSection('portfolio-directory');
+      }
+    }, 300);
+  };
 
   return (
     <div 
@@ -294,7 +323,7 @@ export default function DreamCreations() {
 
       <div id="founder-bio" className="scroll-mt-24" />
 
-      {/* ================= MEET THE FOUNDER SECTION ================= */}
+      {/* ================= 27. MEET THE FOUNDER SECTION ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <motion.div
@@ -324,15 +353,31 @@ export default function DreamCreations() {
             className="lg:col-span-7 space-y-6"
           >
             <div className="mb-6">
-              <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">The Mind Behind the Studio</h3>
+              <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Meet the Founder</h3>
               <div className="w-20 h-1 bg-[#1095d2] rounded-full" />
             </div>
-            <p className="text-base md:text-lg text-white/70 leading-relaxed">
-              Dream Creations was born out of a passion for visual storytelling and a relentless drive for perfection. What started as an independent graphic design practice has evolved into a structured creative agency serving global clients.
-            </p>
-            <p className="text-base md:text-lg text-white/70 leading-relaxed">
-              With over a decade of experience across print, digital, and corporate design sectors, I bridge the gap between pure artistic creativity and structured business strategy. My goal is simple: to make your dream artworks a reality while ensuring they drive measurable impact for your brand.
-            </p>
+            <div className="flex flex-wrap gap-2 mb-4">
+               {["Founder", "Owner", "Creative Director", "Team Manager", "Graphic Designer"].map((role, idx) => (
+                 <span key={idx} className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-medium text-white/80">
+                   {role}
+                 </span>
+               ))}
+            </div>
+            <div className="space-y-4">
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">
+                Jefferson founded Dream Creations with the vision of helping businesses communicate more effectively through thoughtful and impactful visual design.
+              </p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">
+                With more than ten years of professional experience, he has worked across multiple industries including healthcare, finance, insurance, technology, apparel, education, e-commerce, printing, media, and real estate, in both onsite and work-from-home setups for local and international clients.
+              </p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">
+                Inspired by his former team manager, he started building his own team of graphic designers with a vision to empower more dreamers (clients) and creators (designers).
+              </p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">
+                Today, he continues leading Dream Creations while expanding its capabilities through data analytics, automation, and software development.
+              </p>
+            </div>
+            
             <div className="grid grid-cols-2 gap-4 pt-4">
               <div className="p-4 rounded-xl border border-white/10 bg-black/20 hover:border-[#1095d2]/30 transition-colors">
                 <div className="text-2xl font-bold text-[#1095d2] mb-1">10+</div>
@@ -344,6 +389,89 @@ export default function DreamCreations() {
               </div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* ================= 28. OUR TEAM (CMS-Ready Profile Cards) ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
+        <div className="mb-16 text-center">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Team</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
+          <p className="text-base text-white/70 mt-4 max-w-2xl mx-auto">
+            The creative minds driving the studio's vision.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {teamMembers.map((member) => (
+            <motion.div
+              key={member.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="rounded-3xl bg-black/30 border border-white/10 backdrop-blur-md overflow-hidden hover:border-[#1095d2]/40 transition-all group flex flex-col h-full"
+            >
+              <div className="p-6 pb-4 border-b border-white/5 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#1095d2]/20 to-transparent opacity-50" />
+                <div className="flex gap-5 relative z-10">
+                  <div className="w-24 h-24 rounded-2xl bg-black/50 border border-white/10 overflow-hidden shrink-0">
+                    <img src={member.photo} alt={member.name} className="w-full h-full object-cover" 
+                         onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }} />
+                  </div>
+                  <div className="flex flex-col justify-center">
+                    <div className="flex items-center gap-2 mb-1">
+                       <UserCheck size={14} className="text-[#1095d2]" />
+                       <span className="text-[10px] text-white/60 uppercase tracking-wider">{member.status}</span>
+                    </div>
+                    <h4 className="text-xl font-bold text-white mb-1 leading-tight">{member.name}</h4>
+                    <span className="text-xs text-[#1095d2] font-semibold">{member.availability}</span>
+                  </div>
+                </div>
+              </div>
+
+               <div className="px-6 py-4 flex flex-wrap gap-2">
+                {member.positions.map((pos, idx) => (
+                  <span key={idx} className="px-2.5 py-1 rounded-md bg-white/5 border border-white/5 text-[10px] text-white/80">
+                    {pos}
+                  </span>
+                ))}
+              </div>
+
+              <div className="px-6 py-2">
+                <p className="text-sm text-white/70 leading-relaxed">
+                  {member.bio}
+                </p>
+              </div>
+
+              <div className="px-6 py-4 space-y-4 flex-grow border-b border-white/5">
+                <div>
+                  <h5 className="text-[10px] text-white/40 uppercase tracking-widest mb-2 font-semibold">Core Skills</h5>
+                  <div className="text-xs text-white/80 leading-relaxed">
+                    {member.skills.join(" • ")}
+                  </div>
+                </div>
+                <div>
+                  <h5 className="text-[10px] text-white/40 uppercase tracking-widest mb-2 font-semibold">Software Expertise</h5>
+                  <div className="text-xs text-white/80 leading-relaxed">
+                    {member.software.join(" • ")}
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 bg-black/20 mt-auto flex items-center justify-between">
+                <div className="flex items-center gap-2 text-white/60">
+                  <Award size={16} />
+                  <span className="text-xs font-semibold">{member.experience}</span>
+                </div>
+                <div className="flex gap-2">
+                  <a href={member.portfolioUrl} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#1095d2] flex items-center justify-center transition-colors cursor-pointer relative z-20">
+                    <LinkIcon size={14} className="text-white" />
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
 
@@ -382,8 +510,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 35. CREATIVE PROCESS (MANUAL HORIZONTAL SCROLL) ================= */}
-      {/* Scroll-jacking removed! Now it's a simple, sleek manual scroll container that fixes the layout gap */}
+      {/* ================= 35. CREATIVE PROCESS ================= */}
       <section className="w-full py-20 z-10 relative border-t border-white/10">
         <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
@@ -393,7 +520,6 @@ export default function DreamCreations() {
           </p>
         </div>
 
-        {/* Manual Native Horizontal Scroll Container */}
         <div className="flex overflow-x-auto gap-4 px-6 md:px-12 pb-8 hide-scrollbar snap-x snap-mandatory">
           {creativeProcess.map((item, index) => (
             <React.Fragment key={item.step}>
@@ -415,7 +541,6 @@ export default function DreamCreations() {
                 </p>
               </motion.div>
 
-              {/* Animated connector arrow */}
               {index < creativeProcess.length - 1 && (
                 <div className="shrink-0 text-[#1095d2]/30 flex items-center justify-center px-2">
                   <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}>
@@ -501,109 +626,96 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* Anchor Target for the Unified Showcase */}
       <div id="portfolio-directory" className="scroll-mt-24" />
 
       {/* ================= 30 & 31. UNIFIED PORTFOLIO DIRECTORY ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
-        <div className="mb-10 text-center md:text-left">
-          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Archive</h3>
-          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-          <p className="text-sm text-white/60 mt-4">
-            Select a category below to explore specific visual solutions and featured artworks.
-          </p>
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-[100vh]">
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
+          <div className="text-center md:text-left">
+            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Archive</h3>
+            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+            <p className="text-sm text-white/60 mt-4">
+              Explore our specific visual solutions organized by category.
+            </p>
+          </div>
+          <button className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20">
+            View Full Archive
+          </button>
         </div>
 
-        {/* Level 1: Category Filter Pills */}
-        <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-10 relative z-20">
-          {creationsCategories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => {
-                setActivePortfolioCategory(cat.category);
-                setActivePortfolioSubtitle(null); // Reset subtitle when category changes
-              }}
-              className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                activePortfolioCategory === cat.category 
-                  ? 'bg-[#1095d2] text-white shadow-[0_0_15px_rgba(16,149,210,0.4)]' 
-                  : 'bg-black/30 border border-white/10 text-white/60 hover:text-white hover:border-[#1095d2]/40'
-              }`}
-            >
-              {cat.category}
-            </button>
-          ))}
-        </div>
-
-        {/* Drill-down View Logic */}
         <AnimatePresence mode="wait">
           {!activePortfolioSubtitle ? (
-            /* Level 2: Subtitle Toggle Boxes (with Placeholder Cover Photos) */
             <motion.div 
-              key="subtitle-grid"
+              key="subtitle-list"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 relative z-20"
+              className="space-y-16 relative z-20"
             >
-              {currentCategoryData.items.map((subtitle, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActivePortfolioSubtitle(subtitle)}
-                  className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left"
-                >
-                  {/* Background Image Placeholder - Ready for your actual cover photos! */}
-                  <img 
-                    src={`/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`} 
-                    alt={subtitle} 
-                    className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700"
-                    onError={(e) => {
-                      // Fallback gradient if image isn't loaded yet
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'block';
-                    }}
-                  />
-                  {/* Fallback Gradient if image is missing */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
+              {creationsCategories.map((cat) => (
+                <div key={cat.id} className="pt-4">
+                  <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block">
+                    {cat.category}
+                  </h4>
                   
-                  {/* Dark Overlay for text readability */}
-                  <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors duration-300" />
-                  
-                  {/* Box Content */}
-                  <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                    <span className="text-[#1095d2] text-[10px] font-black uppercase tracking-wider mb-2">View Works</span>
-                    <h4 className="text-white font-bold text-xl group-hover:text-[#1095d2] transition-colors">{subtitle}</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    {cat.items.map((subtitle, idx) => (
+                      <button
+                        key={idx}
+                        id={subtitle.toLowerCase().replace(/\s+/g, '-')}
+                        onClick={() => openPortfolioGallery(subtitle)}
+                        className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500"
+                      >
+                        <img 
+                          src={`/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`} 
+                          alt={subtitle} 
+                          className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'block';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
+                        <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
+                        <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                          <span className="text-[#1095d2] text-[10px] font-black uppercase tracking-wider mb-2">View Works</span>
+                          <h4 className="text-white font-bold text-xl group-hover:text-[#1095d2] transition-colors">{subtitle}</h4>
+                        </div>
+                      </button>
+                    ))}
                   </div>
-                </button>
+                </div>
               ))}
             </motion.div>
           ) : (
-            /* Level 3: Actual Artworks Grid for the selected Subtitle */
             <motion.div
               key="works-grid"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
-              className="relative z-20"
+              className="relative z-20 pt-4"
             >
-              {/* Back Button */}
               <button 
-                onClick={() => setActivePortfolioSubtitle(null)}
+                onClick={() => {
+                   setActivePortfolioSubtitle(null);
+                   setTimeout(() => {
+                      document.getElementById('portfolio-directory').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                   }, 50);
+                }}
                 className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer"
               >
-                <ArrowLeft size={16} /> Back to {activePortfolioCategory}
+                <ArrowLeft size={16} /> Back to Directory
               </button>
 
               <h4 className="text-2xl font-bold text-white mb-6">
                 Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span>
               </h4>
 
-              {/* Grid of Actual Final Works (Placeholders ready for CMS integration) */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[1, 2, 3, 4].map((work) => (
                   <div key={work} className="relative h-64 rounded-xl border border-white/10 bg-black/40 overflow-hidden group">
-                     {/* Your actual design images will go here */}
                      <div className="absolute inset-0 flex items-center justify-center text-white/20 group-hover:scale-110 transition-transform duration-500">
                        <ImagePlaceholder size={48} />
                      </div>
@@ -619,7 +731,7 @@ export default function DreamCreations() {
       </section>
 
       {/* ================= 38. PRICING / PROJECT INVESTMENT ================= */}
-      <section className="max-w-4xl mx-auto w-full px-6 pt-24 pb-12 z-10 relative text-center border-t border-white/10 mt-10">
+      <section className="max-w-4xl mx-auto w-full px-6 pt-24 pb-12 z-10 relative text-center mt-10">
         <div className="mb-12">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Investment</h3>
           <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
@@ -651,6 +763,45 @@ export default function DreamCreations() {
             Request a Quote
           </button>
         </motion.div>
+      </section>
+
+      {/* ================= 40. TRANSITION TO THE NEXT JOURNEY ================= */}
+      <section className="w-full relative border-t border-white/10 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
+        
+        {/* Aesthetic Shift Gradient: Fading from Dream Creations blue to clean Corporate Slate */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-800/60 to-slate-950 -z-10" />
+
+        <div className="max-w-4xl mx-auto text-center relative z-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
+              Ready for the Next Chapter?
+            </h2>
+            <p className="text-base md:text-lg text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
+              Every stage of my career builds upon the previous one. The transition from a creative professional to a data-driven analyst reflects my evolution from crafting visual stories to uncovering the insights that drive them.
+            </p>
+            
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <button 
+                onClick={() => window.location.href = '/data-analyst'}
+                className="px-8 py-4 rounded-xl bg-slate-100 text-slate-900 font-bold text-sm hover:bg-white transition-colors shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] flex items-center gap-2 cursor-pointer relative z-20"
+              >
+                Continue as Data Analyst <ArrowRight size={16} />
+              </button>
+              
+              <button 
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="px-8 py-4 rounded-xl bg-slate-800/50 border border-slate-600 hover:bg-slate-700 text-white font-bold text-sm transition-colors flex items-center gap-2 backdrop-blur-md cursor-pointer relative z-20"
+              >
+                <ArrowUp size={16} /> Back to Top 
+              </button>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* ================= INTERACTIVE POP-UP MODAL ================= */}
@@ -694,7 +845,7 @@ export default function DreamCreations() {
                 {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
                     <button 
-                      onClick={() => handleSubtitleModalClick(activeCreationPopup, item)}
+                      onClick={() => handleSubtitleModalClick(item)}
                       className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group cursor-pointer"
                     >
                       <span className="text-[#1095d2] group-hover:translate-x-1 transition-transform">▹</span>
