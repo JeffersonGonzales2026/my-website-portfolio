@@ -175,23 +175,15 @@ export default function DreamCreations() {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="max-w-4xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl border border-transparent z-10"
         >
-          <h1 className="text-xs font-bold tracking-[0.4em] text-[#1095d2] uppercase mb-4">
-            Creative Agency Experience
-          </h1>
           <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
             Let's make your <span className="text-[#1095d2]">dream</span> a reality.
           </h2>
           
           <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
-            <p>
-              For over a decade Dream Creations has helped businesses, entrepreneurs, organizations, and professionals transform ideas into compelling visual experiences.
-            </p>
-            <p>
-              Inspired by my former team manager, I started building my own team of graphic designers with a vision to empower more dreamers (clients) and creators (designers).
-            </p>
-            <p>
-              From branding and digital marketing to print production and motion graphics, every project is crafted with creativity, precision, and purpose.
-            </p>
+            <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">
+            For over a decade Dream Creations has helped businesses, entrepreneurs, organizations, 
+            and professionals transform ideas into compelling visual experiences.
+          </p>
           </div>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
@@ -207,18 +199,11 @@ export default function DreamCreations() {
               className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:border-[#1095d2]/50 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md"
             >
               <LayoutGrid size={16} />
-              Our Services
+              Our Creations
             </button>
             <button 
               onClick={() => scrollToSection('creations')}
               className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#1095d2] hover:bg-[#0c7ab0] text-white text-sm font-semibold transition-all shadow-lg shadow-[#1095d2]/20"
-            >
-              <Eye size={16} />
-              View Creations
-            </button>
-            <button 
-              onClick={() => window.location.href = '/contact'}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-black/40 border border-white/10 hover:bg-black/60 text-white text-sm font-semibold transition-all backdrop-blur-md"
             >
               <Mail size={16} />
               Contact Us
