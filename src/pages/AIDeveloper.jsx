@@ -1,7 +1,7 @@
 // src/pages/AiDeveloper.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
-import { Code2, Cpu, Terminal, Layers, GitBranch, ArrowRight, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Laptop, Settings, ExternalLink, HelpCircle, Quote, Mail } from 'lucide-react';
+import { motion, useInView, animate } from 'framer-motion';
+import { Code2, Cpu, Terminal, Layers, ArrowRight, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail } from 'lucide-react';
 
 // ================= CUSTOM ANIMATED COUNTER =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -26,31 +26,48 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
   return <span ref={ref} className="text-3xl md:text-4xl font-black text-white tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">0{suffix}</span>;
 };
 
-// ================= FUTURISTIC ANIMATION VARIANTS =================
-const futuristicReveal = {
-  hidden: { opacity: 0, y: 40, scale: 0.95, filter: "blur(10px)" },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    scale: 1, 
-    filter: "blur(0px)",
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } // Custom tech-snap easing
-  }
+// ================= VARIED ANIMATION VARIANTS =================
+
+// Clean slide up for text and hero
+const fadeSlideUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
 };
 
+// 3D Flip & Scale for ecosystem/tech cards
+const cardPop = {
+  hidden: { opacity: 0, scale: 0.8, rotateX: 15 },
+  visible: { opacity: 1, scale: 1, rotateX: 0, transition: { duration: 0.5, type: "spring", stiffness: 100 } }
+};
+
+// Slide in from left for timeline
+const timelineSlide = {
+  hidden: { opacity: 0, x: -40 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } }
+};
+
+// Parent container to stagger children
 const staggerContainer = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.15 }
-  }
+  visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
 };
+
+// Specific animation for the "Learning Philosophy" list
+const checkIconVariant = {
+  hidden: { scale: 3, opacity: 0 },
+  visible: { scale: 1, opacity: 1, transition: { type: "spring", stiffness: 250, damping: 15 } }
+};
+const textSlideVariant = {
+  hidden: { x: 30, y: -20, opacity: 0 }, // Starts right and up
+  visible: { x: 0, y: 0, opacity: 1, transition: { type: "spring", stiffness: 150, damping: 15 } }
+};
+
 
 // ================= DATA GENERATORS =================
 
 const developerStats = [
   { label: "Git Repositories", value: 4, suffix: "" },
-  { label: "Production Commits", value: 140, suffix: "+" },
+  { label: "Dashboards Built", value: 12, suffix: "" },
   { label: "Hours Coding", value: 320, suffix: "+" },
   { label: "AI Prompts Optimized", value: 1200, suffix: "+" }
 ];
@@ -112,13 +129,13 @@ const techStackData = [
   }
 ];
 
-// Reusable Data Stream Line for Background
+// Reusable Data Stream Laser for Background
 const DataStream = ({ delay, duration, left, color, isVertical }) => (
   <motion.div
     className={`absolute bg-gradient-to-${isVertical ? 'b' : 'r'} from-transparent via-${color} to-transparent opacity-40`}
     style={{
       [isVertical ? 'left' : 'top']: left,
-      [isVertical ? 'width' : 'height']: '1px',
+      [isVertical ? 'width' : 'height']: '2px',
       [isVertical ? 'height' : 'width']: '150px',
     }}
     animate={{
@@ -146,53 +163,43 @@ export default function AiDeveloper() {
   return (
     <div ref={containerRef} className="flex flex-col min-h-screen bg-[#030303] text-slate-100 overflow-x-hidden relative selection:bg-cyan-500/30 selection:text-cyan-200">
       
-      {/* ================= FUTURISTIC MOVING BACKGROUND ================= */}
-      <style>{`
-        @keyframes panGrid {
-          0% { background-position: 0px 0px; }
-          100% { background-position: 50px 50px; }
-        }
-        .animate-panGrid {
-          animation: panGrid 4s linear infinite;
-        }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
+      {/* ================= FUTURISTIC AI BACKGROUND ================= */}
+      {/* Deep Space Base */}
+      <div className="fixed inset-0 z-0 pointer-events-none bg-[#030303]" />
 
-      {/* Continuously Moving Cyber Grid */}
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-10 animate-panGrid"
-           style={{ 
-             backgroundImage: 'linear-gradient(to right, #06b6d4 1px, transparent 1px), linear-gradient(to bottom, #06b6d4 1px, transparent 1px)', 
-             backgroundSize: '50px 50px' 
-           }} />
-
-      {/* Floating Aurora / Nebula Glows */}
+      {/* Floating Neural Orbs (Breathing/Moving) */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[150px]" />
-        <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.5, 0.2] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-[-10%] right-[-10%] w-[700px] h-[700px] bg-purple-500/10 rounded-full blur-[180px]" />
+        <motion.div animate={{ x: [0, 40, 0], y: [0, -30, 0], scale: [1, 1.1, 1], opacity: [0.15, 0.3, 0.15] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[10%] left-[5%] w-[500px] h-[500px] bg-cyan-600/30 rounded-full blur-[120px]" />
+        
+        <motion.div animate={{ x: [0, -50, 0], y: [0, 40, 0], scale: [1, 1.2, 1], opacity: [0.1, 0.25, 0.1] }} transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute bottom-[10%] right-[5%] w-[600px] h-[600px] bg-purple-600/30 rounded-full blur-[140px]" />
+          
+        <motion.div animate={{ x: [0, 20, 0], y: [0, 20, 0], opacity: [0.05, 0.15, 0.05] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+          className="absolute top-[40%] right-[30%] w-[400px] h-[400px] bg-blue-600/20 rounded-full blur-[100px]" />
       </div>
 
-      {/* Animated Data Streams (Shooting Lasers) */}
+      {/* High-Speed Data Streams */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <DataStream delay={0} duration={3} left="15%" color="cyan-400" isVertical={true} />
-        <DataStream delay={1.5} duration={4} left="45%" color="purple-500" isVertical={true} />
-        <DataStream delay={0.5} duration={2.5} left="85%" color="cyan-300" isVertical={true} />
-        <DataStream delay={2} duration={5} left="20%" color="purple-400" isVertical={false} />
-        <DataStream delay={1} duration={3.5} left="75%" color="cyan-500" isVertical={false} />
+        <DataStream delay={0} duration={2.5} left="15%" color="cyan-400" isVertical={true} />
+        <DataStream delay={1.2} duration={3} left="45%" color="purple-500" isVertical={true} />
+        <DataStream delay={0.5} duration={2} left="85%" color="cyan-300" isVertical={true} />
+        <DataStream delay={2} duration={4} left="25%" color="blue-500" isVertical={true} />
+        
+        <DataStream delay={1.5} duration={4.5} left="20%" color="purple-400" isVertical={false} />
+        <DataStream delay={0.8} duration={3.5} left="75%" color="cyan-500" isVertical={false} />
       </div>
 
       {/* ================= 59. HERO SECTION ================= */}
       <section className="relative pt-44 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center z-10">
         <div className="max-w-5xl mx-auto text-center relative">
           
-          <motion.div variants={futuristicReveal} initial="hidden" animate="visible"
+          <motion.div variants={fadeSlideUp} initial="hidden" animate="visible"
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold mb-8 backdrop-blur-md">
             <Terminal size={14} /> AI-Assisted Full-Stack Engineering
           </motion.div>
 
-          <motion.h1 variants={futuristicReveal} initial="hidden" animate="visible"
+          <motion.h1 variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}
             className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8 leading-tight">
             Building the Future with <br/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500">
@@ -200,7 +207,7 @@ export default function AiDeveloper() {
             </span>
           </motion.h1>
 
-          <motion.div variants={futuristicReveal} initial="hidden" animate="visible"
+          <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }}
             className="text-base md:text-lg text-slate-400 leading-relaxed max-w-3xl mx-auto space-y-4 mb-16">
             <p><strong>Software engineering is more than writing code.</strong> It is understanding problems, designing scalable solutions, collaborating with intelligent tools, and continuously improving through real-world experience.</p>
             <p>As an aspiring AI-Assisted Full-Stack Developer, I am building practical applications while learning modern technologies, software architecture, automation, and best development practices.</p>
@@ -210,7 +217,7 @@ export default function AiDeveloper() {
           {/* Quick Statistics Counter System */}
           <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-16">
             {developerStats.map((stat, idx) => (
-              <motion.div variants={futuristicReveal} key={idx} className="p-5 rounded-2xl bg-black/60 border border-slate-800 backdrop-blur-md flex flex-col items-center justify-center hover:border-cyan-500/60 transition-colors group relative overflow-hidden">
+              <motion.div variants={cardPop} key={idx} className="p-5 rounded-2xl bg-black/60 border border-slate-800 backdrop-blur-md flex flex-col items-center justify-center hover:border-cyan-500/60 transition-colors group relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                 <span className="text-[10px] text-slate-500 uppercase tracking-widest text-center mt-1 font-bold">{stat.label}</span>
@@ -219,7 +226,7 @@ export default function AiDeveloper() {
           </motion.div>
 
           {/* Call-to-Action Controls */}
-          <motion.div variants={futuristicReveal} initial="hidden" animate="visible" className="flex flex-wrap justify-center gap-4 relative z-20">
+          <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.4 }} className="flex flex-wrap justify-center gap-4 relative z-20">
             <button onClick={() => scrollToSection('current-projects')} className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-black text-sm hover:opacity-90 transition-opacity shadow-[0_0_25px_rgba(6,182,212,0.4)] cursor-pointer">
               View Projects
             </button>
@@ -236,11 +243,11 @@ export default function AiDeveloper() {
       </section>
 
       {/* ================= 61. LEARNING PHILOSOPHY ================= */}
-      <section className="py-24 px-6 relative z-10 border-t border-slate-900 bg-black/40 backdrop-blur-sm">
+      <section className="py-24 px-6 relative z-10 border-t border-slate-900/50 bg-black/40 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
-            <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-5 space-y-6">
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-5 space-y-6">
               <h3 className="text-3xl font-black text-white">Learning by Building.</h3>
               <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
               <div className="text-slate-400 space-y-4 text-sm leading-relaxed">
@@ -251,6 +258,7 @@ export default function AiDeveloper() {
               </div>
             </motion.div>
 
+            {/* Custom List Animation: Check zooms out, text slides down from right */}
             <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-7">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
@@ -258,9 +266,13 @@ export default function AiDeveloper() {
                   "Write maintainable software.", "Design scalable systems.", "Use AI responsibly.", "Embrace debugging.",
                   "Document everything.", "Improve every iteration."
                 ].map((principle, idx) => (
-                  <motion.div variants={futuristicReveal} key={idx} className="p-4 rounded-xl bg-slate-950/50 border border-slate-800 flex items-center gap-3 hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all group">
-                    <CheckCircle2 size={16} className="text-cyan-400 shrink-0 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm text-slate-300 font-medium group-hover:text-white transition-colors">{principle}</span>
+                  <motion.div key={idx} className="p-4 rounded-xl bg-slate-950/50 border border-slate-800 flex items-center gap-3 overflow-hidden">
+                    <motion.div variants={{ hidden: { scale: 0 }, visible: { scale: 1, transition: { type: "spring", stiffness: 200, damping: 12 } } }}>
+                      <CheckCircle2 size={18} className="text-cyan-400 shrink-0" />
+                    </motion.div>
+                    <motion.div variants={{ hidden: { x: 30, y: -15, opacity: 0 }, visible: { x: 0, y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } } }}>
+                      <span className="text-sm text-slate-300 font-medium">{principle}</span>
+                    </motion.div>
                   </motion.div>
                 ))}
               </div>
@@ -271,16 +283,16 @@ export default function AiDeveloper() {
       </section>
 
       {/* ================= 62. DEVELOPMENT JOURNEY TIMELINE ================= */}
-      <section id="learning-timeline" className="py-24 px-6 relative z-10 border-t border-slate-900">
+      <section id="learning-timeline" className="py-24 px-6 relative z-10 border-t border-slate-900/50">
         <div className="max-w-4xl mx-auto">
-          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
+          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
             <h3 className="text-3xl font-black text-white mb-4">Development Journey Timeline</h3>
             <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
           </motion.div>
 
           <div className="relative border-l border-slate-800 ml-4 md:ml-32 space-y-12">
             {learningTimeline.map((item, idx) => (
-              <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: idx * 0.1 }} key={idx} className="relative pl-8 group">
+              <motion.div variants={timelineSlide} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} transition={{ delay: idx * 0.1 }} key={idx} className="relative pl-8 group">
                 <div className="absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full bg-slate-900 group-hover:bg-cyan-400 transition-colors border border-black z-20 shadow-[0_0_10px_rgba(6,182,212,0)] group-hover:shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
                 
                 <div className="md:absolute md:left-[-140px] md:top-0 md:w-32 md:text-right font-black text-sm text-slate-600 group-hover:text-cyan-400 transition-colors mb-2 md:mb-0">
@@ -299,11 +311,10 @@ export default function AiDeveloper() {
       </section>
 
       {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW ================= */}
-      {/* Removed the Engineering Lifecycle array box here as requested */}
-      <section className="py-24 px-6 relative z-10 border-t border-slate-900 bg-black/40 backdrop-blur-sm">
+      <section className="py-24 px-6 relative z-10 border-t border-slate-900/50 bg-black/40 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
-          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-6 space-y-6">
+          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-6 space-y-6">
             <h3 className="text-3xl font-black text-white">AI is a Partner, <br/>Not a Replacement.</h3>
             <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.4)]" />
             <div className="text-slate-400 space-y-4 text-sm leading-relaxed">
@@ -315,7 +326,7 @@ export default function AiDeveloper() {
             </div>
           </motion.div>
 
-          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
+          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} 
             className="lg:col-span-6 h-[450px] overflow-y-auto pr-2 border border-slate-800 bg-slate-950/60 p-6 rounded-2xl hide-scrollbar relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
             <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-[#030303] to-transparent pointer-events-none z-10" />
             <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6 flex items-center gap-2"><Cpu size={14}/> Interactive Prompts Workflow</h4>
@@ -334,16 +345,16 @@ export default function AiDeveloper() {
       </section>
 
       {/* ================= 65. AI ECOSYSTEM (WITH LOGOS) ================= */}
-      <section className="py-24 px-6 relative z-10 border-t border-slate-900">
+      <section className="py-24 px-6 relative z-10 border-t border-slate-900/50">
         <div className="max-w-7xl mx-auto">
-          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
+          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
             <h3 className="text-3xl font-black text-white mb-4">Current AI Ecosystem</h3>
             <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
           </motion.div>
 
           <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {aiEcosystem.map((ai, idx) => (
-              <motion.div variants={futuristicReveal} key={idx} className="p-6 rounded-2xl bg-black/40 border border-slate-900 flex flex-col hover:border-purple-500/60 hover:bg-purple-500/5 transition-all group">
+              <motion.div variants={cardPop} key={idx} className="p-6 rounded-2xl bg-black/40 border border-slate-900 flex flex-col hover:border-purple-500/60 hover:bg-purple-500/5 transition-all group">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 rounded-xl border border-slate-800 bg-black flex items-center justify-center relative overflow-hidden shrink-0 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.5)]">
                     <img src={ai.imageSrc} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto" 
@@ -360,29 +371,29 @@ export default function AiDeveloper() {
       </section>
 
       {/* ================= 67. TECH STACK (WITH LOGOS) ================= */}
-      <section className="py-24 px-6 relative z-10 border-t border-slate-900 bg-black/40 backdrop-blur-sm">
+      <section className="py-24 px-6 relative z-10 border-t border-slate-900/50 bg-black/40 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
-          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
+          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
             <h3 className="text-3xl font-black text-white mb-4">Development Architecture</h3>
             <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
           </motion.div>
 
           <div className="space-y-16">
             {techStackData.map((stack, idx) => (
-              <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} key={idx}>
+              <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} key={idx}>
                 <h4 className="text-xs text-cyan-500 uppercase tracking-widest font-black mb-6 border-b border-slate-800 pb-2">{stack.category}</h4>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                   {stack.items.map((tool, i) => (
-                    <div key={i} className="p-4 rounded-xl bg-slate-950/50 border border-slate-900 flex flex-col items-center justify-center text-center hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-300 group shadow-lg">
+                    <motion.div variants={cardPop} key={i} className="p-4 rounded-xl bg-slate-950/50 border border-slate-900 flex flex-col items-center justify-center text-center hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-300 group shadow-lg">
                       <div className="w-14 h-14 rounded-xl border border-slate-800 bg-black flex items-center justify-center mb-3 relative overflow-hidden group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all">
                         <img src={tool.imageSrc} alt={tool.name} className="w-8 h-8 object-contain opacity-60 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto"
                              onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                         <Settings size={20} className="text-slate-700 hidden" />
                       </div>
                       <span className="text-[11px] font-semibold text-slate-400 group-hover:text-cyan-400 transition-colors">{tool.name}</span>
-                    </div>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               </motion.div>
             ))}
           </div>
@@ -390,16 +401,16 @@ export default function AiDeveloper() {
       </section>
 
       {/* ================= 68. CURRENT PROJECTS ================= */}
-      <section id="current-projects" className="py-24 px-6 relative z-10 border-t border-slate-900">
+      <section id="current-projects" className="py-24 px-6 relative z-10 border-t border-slate-900/50">
         <div className="max-w-7xl mx-auto">
-          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
+          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
             <h3 className="text-3xl font-black text-white mb-4">Engineering Showcase</h3>
             <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Core Project Card */}
-            <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} 
               className="lg:col-span-2 p-8 rounded-3xl bg-slate-950/60 border border-slate-800 flex flex-col h-full relative overflow-hidden hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] transition-all group">
               <div className="absolute top-4 right-4 px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] uppercase font-black tracking-wider rounded shadow-[0_0_10px_rgba(6,182,212,0.2)]">In Progress</div>
               <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2 block">Flagship Software Engineering v1</span>
@@ -421,7 +432,7 @@ export default function AiDeveloper() {
             </motion.div>
 
             {/* Automation Pipeline Placeholder Card */}
-            <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.2 }}
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.2 }}
               className="p-6 rounded-3xl border border-dashed border-slate-700 bg-black/40 flex flex-col justify-between h-full opacity-70 hover:opacity-100 hover:border-purple-500/50 transition-all">
               <div>
                 <Layers className="text-purple-400 mb-4" size={28} />
@@ -438,9 +449,9 @@ export default function AiDeveloper() {
         </div>
       </section>
 
-      {/* ================= 69. GITHUB SYSTEM (SIMULATED FOR CMS INTEGRATION) ================= */}
-      <section className="py-24 px-6 relative z-10 border-t border-slate-900 bg-black/40 backdrop-blur-sm">
-        <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+      {/* ================= 69. GITHUB SYSTEM ================= */}
+      <section className="py-24 px-6 relative z-10 border-t border-slate-900/50 bg-black/40 backdrop-blur-sm">
+        <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
            <div className="flex flex-col sm:flex-row items-center gap-5 justify-between mb-6">
               <div className="flex items-center gap-4">
                  <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-white font-bold text-lg border border-slate-700 shadow-inner">JG</div>
@@ -462,8 +473,8 @@ export default function AiDeveloper() {
       </section>
 
       {/* ================= 71. VISION STATEMENT ================= */}
-      <section className="py-24 px-6 relative z-10 border-t border-slate-900 text-center">
-        <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto">
+      <section className="py-24 px-6 relative z-10 border-t border-slate-900/50 text-center">
+        <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto">
            <Quote size={40} className="text-cyan-500/20 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
            <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Vision Statement</h2>
            <p className="text-base md:text-lg text-slate-400 leading-relaxed max-w-3xl mx-auto">
@@ -481,7 +492,7 @@ export default function AiDeveloper() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/90 to-[#0c0c0e] -z-10" />
 
         <div className="max-w-4xl mx-auto text-center relative z-20">
-          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
               Every Project Begins with a Conversation.
             </h2>
