@@ -1,7 +1,7 @@
 // src/pages/DreamCreations.jsx
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay } from 'lucide-react';
+import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail } from 'lucide-react';
 
 const services = [
   { id: 1, title: "Brand Identity", icon: <PenTool size={24} />, desc: "Crafting cohesive visual identities, logos, and brand guidelines that resonate with target audiences." },
@@ -10,7 +10,6 @@ const services = [
   { id: 4, title: "Marketing Materials", icon: <MonitorSmartphone size={24} />, desc: "High-conversion social media assets, print layouts, and digital campaign aesthetics." },
 ];
 
-// Placeholder data for your diverse client portfolio
 const featuredClients = [
   { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
   { id: 2, name: "Real Estate Partners", industry: "Property Development", icon: <Building2 size={32} /> },
@@ -42,10 +41,31 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
 export default function DreamCreations() {
   const containerRef = useRef(null);
 
+  // Interactive Spaceshift Cursor effect tracking
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        containerRef.current.style.setProperty('--x', `${e.clientX - rect.left}px`);
+        containerRef.current.style.setProperty('--y', `${e.clientY - rect.top}px`);
+      }
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Quick action helper to jump to sections
+  const scrollToSection = (id) => {
+    const targetElement = document.getElementById(id);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <div 
       ref={containerRef}
-      className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-nightSkyCycle"
+      className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-nightSkyCycle spaceshift-cursor-glow"
     >
       
       <style>{`
@@ -60,6 +80,7 @@ export default function DreamCreations() {
         }
       `}</style>
 
+      {/* Twinkling Stars Matrix Field */}
       <div className="absolute inset-0 z-0 opacity-80 pointer-events-none">
         {starsData.map((star) => (
           <motion.div
@@ -72,6 +93,7 @@ export default function DreamCreations() {
         ))}
       </div>
 
+      {/* Visible Drifting Night Clouds / Fog */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         {cloudsData.map((cloud) => (
           <motion.div
@@ -88,8 +110,24 @@ export default function DreamCreations() {
         ))}
       </div>
 
+      {/* Floating Artwork Previews */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30 z-0">
+        <motion.div 
+          animate={{ y: [-10, 10, -10], rotate: [-2, 2, -2] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[20%] left-[10%] w-32 h-40 rounded-xl border border-[#1095d2]/20 bg-gradient-to-br from-[#1095d2]/10 to-transparent backdrop-blur-sm flex items-center justify-center"
+        >
+          <Palette size={40} className="text-[#1095d2]/40" />
+        </motion.div>
+        <motion.div 
+          animate={{ y: [15, -15, 15], rotate: [2, -2, 2] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-[30%] right-[12%] w-48 h-32 rounded-xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent backdrop-blur-sm"
+        />
+      </div>
+
       {/* ================= HERO SECTION ================= */}
-      <section className="relative pt-40 pb-20 px-6 min-h-[70vh] flex flex-col items-center justify-center text-center z-10">
+      <section className="relative pt-40 pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center text-center z-10">
         
         <motion.div 
           initial={{ scaleX: 0, opacity: 0 }}
@@ -135,20 +173,64 @@ export default function DreamCreations() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="max-w-3xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl bg-black/10 border border-white/5"
+          className="max-w-4xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl border border-transparent z-10"
         >
           <h1 className="text-xs font-bold tracking-[0.4em] text-[#1095d2] uppercase mb-4">
             Creative Agency Experience
           </h1>
-          <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-6">
-            Let's make your dream a reality.
+          <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
+            Let's make your <span className="text-[#1095d2]">dream</span> a reality.
           </h2>
-          <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">
-            For over a decade Dream Creations has helped businesses, entrepreneurs, organizations, 
-            and professionals transform ideas into compelling visual experiences.
-          </p>
+          
+          <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
+            <p>
+              For over a decade Dream Creations has helped businesses, entrepreneurs, organizations, and professionals transform ideas into compelling visual experiences.
+            </p>
+            <p>
+              Inspired by my former team manager, I started building my own team of graphic designers with a vision to empower more dreamers (clients) and creators (designers).
+            </p>
+            <p>
+              From branding and digital marketing to print production and motion graphics, every project is crafted with creativity, precision, and purpose.
+            </p>
+          </div>
+
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <button 
+              onClick={() => scrollToSection('mission-vision')}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:border-[#1095d2]/50 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md"
+            >
+              <Info size={16} />
+              About Dream Creations
+            </button>
+            <button 
+              onClick={() => scrollToSection('services')}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:border-[#1095d2]/50 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md"
+            >
+              <LayoutGrid size={16} />
+              Our Services
+            </button>
+            <button 
+              onClick={() => scrollToSection('creations')}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#1095d2] hover:bg-[#0c7ab0] text-white text-sm font-semibold transition-all shadow-lg shadow-[#1095d2]/20"
+            >
+              <Eye size={16} />
+              View Creations
+            </button>
+            <button 
+              onClick={() => window.location.href = '/contact'}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-black/40 border border-white/10 hover:bg-black/60 text-white text-sm font-semibold transition-all backdrop-blur-md"
+            >
+              <Mail size={16} />
+              Contact Us
+            </button>
+          </div>
         </motion.div>
       </section>
+
+      {/* Anchor targets for Hero Buttons */}
+      <div id="mission-vision" className="scroll-mt-24" />
+      <div id="services" className="scroll-mt-24" />
+      <div id="creations" className="scroll-mt-24" />
 
       {/* ================= SERVICES SECTION ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative">
@@ -245,7 +327,6 @@ export default function DreamCreations() {
           </p>
         </div>
 
-        {/* Client Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {featuredClients.map((client, index) => (
             <motion.div
@@ -299,7 +380,8 @@ export default function DreamCreations() {
           ))}
         </div>
       </section>
-{/* ================= CALL TO ACTION SECTION ================= */}
+
+      {/* ================= CALL TO ACTION SECTION ================= */}
       <section className="max-w-4xl mx-auto w-full px-6 py-24 z-10 relative text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -308,7 +390,6 @@ export default function DreamCreations() {
           transition={{ duration: 0.6 }}
           className="p-10 md:p-14 rounded-3xl border border-[#1095d2]/20 bg-gradient-to-b from-[#1095d2]/10 to-black/40 backdrop-blur-md relative overflow-hidden"
         >
-          {/* Subtle background glow */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-[#1095d2]/20 blur-[80px] -z-10 pointer-events-none" />
           
           <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">
@@ -322,6 +403,7 @@ export default function DreamCreations() {
           </button>
         </motion.div>
       </section>
+
     </div>
   );
 }
