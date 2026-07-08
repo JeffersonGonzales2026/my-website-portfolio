@@ -1,18 +1,40 @@
 // src/pages/DataAnalyst.jsx
-import React, { useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-// Fixed the bug: Added 'Quote' to the imports!
+import React, { useRef, useEffect, useState } from 'react';
+import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
 import { BarChart3, PieChart, Database, FileSpreadsheet, Settings, Cpu, LineChart, Table, CheckCircle2, ArrowRight, ArrowUp, Briefcase, FileText, LayoutDashboard, BrainCircuit, GraduationCap, Code2, Quote } from 'lucide-react';
 
-// ================= CMS PLACEHOLDER DATA (Sections 43 - 55) =================
+// ================= CUSTOM ANIMATED COUNTER COMPONENT =================
+const AnimatedCounter = ({ value, suffix = "" }) => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    if (inView) {
+      const controls = animate(0, value, {
+        duration: 2,
+        ease: "easeOut",
+        onUpdate(val) {
+          if (ref.current) {
+            ref.current.textContent = Math.floor(val) + suffix;
+          }
+        }
+      });
+      return () => controls.stop();
+    }
+  }, [value, inView, suffix]);
+
+  return <span ref={ref} className="text-2xl font-black text-white mb-1 group-hover:text-emerald-400 transition-colors">0{suffix}</span>;
+};
+
+// ================= CMS PLACEHOLDER DATA =================
 
 const quickStats = [
-  { label: "Years in Analytics", value: "1+" },
-  { label: "Dashboards Built", value: "12" },
-  { label: "Reports Created", value: "45" },
-  { label: "Automation Projects", value: "8" },
-  { label: "Processes Improved", value: "15" },
-  { label: "Hours Saved", value: "120+" }
+  { label: "Years in Analytics", value: 1, suffix: "+" },
+  { label: "Dashboards Built", value: 12, suffix: "" },
+  { label: "Reports Created", value: 45, suffix: "" },
+  { label: "Automation Projects", value: 8, suffix: "" },
+  { label: "Processes Improved", value: 15, suffix: "" },
+  { label: "Hours Saved", value: 120, suffix: "+" }
 ];
 
 const experienceResponsibilities = [
@@ -36,12 +58,49 @@ const technicalSkills = [
   { category: "Documentation", skills: ["Process Documentation", "Workflow Documentation", "Standard Operating Procedures"] }
 ];
 
+// Software Ecosystem now uses logo image structures ready for your files
 const toolsTechnologies = [
-  { category: "Office Productivity", tools: ["Microsoft Excel", "Microsoft Word", "Microsoft PowerPoint", "Microsoft Office"] },
-  { category: "Data Analysis", tools: ["Power Query", "ODBC", "Advanced Excel"] },
-  { category: "Databases", tools: ["Supabase", "SQL"] },
-  { category: "Programming", tools: ["Python", "JavaScript", "React (Future)"] },
-  { category: "AI Assistance", tools: ["ChatGPT", "Claude", "Gemini", "GitHub Copilot"] }
+  { 
+    category: "Office Productivity", 
+    tools: [
+      { name: "Microsoft Excel", imageSrc: "/images/excel.png" },
+      { name: "Microsoft Word", imageSrc: "/images/word.png" },
+      { name: "Microsoft PowerPoint", imageSrc: "/images/powerpoint.png" }
+    ] 
+  },
+  { 
+    category: "Data Analysis", 
+    tools: [
+      { name: "Power Query", imageSrc: "/images/powerquery.png" },
+      { name: "Power BI", imageSrc: "/images/powerbi.png" },
+      { name: "ODBC", imageSrc: "/images/odbc.png" }
+    ] 
+  },
+  { 
+    category: "Databases", 
+    tools: [
+      { name: "Supabase", imageSrc: "/images/supabase.png" },
+      { name: "SQL", imageSrc: "/images/sql.png" },
+      { name: "PostgreSQL", imageSrc: "/images/postgresql.png" }
+    ] 
+  },
+  { 
+    category: "Programming", 
+    tools: [
+      { name: "Python", imageSrc: "/images/python.png" },
+      { name: "JavaScript", imageSrc: "/images/javascript.png" },
+      { name: "React", imageSrc: "/images/react.png" }
+    ] 
+  },
+  { 
+    category: "AI Assistance", 
+    tools: [
+      { name: "ChatGPT", imageSrc: "/images/chatgpt.png" },
+      { name: "Claude", imageSrc: "/images/claude.png" },
+      { name: "Gemini", imageSrc: "/images/gemini.png" },
+      { name: "GitHub Copilot", imageSrc: "/images/copilot.png" }
+    ] 
+  }
 ];
 
 const certifications = {
@@ -55,7 +114,6 @@ const analyticsRoadmap = [
   "Cloud Analytics", "Microsoft Fabric", "Azure Data Services", "Business Intelligence Platforms", "Enterprise Reporting Systems"
 ];
 
-// Showcase Placeholders containing all requested CMS fields
 const showcaseData = {
   dashboards: [{
     id: 1, name: "Executive Sales Dashboard", purpose: "Track monthly recurring revenue and sales team performance.", industry: "Corporate B2B", department: "Sales & Operations",
@@ -121,12 +179,12 @@ export default function DataAnalyst() {
             <p>As a Data Analyst Intern, I continuously learn how data can improve operations, increase efficiency, and support strategic business decisions.</p>
           </div>
 
-          {/* Quick Statistics Grid */}
+          {/* Quick Statistics Grid with Animated Counters */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {quickStats.map((stat, idx) => (
               <motion.div key={idx} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4, delay: 0.2 + (idx * 0.1) }}
                 className="p-4 rounded-2xl bg-slate-900/50 border border-slate-800 backdrop-blur-sm flex flex-col items-center justify-center hover:border-emerald-500/50 transition-colors group">
-                <span className="text-2xl font-black text-white mb-1 group-hover:text-emerald-400 transition-colors">{stat.value}</span>
+                <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                 <span className="text-[10px] text-slate-400 uppercase tracking-wider text-center">{stat.label}</span>
               </motion.div>
             ))}
@@ -238,7 +296,7 @@ export default function DataAnalyst() {
             ))}
           </div>
 
-          {/* Showcase Content Area (Highly Detailed Placeholders based on PRD) */}
+          {/* Showcase Content Area */}
           <div className="min-h-[400px]">
             <AnimatePresence mode="wait">
               {activeTab === 'dashboards' && (
@@ -246,7 +304,6 @@ export default function DataAnalyst() {
                   {showcaseData.dashboards.map(item => (
                     <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden flex flex-col group hover:border-emerald-500/50 transition-colors">
                       <div className="h-48 bg-slate-800 relative flex items-center justify-center overflow-hidden">
-                         {/* Optional real thumbnail can go here */}
                          <LayoutDashboard size={40} className="text-slate-700 group-hover:text-emerald-500/20 transition-colors" />
                          <div className="absolute top-4 right-4 px-2 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] uppercase font-bold rounded">{item.status}</div>
                       </div>
@@ -363,22 +420,55 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= 52. TOOLS & TECHNOLOGIES ================= */}
+      {/* ================= 52. SOFTWARE ECOSYSTEM (WITH LOGOS) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <h3 className="text-2xl md:text-3xl font-black text-white mb-4">Software Ecosystem</h3>
             <div className="w-12 h-1 bg-emerald-500 rounded-full mx-auto" />
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          
+          <div className="space-y-16">
             {toolsTechnologies.map((cat, idx) => (
-              <div key={idx} className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center hover:border-emerald-500/30 transition-colors">
-                <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider block mb-3">{cat.category}</span>
-                <ul className="space-y-1">
+              <div key={idx} className="relative">
+                <h4 className="text-[11px] text-emerald-400 font-bold uppercase tracking-widest mb-6 text-center border-b border-slate-800/60 pb-3 max-w-sm mx-auto">
+                  {cat.category}
+                </h4>
+                <div className="flex flex-wrap justify-center gap-4 md:gap-8">
                   {cat.tools.map((tool, i) => (
-                    <li key={i} className="text-xs text-slate-300 font-medium">{tool}</li>
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: i * 0.05 }}
+                      className="flex flex-col items-center gap-3 w-24 sm:w-28 group"
+                    >
+                      <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-slate-800 bg-slate-900/50 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 overflow-hidden hover:border-emerald-500/40 relative">
+                        {/* 
+                          To use your own icons:
+                          Place images (like excel.png, python.png) in the /public/images folder.
+                          The code will automatically display them!
+                        */}
+                        <img 
+                          src={tool.imageSrc} 
+                          alt={tool.name} 
+                          className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10" 
+                          onError={(e) => { 
+                             // If the image is missing, hide the image tag and show the fallback icon
+                             e.target.style.display = 'none'; 
+                             e.target.nextSibling.style.display = 'block'; 
+                          }}
+                        />
+                        {/* Fallback Icon if image file is not found */}
+                        <Settings size={24} className="text-slate-600 hidden absolute inset-0 m-auto z-0" />
+                      </div>
+                      <span className="text-[10px] md:text-xs text-center font-semibold text-slate-400 group-hover:text-emerald-300 transition-colors">
+                        {tool.name}
+                      </span>
+                    </motion.div>
                   ))}
-                </ul>
+                </div>
               </div>
             ))}
           </div>
