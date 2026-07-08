@@ -1,7 +1,7 @@
 // src/pages/AiDeveloper.jsx
-import React, { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
-import { Code2, Cpu, Terminal, Layers, ArrowRight, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail } from 'lucide-react';
+import React, { useRef, useEffect } from 'react';
+import { motion, useInView, animate } from 'framer-motion';
+import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail } from 'lucide-react';
 
 // ================= CUSTOM ANIMATED COUNTER =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -26,7 +26,7 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
   return <span ref={ref} className="text-3xl md:text-4xl font-black text-white tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">0{suffix}</span>;
 };
 
-// ================= VARIED ANIMATION VARIANTS (KEPT INTACT AS REQUESTED) =================
+// ================= VARIED ANIMATION VARIANTS =================
 const fadeSlideUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -133,10 +133,10 @@ export default function AiDeveloper() {
   };
 
   return (
-    // Fixed: Removed the bg-[#02040a] here so it doesn't block the background layer!
-    <div ref={containerRef} className="flex flex-col min-h-screen text-slate-100 overflow-x-hidden relative selection:bg-cyan-500/30 selection:text-cyan-200">
+    // REMOVED overflow-x-hidden from here. This was breaking the sticky background!
+    <div ref={containerRef} className="flex flex-col min-h-screen text-slate-100 relative selection:bg-cyan-500/30 selection:text-cyan-200">
       
-      {/* ================= HIGH-PERFORMANCE CSS BACKGROUND (DATA STREAMS + NEURAL GLOWS) ================= */}
+      {/* ================= HIGH-PERFORMANCE CSS BACKGROUND ================= */}
       <style>{`
         @keyframes digital-rain {
           0% { background-position: 0 0, 0 0; }
@@ -164,7 +164,7 @@ export default function AiDeveloper() {
         .ambient-glow { animation: ambient-pulse ease-in-out infinite; will-change: opacity, transform; }
       `}</style>
 
-      {/* The STICKY Wrapper: Tracks scroll properly but is bounded perfectly to the page size (Footer safe!) */}
+      {/* The STICKY Wrapper: Tracks scroll properly and is bounded perfectly to the page size (Footer safe!) */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#02040a]">
           
@@ -186,7 +186,7 @@ export default function AiDeveloper() {
           {/* Hardware-Accelerated High-Speed Data Streams (Fiber Optics) */}
           <div className="absolute top-0 w-[2px] h-[150px] bg-gradient-to-b from-transparent via-cyan-400 to-transparent opacity-60 stream-y" style={{ left: '15%', animationDuration: '2.5s', animationDelay: '0s' }} />
           <div className="absolute top-0 w-[2px] h-[200px] bg-gradient-to-b from-transparent via-purple-500 to-transparent opacity-60 stream-y" style={{ left: '45%', animationDuration: '3s', animationDelay: '1.2s' }} />
-          <div className="absolute top-0 w-[2px] h-[100px] bg-gradient-to-b from-transparent via-cyan-300 to-transparent opacity-60 stream-y" style={{ left: '85%', animationDuration: '2s', animationDelay: '0.5s' }} />
+          <div className="absolute top-0 w-[2px] h-[100px] bg-gradient-to-b from-transparent via-blue-400 to-transparent opacity-60 stream-y" style={{ left: '85%', animationDuration: '2s', animationDelay: '0.5s' }} />
           
           <div className="absolute left-0 h-[2px] w-[200px] bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-60 stream-x" style={{ top: '20%', animationDuration: '4.5s', animationDelay: '1.5s' }} />
           <div className="absolute left-0 h-[2px] w-[150px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-60 stream-x" style={{ top: '75%', animationDuration: '3.5s', animationDelay: '0.8s' }} />
@@ -200,7 +200,8 @@ export default function AiDeveloper() {
       </div>
 
       {/* ================= PAGE CONTENT WRAPPER (Pushed to front) ================= */}
-      <div className="relative z-10">
+      {/* ADDED overflow-x-hidden here to prevent horizontal scroll bars from animations without breaking sticky! */}
+      <div className="relative z-10 overflow-x-hidden">
 
         {/* ================= 59. HERO SECTION ================= */}
         <section className="relative pt-44 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center">
@@ -311,7 +312,7 @@ export default function AiDeveloper() {
                     {item.year}
                   </div>
 
-                  <div className="p-5 rounded-xl bg-slate-950/40 border border-slate-900 group-hover:border-cyan-500/40 group-hover:bg-cyan-500/5 transition-all duration-300 shadow-lg">
+                  <div className="p-5 rounded-xl bg-slate-950/60 border border-slate-900 group-hover:border-cyan-500/40 group-hover:bg-cyan-500/5 transition-all duration-300 shadow-lg backdrop-blur-sm">
                     <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line group-hover:text-slate-200 transition-colors">
                       {item.desc}
                     </p>
@@ -323,16 +324,16 @@ export default function AiDeveloper() {
         </section>
 
         {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-md">
+        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-6 space-y-6">
               <h3 className="text-3xl font-black text-white">AI is a Partner, <br/>Not a Replacement.</h3>
-              <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.4)]" />
-              <div className="text-slate-400 space-y-4 text-sm leading-relaxed">
+              <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
+              <div className="text-slate-300 space-y-4 text-sm leading-relaxed">
                 <p>Artificial Intelligence is transforming software development. Rather than fearing this change, I embrace AI as a productivity tool that accelerates learning, improves code quality, and helps solve complex technical challenges.</p>
                 <p>However, I believe true software engineering requires understanding the code being written. AI can generate ideas, explain concepts, suggest improvements, and accelerate implementation, but developers remain responsible for architecture, design decisions, debugging, testing, security, maintainability, and long-term scalability.</p>
-                <p className="text-purple-400 font-semibold bg-purple-500/10 p-4 rounded-xl border border-purple-500/20">
+                <p className="text-cyan-400 font-semibold bg-cyan-500/10 p-4 rounded-xl border border-cyan-500/20">
                   My goal is to combine human creativity, critical thinking, and engineering principles with AI-assisted productivity to build better software.
                 </p>
               </div>
@@ -342,11 +343,11 @@ export default function AiDeveloper() {
               className="lg:col-span-6 h-[450px] overflow-y-auto pr-2 border border-slate-800 bg-slate-950/80 p-6 rounded-2xl hide-scrollbar relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
               <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-[#02040a] to-transparent pointer-events-none z-10" />
               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2"><Cpu size={14} className="text-purple-400" /> Interactive Prompts Workflow</h4>
-              <div className="space-y-3 relative border-l border-cyan-500/30 ml-2">
+              <div className="space-y-3 relative border-l border-purple-500/30 ml-2">
                 {aiWorkflowSteps.map((step, idx) => (
                   <div key={idx} className="flex items-center gap-3 pl-4 relative group cursor-default">
-                    <div className="absolute left-[-4.5px] top-2 w-2 h-2 rounded-full bg-slate-800 group-hover:bg-cyan-400 transition-colors shadow-[0_0_10px_rgba(6,182,212,0)] group-hover:shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
-                    <span className="text-xs font-mono text-slate-600 group-hover:text-cyan-400 transition-colors">[{idx+1}]</span>
+                    <div className="absolute left-[-4.5px] top-2 w-2 h-2 rounded-full bg-slate-800 group-hover:bg-purple-400 transition-colors shadow-[0_0_10px_rgba(168,85,247,0)] group-hover:shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
+                    <span className="text-xs font-mono text-slate-600 group-hover:text-purple-400 transition-colors">[{idx+1}]</span>
                     <span className="text-sm font-semibold text-slate-400 group-hover:text-white transition-colors">{step}</span>
                   </div>
                 ))}
@@ -357,7 +358,7 @@ export default function AiDeveloper() {
         </section>
 
         {/* ================= 65. AI ECOSYSTEM (WITH LOGOS) ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/20">
+        <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
               <h3 className="text-3xl font-black text-white mb-4">Current AI Ecosystem</h3>
@@ -366,14 +367,14 @@ export default function AiDeveloper() {
 
             <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {aiEcosystem.map((ai, idx) => (
-                <motion.div variants={cardPop} key={idx} className="p-6 rounded-2xl bg-slate-950/60 border border-slate-900 flex flex-col hover:border-cyan-500/60 hover:bg-cyan-500/5 transition-all group shadow-lg backdrop-blur-sm">
+                <motion.div variants={cardPop} key={idx} className="p-6 rounded-2xl bg-slate-950/60 border border-slate-900 flex flex-col hover:border-purple-500/50 hover:bg-purple-500/5 transition-all group shadow-lg backdrop-blur-sm">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 rounded-xl border border-slate-800 bg-black flex items-center justify-center relative overflow-hidden shrink-0 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.5)]">
                       <img src={ai.imageSrc} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto" 
                            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                       <Cpu size={20} className="text-slate-700 hidden" />
                     </div>
-                    <h4 className="text-base font-bold text-white group-hover:text-cyan-400 transition-colors">{ai.name}</h4>
+                    <h4 className="text-base font-bold text-white group-hover:text-purple-400 transition-colors">{ai.name}</h4>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed flex-grow group-hover:text-slate-300 transition-colors">{ai.role}</p>
                 </motion.div>
@@ -383,7 +384,7 @@ export default function AiDeveloper() {
         </section>
 
         {/* ================= 67. TECH STACK (WITH LOGOS) ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/50 backdrop-blur-md">
+        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-md">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
               <h3 className="text-3xl font-black text-white mb-4">Development Architecture</h3>
@@ -413,7 +414,7 @@ export default function AiDeveloper() {
         </section>
 
         {/* ================= 68. CURRENT PROJECTS ================= */}
-        <section id="current-projects" className="py-24 px-6 relative border-t border-slate-900 bg-black/20">
+        <section id="current-projects" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
               <h3 className="text-3xl font-black text-white mb-4">Engineering Showcase</h3>
@@ -498,9 +499,9 @@ export default function AiDeveloper() {
         </section>
 
         {/* ================= 72. TRANSITION TO CONTACT ================= */}
-        <section className="w-full relative border-t border-slate-900 mt-16 pt-32 pb-24 px-6 overflow-hidden">
+        <section className="w-full relative border-t border-slate-900 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
           
-          {/* Aesthetic Shift Gradient: Futuristic neon fades into elegant neutral/charcoal form */}
+          {/* Aesthetic Shift Gradient */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/90 to-[#0c0c0e] z-[-1]" />
 
           <div className="max-w-4xl mx-auto text-center relative z-20">
