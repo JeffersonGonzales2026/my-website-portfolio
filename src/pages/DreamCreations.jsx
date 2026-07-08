@@ -1,7 +1,7 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X } from 'lucide-react';
+import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, Sparkles, ArrowRight, Star, Quote } from 'lucide-react';
 
 const featuredClients = [
   { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
@@ -12,19 +12,53 @@ const featuredClients = [
   { id: 6, name: "Corporate B2B", industry: "Consulting & Finance", icon: <Briefcase size={32} /> },
 ];
 
-// Shrunk icons to size={20}
 const creationsCategories = [
-  { id: 1, category: "Branding & Identity", icon: <Fingerprint size={20} />, items: ["Logo Design", "Brand Guidelines", "Visual Identity", "Brand Refresh", "Brand Assets", "Business Identity Systems"] },
-  { id: 2, category: "Graphic Design", icon: <PenTool size={20} />, items: ["Marketing Graphics", "Corporate Graphics", "Advertising Materials", "Print Design", "Creative Campaigns", "Promotional Graphics"] },
-  { id: 3, category: "Social Media Design", icon: <Share2 size={20} />, items: ["Facebook Graphics", "Instagram Posts", "Carousel Posts", "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"] },
-  { id: 4, category: "Marketing Materials", icon: <FileText size={20} />, items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Product Sheets", "Sales Kits", "Business Presentations"] },
-  { id: 5, category: "Motion Graphics", icon: <Video size={20} />, items: ["Animated Ads", "Product Promotions", "Marketing Videos", "Social Media Motion Graphics", "Explainer Videos", "Logo Animation", "Video Thumbnails"] },
-  { id: 6, category: "Web Graphics", icon: <MousePointerClick size={20} />, items: ["Website Banners", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"] },
-  { id: 7, category: "Photo Editing", icon: <ImageIcon size={20} />, items: ["Photo Retouching", "Photo Restoration", "Watercolor Portraits", "Background Removal", "Image Manipulation", "Color Correction", "Composite Editing"] },
-  { id: 8, category: "Apparel Design", icon: <Shirt size={20} />, items: ["Shirt Designs", "Streetwear Graphics", "Mockups", "Print-ready Artwork"] },
-  { id: 9, category: "Print Production", icon: <Printer size={20} />, items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards"] },
-  { id: 10, category: "Packaging", icon: <Box size={20} />, items: ["Packaging Graphics", "Clothing Labels", "Product Labels"] },
-  { id: 11, category: "Illustration", icon: <Pencil size={20} />, items: ["Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"] }
+  { id: 1, category: "Branding & Identity", icon: <Fingerprint size={16} />, items: ["Logo Design", "Brand Guidelines", "Visual Identity", "Brand Refresh", "Brand Assets", "Business Identity Systems"] },
+  { id: 2, category: "Graphic Design", icon: <PenTool size={16} />, items: ["Marketing Graphics", "Corporate Graphics", "Advertising Materials", "Print Design", "Creative Campaigns", "Promotional Graphics"] },
+  { id: 3, category: "Social Media Design", icon: <Share2 size={16} />, items: ["Facebook Graphics", "Instagram Posts", "Carousel Posts", "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"] },
+  { id: 4, category: "Marketing Materials", icon: <FileText size={16} />, items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Product Sheets", "Sales Kits", "Business Presentations"] },
+  { id: 5, category: "Motion Graphics", icon: <Video size={16} />, items: ["Animated Ads", "Product Promotions", "Marketing Videos", "Social Media Motion Graphics", "Explainer Videos", "Logo Animation", "Video Thumbnails"] },
+  { id: 6, category: "Web Graphics", icon: <MousePointerClick size={16} />, items: ["Website Banners", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"] },
+  { id: 7, category: "Photo Editing", icon: <ImageIcon size={16} />, items: ["Photo Retouching", "Photo Restoration", "Watercolor Portraits", "Background Removal", "Image Manipulation", "Color Correction", "Composite Editing"] },
+  { id: 8, category: "Apparel Design", icon: <Shirt size={16} />, items: ["Shirt Designs", "Streetwear Graphics", "Mockups", "Print-ready Artwork"] },
+  { id: 9, category: "Print Production", icon: <Printer size={16} />, items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards"] },
+  { id: 10, category: "Packaging", icon: <Box size={16} />, items: ["Packaging Graphics", "Clothing Labels", "Product Labels"] },
+  { id: 11, category: "Illustration", icon: <Pencil size={16} />, items: ["Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"] }
+];
+
+const softwareExpertise = [
+  { id: 1, name: "Photoshop", imageSrc: "/images/photoshop.png" },
+  { id: 2, name: "Illustrator", imageSrc: "/images/illustrator.png" },
+  { id: 3, name: "Premiere Pro", imageSrc: "/images/premiere.png" },
+  { id: 4, name: "After Effects", imageSrc: "/images/aftereffects.png" },
+  { id: 5, name: "Canva", imageSrc: "/images/canva.png" },
+  { id: 6, name: "CapCut", imageSrc: "/images/capcut.png" },
+  { id: 7, name: "Microsoft Office", imageSrc: "/images/msoffice.png" },
+  { id: 8, name: "WordPress", imageSrc: "/images/wordpress.png" },
+  { id: 9, name: "AI Design Tools", imageSrc: "/images/ai-tools.png" },
+];
+
+const creativeProcess = [
+  { step: 1, title: "Client Consultation", desc: "Understand goals & vision." },
+  { step: 2, title: "Requirements Gathering", desc: "Scope & timelines." },
+  { step: 3, title: "Research", desc: "Competitors & audience." },
+  { step: 4, title: "Concept Development", desc: "Brainstorming ideas." },
+  { step: 5, title: "Sketches / Ideas", desc: "Rough visual drafts." },
+  { step: 6, title: "Design Production", desc: "High-fidelity artwork." },
+  { step: 7, title: "Internal Review", desc: "Quality assurance." },
+  { step: 8, title: "Client Presentation", desc: "Showcase for feedback." },
+  { step: 9, title: "Revisions", desc: "Refine based on input." },
+  { step: 10, title: "Final Approval", desc: "Client sign-off." },
+  { step: 11, title: "Production", desc: "Prepare final files." },
+  { step: 12, title: "Delivery", desc: "Handover assets." },
+  { step: 13, title: "Post-Project Support", desc: "Ongoing assistance." }
+];
+
+// Section 36: Testimonials Placeholders
+const testimonials = [
+  { id: 1, name: "Sarah Jenkins", company: "Responsive Health", project: "Brand Identity", rating: 5, feedback: "Dream Creations completely transformed our visual identity. The level of professionalism and the quality of the final assets exceeded our expectations." },
+  { id: 2, name: "Mark Tolentino", company: "Real Estate Partners", project: "Marketing Materials", rating: 5, feedback: "Fast, reliable, and incredibly creative. The brochures and social media assets they produced helped us close three major properties this quarter." },
+  { id: 3, name: "Elena Rostova", company: "Tech Startups Inc.", project: "UI/UX & Motion Graphics", rating: 5, feedback: "We needed a complete overhaul of our app interface and explainer videos. The team delivered a sleek, modern aesthetic that our users love." }
 ];
 
 const portfolioPlaceholders = [1, 2, 3, 4, 5, 6];
@@ -50,7 +84,6 @@ export default function DreamCreations() {
   const containerRef = useRef(null);
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
 
-  // Safely track mouse position for the cursor glow without blocking clicks
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (containerRef.current) {
@@ -88,14 +121,12 @@ export default function DreamCreations() {
       className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-nightSkyCycle"
     >
       
-      {/* NEW: Dedicated Spaceshift Cursor Glow Layer 
-        This pointer-events-none layer fixes the "unclickable" bug!
-      */}
       <div 
         className="fixed inset-0 z-50 pointer-events-none mix-blend-screen"
         style={{ background: 'radial-gradient(600px circle at var(--x, 50vw) var(--y, 50vh), rgba(16, 149, 210, 0.08), transparent 40%)' }}
       />
 
+      {/* Added class to hide the scrollbar for the horizontal process flow */}
       <style>{`
         @keyframes nightSkyCycle {
           0%   { background-color: #1e1b4b; } 
@@ -106,9 +137,16 @@ export default function DreamCreations() {
         .animate-nightSkyCycle {
           animation: nightSkyCycle 25s ease-in-out infinite alternate;
         }
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
       `}</style>
 
-      {/* Twinkling Stars */}
+      {/* Background Elements */}
       <div className="absolute inset-0 z-0 opacity-80 pointer-events-none">
         {starsData.map((star) => (
           <motion.div
@@ -120,25 +158,17 @@ export default function DreamCreations() {
           />
         ))}
       </div>
-
-      {/* Drifting Clouds */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         {cloudsData.map((cloud) => (
           <motion.div
             key={cloud.id}
             className="absolute bg-white/10 blur-[40px] rounded-[100%]"
-            style={{
-              top: cloud.top,
-              width: `${450 * cloud.scale}px`,
-              height: `${120 * cloud.scale}px`,
-            }}
+            style={{ top: cloud.top, width: `${450 * cloud.scale}px`, height: `${120 * cloud.scale}px` }}
             animate={{ x: ["110vw", "-50vw"] }}
             transition={{ duration: cloud.duration, repeat: Infinity, delay: cloud.delay, ease: "linear" }}
           />
         ))}
       </div>
-
-      {/* Floating Artworks */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30 z-0">
         <motion.div 
           animate={{ y: [-10, 10, -10], rotate: [-2, 2, -2] }}
@@ -162,7 +192,6 @@ export default function DreamCreations() {
           transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }}
           className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10"
         />
-
         <motion.div
           initial={{ y: 150, scale: 0.5, opacity: 0 }}
           animate={{ y: 0, scale: 1, opacity: 1 }}
@@ -199,40 +228,32 @@ export default function DreamCreations() {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="max-w-4xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl border border-transparent z-10"
         >
-          <h1 className="text-xs font-bold tracking-[0.4em] text-[#1095d2] uppercase mb-4">
-            Creative Agency Experience
-          </h1>
           <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
             Let's make your <span className="text-[#1095d2]">dream</span> a reality.
           </h2>
-          
           <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
             <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">
             For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.
             </p>
           </div>
-
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <button 
               onClick={() => scrollToSection('founder-bio')}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:border-[#1095d2]/50 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md cursor-pointer"
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:border-[#1095d2]/50 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md cursor-pointer relative z-20"
             >
-              <Info size={16} />
-              About Dream Creations
+              <Info size={16} /> About Dream Creations
             </button>
             <button 
               onClick={() => scrollToSection('creations-grid')}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:border-[#1095d2]/50 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md cursor-pointer"
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:border-[#1095d2]/50 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md cursor-pointer relative z-20"
             >
-              <LayoutGrid size={16} />
-              Our Creations
+              <LayoutGrid size={16} /> Our Creations
             </button>
             <button 
               onClick={() => window.location.href = '/contact'}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#1095d2] hover:bg-[#0c7ab0] text-white text-sm font-semibold transition-all shadow-lg shadow-[#1095d2]/20 cursor-pointer"
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#1095d2] hover:bg-[#0c7ab0] text-white text-sm font-semibold transition-all shadow-lg shadow-[#1095d2]/20 cursor-pointer relative z-20"
             >
-              <Mail size={16} />
-              Contact Us
+              <Mail size={16} /> Contact Us
             </button>
           </div>
         </motion.div>
@@ -240,7 +261,7 @@ export default function DreamCreations() {
 
       <div id="creations-grid" className="scroll-mt-24" />
 
-      {/* ================= 29. CREATIONS SECTION (SMALLER FLOATING BOXES) ================= */}
+      {/* ================= 29. CREATIONS SECTION ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative">
         <div className="mb-12 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
@@ -250,8 +271,7 @@ export default function DreamCreations() {
           </p>
         </div>
 
-        {/* Tighter Grid with smaller boxes (grid-cols-3 on mobile, 4 on tablet, 6 on desktop) */}
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {creationsCategories.map((category, index) => (
             <motion.button
               key={category.id}
@@ -260,12 +280,12 @@ export default function DreamCreations() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: (index % 6) * 0.05 }}
-              className="p-4 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md hover:-translate-y-1 hover:border-[#1095d2]/50 hover:bg-[#1095d2]/10 transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer"
+              className="p-3 h-28 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md hover:-translate-y-1 hover:border-[#1095d2]/50 hover:bg-[#1095d2]/10 transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer relative z-20"
             >
               <div className="text-white/60 group-hover:text-[#1095d2] transition-colors duration-300 mb-2 group-hover:scale-110">
                 {category.icon}
               </div>
-              <h4 className="text-xs font-bold text-white/90 group-hover:text-white transition-colors leading-tight">
+              <h4 className="text-[11px] font-bold text-white/90 group-hover:text-white transition-colors leading-tight px-1">
                 {category.category}
               </h4>
             </motion.button>
@@ -278,7 +298,6 @@ export default function DreamCreations() {
       {/* ================= MEET THE FOUNDER SECTION ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -309,14 +328,12 @@ export default function DreamCreations() {
               <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">The Mind Behind the Studio</h3>
               <div className="w-20 h-1 bg-[#1095d2] rounded-full" />
             </div>
-            
             <p className="text-base md:text-lg text-white/70 leading-relaxed">
               Dream Creations was born out of a passion for visual storytelling and a relentless drive for perfection. What started as an independent graphic design practice has evolved into a structured creative agency serving global clients.
             </p>
             <p className="text-base md:text-lg text-white/70 leading-relaxed">
               With over a decade of experience across print, digital, and corporate design sectors, I bridge the gap between pure artistic creativity and structured business strategy. My goal is simple: to make your dream artworks a reality while ensuring they drive measurable impact for your brand.
             </p>
-            
             <div className="grid grid-cols-2 gap-4 pt-4">
               <div className="p-4 rounded-xl border border-white/10 bg-black/20 hover:border-[#1095d2]/30 transition-colors">
                 <div className="text-2xl font-bold text-[#1095d2] mb-1">10+</div>
@@ -328,6 +345,141 @@ export default function DreamCreations() {
               </div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* ================= 34. SOFTWARE EXPERTISE ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
+        <div className="mb-12 text-center md:text-left">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Software Expertise</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+          <p className="text-base text-white/70 mt-4 max-w-2xl">
+            Proficient across the industry's leading creative and management tools.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6">
+          {softwareExpertise.map((tool, index) => (
+            <motion.div
+              key={tool.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
+              className="flex flex-col items-center gap-3 w-24 sm:w-28 group"
+            >
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-white/5 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 overflow-hidden bg-black/40 hover:border-[#1095d2]/40">
+                <img 
+                  src={tool.imageSrc} 
+                  alt={tool.name} 
+                  className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity" 
+                />
+              </div>
+              <span className="text-[10px] md:text-xs text-center font-semibold text-white/60 group-hover:text-white transition-colors">
+                {tool.name}
+              </span>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ================= 35. CREATIVE PROCESS (HORIZONTAL COMPACT FLOW) ================= */}
+      <section className="max-w-7xl mx-auto w-full py-20 z-10 relative border-t border-white/10 overflow-hidden">
+        <div className="mb-12 px-6 text-center">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
+          <p className="text-base text-white/70 mt-4 max-w-2xl mx-auto">
+            Every project follows a structured, transparent workflow to ensure your vision is executed flawlessly.
+          </p>
+        </div>
+
+        {/* Ultra-compact horizontal scrolling track with animated arrows */}
+        <div className="px-6 flex overflow-x-auto hide-scrollbar gap-4 md:gap-6 pb-8 items-center cursor-ew-resize">
+          {creativeProcess.map((item, index) => (
+            <React.Fragment key={item.step}>
+              {/* Step Card */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                className="shrink-0 w-36 md:w-44 p-4 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group"
+              >
+                <div className="w-6 h-6 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-[10px] font-black mb-3 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all">
+                  {item.step}
+                </div>
+                <h4 className="text-xs md:text-sm font-bold text-white mb-1.5 leading-tight group-hover:text-[#1095d2] transition-colors">
+                  {item.title}
+                </h4>
+                <p className="text-[10px] text-white/50 leading-tight">
+                  {item.desc}
+                </p>
+              </motion.div>
+
+              {/* Animating Arrow (Between cards, skipping the last one) */}
+              {index < creativeProcess.length - 1 && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  className="shrink-0 text-[#1095d2]/40 flex items-center justify-center"
+                >
+                  <motion.div
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <ArrowRight size={20} />
+                  </motion.div>
+                </motion.div>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      </section>
+
+      {/* ================= 36. TESTIMONIALS (CMS PLACEHOLDER) ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
+        <div className="mb-16 text-center">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Client Feedback</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
+          <p className="text-base text-white/70 mt-4 max-w-2xl mx-auto">
+            What our partners and clients have to say about the Dream Creations experience.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {testimonials.map((testimonial, index) => (
+            <motion.div
+              key={testimonial.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="p-8 rounded-3xl bg-black/20 border border-white/10 backdrop-blur-md flex flex-col relative group hover:border-[#1095d2]/40 transition-colors"
+            >
+              <Quote size={40} className="text-[#1095d2]/10 absolute top-6 right-6 group-hover:text-[#1095d2]/20 transition-colors" />
+              
+              <div className="flex gap-1 mb-6 text-[#1095d2]">
+                {[...Array(testimonial.rating)].map((_, i) => (
+                  <Star key={i} size={14} fill="currentColor" />
+                ))}
+              </div>
+              
+              <p className="text-sm text-white/80 leading-relaxed mb-8 flex-grow italic">
+                "{testimonial.feedback}"
+              </p>
+              
+              <div className="flex items-center gap-4 mt-auto">
+                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 border border-white/5">
+                  {testimonial.name.charAt(0)}
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-white leading-tight">{testimonial.name}</h4>
+                  <p className="text-[10px] text-white/50">{testimonial.project} • {testimonial.company}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
 
@@ -373,7 +525,7 @@ export default function DreamCreations() {
               (Links from the pop-up will scroll directly to these targeted sections once the CMS is connected)
             </p>
           </div>
-          <button className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer">
+          <button className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20">
             View Full Archive
           </button>
         </div>
@@ -387,7 +539,7 @@ export default function DreamCreations() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.05 }}
-              className={`rounded-2xl border border-white/10 bg-black/20 overflow-hidden group relative ${
+              className={`rounded-2xl border border-white/10 bg-black/20 overflow-hidden group relative cursor-pointer z-20 ${
                 index === 0 || index === 3 ? 'md:col-span-2' : ''
               }`}
             >
@@ -420,7 +572,7 @@ export default function DreamCreations() {
           </p>
           <button 
             onClick={() => window.location.href = '/contact'}
-            className="px-8 py-4 rounded-xl bg-[#1095d2] text-white font-bold text-sm hover:bg-[#0c7ab0] transition-colors shadow-[0_0_20px_rgba(16,149,210,0.4)] hover:shadow-[0_0_30px_rgba(16,149,210,0.6)] group cursor-pointer"
+            className="px-8 py-4 rounded-xl bg-[#1095d2] text-white font-bold text-sm hover:bg-[#0c7ab0] transition-colors shadow-[0_0_20px_rgba(16,149,210,0.4)] hover:shadow-[0_0_30px_rgba(16,149,210,0.6)] group cursor-pointer relative z-20"
           >
             Start a Project
           </button>
