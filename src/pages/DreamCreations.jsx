@@ -98,11 +98,11 @@ export default function DreamCreations() {
   const processScrollRef = useRef(null);
   const { scrollYProgress: processProgress } = useScroll({
     target: processScrollRef,
-    offset: ["start 70%", "end end"]
+    offset: ["start 50%", "end end"]
   });
   
   // Increased transform distance to -82% so it reaches Phase 13
-  const processX = useTransform(processProgress, [0, 1], ["5%", "-95%"]);
+  const processX = useTransform(processProgress, [0, 1], ["5%", "-88%"]);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
