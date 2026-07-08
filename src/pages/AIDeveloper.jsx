@@ -1,7 +1,7 @@
 // src/pages/AiDeveloper.jsx
-import React, { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
-import { Code2, Cpu, Terminal, Layers, ArrowRight, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail } from 'lucide-react';
+import React, { useRef, useEffect } from 'react';
+import { motion, useInView, animate } from 'framer-motion';
+import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail } from 'lucide-react';
 
 // ================= CUSTOM ANIMATED COUNTER =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -23,10 +23,10 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
     }
   }, [value, inView, suffix]);
 
-  return <span ref={ref} className="text-3xl md:text-4xl font-black text-white tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">0{suffix}</span>;
+  return <span ref={ref} className="text-3xl md:text-4xl font-black text-white tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">0{suffix}</span>;
 };
 
-// ================= VARIED ANIMATION VARIANTS (NO BLUR, ZOOM CHECKS INTACT) =================
+// ================= VARIED ANIMATION VARIANTS =================
 const fadeSlideUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -133,10 +133,22 @@ export default function AiDeveloper() {
   };
 
   return (
-    <div ref={containerRef} className="flex flex-col min-h-screen text-slate-100 overflow-x-hidden relative selection:bg-emerald-500/30 selection:text-emerald-200">
+    <div ref={containerRef} className="flex flex-col min-h-screen bg-[#02040a] text-slate-100 overflow-x-hidden relative selection:bg-cyan-500/30 selection:text-cyan-200">
       
-      {/* ================= HIGH-PERFORMANCE CSS BACKGROUND (DATA STREAMS + FOOTER FIX) ================= */}
+      {/* ================= HIGH-PERFORMANCE CSS BACKGROUND ================= */}
       <style>{`
+        @keyframes digital-rain {
+          0% { background-position: 0 0, 0 0; }
+          100% { background-position: 0 1000px, 0 0; }
+        }
+        @keyframes pan-neural {
+          0% { background-position: 0 0, 30px 30px; }
+          100% { background-position: 120px 120px, 150px 150px; }
+        }
+        @keyframes ambient-pulse {
+          0%, 100% { opacity: 0.15; transform: scale(1); }
+          50% { opacity: 0.3; transform: scale(1.05); }
+        }
         @keyframes data-stream-y {
           0% { transform: translateY(-200px); }
           100% { transform: translateY(120vh); }
@@ -145,34 +157,47 @@ export default function AiDeveloper() {
           0% { transform: translateX(-200px); }
           100% { transform: translateX(120vw); }
         }
-        @keyframes ambient-pulse {
-          0%, 100% { opacity: 0.15; transform: scale(1); }
-          50% { opacity: 0.25; transform: scale(1.05); }
-        }
+
         .stream-y { animation: data-stream-y linear infinite; will-change: transform; }
         .stream-x { animation: data-stream-x linear infinite; will-change: transform; }
         .ambient-glow { animation: ambient-pulse ease-in-out infinite; will-change: opacity, transform; }
       `}</style>
 
-      {/* Deep Space Base - Using z-[-10] to ensure footer stays on top */}
-      <div className="fixed inset-0 z-[-10] pointer-events-none bg-[#02040a]" />
+      {/* The STICKY Wrapper: Keeps background locked to screen but STOPS perfectly at the footer! */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="sticky top-0 h-screen w-full">
+          
+          <div className="absolute inset-0 bg-[#02040a]" />
 
-      {/* Hardware-Accelerated Ambient Neural Glows */}
-      <div className="fixed inset-0 z-[-10] pointer-events-none overflow-hidden">
-        <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] bg-cyan-600/30 rounded-full blur-[120px] ambient-glow" style={{ animationDuration: '10s' }} />
-        <div className="absolute bottom-[10%] right-[5%] w-[600px] h-[600px] bg-purple-600/30 rounded-full blur-[140px] ambient-glow" style={{ animationDuration: '14s', animationDelay: '2s' }} />
-        <div className="absolute top-[40%] right-[30%] w-[400px] h-[400px] bg-blue-600/20 rounded-full blur-[100px] ambient-glow" style={{ animationDuration: '12s', animationDelay: '5s' }} />
-      </div>
+          {/* Digital Rain Layer */}
+          <div className="absolute inset-0 opacity-40" style={{
+            backgroundImage: `repeating-linear-gradient(180deg, transparent 0%, rgba(6, 182, 212, 0.2) 50%, transparent 100%), repeating-linear-gradient(90deg, rgba(6, 182, 212, 0.05) 0px, transparent 1px, transparent 60px)`,
+            backgroundSize: '100% 250px, 100% 100%',
+            animation: 'digital-rain 6s linear infinite'
+          }} />
 
-      {/* Hardware-Accelerated High-Speed Data Streams (Fiber Optics) */}
-      <div className="fixed inset-0 z-[-10] pointer-events-none overflow-hidden">
-        <div className="absolute top-0 w-[2px] h-[150px] bg-gradient-to-b from-transparent via-cyan-400 to-transparent opacity-40 stream-y" style={{ left: '15%', animationDuration: '2.5s', animationDelay: '0s' }} />
-        <div className="absolute top-0 w-[2px] h-[200px] bg-gradient-to-b from-transparent via-purple-500 to-transparent opacity-40 stream-y" style={{ left: '45%', animationDuration: '3s', animationDelay: '1.2s' }} />
-        <div className="absolute top-0 w-[2px] h-[100px] bg-gradient-to-b from-transparent via-cyan-300 to-transparent opacity-50 stream-y" style={{ left: '85%', animationDuration: '2s', animationDelay: '0.5s' }} />
-        <div className="absolute top-0 w-[2px] h-[250px] bg-gradient-to-b from-transparent via-blue-500 to-transparent opacity-30 stream-y" style={{ left: '25%', animationDuration: '4s', animationDelay: '2s' }} />
-        
-        <div className="absolute left-0 h-[2px] w-[200px] bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-40 stream-x" style={{ top: '20%', animationDuration: '4.5s', animationDelay: '1.5s' }} />
-        <div className="absolute left-0 h-[2px] w-[150px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-40 stream-x" style={{ top: '75%', animationDuration: '3.5s', animationDelay: '0.8s' }} />
+          {/* Neural Network Layer */}
+          <div className="absolute inset-0 opacity-30" style={{
+            backgroundImage: `radial-gradient(rgba(168, 85, 247, 0.4) 2px, transparent 2px), radial-gradient(rgba(6, 182, 212, 0.3) 2px, transparent 2px)`,
+            backgroundSize: '60px 60px',
+            backgroundPosition: '0 0, 30px 30px',
+            animation: 'pan-neural 25s linear infinite'
+          }} />
+
+          {/* Hardware-Accelerated High-Speed Data Streams (Fiber Optics) */}
+          <div className="absolute top-0 w-[2px] h-[150px] bg-gradient-to-b from-transparent via-cyan-400 to-transparent opacity-60 stream-y" style={{ left: '15%', animationDuration: '2.5s', animationDelay: '0s' }} />
+          <div className="absolute top-0 w-[2px] h-[200px] bg-gradient-to-b from-transparent via-purple-500 to-transparent opacity-60 stream-y" style={{ left: '45%', animationDuration: '3s', animationDelay: '1.2s' }} />
+          <div className="absolute top-0 w-[2px] h-[100px] bg-gradient-to-b from-transparent via-blue-400 to-transparent opacity-60 stream-y" style={{ left: '85%', animationDuration: '2s', animationDelay: '0.5s' }} />
+          
+          <div className="absolute left-0 h-[2px] w-[200px] bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-60 stream-x" style={{ top: '20%', animationDuration: '4.5s', animationDelay: '1.5s' }} />
+          <div className="absolute left-0 h-[2px] w-[150px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-60 stream-x" style={{ top: '75%', animationDuration: '3.5s', animationDelay: '0.8s' }} />
+
+          {/* Deep Ambient Glows */}
+          <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] bg-cyan-600/30 rounded-full blur-[120px] ambient-glow" style={{ animationDuration: '8s' }} />
+          <div className="absolute bottom-[10%] right-[5%] w-[600px] h-[600px] bg-purple-600/30 rounded-full blur-[140px] ambient-glow" style={{ animationDuration: '12s', animationDelay: '2s' }} />
+          <div className="absolute top-[40%] right-[30%] w-[400px] h-[400px] bg-blue-600/20 rounded-full blur-[100px] ambient-glow" style={{ animationDuration: '10s', animationDelay: '5s' }} />
+          
+        </div>
       </div>
 
       {/* ================= PAGE CONTENT WRAPPER ================= */}
@@ -183,14 +208,14 @@ export default function AiDeveloper() {
           <div className="max-w-5xl mx-auto text-center relative">
             
             <motion.div variants={fadeSlideUp} initial="hidden" animate="visible"
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-8 backdrop-blur-md">
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-8 backdrop-blur-md">
               <Terminal size={14} /> AI-Assisted Full-Stack Engineering
             </motion.div>
 
             <motion.h1 variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}
               className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8 leading-tight">
               Building the Future with <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-500 drop-shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">
                 Code, AI, & Continuous Learning.
               </span>
             </motion.h1>
@@ -199,26 +224,26 @@ export default function AiDeveloper() {
               className="text-base md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto space-y-4 mb-16">
               <p><strong>Software engineering is more than writing code.</strong> It is understanding problems, designing scalable solutions, collaborating with intelligent tools, and continuously improving through real-world experience.</p>
               <p>As an aspiring AI-Assisted Full-Stack Developer, I am building practical applications while learning modern technologies, software architecture, automation, and best development practices.</p>
-              <p className="text-emerald-400/80 font-medium">This portfolio is my first flagship software engineering project—and the beginning of a much larger journey.</p>
+              <p className="text-cyan-400/90 font-medium">This portfolio is my first flagship software engineering project—and the beginning of a much larger journey.</p>
             </motion.div>
 
             {/* Quick Statistics Counter System */}
             <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-16">
               {developerStats.map((stat, idx) => (
-                <motion.div variants={cardPop} key={idx} className="p-5 rounded-2xl bg-black/60 border border-slate-800 backdrop-blur-md flex flex-col items-center justify-center hover:border-emerald-500/60 transition-colors group relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <motion.div variants={cardPop} key={idx} className="p-5 rounded-2xl bg-black/60 border border-slate-800 backdrop-blur-md flex flex-col items-center justify-center hover:border-cyan-500/60 transition-colors group relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                  <span className="text-[10px] text-slate-400 uppercase tracking-widest text-center mt-1 font-bold group-hover:text-slate-300">{stat.label}</span>
+                  <span className="text-[10px] text-slate-400 uppercase tracking-widest text-center mt-1 font-bold group-hover:text-cyan-300 transition-colors">{stat.label}</span>
                 </motion.div>
               ))}
             </motion.div>
 
             {/* Call-to-Action Controls */}
             <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.4 }} className="flex flex-wrap justify-center gap-4 relative z-20">
-              <button onClick={() => scrollToSection('current-projects')} className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-black text-sm hover:opacity-90 transition-opacity shadow-[0_0_25px_rgba(16,185,129,0.4)] cursor-pointer">
+              <button onClick={() => scrollToSection('current-projects')} className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-black text-sm hover:opacity-90 transition-opacity shadow-[0_0_25px_rgba(6,182,212,0.4)] cursor-pointer">
                 View Projects
               </button>
-              <button onClick={() => scrollToSection('learning-timeline')} className="px-6 py-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-sm hover:bg-slate-800 hover:border-emerald-500/50 transition-colors flex items-center gap-2 cursor-pointer">
+              <button onClick={() => scrollToSection('learning-timeline')} className="px-6 py-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-sm hover:bg-slate-800 hover:border-cyan-500/50 transition-colors flex items-center gap-2 cursor-pointer">
                 Explore My Journey <ChevronRight size={16} />
               </button>
               <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="px-6 py-3.5 rounded-xl bg-black border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600 transition-colors flex items-center gap-2 text-sm font-semibold">
@@ -231,13 +256,13 @@ export default function AiDeveloper() {
         </section>
 
         {/* ================= 61. LEARNING PHILOSOPHY ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
+        <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/40 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               
               <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-5 space-y-6">
                 <h3 className="text-3xl font-black text-white">Learning by Building.</h3>
-                <div className="w-16 h-1 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
+                <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
                 <div className="text-slate-300 space-y-4 text-sm leading-relaxed">
                   <p>I believe the most effective way to learn software engineering is through practical application.</p>
                   <p>Rather than relying solely on tutorials or theoretical exercises, I build complete projects that challenge me to solve real problems, make architectural decisions, debug unexpected issues, and continuously improve my understanding.</p>
@@ -254,9 +279,9 @@ export default function AiDeveloper() {
                     "Write maintainable software.", "Design scalable systems.", "Use AI responsibly.", "Embrace debugging.",
                     "Document everything.", "Improve every iteration."
                   ].map((principle, idx) => (
-                    <motion.div key={idx} className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center gap-3 overflow-hidden shadow-lg hover:border-emerald-500/30 transition-colors">
+                    <motion.div key={idx} className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center gap-3 overflow-hidden shadow-lg hover:border-cyan-500/40 transition-colors group">
                       <motion.div variants={{ hidden: { scale: 3, opacity: 0 }, visible: { scale: 1, opacity: 1, transition: { type: "spring", stiffness: 200, damping: 15 } } }}>
-                        <CheckCircle2 size={18} className="text-emerald-400 shrink-0 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+                        <CheckCircle2 size={18} className="text-cyan-400 shrink-0 drop-shadow-[0_0_8px_rgba(6,182,212,0.6)] group-hover:scale-110 transition-transform" />
                       </motion.div>
                       <motion.div variants={{ hidden: { x: 40, y: -20, opacity: 0 }, visible: { x: 0, y: 0, opacity: 1, transition: { type: "spring", stiffness: 120, damping: 14 } } }}>
                         <span className="text-sm text-slate-200 font-medium">{principle}</span>
@@ -275,19 +300,19 @@ export default function AiDeveloper() {
           <div className="max-w-4xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
               <h3 className="text-3xl font-black text-white mb-4">Development Journey Timeline</h3>
-              <div className="w-16 h-1 bg-emerald-500 rounded-full mx-auto shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
+              <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
             </motion.div>
 
             <div className="relative border-l border-slate-800 ml-4 md:ml-32 space-y-12">
               {learningTimeline.map((item, idx) => (
                 <motion.div variants={timelineSlide} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} transition={{ delay: idx * 0.1 }} key={idx} className="relative pl-8 group">
-                  <div className="absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full bg-slate-900 group-hover:bg-emerald-400 transition-colors border border-emerald-500/50 z-20 shadow-[0_0_10px_rgba(16,185,129,0)] group-hover:shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+                  <div className="absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full bg-slate-900 group-hover:bg-cyan-400 transition-colors border border-cyan-500/50 z-20 shadow-[0_0_10px_rgba(6,182,212,0)] group-hover:shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
                   
-                  <div className="md:absolute md:left-[-140px] md:top-0 md:w-32 md:text-right font-black text-sm text-slate-500 group-hover:text-emerald-400 transition-colors mb-2 md:mb-0">
+                  <div className="md:absolute md:left-[-140px] md:top-0 md:w-32 md:text-right font-black text-sm text-slate-500 group-hover:text-cyan-400 transition-colors mb-2 md:mb-0">
                     {item.year}
                   </div>
 
-                  <div className="p-5 rounded-xl bg-slate-950/60 border border-slate-900 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/5 transition-all duration-300 shadow-lg backdrop-blur-sm">
+                  <div className="p-5 rounded-xl bg-slate-950/60 border border-slate-900 group-hover:border-cyan-500/40 group-hover:bg-cyan-500/5 transition-all duration-300 shadow-lg backdrop-blur-sm">
                     <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line group-hover:text-slate-200 transition-colors">
                       {item.desc}
                     </p>
@@ -299,16 +324,16 @@ export default function AiDeveloper() {
         </section>
 
         {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
+        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-md">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-6 space-y-6">
               <h3 className="text-3xl font-black text-white">AI is a Partner, <br/>Not a Replacement.</h3>
-              <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
+              <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.4)]" />
               <div className="text-slate-300 space-y-4 text-sm leading-relaxed">
                 <p>Artificial Intelligence is transforming software development. Rather than fearing this change, I embrace AI as a productivity tool that accelerates learning, improves code quality, and helps solve complex technical challenges.</p>
                 <p>However, I believe true software engineering requires understanding the code being written. AI can generate ideas, explain concepts, suggest improvements, and accelerate implementation, but developers remain responsible for architecture, design decisions, debugging, testing, security, maintainability, and long-term scalability.</p>
-                <p className="text-cyan-400 font-semibold bg-cyan-500/10 p-4 rounded-xl border border-cyan-500/20">
+                <p className="text-purple-400 font-semibold bg-purple-500/10 p-4 rounded-xl border border-purple-500/20">
                   My goal is to combine human creativity, critical thinking, and engineering principles with AI-assisted productivity to build better software.
                 </p>
               </div>
@@ -317,12 +342,12 @@ export default function AiDeveloper() {
             <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
               className="lg:col-span-6 h-[450px] overflow-y-auto pr-2 border border-slate-800 bg-slate-950/80 p-6 rounded-2xl hide-scrollbar relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
               <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-[#02040a] to-transparent pointer-events-none z-10" />
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2"><Cpu size={14} className="text-cyan-400" /> Interactive Prompts Workflow</h4>
-              <div className="space-y-3 relative border-l border-cyan-500/30 ml-2">
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2"><Cpu size={14} className="text-purple-400" /> Interactive Prompts Workflow</h4>
+              <div className="space-y-3 relative border-l border-purple-500/30 ml-2">
                 {aiWorkflowSteps.map((step, idx) => (
                   <div key={idx} className="flex items-center gap-3 pl-4 relative group cursor-default">
-                    <div className="absolute left-[-4.5px] top-2 w-2 h-2 rounded-full bg-slate-800 group-hover:bg-cyan-400 transition-colors shadow-[0_0_10px_rgba(6,182,212,0)] group-hover:shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
-                    <span className="text-xs font-mono text-slate-600 group-hover:text-cyan-400 transition-colors">[{idx+1}]</span>
+                    <div className="absolute left-[-4.5px] top-2 w-2 h-2 rounded-full bg-slate-800 group-hover:bg-purple-400 transition-colors shadow-[0_0_10px_rgba(168,85,247,0)] group-hover:shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
+                    <span className="text-xs font-mono text-slate-600 group-hover:text-purple-400 transition-colors">[{idx+1}]</span>
                     <span className="text-sm font-semibold text-slate-400 group-hover:text-white transition-colors">{step}</span>
                   </div>
                 ))}
@@ -333,23 +358,23 @@ export default function AiDeveloper() {
         </section>
 
         {/* ================= 65. AI ECOSYSTEM (WITH LOGOS) ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/20">
+        <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
               <h3 className="text-3xl font-black text-white mb-4">Current AI Ecosystem</h3>
-              <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
+              <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
             </motion.div>
 
             <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {aiEcosystem.map((ai, idx) => (
-                <motion.div variants={cardPop} key={idx} className="p-6 rounded-2xl bg-slate-950/60 border border-slate-900 flex flex-col hover:border-cyan-500/60 hover:bg-cyan-500/5 transition-all group shadow-lg backdrop-blur-sm">
+                <motion.div variants={cardPop} key={idx} className="p-6 rounded-2xl bg-slate-950/60 border border-slate-900 flex flex-col hover:border-purple-500/50 hover:bg-purple-500/5 transition-all group shadow-lg backdrop-blur-sm">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 rounded-xl border border-slate-800 bg-black flex items-center justify-center relative overflow-hidden shrink-0 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.5)]">
                       <img src={ai.imageSrc} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto" 
                            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                       <Cpu size={20} className="text-slate-700 hidden" />
                     </div>
-                    <h4 className="text-base font-bold text-white group-hover:text-cyan-400 transition-colors">{ai.name}</h4>
+                    <h4 className="text-base font-bold text-white group-hover:text-purple-400 transition-colors">{ai.name}</h4>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed flex-grow group-hover:text-slate-300 transition-colors">{ai.role}</p>
                 </motion.div>
@@ -359,26 +384,26 @@ export default function AiDeveloper() {
         </section>
 
         {/* ================= 67. TECH STACK (WITH LOGOS) ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/50 backdrop-blur-md">
+        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-md">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
               <h3 className="text-3xl font-black text-white mb-4">Development Architecture</h3>
-              <div className="w-16 h-1 bg-emerald-500 rounded-full mx-auto shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
+              <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
             </motion.div>
 
             <div className="space-y-16">
               {techStackData.map((stack, idx) => (
                 <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} key={idx}>
-                  <h4 className="text-xs text-emerald-500 uppercase tracking-widest font-black mb-6 border-b border-slate-800 pb-2">{stack.category}</h4>
+                  <h4 className="text-xs text-cyan-500 uppercase tracking-widest font-black mb-6 border-b border-slate-800 pb-2">{stack.category}</h4>
                   <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     {stack.items.map((tool, i) => (
-                      <motion.div variants={cardPop} key={i} className="p-4 rounded-xl bg-slate-950/70 border border-slate-900 flex flex-col items-center justify-center text-center hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all duration-300 group shadow-lg">
-                        <div className="w-14 h-14 rounded-xl border border-slate-800 bg-black flex items-center justify-center mb-3 relative overflow-hidden group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all">
+                      <motion.div variants={cardPop} key={i} className="p-4 rounded-xl bg-slate-950/70 border border-slate-900 flex flex-col items-center justify-center text-center hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-300 group shadow-lg">
+                        <div className="w-14 h-14 rounded-xl border border-slate-800 bg-black flex items-center justify-center mb-3 relative overflow-hidden group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all">
                           <img src={tool.imageSrc} alt={tool.name} className="w-8 h-8 object-contain opacity-60 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto"
                                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                           <Settings size={20} className="text-slate-700 hidden" />
                         </div>
-                        <span className="text-[11px] font-semibold text-slate-400 group-hover:text-emerald-400 transition-colors">{tool.name}</span>
+                        <span className="text-[11px] font-semibold text-slate-400 group-hover:text-cyan-400 transition-colors">{tool.name}</span>
                       </motion.div>
                     ))}
                   </motion.div>
@@ -389,7 +414,7 @@ export default function AiDeveloper() {
         </section>
 
         {/* ================= 68. CURRENT PROJECTS ================= */}
-        <section id="current-projects" className="py-24 px-6 relative border-t border-slate-900 bg-black/20">
+        <section id="current-projects" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
               <h3 className="text-3xl font-black text-white mb-4">Engineering Showcase</h3>
@@ -421,16 +446,16 @@ export default function AiDeveloper() {
 
               {/* Automation Pipeline Placeholder Card */}
               <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.2 }}
-                className="p-6 rounded-3xl border border-dashed border-slate-700 bg-black/60 flex flex-col justify-between h-full opacity-80 hover:opacity-100 hover:border-emerald-500/50 transition-all backdrop-blur-md">
+                className="p-6 rounded-3xl border border-dashed border-slate-700 bg-black/60 flex flex-col justify-between h-full opacity-80 hover:opacity-100 hover:border-purple-500/50 transition-all backdrop-blur-md">
                 <div>
-                  <Layers className="text-emerald-400 mb-4" size={28} />
+                  <Layers className="text-purple-400 mb-4" size={28} />
                   <h4 className="text-lg font-bold text-white mb-2">Future AI Automation Pipelines</h4>
                   <p className="text-xs text-slate-400 leading-relaxed">
                      Upcoming systems for centralizing enterprise data layers, processing natural language document pipelines, lead routing rules, and automated business flow orchestration.
                   </p>
                 </div>
-                <div className="pt-6 border-t border-slate-800/60 text-[11px] text-emerald-400/80 font-mono flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" /> STATUS: WAITING_ON_DEPS
+                <div className="pt-6 border-t border-slate-800/60 text-[11px] text-purple-400/80 font-mono flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" /> STATUS: WAITING_ON_DEPS
                 </div>
               </motion.div>
             </div>
@@ -463,7 +488,7 @@ export default function AiDeveloper() {
         {/* ================= 71. VISION STATEMENT ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 text-center bg-black/20">
           <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto">
-             <Quote size={40} className="text-emerald-500/30 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
+             <Quote size={40} className="text-purple-500/30 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
              <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Vision Statement</h2>
              <p className="text-base md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto">
                My long-term goal is to become a software engineer who combines creativity, business understanding, data analytics, automation, and artificial intelligence to build meaningful digital products. 
@@ -476,8 +501,7 @@ export default function AiDeveloper() {
         {/* ================= 72. TRANSITION TO CONTACT ================= */}
         <section className="w-full relative border-t border-slate-900 mt-16 pt-32 pb-24 px-6 overflow-hidden">
           
-          {/* Aesthetic Shift Gradient: Futuristic neon fades into elegant neutral/charcoal form */}
-          {/* Maintained z-[-1] to ensure global footers stay on top */}
+          {/* Transition Gradient ensuring it doesn't break footer visibility */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/90 to-[#0c0c0e] z-[-1]" />
 
           <div className="max-w-4xl mx-auto text-center relative z-20">
