@@ -1,6 +1,6 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X } from 'lucide-react';
 
 const featuredClients = [
@@ -12,19 +12,19 @@ const featuredClients = [
   { id: 6, name: "Corporate B2B", industry: "Consulting & Finance", icon: <Briefcase size={32} /> },
 ];
 
-// Section 29 PRD Services Data (Renamed for the Creations Floating Boxes)
+// Section 29 PRD Services Data (Icons resized to size={24} for smaller boxes)
 const creationsCategories = [
-  { id: 1, category: "Branding & Identity", icon: <Fingerprint size={32} />, items: ["Logo Design", "Brand Guidelines", "Visual Identity", "Brand Refresh", "Brand Assets", "Business Identity Systems"] },
-  { id: 2, category: "Graphic Design", icon: <PenTool size={32} />, items: ["Marketing Graphics", "Corporate Graphics", "Advertising Materials", "Print Design", "Creative Campaigns", "Promotional Graphics"] },
-  { id: 3, category: "Social Media Design", icon: <Share2 size={32} />, items: ["Facebook Graphics", "Instagram Posts", "Carousel Posts", "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"] },
-  { id: 4, category: "Marketing Materials", icon: <FileText size={32} />, items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Product Sheets", "Sales Kits", "Business Presentations"] },
-  { id: 5, category: "Motion Graphics", icon: <Video size={32} />, items: ["Animated Ads", "Product Promotions", "Marketing Videos", "Social Media Motion Graphics", "Explainer Videos", "Logo Animation", "Video Thumbnails"] },
-  { id: 6, category: "Web Graphics", icon: <MousePointerClick size={32} />, items: ["Website Banners", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"] },
-  { id: 7, category: "Photo Editing", icon: <ImageIcon size={32} />, items: ["Photo Retouching", "Photo Restoration", "Watercolor Portraits", "Background Removal", "Image Manipulation", "Color Correction", "Composite Editing"] },
-  { id: 8, category: "Apparel Design", icon: <Shirt size={32} />, items: ["Shirt Designs", "Streetwear Graphics", "Mockups", "Print-ready Artwork"] },
-  { id: 9, category: "Print Production", icon: <Printer size={32} />, items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards"] },
-  { id: 10, category: "Packaging", icon: <Box size={32} />, items: ["Packaging Graphics", "Clothing Labels", "Product Labels"] },
-  { id: 11, category: "Illustration", icon: <Pencil size={32} />, items: ["Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"] }
+  { id: 1, category: "Branding & Identity", icon: <Fingerprint size={24} />, items: ["Logo Design", "Brand Guidelines", "Visual Identity", "Brand Refresh", "Brand Assets", "Business Identity Systems"] },
+  { id: 2, category: "Graphic Design", icon: <PenTool size={24} />, items: ["Marketing Graphics", "Corporate Graphics", "Advertising Materials", "Print Design", "Creative Campaigns", "Promotional Graphics"] },
+  { id: 3, category: "Social Media Design", icon: <Share2 size={24} />, items: ["Facebook Graphics", "Instagram Posts", "Carousel Posts", "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"] },
+  { id: 4, category: "Marketing Materials", icon: <FileText size={24} />, items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Product Sheets", "Sales Kits", "Business Presentations"] },
+  { id: 5, category: "Motion Graphics", icon: <Video size={24} />, items: ["Animated Ads", "Product Promotions", "Marketing Videos", "Social Media Motion Graphics", "Explainer Videos", "Logo Animation", "Video Thumbnails"] },
+  { id: 6, category: "Web Graphics", icon: <MousePointerClick size={24} />, items: ["Website Banners", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"] },
+  { id: 7, category: "Photo Editing", icon: <ImageIcon size={24} />, items: ["Photo Retouching", "Photo Restoration", "Watercolor Portraits", "Background Removal", "Image Manipulation", "Color Correction", "Composite Editing"] },
+  { id: 8, category: "Apparel Design", icon: <Shirt size={24} />, items: ["Shirt Designs", "Streetwear Graphics", "Mockups", "Print-ready Artwork"] },
+  { id: 9, category: "Print Production", icon: <Printer size={24} />, items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards"] },
+  { id: 10, category: "Packaging", icon: <Box size={24} />, items: ["Packaging Graphics", "Clothing Labels", "Product Labels"] },
+  { id: 11, category: "Illustration", icon: <Pencil size={24} />, items: ["Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"] }
 ];
 
 const portfolioPlaceholders = [1, 2, 3, 4, 5, 6];
@@ -49,7 +49,7 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
 export default function DreamCreations() {
   const containerRef = useRef(null);
   
-  // State to control which category pop-up is currently open
+  // Controls which pop-up is active
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
 
   // Interactive Spaceshift Cursor effect tracking
@@ -65,7 +65,7 @@ export default function DreamCreations() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Quick action helper to jump to sections
+  // Normal scroll function
   const scrollToSection = (id) => {
     const targetElement = document.getElementById(id);
     if (targetElement) {
@@ -73,22 +73,18 @@ export default function DreamCreations() {
     }
   };
 
-  // Scroll function specifically for the pop-up subtitle links
+  // Pop-up Subtitle Scroll Link logic
   const handleSubtitleClick = (subtitleName) => {
-    // 1. Close the popup
-    setActiveCreationPopup(null);
-    
-    // 2. Format the name into an ID (e.g., "Logo Design" -> "logo-design")
+    setActiveCreationPopup(null); // Close the modal
     const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
     
-    // 3. Scroll to the matching section down the page
+    // Timeout allows the modal to fade out before scrolling
     setTimeout(() => {
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
-        // Fallback to the main creations gallery if specific ID doesn't exist yet
-        scrollToSection('portfolio-gallery');
+        scrollToSection('portfolio-gallery'); // Fallback if section ID isn't linked yet
       }
     }, 300);
   };
@@ -247,7 +243,7 @@ export default function DreamCreations() {
 
       {/* ================= 29. CREATIONS SECTION (FLOATING BOXES) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative">
-        <div className="mb-16 text-center md:text-left">
+        <div className="mb-12 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
           <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
           <p className="text-base text-white/70 mt-4 max-w-2xl">
@@ -255,8 +251,8 @@ export default function DreamCreations() {
           </p>
         </div>
 
-        {/* The new Floating Box Grid Layout */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {/* Small Floating Box Grid Layout */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {creationsCategories.map((category, index) => (
             <motion.button
               key={category.id}
@@ -264,13 +260,13 @@ export default function DreamCreations() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: (index % 4) * 0.1 }}
-              className="p-8 rounded-3xl bg-black/30 border border-white/10 backdrop-blur-md hover:-translate-y-2 hover:border-[#1095d2]/50 hover:bg-[#1095d2]/10 transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-[0_10px_30px_rgba(0,0,0,0.2)] hover:shadow-[0_15px_40px_rgba(16,149,210,0.15)]"
+              transition={{ duration: 0.4, delay: (index % 5) * 0.05 }}
+              className="p-6 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md hover:-translate-y-1.5 hover:border-[#1095d2]/50 hover:bg-[#1095d2]/10 transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg"
             >
-              <div className="text-white/60 group-hover:text-[#1095d2] transition-colors duration-300 mb-4 group-hover:scale-110">
+              <div className="text-white/60 group-hover:text-[#1095d2] transition-colors duration-300 mb-3 group-hover:scale-110">
                 {category.icon}
               </div>
-              <h4 className="text-lg font-bold text-white group-hover:text-white transition-colors">
+              <h4 className="text-sm font-bold text-white group-hover:text-white transition-colors leading-tight">
                 {category.category}
               </h4>
             </motion.button>
@@ -435,62 +431,65 @@ export default function DreamCreations() {
       </section>
 
       {/* ================= INTERACTIVE POP-UP MODAL ================= */}
-      {activeCreationPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Dark blurred background overlay that closes the pop-up if clicked */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setActiveCreationPopup(null)}
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"
-          />
-          
-          {/* The Glassmorphism Pop-Up Box */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-lg bg-[#0b1026] border border-[#1095d2]/30 rounded-3xl p-8 shadow-[0_0_50px_rgba(16,149,210,0.2)] overflow-hidden"
-          >
-            {/* Close Button */}
-            <button 
+      {/* Wrapped in AnimatePresence and set to extremely high z-[100] index so it correctly overlays everything */}
+      <AnimatePresence>
+        {activeCreationPopup && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Dark blurred background overlay that closes the pop-up if clicked */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               onClick={() => setActiveCreationPopup(null)}
-              className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors"
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"
+            />
+            
+            {/* The Glassmorphism Pop-Up Box */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-lg bg-[#0b1026] border border-[#1095d2]/30 rounded-3xl p-8 shadow-[0_0_50px_rgba(16,149,210,0.4)] overflow-hidden"
             >
-              <X size={24} />
-            </button>
+              {/* Close Button */}
+              <button 
+                onClick={() => setActiveCreationPopup(null)}
+                className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
 
-            {/* Pop-up Header */}
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-xl bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center shrink-0">
-                {activeCreationPopup.icon}
+              {/* Pop-up Header */}
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-xl bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center shrink-0">
+                  {activeCreationPopup.icon}
+                </div>
+                <div>
+                  <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">
+                    {activeCreationPopup.category}
+                  </h3>
+                  <p className="text-xs md:text-sm text-white/60">Select a specific area to view works</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-2xl font-bold text-white leading-tight">
-                  {activeCreationPopup.category}
-                </h3>
-                <p className="text-sm text-white/60">Select a specific area to view works</p>
-              </div>
-            </div>
 
-            {/* List of Clickable Subtitle Links */}
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {activeCreationPopup.items.map((item, idx) => (
-                <li key={idx}>
-                  <button 
-                    onClick={() => handleSubtitleClick(item)}
-                    className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group"
-                  >
-                    <span className="text-[#1095d2] group-hover:translate-x-1 transition-transform">▹</span>
-                    <span className="text-sm font-medium text-white/80 group-hover:text-white">{item}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        </div>
-      )}
+              {/* List of Clickable Subtitle Links */}
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {activeCreationPopup.items.map((item, idx) => (
+                  <li key={idx}>
+                    <button 
+                      onClick={() => handleSubtitleClick(item)}
+                      className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group"
+                    >
+                      <span className="text-[#1095d2] group-hover:translate-x-1 transition-transform">▹</span>
+                      <span className="text-sm font-medium text-white/80 group-hover:text-white">{item}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
