@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Palette, BarChart2, Code, ArrowRight } from 'lucide-react';
 
-export default function Hero() {
+export default function Hero({ homeData }) {
   const navigate = useNavigate();
   
   const titles = [
@@ -106,9 +106,20 @@ export default function Hero() {
               &#125;;
             </div>
 
-            <div className="w-24 h-24 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500 text-3xl font-bold mb-4 shadow-inner relative z-10 group-hover:scale-105 transition-transform">
-              JG
-            </div>
+
+            {/* Inside your Hero.jsx file where the image goes */}
+            {homeData?.profile_image_url ? (
+              <img 
+                src={homeData.profile_image_url} 
+                alt={homeData.hero_title} 
+              className="w-32 h-32 md:w-48 md:h-48 rounded-full object-cover border-4 border-white/10 shadow-2xl z-10 relative mb-6" 
+            />
+            ) : (
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-black/50 border border-white/10 flex items-center justify-center mb-6 z-10 relative shadow-xl">
+              <span className="text-3xl font-bold text-white tracking-widest">JG</span>
+              </div>
+          )}
+            
             
             <h4 className="text-white font-bold tracking-tight text-lg relative z-10">
               Jefferson Gonzales

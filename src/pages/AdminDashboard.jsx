@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Palette, Database, BrainCircuit, 
   Mail, Settings, LogOut, FileText, Image as ImageIcon,
-  Activity, Users, Loader2, CheckCircle, UploadCloud, File
+  Activity, Users, Loader2, CheckCircle, UploadCloud, File, Save
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -30,6 +30,12 @@ export default function AdminDashboard() {
   const [mediaFiles, setMediaFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   
+  // Home Config States
+  const [homeData, setHomeData] = useState({
+    hero_title: '', hero_subtitle: '', about_text: '', profile_image_url: '', resume_url: ''
+  });
+  const [savingHome, setSavingHome] = useState(false);
+
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
@@ -56,23 +62,46 @@ export default function AdminDashboard() {
       fetchLiveMessages();
     } else if (activeModule === 'Media Library') {
       fetchMediaLibrary();
+    } else if (activeModule === 'Home Config') {
+      fetchHomeConfig();
     }
   }, [activeModule, session]);
+
+  // ================= MODULE: HOME CONFIG =================
+  const fetchHomeConfig = async () => {
+    try {
+      const { data, error } = await supabase.from('home_settings').select('*').eq('id', 1).single();
+      if (error && error.code !== 'PGRST116') throw error; // Ignore 'no rows' error on first load
+      if (data) setHomeData(data);
+    } catch (error) {
+      console.error('Error fetching home config:', error.message);
+    }
+  };
+
+  const handleSaveHome = async () => {
+    setSavingHome(true);
+    try {
+      const { error } = await supabase
+        .from('home_settings')
+        .upsert({ id: 1, ...homeData, updated_at: new Date() });
+
+      if (error) throw error;
+      alert('Homepage configuration saved successfully!');
+    } catch (error) {
+      console.error('Save failed:', error.message);
+      alert('Failed to save configuration.');
+    } finally {
+      setSavingHome(false);
+    }
+  };
 
   // ================= MODULE: MESSAGES =================
   const fetchLiveMessages = async () => {
     try {
-      const { data, error } = await supabase
-        .from('contact_messages')
-        .select('*')
-        .order('created_at', { ascending: false });
-
+      const { data, error } = await supabase.from('contact_messages').select('*').order('created_at', { ascending: false });
       if (error) throw error;
       setMessages(data || []);
-      setStats({ 
-        totalMessages: data.length, 
-        unreadMessages: data.filter(msg => msg.status === 'unread').length 
-      });
+      setStats({ totalMessages: data.length, unreadMessages: data.filter(msg => msg.status === 'unread').length });
     } catch (error) {
       console.error('Error fetching messages:', error.message);
     }
@@ -91,11 +120,7 @@ export default function AdminDashboard() {
   // ================= MODULE: MEDIA LIBRARY =================
   const fetchMediaLibrary = async () => {
     try {
-      const { data, error } = await supabase
-        .from('media_library')
-        .select('*')
-        .order('created_at', { ascending: false });
-
+      const { data, error } = await supabase.from('media_library').select('*').order('created_at', { ascending: false });
       if (error) throw error;
       setMediaFiles(data || []);
     } catch (error) {
@@ -109,44 +134,30 @@ export default function AdminDashboard() {
 
     setUploading(true);
     try {
-      // 1. Generate unique filename to prevent overwrites
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
       
-      // 2. Upload to Supabase Storage Bucket ('media')
-      const { error: uploadError, data } = await supabase.storage
-        .from('media')
-        .upload(fileName, file);
-
+      const { error: uploadError } = await supabase.storage.from('media').upload(fileName, file);
       if (uploadError) throw uploadError;
 
-      // 3. Get the Public URL of the uploaded file
-      const { data: { publicUrl } } = supabase.storage
-        .from('media')
-        .getPublicUrl(fileName);
+      const { data: { publicUrl } } = supabase.storage.from('media').getPublicUrl(fileName);
 
-      // 4. Save file metadata to our SQL table
-      const { error: dbError } = await supabase
-        .from('media_library')
-        .insert([{
-          uploader_id: session.user.id,
-          file_name: file.name,
-          file_url: publicUrl,
-          file_type: file.type,
-          size_bytes: file.size
-        }]);
+      const { error: dbError } = await supabase.from('media_library').insert([{
+        uploader_id: session.user.id,
+        file_name: file.name,
+        file_url: publicUrl,
+        file_type: file.type,
+        size_bytes: file.size
+      }]);
 
       if (dbError) throw dbError;
-
-      // 5. Refresh grid
       await fetchMediaLibrary();
       
     } catch (error) {
       console.error('Upload failed:', error.message);
-      alert('Upload failed. Did you create the "media" bucket and set it to public?');
+      alert('Upload failed.');
     } finally {
       setUploading(false);
-      // Reset input
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
@@ -255,6 +266,93 @@ export default function AdminDashboard() {
             </>
           )}
 
+          {/* ================= HOME CONFIG VIEW ================= */}
+          {activeModule === 'Home Config' && (
+            <div className="max-w-3xl">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h3 className="text-lg font-bold text-white">Homepage Configuration</h3>
+                  <p className="text-sm text-slate-400 mt-1">Update the public-facing details on your main landing page.</p>
+                </div>
+                <button 
+                  onClick={handleSaveHome}
+                  disabled={savingHome}
+                  className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition-all flex items-center gap-2 shadow-lg disabled:opacity-50"
+                >
+                  {savingHome ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                  {savingHome ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+
+              <div className="space-y-6 bg-white/[0.02] border border-white/10 rounded-3xl p-8">
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-2">Hero Title</label>
+                    <input 
+                      type="text" 
+                      value={homeData.hero_title || ''} 
+                      onChange={(e) => setHomeData({...homeData, hero_title: e.target.value})}
+                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50"
+                      placeholder="e.g., Jefferson Gonzales"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-2">Hero Subtitle / Role</label>
+                    <input 
+                      type="text" 
+                      value={homeData.hero_subtitle || ''} 
+                      onChange={(e) => setHomeData({...homeData, hero_subtitle: e.target.value})}
+                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50"
+                      placeholder="e.g., Data Analyst & AI Developer"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-2">About Me (Bio)</label>
+                  <textarea 
+                    rows={4}
+                    value={homeData.about_text || ''} 
+                    onChange={(e) => setHomeData({...homeData, about_text: e.target.value})}
+                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 resize-none"
+                    placeholder="Write a brief introduction about yourself..."
+                  />
+                </div>
+
+                <div className="pt-4 border-t border-white/10 space-y-6">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-2">Profile Image URL <span className="font-normal text-slate-500">(Upload in Media Library and paste link here)</span></label>
+                    <div className="flex gap-4 items-center">
+                      <input 
+                        type="text" 
+                        value={homeData.profile_image_url || ''} 
+                        onChange={(e) => setHomeData({...homeData, profile_image_url: e.target.value})}
+                        className="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50"
+                        placeholder="https://..."
+                      />
+                      {homeData.profile_image_url && (
+                        <img src={homeData.profile_image_url} alt="Profile Preview" className="w-12 h-12 rounded-lg object-cover border border-white/20" />
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-2">Resume PDF URL <span className="font-normal text-slate-500">(Upload in Media Library and paste link here)</span></label>
+                    <input 
+                      type="text" 
+                      value={homeData.resume_url || ''} 
+                      onChange={(e) => setHomeData({...homeData, resume_url: e.target.value})}
+                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50"
+                      placeholder="https://..."
+                    />
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          )}
+
           {/* ================= MESSAGES VIEW ================= */}
           {activeModule === 'Messages' && (
             <div className="space-y-6">
@@ -333,7 +431,7 @@ export default function AdminDashboard() {
                       <button 
                         onClick={() => {
                           navigator.clipboard.writeText(file.file_url);
-                          alert('Image URL copied to clipboard!');
+                          alert('File URL copied to clipboard!');
                         }}
                         className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors"
                       >
@@ -354,7 +452,7 @@ export default function AdminDashboard() {
           )}
 
           {/* Placeholder for unbuilt modules */}
-          {activeModule !== 'Dashboard' && activeModule !== 'Messages' && activeModule !== 'Media Library' && (
+          {activeModule !== 'Dashboard' && activeModule !== 'Messages' && activeModule !== 'Media Library' && activeModule !== 'Home Config' && (
             <div className="flex flex-col items-center justify-center h-64 border border-dashed border-white/10 rounded-2xl text-slate-500">
               <Database size={32} className="mb-4 opacity-50" />
               <p>Module "{activeModule}" is structured and fully mapped for production data integration.</p>
