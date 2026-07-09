@@ -49,10 +49,10 @@ export default function Home() {
         {/* Pass the fetched data into your components as props */}
         <Hero homeData={homeData} />
         <AboutMe homeData={homeData} />
-        <QuickStats />
-        <SkillsOverview />
-        <CareerTimeline />
-        <JourneySelector />
+        <QuickStats homeData={homeData} />
+        <SkillsOverview homeData={homeData} />
+        <CareerTimeline homeData={homeData} />
+        <JourneySelector homeData={homeData} />
       </div>
     </div>
   );

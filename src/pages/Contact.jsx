@@ -1,84 +1,29 @@
 // src/pages/Contact.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// Standard safe icons from lucide
 import { 
   Send, Loader2, CheckCircle2, AlertCircle, Mail, 
   Download, FileText, Globe
 } from 'lucide-react';
-
-// Import your custom client wrapper from the lib directory
 import { supabase } from '../lib/supabase';
 
-// ================= PLATFORM DATA (TRUE ICONS & FULLY CLICKABLE) =================
-const connectPlatforms = [
-  { 
-    id: 'email', name: 'Email', username: 'hello@jeffersongonzales.com', link: 'mailto:hello@jeffersongonzales.com', 
-    icon: <Mail size={20} />, status: 'active', desc: 'Direct professional inquiries.' 
-  },
-  { 
-    id: 'linkedin', name: 'LinkedIn', username: 'in/jeffersongonzales', link: 'https://linkedin.com/in/jeffersongonzales', 
-    icon: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>, 
-    status: 'active', desc: 'Professional network & updates.' 
-  },
-  { 
-    id: 'github', name: 'GitHub', username: 'jeffersongonzales', link: 'https://github.com/jeffersongonzales', 
-    icon: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>, 
-    status: 'active', desc: 'Code repositories & contributions.' 
-  },
-  { 
-    id: 'facebook', name: 'Facebook', username: 'Jefferson Gonzales', link: 'https://facebook.com/jeffersongonzales', 
-    icon: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>, 
-    status: 'active', desc: 'Community & announcements.' 
-  },
-  { 
-    id: 'instagram', name: 'Instagram', username: '@jeffersongonzales', link: 'https://instagram.com/jeffersongonzales', 
-    icon: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>, 
-    status: 'active', desc: 'Behind the scenes & visual work.' 
-  },
-  { 
-    id: 'discord', name: 'Discord', username: 'jeffgonzales#1234', link: 'https://discordapp.com/users/jeffgonzales', 
-    icon: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M19 5.5a16 16 0 0 0-4-1.5.8.8 0 0 0-.5.9 14 14 0 0 0-6 0 .8.8 0 0 0-.5-.9 16 16 0 0 0-4 1.5C.5 13 .5 20.5 4 21.5a16 16 0 0 0 5-1.5 1 1 0 0 0 0-1.5 12 12 0 0 1-2-1 1 1 0 0 1 .5-1.5 9 9 0 0 0 9 0 1 1 0 0 1 .5 1.5 12 12 0 0 1-2 1 1 1 0 0 0 0 1.5 16 16 0 0 0 5 1.5C23.5 20.5 23.5 13 19 5.5z"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/></svg>, 
-    status: 'active', desc: 'Real-time chat & collaboration.' 
-  },
-  { 
-    id: 'telegram', name: 'Telegram', username: '@jeffersongonzales', link: 'https://t.me/jeffersongonzales', 
-    icon: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>, 
-    status: 'active', desc: 'Quick secure messaging.' 
-  },
-  { 
-    id: 'whatsapp', name: 'WhatsApp', username: '+63 900 000 0000', link: 'https://wa.me/639000000000', 
-    icon: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>, 
-    status: 'active', desc: 'Direct business messaging.' 
-  },
-  { 
-    id: 'viber', name: 'Viber', username: '+63 900 000 0000', link: 'viber://chat?number=639000000000', 
-    icon: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/><path d="M16 8a4 4 0 0 1 4 4M12 4a10 10 0 0 1 10 10"/></svg>, 
-    status: 'active', desc: 'Voice and messaging connectivity.' 
-  },
-  { 
-    id: 'lark', name: 'Lark', username: 'Jefferson Gonzales', link: 'https://larksuite.com', 
-    icon: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12l20-8-5 18-4-6-6-4z"/></svg>, 
-    status: 'active', desc: 'Enterprise team collaboration.' 
-  },
-  { 
-    id: 'youtube', name: 'YouTube', username: 'JeffersonGonzalesTV', link: 'https://youtube.com/@jeffersongonzales', 
-    icon: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>, 
-    status: 'future', desc: 'Tutorials & case studies.' 
-  },
-  { 
-    id: 'x', name: 'X (Twitter)', username: '@jeffgonzales_x', link: 'https://twitter.com/jeffgonzales_x', 
-    icon: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5 0.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>, 
-    status: 'future', desc: 'Tech thoughts & industry news.' 
-  },
-  { 
-    id: 'medium', name: 'Medium', username: '@jeffersongonzales', link: 'https://medium.com/@jeffersongonzales', 
-    icon: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="6" cy="12" rx="6" ry="6"/><ellipse cx="16" cy="12" rx="3" ry="6"/><ellipse cx="21" cy="12" rx="1" ry="6"/></svg>, 
-    status: 'future', desc: 'Long-form technical articles.' 
-  }
-];
+// Map textual platform IDs safely back to your exact beautiful custom inline SVGs
+const iconMap = {
+  email: <Mail size={20} />,
+  linkedin: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>,
+  github: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>,
+  facebook: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>,
+  instagram: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>,
+  discord: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M19 5.5a16 16 0 0 0-4-1.5.8.8 0 0 0-.5.9 14 14 0 0 0-6 0 .8.8 0 0 0-.5-.9 16 16 0 0 0-4 1.5C.5 13 .5 20.5 4 21.5a16 16 0 0 0 5-1.5 1 1 0 0 0 0-1.5 12 12 0 0 1-2-1 1 1 0 0 1 .5-1.5 9 9 0 0 0 9 0 1 1 0 0 1 .5 1.5 12 12 0 0 1-2 1 1 1 0 0 0 0 1.5 16 16 0 0 0 5 1.5C23.5 20.5 23.5 13 19 5.5z"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/></svg>,
+  telegram: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>,
+  whatsapp: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>,
+  viber: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/><path d="M16 8a4 4 0 0 1 4 4M12 4a10 10 0 0 1 10 10"/></svg>,
+  lark: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12l20-8-5 18-4-6-6-4z"/></svg>,
+  youtube: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>,
+  x: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5 0.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>,
+  medium: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="6" cy="12" rx="6" ry="6"/><ellipse cx="16" cy="12" rx="3" ry="6"/><ellipse cx="21" cy="12" rx="1" ry="6"/></svg>
+};
 
-// ================= ANIMATION VARIANTS =================
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -97,6 +42,25 @@ export default function Contact() {
   
   const [status, setStatus] = useState('idle');
   const [errors, setErrors] = useState({});
+  const [platforms, setPlatforms] = useState([]);
+
+  // Fetch dynamic platform listings directly from live cloud database instance
+  useEffect(() => {
+    const fetchPlatforms = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('contact_platforms')
+          .select('*')
+          .order('display_order', { ascending: true });
+        
+        if (error) throw error;
+        setPlatforms(data || []);
+      } catch (err) {
+        console.error("Platform directory fetch failure:", err.message);
+      }
+    };
+    fetchPlatforms();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -109,7 +73,6 @@ export default function Contact() {
     }
   };
 
-  // Live Async Pipeline to populate 'contact_messages'
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus('loading');
@@ -129,7 +92,6 @@ export default function Contact() {
     }
 
     try {
-      // Connect to database and insert client request payload
       const { error } = await supabase
         .from('contact_messages')
         .insert([
@@ -146,7 +108,6 @@ export default function Contact() {
 
       if (error) throw error;
 
-      // Reset state upon successful connection return
       setStatus('success');
       setFormData({ name: '', email: '', company: '', phone: '', country: '', subject: '', service: '', budget: '', timeline: '', message: '', privacy: false });
       setTimeout(() => setStatus('idle'), 5000);
@@ -351,34 +312,33 @@ export default function Contact() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 h-[500px] overflow-y-auto pr-2 hide-scrollbar">
               <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
               
-              {connectPlatforms.map((platform) => (
+              {platforms.map((platform) => (
                 <motion.a 
                   variants={fadeUp}
                   key={platform.id}
-                  href={platform.link}
+                  href={platform.status === 'future' ? '#' : platform.link}
                   target="_blank" 
                   rel="noopener noreferrer"
                   className={`p-4 rounded-xl border flex flex-col gap-3 transition-all group ${
                     platform.status === 'future' 
-                    ? 'bg-black/20 border-white/5 opacity-60 hover:opacity-100 cursor-default' 
+                    ? 'bg-black/20 border-white/5 opacity-40 cursor-default select-none' 
                     : 'bg-white/5 border-white/10 hover:border-blue-500/30 hover:bg-blue-500/5 cursor-pointer'
                   }`}
                   onClick={(e) => {
-                    // Prevent navigation for "future" items so users aren't confused by a dead link
                     if (platform.status === 'future') e.preventDefault();
                   }}
                 >
                   <div className="flex items-center justify-between">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${platform.status === 'future' ? 'bg-white/5 text-slate-500' : 'bg-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform'}`}>
-                      {platform.icon}
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${platform.status === 'future' ? 'bg-white/5 text-slate-600' : 'bg-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform'}`}>
+                      {iconMap[platform.id] || <Globe size={20} />}
                     </div>
                     {platform.status === 'future' && (
                       <span className="text-[9px] px-2 py-0.5 rounded border border-white/10 text-slate-500 font-semibold uppercase tracking-wider">Future</span>
                     )}
                   </div>
                   <div>
-                    <h4 className={`text-sm font-bold mb-0.5 ${platform.status === 'future' ? 'text-slate-400' : 'text-white'}`}>{platform.name}</h4>
-                    <p className="text-xs text-slate-500 truncate">{platform.username}</p>
+                    <h4 className={`text-sm font-bold mb-0.5 ${platform.status === 'future' ? 'text-slate-500' : 'text-white'}`}>{platform.name}</h4>
+                    <p className="text-xs text-slate-500 truncate font-mono">{platform.username}</p>
                   </div>
                 </motion.a>
               ))}

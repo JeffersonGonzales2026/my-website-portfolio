@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Palette, BarChart2, Code2, Cpu, Users } from 'lucide-react';
 
-const skillCategories = [
+const defaultSkillCategories = [
   {
     title: "Creative",
     icon: <Palette size={20} className="text-dreamCreations-brandBlue" />,
@@ -65,22 +65,37 @@ const skillCategories = [
   }
 ];
 
-export default function SkillsOverview() {
+// Lookup engine to map textual names to their respective live components if parsed via database
+const iconMap = {
+  "Creative": <Palette size={20} className="text-dreamCreations-brandBlue" />,
+  "Analytics": <BarChart2 size={20} className="text-blue-500" />,
+  "Technology": <Code2 size={20} className="text-aiDeveloper-neonCyan" />,
+  "AI & Automation": <Cpu size={20} className="text-aiDeveloper-neonPurple" />,
+  "Leadership": <Users size={20} className="text-zinc-400" />
+};
+
+export default function SkillsOverview({ homeData }) {
+  // Gracefully use live database records if present, otherwise fall back to your native array layout
+  const skillCategories = homeData?.skills_matrix || defaultSkillCategories;
+
   return (
     <section className="max-w-7xl mx-auto px-6 py-20 relative">
       
+      {/* Background Atmosphere Adjustment */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden" />
+
       {/* Section Headings */}
-      <div className="mb-16 space-y-3">
+      <div className="mb-16 space-y-3 relative z-10">
         <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
-          Capability Matrix
+          {homeData?.skills_title || 'Capability Matrix'}
         </h2>
-        <p className="text-sm text-text-secondary max-w-xl">
-          An honest, documented breakdown of my technical proficiencies, specialized software skill sets, and active areas of professional learning[cite: 44, 282].
+        <p className="text-sm text-slate-400 max-w-xl">
+          {homeData?.skills_subtitle || 'An honest, documented breakdown of my technical proficiencies, specialized software skill sets, and active areas of professional learning.'}
         </p>
       </div>
 
       {/* Grid Track Layout Container */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
         {skillCategories.map((cat, idx) => (
           <motion.div
             key={idx}
@@ -88,12 +103,12 @@ export default function SkillsOverview() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: idx * 0.05 }}
-            className={`p-6 rounded-2xl border border-glass-border bg-glass-card/10 backdrop-blur-sm transition-all duration-300 flex flex-col ${cat.borderColor}`}
+            className={`p-6 rounded-2xl border border-white/5 bg-white/[0.01] backdrop-blur-sm transition-all duration-300 flex flex-col ${cat.borderColor || 'hover:border-zinc-700'}`}
           >
             {/* Category Header Card Line */}
             <div className="flex items-center gap-3 mb-6 border-b border-zinc-800/60 pb-3">
               <div className="p-2 rounded-lg bg-zinc-950 border border-zinc-800">
-                {cat.icon}
+                {iconMap[cat.title] || cat.icon || <Cpu size={20} />}
               </div>
               <h3 className="text-lg font-bold text-white tracking-tight">
                 {cat.title}
@@ -102,7 +117,7 @@ export default function SkillsOverview() {
 
             {/* Pills Wrap Field */}
             <div className="flex flex-wrap gap-2 flex-grow content-start">
-              {cat.skills.map((skill, sIdx) => {
+              {cat.skills?.map((skill, sIdx) => {
                 const isObject = typeof skill === 'object';
                 const name = isObject ? skill.name : skill;
                 const isLearning = isObject && skill.status === 'Learning';
@@ -113,7 +128,7 @@ export default function SkillsOverview() {
                     className={`text-xs px-2.5 py-1 rounded-md font-medium border transition-colors ${
                       isLearning
                         ? 'bg-purple-950/20 border-purple-800/40 text-purple-300 font-mono'
-                        : 'bg-zinc-900/40 border-zinc-800/80 text-text-secondary hover:text-white hover:border-zinc-700'
+                        : 'bg-zinc-900/40 border-zinc-800/80 text-slate-400 hover:text-white hover:border-zinc-700'
                     }`}
                   >
                     {name}

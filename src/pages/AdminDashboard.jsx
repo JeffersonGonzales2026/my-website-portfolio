@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Palette, Database, BrainCircuit, 
   Mail, Settings, LogOut, FileText, Image as ImageIcon,
-  Activity, Users, Loader2, CheckCircle, UploadCloud, File, Save
+  Activity, Users, Loader2, CheckCircle, UploadCloud, File, Save, Plus, Trash2, Video, MessageSquare, Star
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -36,6 +36,21 @@ export default function AdminDashboard() {
   });
   const [savingHome, setSavingHome] = useState(false);
 
+  // Dream Creations States
+  const [dreamTab, setDreamTab] = useState('projects'); // 'projects' or 'reviews'
+  
+  const [portfolioProjects, setPortfolioProjects] = useState([]);
+  const [savingProject, setSavingProject] = useState(false);
+  const [projectForm, setProjectForm] = useState({
+    title: '', client_name: '', description: '', featured_image_url: '', video_url: '', is_published: false
+  });
+
+  const [clientReviews, setClientReviews] = useState([]);
+  const [savingReview, setSavingReview] = useState(false);
+  const [reviewForm, setReviewForm] = useState({
+    client_name: '', company: '', project_type: '', rating: 5, feedback: '', face_image_url: '', is_published: true
+  });
+
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
@@ -43,10 +58,8 @@ export default function AdminDashboard() {
   useEffect(() => {
     const checkUserSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        navigate('/admin/login');
-      } else {
+      if (!session) navigate('/admin/login');
+      else {
         setSession(session);
         setLoading(false);
       }
@@ -58,20 +71,101 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (!session) return;
     
-    if (activeModule === 'Dashboard' || activeModule === 'Messages') {
-      fetchLiveMessages();
-    } else if (activeModule === 'Media Library') {
-      fetchMediaLibrary();
-    } else if (activeModule === 'Home Config') {
-      fetchHomeConfig();
+    if (activeModule === 'Dashboard' || activeModule === 'Messages') fetchLiveMessages();
+    else if (activeModule === 'Media Library') fetchMediaLibrary();
+    else if (activeModule === 'Home Config') fetchHomeConfig();
+    else if (activeModule === 'Dream Creations') {
+      fetchPortfolioProjects();
+      fetchClientReviews();
     }
   }, [activeModule, session]);
+
+  // ================= MODULE: DREAM CREATIONS (PROJECTS) =================
+  const fetchPortfolioProjects = async () => {
+    try {
+      const { data, error } = await supabase.from('portfolio_projects').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      setPortfolioProjects(data || []);
+    } catch (error) {
+      console.error('Error fetching projects:', error.message);
+    }
+  };
+
+  const handleSaveProject = async (e) => {
+    e.preventDefault();
+    setSavingProject(true);
+    try {
+      const { error } = await supabase.from('portfolio_projects').insert([projectForm]);
+      if (error) throw error;
+      
+      setProjectForm({ title: '', client_name: '', description: '', featured_image_url: '', video_url: '', is_published: false });
+      await fetchPortfolioProjects();
+      alert('Project added successfully!');
+    } catch (error) {
+      console.error('Failed to save project:', error.message);
+      alert('Error saving project.');
+    } finally {
+      setSavingProject(false);
+    }
+  };
+
+  const handleTogglePublish = async (id, currentStatus, table = 'portfolio_projects') => {
+    try {
+      const { error } = await supabase.from(table).update({ is_published: !currentStatus }).eq('id', id);
+      if (error) throw error;
+      if (table === 'portfolio_projects') fetchPortfolioProjects();
+      else fetchClientReviews();
+    } catch (error) {
+      console.error(`Failed to toggle status on ${table}:`, error.message);
+    }
+  };
+
+  const handleDeleteRecord = async (id, table) => {
+    if (!window.confirm('Are you sure you want to delete this record?')) return;
+    try {
+      const { error } = await supabase.from(table).delete().eq('id', id);
+      if (error) throw error;
+      if (table === 'portfolio_projects') fetchPortfolioProjects();
+      else fetchClientReviews();
+    } catch (error) {
+      console.error(`Failed to delete record from ${table}:`, error.message);
+    }
+  };
+
+  // ================= MODULE: DREAM CREATIONS (REVIEWS) =================
+  const fetchClientReviews = async () => {
+    try {
+      const { data, error } = await supabase.from('client_reviews').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      setClientReviews(data || []);
+    } catch (error) {
+      console.error('Error fetching reviews:', error.message);
+    }
+  };
+
+  const handleSaveReview = async (e) => {
+    e.preventDefault();
+    setSavingReview(true);
+    try {
+      const { error } = await supabase.from('client_reviews').insert([reviewForm]);
+      if (error) throw error;
+      
+      setReviewForm({ client_name: '', company: '', project_type: '', rating: 5, feedback: '', face_image_url: '', is_published: true });
+      await fetchClientReviews();
+      alert('Testimonial added successfully!');
+    } catch (error) {
+      console.error('Failed to save review:', error.message);
+      alert('Error saving testimonial.');
+    } finally {
+      setSavingReview(false);
+    }
+  };
 
   // ================= MODULE: HOME CONFIG =================
   const fetchHomeConfig = async () => {
     try {
       const { data, error } = await supabase.from('home_settings').select('*').eq('id', 1).single();
-      if (error && error.code !== 'PGRST116') throw error; // Ignore 'no rows' error on first load
+      if (error && error.code !== 'PGRST116') throw error;
       if (data) setHomeData(data);
     } catch (error) {
       console.error('Error fetching home config:', error.message);
@@ -81,15 +175,11 @@ export default function AdminDashboard() {
   const handleSaveHome = async () => {
     setSavingHome(true);
     try {
-      const { error } = await supabase
-        .from('home_settings')
-        .upsert({ id: 1, ...homeData, updated_at: new Date() });
-
+      const { error } = await supabase.from('home_settings').upsert({ id: 1, ...homeData, updated_at: new Date() });
       if (error) throw error;
       alert('Homepage configuration saved successfully!');
     } catch (error) {
       console.error('Save failed:', error.message);
-      alert('Failed to save configuration.');
     } finally {
       setSavingHome(false);
     }
@@ -136,23 +226,16 @@ export default function AdminDashboard() {
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-      
       const { error: uploadError } = await supabase.storage.from('media').upload(fileName, file);
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage.from('media').getPublicUrl(fileName);
-
       const { error: dbError } = await supabase.from('media_library').insert([{
-        uploader_id: session.user.id,
-        file_name: file.name,
-        file_url: publicUrl,
-        file_type: file.type,
-        size_bytes: file.size
+        uploader_id: session.user.id, file_name: file.name, file_url: publicUrl, file_type: file.type, size_bytes: file.size
       }]);
 
       if (dbError) throw dbError;
       await fetchMediaLibrary();
-      
     } catch (error) {
       console.error('Upload failed:', error.message);
       alert('Upload failed.');
@@ -171,8 +254,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#02040a] flex items-center justify-center text-slate-400 gap-3 font-mono text-xs">
-        <Loader2 className="animate-spin text-blue-500" size={18} />
-        VERIFYING SESSION ENCRYPTION...
+        <Loader2 className="animate-spin text-blue-500" size={18} /> VERIFYING SESSION ENCRYPTION...
       </div>
     );
   }
@@ -236,34 +318,195 @@ export default function AdminDashboard() {
                   <div className="text-3xl font-bold text-blue-400">{stats.unreadMessages}</div>
                 </div>
                 <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                  <div className="flex items-center gap-3 text-slate-400 mb-2"><Users size={16}/> Core Personas</div>
-                  <div className="text-3xl font-bold text-white">3</div>
+                  <div className="flex items-center gap-3 text-slate-400 mb-2"><Palette size={16}/> Published Designs</div>
+                  <div className="text-3xl font-bold text-white">{portfolioProjects.filter(p => p.is_published).length}</div>
                 </div>
                 <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
                   <div className="flex items-center gap-3 text-slate-400 mb-2"><Activity size={16}/> Sync Engine</div>
                   <div className="text-3xl font-bold text-emerald-400">RLS Active</div>
                 </div>
               </div>
+            </>
+          )}
 
-              <h3 className="text-lg font-bold text-white mb-4">Recent Form Submissions</h3>
-              <div className="space-y-4">
-                {messages.slice(0, 3).map((msg) => (
-                  <div key={msg.id} className="p-5 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-white text-sm">{msg.sender_name}</span>
-                        <span className="text-xs text-slate-500">{msg.sender_email}</span>
-                        {msg.status === 'unread' && <span className="w-2 h-2 rounded-full bg-blue-500" />}
-                      </div>
-                      <p className="text-xs text-slate-400 mt-1 font-semibold">{msg.subject}</p>
+          {/* ================= DREAM CREATIONS VIEW ================= */}
+          {activeModule === 'Dream Creations' && (
+            <div className="space-y-8">
+              
+              {/* Internal Tab Navigation */}
+              <div className="flex gap-2 border-b border-white/10 pb-4">
+                <button 
+                  onClick={() => setDreamTab('projects')}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${dreamTab === 'projects' ? 'bg-[#1095d2] text-white' : 'bg-white/5 text-slate-400 hover:text-white'}`}
+                >
+                  Portfolio Projects
+                </button>
+                <button 
+                  onClick={() => setDreamTab('reviews')}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${dreamTab === 'reviews' ? 'bg-[#1095d2] text-white' : 'bg-white/5 text-slate-400 hover:text-white'}`}
+                >
+                  Client Testimonials
+                </button>
+              </div>
+
+              {/* ----- SUB-TAB: PORTFOLIO PROJECTS ----- */}
+              {dreamTab === 'projects' && (
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+                  {/* Add New Project Form */}
+                  <div className="xl:col-span-4">
+                    <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 sticky top-0">
+                      <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2"><Plus size={18}/> New Project</h3>
+                      <form onSubmit={handleSaveProject} className="space-y-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-400 mb-1">Project Title</label>
+                          <input required type="text" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="Brand Redesign..." />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-400 mb-1">Client / Agency <span className="font-normal">(Optional)</span></label>
+                          <input type="text" value={projectForm.client_name} onChange={e => setProjectForm({...projectForm, client_name: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="Acme Corp" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-400 mb-1">Featured Image URL</label>
+                          <input required type="url" value={projectForm.featured_image_url} onChange={e => setProjectForm({...projectForm, featured_image_url: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="https://..." />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-400 mb-1">Video URL <span className="font-normal">(Optional YouTube/Vimeo/Direct)</span></label>
+                          <input type="url" value={projectForm.video_url} onChange={e => setProjectForm({...projectForm, video_url: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="https://youtube.com/..." />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-400 mb-1">Project Description</label>
+                          <textarea required rows={4} value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50 resize-none" placeholder="Describe the design process and goals..." />
+                        </div>
+                        <div className="flex items-center gap-3 pt-2">
+                          <input type="checkbox" id="publish" checked={projectForm.is_published} onChange={e => setProjectForm({...projectForm, is_published: e.target.checked})} className="w-4 h-4 rounded border-white/20 bg-black/40 text-blue-500 focus:ring-0" />
+                          <label htmlFor="publish" className="text-sm text-slate-300 cursor-pointer">Publish immediately</label>
+                        </div>
+                        <button type="submit" disabled={savingProject} className="w-full py-3 mt-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+                          {savingProject ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Save Project
+                        </button>
+                      </form>
                     </div>
                   </div>
-                ))}
-                {messages.length === 0 && (
-                  <p className="text-sm text-slate-500 font-mono">No customer submission records found.</p>
-                )}
-              </div>
-            </>
+
+                  {/* Projects Grid */}
+                  <div className="xl:col-span-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {portfolioProjects.map((project) => (
+                        <div key={project.id} className={`rounded-2xl border overflow-hidden transition-all flex flex-col ${project.is_published ? 'bg-white/[0.02] border-white/10' : 'bg-black/40 border-white/5 opacity-75'}`}>
+                          <div className="aspect-video relative bg-black/50 border-b border-white/5">
+                            {project.featured_image_url ? (
+                              <img src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-slate-600"><ImageIcon size={32} /></div>
+                            )}
+                            {project.video_url && (
+                              <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur border border-white/10 flex items-center justify-center text-white">
+                                <Video size={14} />
+                              </div>
+                            )}
+                            <div className="absolute top-3 left-3 px-2 py-1 rounded text-[10px] font-bold tracking-wider uppercase backdrop-blur-md bg-black/50 border border-white/10 text-white">
+                              {project.is_published ? <span className="text-emerald-400">Published</span> : <span className="text-amber-400">Draft</span>}
+                            </div>
+                          </div>
+                          <div className="p-5 flex-1 flex flex-col">
+                            <h4 className="text-lg font-bold text-white mb-1">{project.title}</h4>
+                            <p className="text-xs text-blue-400 font-mono mb-3">{project.client_name || 'Independent Project'}</p>
+                            <p className="text-sm text-slate-400 line-clamp-3 mb-6 flex-1">{project.description}</p>
+                            
+                            <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                              <button onClick={() => handleTogglePublish(project.id, project.is_published, 'portfolio_projects')} className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${project.is_published ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'}`}>
+                                {project.is_published ? 'Unpublish' : 'Publish'}
+                              </button>
+                              <button onClick={() => handleDeleteRecord(project.id, 'portfolio_projects')} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ----- SUB-TAB: CLIENT TESTIMONIALS ----- */}
+              {dreamTab === 'reviews' && (
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+                  {/* Add New Review Form */}
+                  <div className="xl:col-span-4">
+                    <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 sticky top-0">
+                      <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2"><MessageSquare size={18}/> New Testimonial</h3>
+                      <form onSubmit={handleSaveReview} className="space-y-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-400 mb-1">Client Name</label>
+                          <input required type="text" value={reviewForm.client_name} onChange={e => setReviewForm({...reviewForm, client_name: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="Jane Doe" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-400 mb-1">Company / Organization <span className="font-normal">(Optional)</span></label>
+                          <input type="text" value={reviewForm.company} onChange={e => setReviewForm({...reviewForm, company: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="Acme Corp" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-400 mb-1">Project Type</label>
+                          <input type="text" value={reviewForm.project_type} onChange={e => setReviewForm({...reviewForm, project_type: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="e.g. Brand Identity" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-400 mb-1">Rating (1-5)</label>
+                          <input type="number" min="1" max="5" value={reviewForm.rating} onChange={e => setReviewForm({...reviewForm, rating: parseInt(e.target.value)})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-400 mb-1">Client Face Image URL <span className="font-normal">(Optional)</span></label>
+                          <input type="url" value={reviewForm.face_image_url} onChange={e => setReviewForm({...reviewForm, face_image_url: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="https://..." />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-400 mb-1">Feedback Quote</label>
+                          <textarea required rows={4} value={reviewForm.feedback} onChange={e => setReviewForm({...reviewForm, feedback: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50 resize-none" placeholder="Dream Creations did an amazing job..." />
+                        </div>
+                        <div className="flex items-center gap-3 pt-2">
+                          <input type="checkbox" id="publishRev" checked={reviewForm.is_published} onChange={e => setReviewForm({...reviewForm, is_published: e.target.checked})} className="w-4 h-4 rounded border-white/20 bg-black/40 text-blue-500 focus:ring-0" />
+                          <label htmlFor="publishRev" className="text-sm text-slate-300 cursor-pointer">Publish immediately</label>
+                        </div>
+                        <button type="submit" disabled={savingReview} className="w-full py-3 mt-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+                          {savingReview ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Save Testimonial
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+
+                  {/* Reviews Grid */}
+                  <div className="xl:col-span-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {clientReviews.map((review) => (
+                        <div key={review.id} className={`p-6 rounded-2xl border flex flex-col transition-all ${review.is_published ? 'bg-white/[0.02] border-white/10' : 'bg-black/40 border-white/5 opacity-75'}`}>
+                          <div className="flex gap-1 mb-4 text-[#1095d2]">
+                            {[...Array(review.rating)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
+                          </div>
+                          <p className="text-sm text-slate-300 italic mb-6 flex-grow">"{review.feedback}"</p>
+                          <div className="flex items-center gap-3 mb-6">
+                            {review.face_image_url ? (
+                              <img src={review.face_image_url} alt="client" className="w-10 h-10 rounded-full object-cover border border-white/10" />
+                            ) : (
+                              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50">{review.client_name.charAt(0)}</div>
+                            )}
+                            <div>
+                              <h4 className="text-sm font-bold text-white leading-tight">{review.client_name}</h4>
+                              <p className="text-[10px] text-slate-400">{review.project_type} • {review.company}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                            <button onClick={() => handleTogglePublish(review.id, review.is_published, 'client_reviews')} className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${review.is_published ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'}`}>
+                              {review.is_published ? 'Unpublish' : 'Publish'}
+                            </button>
+                            <button onClick={() => handleDeleteRecord(review.id, 'client_reviews')} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
 
           {/* ================= HOME CONFIG VIEW ================= */}
@@ -274,185 +517,72 @@ export default function AdminDashboard() {
                   <h3 className="text-lg font-bold text-white">Homepage Configuration</h3>
                   <p className="text-sm text-slate-400 mt-1">Update the public-facing details on your main landing page.</p>
                 </div>
-                <button 
-                  onClick={handleSaveHome}
-                  disabled={savingHome}
-                  className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition-all flex items-center gap-2 shadow-lg disabled:opacity-50"
-                >
-                  {savingHome ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                  {savingHome ? 'Saving...' : 'Save Changes'}
+                <button onClick={handleSaveHome} disabled={savingHome} className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition-all flex items-center gap-2 shadow-lg disabled:opacity-50">
+                  {savingHome ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Save Changes
                 </button>
               </div>
-
               <div className="space-y-6 bg-white/[0.02] border border-white/10 rounded-3xl p-8">
-                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-xs font-semibold text-slate-400 mb-2">Hero Title</label>
-                    <input 
-                      type="text" 
-                      value={homeData.hero_title || ''} 
-                      onChange={(e) => setHomeData({...homeData, hero_title: e.target.value})}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50"
-                      placeholder="e.g., Jefferson Gonzales"
-                    />
+                    <input type="text" value={homeData.hero_title || ''} onChange={e => setHomeData({...homeData, hero_title: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Hero Subtitle / Role</label>
-                    <input 
-                      type="text" 
-                      value={homeData.hero_subtitle || ''} 
-                      onChange={(e) => setHomeData({...homeData, hero_subtitle: e.target.value})}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50"
-                      placeholder="e.g., Data Analyst & AI Developer"
-                    />
+                    <label className="block text-xs font-semibold text-slate-400 mb-2">Hero Subtitle</label>
+                    <input type="text" value={homeData.hero_subtitle || ''} onChange={e => setHomeData({...homeData, hero_subtitle: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
                   </div>
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-2">About Me (Bio)</label>
-                  <textarea 
-                    rows={4}
-                    value={homeData.about_text || ''} 
-                    onChange={(e) => setHomeData({...homeData, about_text: e.target.value})}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 resize-none"
-                    placeholder="Write a brief introduction about yourself..."
-                  />
+                  <label className="block text-xs font-semibold text-slate-400 mb-2">About Me</label>
+                  <textarea rows={4} value={homeData.about_text || ''} onChange={e => setHomeData({...homeData, about_text: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 resize-none" />
                 </div>
-
                 <div className="pt-4 border-t border-white/10 space-y-6">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Profile Image URL <span className="font-normal text-slate-500">(Upload in Media Library and paste link here)</span></label>
+                    <label className="block text-xs font-semibold text-slate-400 mb-2">Profile Image URL</label>
                     <div className="flex gap-4 items-center">
-                      <input 
-                        type="text" 
-                        value={homeData.profile_image_url || ''} 
-                        onChange={(e) => setHomeData({...homeData, profile_image_url: e.target.value})}
-                        className="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50"
-                        placeholder="https://..."
-                      />
-                      {homeData.profile_image_url && (
-                        <img src={homeData.profile_image_url} alt="Profile Preview" className="w-12 h-12 rounded-lg object-cover border border-white/20" />
-                      )}
+                      <input type="text" value={homeData.profile_image_url || ''} onChange={e => setHomeData({...homeData, profile_image_url: e.target.value})} className="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
+                      {homeData.profile_image_url && <img src={homeData.profile_image_url} alt="Preview" className="w-12 h-12 rounded-lg object-cover border border-white/20" />}
                     </div>
                   </div>
-
                   <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Resume PDF URL <span className="font-normal text-slate-500">(Upload in Media Library and paste link here)</span></label>
-                    <input 
-                      type="text" 
-                      value={homeData.resume_url || ''} 
-                      onChange={(e) => setHomeData({...homeData, resume_url: e.target.value})}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50"
-                      placeholder="https://..."
-                    />
+                    <label className="block text-xs font-semibold text-slate-400 mb-2">Resume PDF URL</label>
+                    <input type="text" value={homeData.resume_url || ''} onChange={e => setHomeData({...homeData, resume_url: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
                   </div>
                 </div>
-
               </div>
             </div>
           )}
 
-          {/* ================= MESSAGES VIEW ================= */}
-          {activeModule === 'Messages' && (
-            <div className="space-y-6">
-              {messages.map((msg) => (
-                <div key={msg.id} className={`p-6 rounded-2xl border transition-all ${msg.status === 'unread' ? 'bg-blue-500/[0.02] border-blue-500/20' : 'bg-white/[0.01] border-white/5'}`}>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-4 mb-4">
-                    <div>
-                      <h4 className="text-base font-bold text-white flex items-center gap-2">
-                        {msg.sender_name}
-                        {msg.status === 'unread' && <span className="px-2 py-0.5 rounded text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 font-bold uppercase tracking-wider">New</span>}
-                      </h4>
-                      <p className="text-xs text-slate-400 font-mono mt-0.5">{msg.sender_email} • {msg.company || 'No Company Specified'}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {msg.status === 'unread' && (
-                        <button onClick={() => handleMarkAsRead(msg.id)} className="px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-500 text-xs font-bold transition-colors flex items-center gap-1.5">
-                          <CheckCircle size={14} /> Mark Read
-                        </button>
-                      )}
-                      <span className="text-[10px] font-mono text-slate-500">{new Date(msg.created_at).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-xs font-mono tracking-wider uppercase text-slate-500 block mb-1">Subject: {msg.subject}</span>
-                    <p className="text-sm text-slate-300 leading-relaxed bg-black/20 p-4 rounded-xl border border-white/5">{msg.message}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* ================= MEDIA LIBRARY VIEW ================= */}
+          {/* ================= MEDIA LIBRARY & OTHER VIEWS ================= */}
           {activeModule === 'Media Library' && (
-            <div>
-              {/* Uploader Header */}
+             <div>
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 p-6 rounded-2xl bg-white/5 border border-white/10">
                 <div>
                   <h3 className="text-lg font-bold text-white">Cloud Media Storage</h3>
                   <p className="text-sm text-slate-400 mt-1">Upload images to use across your portfolio projects.</p>
                 </div>
                 <div>
-                  <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    onChange={handleFileUpload} 
-                    className="hidden" 
-                    accept="image/*,application/pdf"
-                  />
-                  <button 
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploading}
-                    className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center gap-2 disabled:opacity-50"
-                  >
-                    {uploading ? <Loader2 size={16} className="animate-spin" /> : <UploadCloud size={16} />}
-                    {uploading ? 'Uploading...' : 'Upload File'}
+                  <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept="image/*,application/pdf" />
+                  <button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center gap-2">
+                    {uploading ? <Loader2 size={16} className="animate-spin" /> : <UploadCloud size={16} />} Upload File
                   </button>
                 </div>
               </div>
-
-              {/* Media Grid */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {mediaFiles.map((file) => (
                   <div key={file.id} className="group relative rounded-xl bg-black/50 border border-white/10 overflow-hidden aspect-square flex flex-col items-center justify-center hover:border-blue-500/50 transition-colors">
-                    {file.file_type?.includes('image') ? (
-                      <img src={file.file_url} alt={file.file_name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="text-slate-500 flex flex-col items-center gap-2">
-                        <File size={32} />
-                        <span className="text-xs uppercase font-bold text-slate-400">{file.file_type?.split('/')[1] || 'FILE'}</span>
-                      </div>
-                    )}
-                    
-                    {/* Hover Overlay to Copy URL */}
-                    <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center backdrop-blur-sm">
+                    {file.file_type?.includes('image') ? <img src={file.file_url} alt="media" className="w-full h-full object-cover" /> : <File size={32} className="text-slate-500" />}
+                    <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center">
                       <p className="text-xs text-white truncate w-full mb-3">{file.file_name}</p>
-                      <button 
-                        onClick={() => {
-                          navigator.clipboard.writeText(file.file_url);
-                          alert('File URL copied to clipboard!');
-                        }}
-                        className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors"
-                      >
-                        Copy Link
-                      </button>
+                      <button onClick={() => { navigator.clipboard.writeText(file.file_url); alert('Copied!'); }} className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold">Copy Link</button>
                     </div>
                   </div>
                 ))}
               </div>
-
-              {mediaFiles.length === 0 && !uploading && (
-                <div className="flex flex-col items-center justify-center py-20 text-slate-500 border border-dashed border-white/10 rounded-2xl">
-                  <ImageIcon size={32} className="mb-4 opacity-50" />
-                  <p className="text-sm font-mono">Your media library is empty.</p>
-                </div>
-              )}
             </div>
           )}
 
-          {/* Placeholder for unbuilt modules */}
-          {activeModule !== 'Dashboard' && activeModule !== 'Messages' && activeModule !== 'Media Library' && activeModule !== 'Home Config' && (
+          {activeModule !== 'Dashboard' && activeModule !== 'Messages' && activeModule !== 'Media Library' && activeModule !== 'Home Config' && activeModule !== 'Dream Creations' && (
             <div className="flex flex-col items-center justify-center h-64 border border-dashed border-white/10 rounded-2xl text-slate-500">
               <Database size={32} className="mb-4 opacity-50" />
               <p>Module "{activeModule}" is structured and fully mapped for production data integration.</p>
