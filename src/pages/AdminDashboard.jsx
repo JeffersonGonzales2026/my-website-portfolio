@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Palette, Database, BrainCircuit, 
   Mail, Settings, LogOut, FileText, Image as ImageIcon,
-  Activity, Users, Loader2, CheckCircle, UploadCloud, File, Save, Plus, Trash2, Video, MessageSquare, Star
+  Activity, Users, Loader2, CheckCircle, UploadCloud, File, Save, Plus, Trash2, Video, MessageSquare, Star, Eye
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -15,8 +15,7 @@ const sidebarModules = [
   { name: 'Data Analyst', icon: <Database size={18} /> },
   { name: 'AI Developer', icon: <BrainCircuit size={18} /> },
   { name: 'Media Library', icon: <ImageIcon size={18} /> },
-  { name: 'Messages', icon: <Mail size={18} /> },
-  { name: 'Settings', icon: <Settings size={18} /> }
+  { name: 'Messages', icon: <Mail size={18} /> }
 ];
 
 export default function AdminDashboard() {
@@ -37,19 +36,29 @@ export default function AdminDashboard() {
   const [savingHome, setSavingHome] = useState(false);
 
   // Dream Creations States
-  const [dreamTab, setDreamTab] = useState('projects'); // 'projects' or 'reviews'
-  
+  const [dreamTab, setDreamTab] = useState('projects'); 
   const [portfolioProjects, setPortfolioProjects] = useState([]);
   const [savingProject, setSavingProject] = useState(false);
   const [projectForm, setProjectForm] = useState({
     title: '', client_name: '', description: '', featured_image_url: '', video_url: '', is_published: false
   });
-
   const [clientReviews, setClientReviews] = useState([]);
   const [savingReview, setSavingReview] = useState(false);
   const [reviewForm, setReviewForm] = useState({
     client_name: '', company: '', project_type: '', rating: 5, feedback: '', face_image_url: '', is_published: true
   });
+
+  // Data Analyst Config States
+  const [analystData, setAnalystData] = useState({
+    hero_title: '', hero_subtitle: '', intern_bio: '', analytics_years: 1, dashboards_built: 0, reports_created: 0, automation_projects: 0, processes_improved: 0, hours_saved: 0
+  });
+  const [savingAnalyst, setSavingAnalyst] = useState(false);
+
+  // AI Developer Config States
+  const [aiDevData, setAiDevData] = useState({
+    git_repos: 4, hours_coding: 320, prompts_optimized: 1200, dashboards_count: 12
+  });
+  const [savingAiDev, setSavingAiDev] = useState(false);
 
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -67,18 +76,118 @@ export default function AdminDashboard() {
     checkUserSession();
   }, [navigate]);
 
-  // Fetch data based on active tab
+  // Fetch data dynamically based on selected workflow module
   useEffect(() => {
     if (!session) return;
     
-    if (activeModule === 'Dashboard' || activeModule === 'Messages') fetchLiveMessages();
+    if (activeModule === 'Dashboard' || activeModule === 'Messages') {
+      fetchLiveMessages();
+      fetchPortfolioProjects(); 
+    }
     else if (activeModule === 'Media Library') fetchMediaLibrary();
     else if (activeModule === 'Home Config') fetchHomeConfig();
+    else if (activeModule === 'Data Analyst') fetchDataAnalystConfig();
+    else if (activeModule === 'AI Developer') fetchAiDeveloperConfig();
     else if (activeModule === 'Dream Creations') {
       fetchPortfolioProjects();
       fetchClientReviews();
     }
   }, [activeModule, session]);
+
+  // ================= MODULE: DATA ANALYST CONFIG LINK LAYER =================
+  const fetchDataAnalystConfig = async () => {
+    try {
+      const { data, error } = await supabase.from('data_analyst_config').select('*').eq('id', 1).single();
+      if (error && error.code !== 'PGRST116') throw error;
+      if (data) {
+        setAnalystData({
+          hero_title: data.hero_title || '',
+          hero_subtitle: data.hero_subtitle || '',
+          intern_bio: data.intern_bio || '',
+          analytics_years: data.analytics_years || 1,
+          dashboards_built: data.dashboards_built || 0,
+          reports_created: data.reports_created || 0,
+          automation_projects: data.automation_projects || 0,
+          processes_improved: data.processes_improved || 0,
+          hours_saved: data.hours_saved || 0
+        });
+      }
+    } catch (error) {
+      console.error('Data Analyst core capture anomaly:', error.message);
+    }
+  };
+
+  const handleSaveAnalyst = async () => {
+    setSavingAnalyst(true);
+    try {
+      // Package payload safely to synchronize statistical grids
+      const updatePayload = {
+        id: 1,
+        ...analystData,
+        quick_stats: [
+          { label: "Years in Analytics", value: parseInt(analystData.analytics_years), suffix: "+" },
+          { label: "Dashboards Built", value: parseInt(analystData.dashboards_built), suffix: "" },
+          { label: "Reports Created", value: parseInt(analystData.reports_created), suffix: "" },
+          { label: "Automation Projects", value: parseInt(analystData.automation_projects), suffix: "" },
+          { label: "Processes Improved", value: parseInt(analystData.processes_improved), suffix: "" },
+          { label: "Hours Saved", value: parseInt(analystData.hours_saved), suffix: "+" }
+        ],
+        updated_at: new Date()
+      };
+
+      const { error } = await supabase.from('data_analyst_config').upsert(updatePayload);
+      if (error) throw error;
+      alert('Data Analyst structural attributes synced live!');
+    } catch (error) {
+      console.error('Analyst save failure:', error.message);
+      alert('Error updating analysis profile configuration.');
+    } finally {
+      setSavingAnalyst(false);
+    }
+  };
+
+  // ================= MODULE: AI DEVELOPER CONFIG LINK LAYER =================
+  const fetchAiDeveloperConfig = async () => {
+    try {
+      const { data, error } = await supabase.from('ai_developer_config').select('*').eq('id', 1).single();
+      if (error && error.code !== 'PGRST116') throw error;
+      if (data) {
+        setAiDevData({
+          git_repos: data.git_repos || 4,
+          hours_coding: data.hours_coding || 320,
+          prompts_optimized: data.prompts_optimized || 1200,
+          dashboards_count: data.dashboards_count || 12
+        });
+      }
+    } catch (error) {
+      console.error('AI dev core query mismatch:', error.message);
+    }
+  };
+
+  const handleSaveAiDev = async () => {
+    setSavingAiDev(true);
+    try {
+      const updatePayload = {
+        id: 1,
+        ...aiDevData,
+        developer_stats: [
+          { label: "Git Repositories", value: parseInt(aiDevData.git_repos), suffix: "" },
+          { label: "Dashboards Built", value: parseInt(aiDevData.dashboards_count), suffix: "" },
+          { label: "Hours Coding", value: parseInt(aiDevData.hours_coding), suffix: "+" },
+          { label: "AI Prompts Optimized", value: parseInt(aiDevData.prompts_optimized), suffix: "+" }
+        ],
+        updated_at: new Date()
+      };
+
+      const { error } = await supabase.from('ai_developer_config').upsert(updatePayload);
+      if (error) throw error;
+      alert('AI Developer engineering metrics updated!');
+    } catch (error) {
+      console.error('AI dev save fault:', error.message);
+    } finally {
+      setSavingAiDev(false);
+    }
+  };
 
   // ================= MODULE: DREAM CREATIONS (PROJECTS) =================
   const fetchPortfolioProjects = async () => {
@@ -274,7 +383,7 @@ export default function AdminDashboard() {
             <button
               key={module.name}
               onClick={() => setActiveModule(module.name)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
                 activeModule === module.name 
                   ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20' 
                   : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
@@ -286,7 +395,7 @@ export default function AdminDashboard() {
         </nav>
 
         <div className="p-4 border-t border-white/10">
-          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors">
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors cursor-pointer">
             <LogOut size={18} /> Sign Out
           </button>
         </div>
@@ -307,10 +416,10 @@ export default function AdminDashboard() {
           
           {/* ================= DASHBOARD VIEW ================= */}
           {activeModule === 'Dashboard' && (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                  <div className="flex items-center gap-3 text-slate-400 mb-2"><Mail size={16}/> Real Messages</div>
+                  <div className="flex items-center gap-3 text-slate-400 mb-2"><Mail size={16}/> Total Messages</div>
                   <div className="text-3xl font-bold text-white">{stats.totalMessages}</div>
                 </div>
                 <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
@@ -326,7 +435,155 @@ export default function AdminDashboard() {
                   <div className="text-3xl font-bold text-emerald-400">RLS Active</div>
                 </div>
               </div>
-            </>
+            </div>
+          )}
+
+          {/* ================= DATA ANALYST VIEW ================= */}
+          {activeModule === 'Data Analyst' && (
+            <div className="max-w-4xl space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-bold text-white">Data Analyst Matrix</h3>
+                  <p className="text-sm text-slate-400 mt-1">Control your analytics headers and matching fluid counter stats.</p>
+                </div>
+                <button onClick={handleSaveAnalyst} disabled={savingAnalyst} className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition-all flex items-center gap-2 shadow-lg cursor-pointer disabled:opacity-50">
+                  {savingAnalyst ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Save Metrics
+                </button>
+              </div>
+
+              <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-8 space-y-6">
+                <div className="grid grid-cols-1 gap-6">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-2">Hero Main Title</label>
+                    <input type="text" value={analystData.hero_title} onChange={e => setAnalystData({...analystData, hero_title: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-2">Hero Analytical Description</label>
+                    <textarea rows={3} value={analystData.hero_subtitle} onChange={e => setAnalystData({...analystData, hero_subtitle: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 resize-none" />
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-white/5">
+                  <h4 className="text-sm font-bold text-emerald-400 mb-4 uppercase tracking-wider">Animated Dashboard Counters</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-400 mb-2">Years in Analytics</label>
+                      <input type="number" value={analystData.analytics_years} onChange={e => setAnalystData({...analystData, analytics_years: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-400 mb-2">Dashboards Built</label>
+                      <input type="number" value={analystData.dashboards_built} onChange={e => setAnalystData({...analystData, dashboards_built: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-400 mb-2">Reports Created</label>
+                      <input type="number" value={analystData.reports_created} onChange={e => setAnalystData({...analystData, reports_created: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-400 mb-2">Automation Projects</label>
+                      <input type="number" value={analystData.automation_projects} onChange={e => setAnalystData({...analystData, automation_projects: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-400 mb-2">Processes Improved</label>
+                      <input type="number" value={analystData.processes_improved} onChange={e => setAnalystData({...analystData, processes_improved: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-400 mb-2">Hours Saved</label>
+                      <input type="number" value={analystData.hours_saved} onChange={e => setAnalystData({...analystData, hours_saved: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ================= AI DEVELOPER VIEW ================= */}
+          {activeModule === 'AI Developer' && (
+            <div className="max-w-4xl space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-bold text-white">AI Developer Node Config</h3>
+                  <p className="text-sm text-slate-400 mt-1">Manage numbers running inside your digital contribution grid.</p>
+                </div>
+                <button onClick={handleSaveAiDev} disabled={savingAiDev} className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center gap-2 shadow-lg cursor-pointer disabled:opacity-50">
+                  {savingAiDev ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Deploy Parameters
+                </button>
+              </div>
+
+              <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-2">Git Repositories</label>
+                  <input type="number" value={aiDevData.git_repos} onChange={e => setAiDevData({...aiDevData, git_repos: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-2">Dashboards Built</label>
+                  <input type="number" value={aiDevData.dashboards_count} onChange={e => setAiDevData({...aiDevData, dashboards_count: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-2">Hours Coding</label>
+                  <input type="number" value={aiDevData.hours_coding} onChange={e => setAiDevData({...aiDevData, hours_coding: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-2">AI Prompts Optimized</label>
+                  <input type="number" value={aiDevData.prompts_optimized} onChange={e => setAiDevData({...aiDevData, prompts_optimized: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ================= MESSAGES VIEW ================= */}
+          {activeModule === 'Messages' && (
+            <div className="space-y-6">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-lg font-bold text-white">Incoming Client Request Influx</h3>
+                <p className="text-sm text-slate-400">Live operational pipelines capturing public form entries.</p>
+              </div>
+              
+              <div className="bg-white/[0.01] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                {messages.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm border-collapse">
+                      <thead>
+                        <tr className="bg-white/5 text-slate-400 font-mono text-xs border-b border-white/10">
+                          <th className="p-4">Sender Profile</th>
+                          <th className="p-4">Contact Subject</th>
+                          <th className="p-4">Message Context</th>
+                          <th className="p-4 text-center">Pipeline Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5 font-medium">
+                        {messages.map((msg) => (
+                          <tr key={msg.id} className="hover:bg-white/[0.02] transition-colors">
+                            <td className="p-4 whitespace-nowrap">
+                              <div className="text-white font-bold">{msg.sender_name}</div>
+                              <div className="text-xs text-slate-400 font-mono mt-0.5">{msg.sender_email}</div>
+                              {msg.company && <div className="text-[10px] text-blue-400 uppercase tracking-wide mt-1">{msg.company}</div>}
+                            </td>
+                            <td className="p-4 max-w-[200px] truncate">
+                              <div className="text-slate-200 truncate">{msg.subject}</div>
+                              {msg.service_interested && <span className="inline-block px-1.5 py-0.5 bg-purple-500/10 border border-purple-500/20 rounded text-[10px] text-purple-300 mt-1">{msg.service_interested}</span>}
+                            </td>
+                            <td className="p-4 text-xs text-slate-400 max-w-sm whitespace-pre-line leading-relaxed">{msg.message}</td>
+                            <td className="p-4 text-center whitespace-nowrap">
+                              {msg.status === 'unread' ? (
+                                <button onClick={() => handleMarkAsRead(msg.id)} className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all cursor-pointer shadow-md flex items-center gap-1.5 mx-auto">
+                                  <Eye size={12}/> Mark Read
+                                </button>
+                              ) : (
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-full mx-auto font-mono">
+                                  <CheckCircle size={12} /> Processed
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="p-16 text-center text-slate-500 font-mono text-sm">No incoming data transmissions detected inside your cloud instance inbox table.</div>
+                )}
+              </div>
+            </div>
           )}
 
           {/* ================= DREAM CREATIONS VIEW ================= */}
@@ -337,13 +594,13 @@ export default function AdminDashboard() {
               <div className="flex gap-2 border-b border-white/10 pb-4">
                 <button 
                   onClick={() => setDreamTab('projects')}
-                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${dreamTab === 'projects' ? 'bg-[#1095d2] text-white' : 'bg-white/5 text-slate-400 hover:text-white'}`}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer ${dreamTab === 'projects' ? 'bg-[#1095d2] text-white' : 'bg-white/5 text-slate-400 hover:text-white'}`}
                 >
                   Portfolio Projects
                 </button>
                 <button 
                   onClick={() => setDreamTab('reviews')}
-                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${dreamTab === 'reviews' ? 'bg-[#1095d2] text-white' : 'bg-white/5 text-slate-400 hover:text-white'}`}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer ${dreamTab === 'reviews' ? 'bg-[#1095d2] text-white' : 'bg-white/5 text-slate-400 hover:text-white'}`}
                 >
                   Client Testimonials
                 </button>
@@ -381,7 +638,7 @@ export default function AdminDashboard() {
                           <input type="checkbox" id="publish" checked={projectForm.is_published} onChange={e => setProjectForm({...projectForm, is_published: e.target.checked})} className="w-4 h-4 rounded border-white/20 bg-black/40 text-blue-500 focus:ring-0" />
                           <label htmlFor="publish" className="text-sm text-slate-300 cursor-pointer">Publish immediately</label>
                         </div>
-                        <button type="submit" disabled={savingProject} className="w-full py-3 mt-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+                        <button type="submit" disabled={savingProject} className="w-full py-3 mt-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer">
                           {savingProject ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Save Project
                         </button>
                       </form>
@@ -414,10 +671,10 @@ export default function AdminDashboard() {
                             <p className="text-sm text-slate-400 line-clamp-3 mb-6 flex-1">{project.description}</p>
                             
                             <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                              <button onClick={() => handleTogglePublish(project.id, project.is_published, 'portfolio_projects')} className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${project.is_published ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'}`}>
+                              <button onClick={() => handleTogglePublish(project.id, project.is_published, 'portfolio_projects')} className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${project.is_published ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'}`}>
                                 {project.is_published ? 'Unpublish' : 'Publish'}
                               </button>
-                              <button onClick={() => handleDeleteRecord(project.id, 'portfolio_projects')} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
+                              <button onClick={() => handleDeleteRecord(project.id, 'portfolio_projects')} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors cursor-pointer">
                                 <Trash2 size={16} />
                               </button>
                             </div>
@@ -429,8 +686,7 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              {/* ----- SUB-TAB: CLIENT TESTIMONIALS ----- */}
-              {dreamTab === 'reviews' && (
+              { dreamTab === 'reviews' && (
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
                   {/* Add New Review Form */}
                   <div className="xl:col-span-4">
@@ -465,7 +721,7 @@ export default function AdminDashboard() {
                           <input type="checkbox" id="publishRev" checked={reviewForm.is_published} onChange={e => setReviewForm({...reviewForm, is_published: e.target.checked})} className="w-4 h-4 rounded border-white/20 bg-black/40 text-blue-500 focus:ring-0" />
                           <label htmlFor="publishRev" className="text-sm text-slate-300 cursor-pointer">Publish immediately</label>
                         </div>
-                        <button type="submit" disabled={savingReview} className="w-full py-3 mt-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+                        <button type="submit" disabled={savingReview} className="w-full py-3 mt-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer">
                           {savingReview ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Save Testimonial
                         </button>
                       </form>
@@ -493,10 +749,10 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                           <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                            <button onClick={() => handleTogglePublish(review.id, review.is_published, 'client_reviews')} className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${review.is_published ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'}`}>
+                            <button onClick={() => handleTogglePublish(review.id, review.is_published, 'client_reviews')} className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${review.is_published ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'}`}>
                               {review.is_published ? 'Unpublish' : 'Publish'}
                             </button>
-                            <button onClick={() => handleDeleteRecord(review.id, 'client_reviews')} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
+                            <button onClick={() => handleDeleteRecord(review.id, 'client_reviews')} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors cursor-pointer">
                               <Trash2 size={16} />
                             </button>
                           </div>
@@ -517,7 +773,7 @@ export default function AdminDashboard() {
                   <h3 className="text-lg font-bold text-white">Homepage Configuration</h3>
                   <p className="text-sm text-slate-400 mt-1">Update the public-facing details on your main landing page.</p>
                 </div>
-                <button onClick={handleSaveHome} disabled={savingHome} className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition-all flex items-center gap-2 shadow-lg disabled:opacity-50">
+                <button onClick={handleSaveHome} disabled={savingHome} className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition-all flex items-center gap-2 shadow-lg disabled:opacity-50 cursor-pointer">
                   {savingHome ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Save Changes
                 </button>
               </div>
@@ -553,7 +809,7 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* ================= MEDIA LIBRARY & OTHER VIEWS ================= */}
+          {/* ================= MEDIA LIBRARY VIEW ================= */}
           {activeModule === 'Media Library' && (
              <div>
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 p-6 rounded-2xl bg-white/5 border border-white/10">
@@ -563,7 +819,7 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept="image/*,application/pdf" />
-                  <button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center gap-2">
+                  <button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center gap-2 cursor-pointer">
                     {uploading ? <Loader2 size={16} className="animate-spin" /> : <UploadCloud size={16} />} Upload File
                   </button>
                 </div>
@@ -574,7 +830,7 @@ export default function AdminDashboard() {
                     {file.file_type?.includes('image') ? <img src={file.file_url} alt="media" className="w-full h-full object-cover" /> : <File size={32} className="text-slate-500" />}
                     <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center">
                       <p className="text-xs text-white truncate w-full mb-3">{file.file_name}</p>
-                      <button onClick={() => { navigator.clipboard.writeText(file.file_url); alert('Copied!'); }} className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold">Copy Link</button>
+                      <button onClick={() => { navigator.clipboard.writeText(file.file_url); alert('Copied!'); }} className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold cursor-pointer">Copy Link</button>
                     </div>
                   </div>
                 ))}
@@ -582,12 +838,6 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {activeModule !== 'Dashboard' && activeModule !== 'Messages' && activeModule !== 'Media Library' && activeModule !== 'Home Config' && activeModule !== 'Dream Creations' && (
-            <div className="flex flex-col items-center justify-center h-64 border border-dashed border-white/10 rounded-2xl text-slate-500">
-              <Database size={32} className="mb-4 opacity-50" />
-              <p>Module "{activeModule}" is structured and fully mapped for production data integration.</p>
-            </div>
-          )}
         </div>
       </main>
     </div>

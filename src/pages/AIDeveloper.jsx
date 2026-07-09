@@ -1,7 +1,8 @@
 // src/pages/AiDeveloper.jsx
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate } from 'framer-motion';
 import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 // ================= CUSTOM ANIMATED COUNTER =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -57,15 +58,15 @@ const futuristicReveal = {
   }
 };
 
-// ================= DATA GENERATORS =================
-const developerStats = [
+// ================= CMS SAFE FALLBACK DATA PARAMETERS =================
+const defaultDeveloperStats = [
   { label: "Git Repositories", value: 4, suffix: "" },
   { label: "Dashboards Built", value: 12, suffix: "" },
   { label: "Hours Coding", value: 320, suffix: "+" },
   { label: "AI Prompts Optimized", value: 1200, suffix: "+" }
 ];
 
-const learningTimeline = [
+const defaultLearningTimeline = [
   { year: "2014", desc: "Started career as Graphic Artist." },
   { year: "2022", desc: "Began pursuing a Bachelor of Science in Information Technology." },
   { year: "2024", desc: "Expanded into entrepreneurship, remote international freelance work, and team management through Dream Creations." },
@@ -76,13 +77,13 @@ const learningTimeline = [
   { year: "Future Scope", desc: "AI Automation Platform, CRM System, Business Management Software, Analytics Platform, Mobile Applications, SaaS Products, Open Source Contributions, Teaching Software Engineering, and Technology Entrepreneurship." }
 ];
 
-const aiWorkflowSteps = [
+const defaultAiWorkflowSteps = [
   "Idea", "Research", "Requirements Gathering", "Planning", "Architecture Design", "UI/UX Planning", 
   "Prompt Engineering", "Prototype", "AI-Assisted Code Generation", "Manual Code Review", "Refactoring", 
   "Debugging", "Testing", "Optimization", "Documentation", "Version Control", "Deployment", "Maintenance", "Continuous Improvement"
 ];
 
-const aiEcosystem = [
+const defaultAiEcosystem = [
   { name: "ChatGPT", role: "Primary planning, architecture, debugging, documentation, learning, and technical guidance.", imageSrc: "/images/chatgpt.png" },
   { name: "Claude", role: "Long-form documentation, reasoning, architecture planning, code reviews, and structured writing.", imageSrc: "/images/claude.png" },
   { name: "Gemini", role: "Alternative implementation ideas, research, and cross-validation.", imageSrc: "/images/gemini.png" },
@@ -91,7 +92,7 @@ const aiEcosystem = [
   { name: "OpenClaw (Learning)", role: "Open-source AI workflow exploration.", imageSrc: "/images/openclaw.png" }
 ];
 
-const techStackData = [
+const defaultTechStackData = [
   {
     category: "Frontend",
     items: [
@@ -124,6 +125,32 @@ const techStackData = [
 
 export default function AiDeveloper() {
   const containerRef = useRef(null);
+  const [config, setConfig] = useState(null); // <-- UNIFIED CLOUD ENGINE HANDLER STATE
+
+  useEffect(() => {
+    const fetchAiDeveloperData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('ai_developer_config')
+          .select('*')
+          .eq('id', 1)
+          .single();
+        
+        if (error && error.code !== 'PGRST116') throw error;
+        if (data) setConfig(data);
+      } catch (err) {
+        console.error('AI module data alignment delay:', err.message);
+      }
+    };
+    fetchAiDeveloperData();
+  }, []);
+
+  // Sync state token distributions with safe array mapping fallbacks
+  const developerStats = config?.developer_stats || defaultDeveloperStats;
+  const learningTimeline = config?.learning_timeline || defaultLearningTimeline;
+  const aiWorkflowSteps = config?.workflow_steps || defaultAiWorkflowSteps;
+  const aiEcosystem = config?.ai_ecosystem || defaultAiEcosystem;
+  const techStackData = config?.tech_stack || defaultTechStackData;
 
   const scrollToSection = (id) => {
     const targetElement = document.getElementById(id);
@@ -133,7 +160,6 @@ export default function AiDeveloper() {
   };
 
   return (
-    // REMOVED overflow-x-hidden from here. This was breaking the sticky background!
     <div ref={containerRef} className="flex flex-col min-h-screen text-slate-100 relative selection:bg-cyan-500/30 selection:text-cyan-200">
       
       {/* ================= HIGH-PERFORMANCE CSS BACKGROUND ================= */}
@@ -199,11 +225,10 @@ export default function AiDeveloper() {
         </div>
       </div>
 
-      {/* ================= PAGE CONTENT WRAPPER (Pushed to front) ================= */}
-      {/* ADDED overflow-x-hidden here to prevent horizontal scroll bars from animations without breaking sticky! */}
+      {/* ================= PAGE CONTENT WRAPPER ================= */}
       <div className="relative z-10 overflow-x-hidden">
 
-        {/* ================= 59. HERO SECTION ================= */}
+        {/* ================= HERO SECTION ================= */}
         <section className="relative pt-44 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center">
           <div className="max-w-5xl mx-auto text-center relative">
             
@@ -255,7 +280,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 61. LEARNING PHILOSOPHY ================= */}
+        {/* ================= LEARNING PHILOSOPHY ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -271,7 +296,6 @@ export default function AiDeveloper() {
                 </div>
               </motion.div>
 
-              {/* Custom Animation: Zoom checkmark, Slide text */}
               <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-7">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[
@@ -295,7 +319,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 62. DEVELOPMENT JOURNEY TIMELINE ================= */}
+        {/* ================= DEVELOPMENT JOURNEY TIMELINE ================= */}
         <section id="learning-timeline" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-4xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -323,7 +347,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW ================= */}
+        {/* ================= AI PHILOSOPHY & WORKFLOW ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
@@ -346,7 +370,7 @@ export default function AiDeveloper() {
               <div className="space-y-3 relative border-l border-purple-500/30 ml-2">
                 {aiWorkflowSteps.map((step, idx) => (
                   <div key={idx} className="flex items-center gap-3 pl-4 relative group cursor-default">
-                    <div className="absolute left-[-4.5px] top-2 w-2 h-2 rounded-full bg-slate-800 group-hover:bg-purple-400 transition-colors shadow-[0_0_10px_rgba(168,85,247,0)] group-hover:shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
+                    <div className="absolute left-[-4.5px] top-2 w-2 h-2 rounded-full bg-slate-800 group-hover:bg-purple-400 transition-colors shadow-[0_0_10px_rgba(168,85,247,0.)] group-hover:shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
                     <span className="text-xs font-mono text-slate-600 group-hover:text-purple-400 transition-colors">[{idx+1}]</span>
                     <span className="text-sm font-semibold text-slate-400 group-hover:text-white transition-colors">{step}</span>
                   </div>
@@ -357,7 +381,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 65. AI ECOSYSTEM (WITH LOGOS) ================= */}
+        {/* ================= AI ECOSYSTEM ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -383,7 +407,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. TECH STACK (WITH LOGOS) ================= */}
+        {/* ================= TECH STACK ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-md">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -396,7 +420,7 @@ export default function AiDeveloper() {
                 <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} key={idx}>
                   <h4 className="text-xs text-cyan-500 uppercase tracking-widest font-black mb-6 border-b border-slate-800 pb-2">{stack.category}</h4>
                   <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {stack.items.map((tool, i) => (
+                    {stack.items?.map((tool, i) => (
                       <motion.div variants={cardPop} key={i} className="p-4 rounded-xl bg-slate-950/70 border border-slate-900 flex flex-col items-center justify-center text-center hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-300 group shadow-lg">
                         <div className="w-14 h-14 rounded-xl border border-slate-800 bg-black flex items-center justify-center mb-3 relative overflow-hidden group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all">
                           <img src={tool.imageSrc} alt={tool.name} className="w-8 h-8 object-contain opacity-60 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto"
@@ -413,7 +437,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 68. CURRENT PROJECTS ================= */}
+        {/* ================= CURRENT PROJECTS ================= */}
         <section id="current-projects" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -440,7 +464,7 @@ export default function AiDeveloper() {
                 </div>
                 <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-800">
                    <span className="text-xs text-cyan-400 font-bold">Role: Frontend Architect</span>
-                   <button className="text-xs text-white/80 hover:text-cyan-400 flex items-center gap-1 font-bold">Inspect Source <ExternalLink size={14}/></button>
+                   <button className="text-xs text-white/80 hover:text-cyan-400 flex items-center gap-1 font-bold cursor-pointer bg-transparent border-none">Inspect Source <ExternalLink size={14}/></button>
                 </div>
               </motion.div>
 
@@ -451,7 +475,7 @@ export default function AiDeveloper() {
                   <Layers className="text-purple-400 mb-4" size={28} />
                   <h4 className="text-lg font-bold text-white mb-2">Future AI Automation Pipelines</h4>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                     Upcoming systems for centralizing enterprise data layers, processing natural language document pipelines, lead routing rules, and automated business flow orchestration.
+                      Upcoming systems for centralizing enterprise data layers, processing natural language document pipelines, lead routing rules, and automated business flow orchestration.
                   </p>
                 </div>
                 <div className="pt-6 border-t border-slate-800/60 text-[11px] text-purple-400/80 font-mono flex items-center gap-2">
@@ -462,7 +486,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 69. GITHUB SYSTEM ================= */}
+        {/* ================= GITHUB SYSTEM ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
           <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
              <div className="flex flex-col sm:flex-row items-center gap-5 justify-between mb-6">
@@ -485,7 +509,7 @@ export default function AiDeveloper() {
           </motion.div>
         </section>
 
-        {/* ================= 71. VISION STATEMENT ================= */}
+        {/* ================= VISION STATEMENT ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 text-center bg-black/20">
           <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto">
              <Quote size={40} className="text-purple-500/30 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
@@ -498,14 +522,14 @@ export default function AiDeveloper() {
           </motion.div>
         </section>
 
-        {/* ================= 72. TRANSITION TO CONTACT ================= */}
+        {/* ================= TRANSITION TO CONTACT ================= */}
         <section className="w-full relative border-t border-slate-900 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
           
           {/* Aesthetic Shift Gradient */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/90 to-[#0c0c0e] z-[-1]" />
 
           <div className="max-w-4xl mx-auto text-center relative z-20">
-            <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <motion.div futuristicreveal="true" variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }}>
               <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
                 Every Project Begins with a Conversation.
               </h2>
