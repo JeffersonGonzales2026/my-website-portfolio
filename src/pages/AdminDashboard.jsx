@@ -1,10 +1,10 @@
 // src/pages/AdminDashboard.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Palette, Database, BrainCircuit, 
   Mail, Settings, LogOut, FileText, Image as ImageIcon,
-  Activity, Users, Loader2, CheckCircle, Trash2
+  Activity, Users, Loader2, CheckCircle, UploadCloud, File
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -22,28 +22,44 @@ const sidebarModules = [
 export default function AdminDashboard() {
   const [activeModule, setActiveModule] = useState('Dashboard');
   const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState(null);
+  
+  // Data States
   const [messages, setMessages] = useState([]);
   const [stats, setStats] = useState({ totalMessages: 0, unreadMessages: 0 });
+  const [mediaFiles, setMediaFiles] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
 
-  // Enforce Cloud Session Security & Load Initial Dashboard Telemetry
+  // Enforce Cloud Session Security
   useEffect(() => {
     const checkUserSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        // No valid token found, intercept request and redirect to gateway lock
         navigate('/admin/login');
       } else {
-        await fetchLiveMessages();
+        setSession(session);
         setLoading(false);
       }
     };
-
     checkUserSession();
   }, [navigate]);
 
-  // Fetch true database records from contact_messages table
+  // Fetch data based on active tab
+  useEffect(() => {
+    if (!session) return;
+    
+    if (activeModule === 'Dashboard' || activeModule === 'Messages') {
+      fetchLiveMessages();
+    } else if (activeModule === 'Media Library') {
+      fetchMediaLibrary();
+    }
+  }, [activeModule, session]);
+
+  // ================= MODULE: MESSAGES =================
   const fetchLiveMessages = async () => {
     try {
       const { data, error } = await supabase
@@ -52,35 +68,90 @@ export default function AdminDashboard() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-
       setMessages(data || []);
-      
-      // Calculate dynamic quick stats
-      const total = data.length;
-      const unread = data.filter(msg => msg.status === 'unread').length;
-      setStats({ totalMessages: total, unreadMessages: unread });
-
+      setStats({ 
+        totalMessages: data.length, 
+        unreadMessages: data.filter(msg => msg.status === 'unread').length 
+      });
     } catch (error) {
-      console.error('Error fetching dashboard telemetry:', error.message);
+      console.error('Error fetching messages:', error.message);
     }
   };
 
-  // Mark message as read
   const handleMarkAsRead = async (id) => {
     try {
-      const { error } = await supabase
-        .from('contact_messages')
-        .update({ status: 'read' })
-        .eq('id', id);
-
+      const { error } = await supabase.from('contact_messages').update({ status: 'read' }).eq('id', id);
       if (error) throw error;
-      await fetchLiveMessages(); // Refresh dynamic grid
+      fetchLiveMessages();
     } catch (error) {
-      console.error('Failed to update message status:', error.message);
+      console.error('Failed to update message:', error.message);
     }
   };
 
-  // Secure Sign Out
+  // ================= MODULE: MEDIA LIBRARY =================
+  const fetchMediaLibrary = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('media_library')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setMediaFiles(data || []);
+    } catch (error) {
+      console.error('Error fetching media:', error.message);
+    }
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      // 1. Generate unique filename to prevent overwrites
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      
+      // 2. Upload to Supabase Storage Bucket ('media')
+      const { error: uploadError, data } = await supabase.storage
+        .from('media')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      // 3. Get the Public URL of the uploaded file
+      const { data: { publicUrl } } = supabase.storage
+        .from('media')
+        .getPublicUrl(fileName);
+
+      // 4. Save file metadata to our SQL table
+      const { error: dbError } = await supabase
+        .from('media_library')
+        .insert([{
+          uploader_id: session.user.id,
+          file_name: file.name,
+          file_url: publicUrl,
+          file_type: file.type,
+          size_bytes: file.size
+        }]);
+
+      if (dbError) throw dbError;
+
+      // 5. Refresh grid
+      await fetchMediaLibrary();
+      
+    } catch (error) {
+      console.error('Upload failed:', error.message);
+      alert('Upload failed. Did you create the "media" bucket and set it to public?');
+    } finally {
+      setUploading(false);
+      // Reset input
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  // ================= GLOBAL ACTIONS =================
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/admin/login');
@@ -122,10 +193,7 @@ export default function AdminDashboard() {
         </nav>
 
         <div className="p-4 border-t border-white/10">
-          <button 
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors"
-          >
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors">
             <LogOut size={18} /> Sign Out
           </button>
         </div>
@@ -144,7 +212,7 @@ export default function AdminDashboard() {
 
         <div className="flex-1 overflow-y-auto p-8">
           
-          {/* Main Analytical Dashboard Module View */}
+          {/* ================= DASHBOARD VIEW ================= */}
           {activeModule === 'Dashboard' && (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
@@ -166,7 +234,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Recent Updates Segment Container */}
               <h3 className="text-lg font-bold text-white mb-4">Recent Form Submissions</h3>
               <div className="space-y-4">
                 {messages.slice(0, 3).map((msg) => (
@@ -179,11 +246,6 @@ export default function AdminDashboard() {
                       </div>
                       <p className="text-xs text-slate-400 mt-1 font-semibold">{msg.subject}</p>
                     </div>
-                    {msg.status === 'unread' && (
-                      <button onClick={() => handleMarkAsRead(msg.id)} className="p-2 rounded-lg bg-white/5 hover:bg-blue-600/20 hover:text-blue-400 text-slate-400 transition-colors text-xs flex items-center gap-1.5 font-semibold">
-                        <CheckCircle size={14} /> Mark Read
-                      </button>
-                    )}
                   </div>
                 ))}
                 {messages.length === 0 && (
@@ -193,7 +255,7 @@ export default function AdminDashboard() {
             </>
           )}
 
-          {/* Messages Independent Interactive Datagrid Module */}
+          {/* ================= MESSAGES VIEW ================= */}
           {activeModule === 'Messages' && (
             <div className="space-y-6">
               {messages.map((msg) => (
@@ -221,16 +283,78 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               ))}
-              {messages.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-20 text-slate-500 font-mono text-sm">
-                  No tracking data logs found inside contact_messages.
+            </div>
+          )}
+
+          {/* ================= MEDIA LIBRARY VIEW ================= */}
+          {activeModule === 'Media Library' && (
+            <div>
+              {/* Uploader Header */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 p-6 rounded-2xl bg-white/5 border border-white/10">
+                <div>
+                  <h3 className="text-lg font-bold text-white">Cloud Media Storage</h3>
+                  <p className="text-sm text-slate-400 mt-1">Upload images to use across your portfolio projects.</p>
+                </div>
+                <div>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleFileUpload} 
+                    className="hidden" 
+                    accept="image/*,application/pdf"
+                  />
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {uploading ? <Loader2 size={16} className="animate-spin" /> : <UploadCloud size={16} />}
+                    {uploading ? 'Uploading...' : 'Upload File'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Media Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {mediaFiles.map((file) => (
+                  <div key={file.id} className="group relative rounded-xl bg-black/50 border border-white/10 overflow-hidden aspect-square flex flex-col items-center justify-center hover:border-blue-500/50 transition-colors">
+                    {file.file_type?.includes('image') ? (
+                      <img src={file.file_url} alt={file.file_name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="text-slate-500 flex flex-col items-center gap-2">
+                        <File size={32} />
+                        <span className="text-xs uppercase font-bold text-slate-400">{file.file_type?.split('/')[1] || 'FILE'}</span>
+                      </div>
+                    )}
+                    
+                    {/* Hover Overlay to Copy URL */}
+                    <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center backdrop-blur-sm">
+                      <p className="text-xs text-white truncate w-full mb-3">{file.file_name}</p>
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(file.file_url);
+                          alert('Image URL copied to clipboard!');
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors"
+                      >
+                        Copy Link
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {mediaFiles.length === 0 && !uploading && (
+                <div className="flex flex-col items-center justify-center py-20 text-slate-500 border border-dashed border-white/10 rounded-2xl">
+                  <ImageIcon size={32} className="mb-4 opacity-50" />
+                  <p className="text-sm font-mono">Your media library is empty.</p>
                 </div>
               )}
             </div>
           )}
 
-          {/* Other Future CMS Sections Placeholder */}
-          {activeModule !== 'Dashboard' && activeModule !== 'Messages' && (
+          {/* Placeholder for unbuilt modules */}
+          {activeModule !== 'Dashboard' && activeModule !== 'Messages' && activeModule !== 'Media Library' && (
             <div className="flex flex-col items-center justify-center h-64 border border-dashed border-white/10 rounded-2xl text-slate-500">
               <Database size={32} className="mb-4 opacity-50" />
               <p>Module "{activeModule}" is structured and fully mapped for production data integration.</p>
