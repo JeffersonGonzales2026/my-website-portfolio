@@ -7,6 +7,9 @@ import {
   Download, FileText, Globe
 } from 'lucide-react';
 
+// Import your custom client wrapper from the lib directory
+import { supabase } from '../lib/supabase';
+
 // ================= PLATFORM DATA (TRUE ICONS & FULLY CLICKABLE) =================
 const connectPlatforms = [
   { 
@@ -106,9 +109,11 @@ export default function Contact() {
     }
   };
 
-  const handleSubmit = (e) => {
+  // Live Async Pipeline to populate 'contact_messages'
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus('loading');
+    setErrors({});
     
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = 'Full Name is required.';
@@ -119,15 +124,37 @@ export default function Contact() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      setStatus('error');
+      setStatus('validation_error');
       return;
     }
 
-    setTimeout(() => {
+    try {
+      // Connect to database and insert client request payload
+      const { error } = await supabase
+        .from('contact_messages')
+        .insert([
+          {
+            sender_name: formData.name,
+            sender_email: formData.email,
+            company: formData.company || null,
+            subject: formData.subject,
+            service_interested: formData.service || null,
+            message: formData.message,
+            status: 'unread'
+          }
+        ]);
+
+      if (error) throw error;
+
+      // Reset state upon successful connection return
       setStatus('success');
       setFormData({ name: '', email: '', company: '', phone: '', country: '', subject: '', service: '', budget: '', timeline: '', message: '', privacy: false });
       setTimeout(() => setStatus('idle'), 5000);
-    }, 2000);
+
+    } catch (error) {
+      console.error('Supabase submission execution crash:', error.message);
+      setStatus('database_error');
+    }
   };
 
   return (
@@ -275,9 +302,14 @@ export default function Contact() {
                         <CheckCircle2 size={18} /> Message Sent Successfully!
                       </motion.div>
                     )}
-                    {status === 'error' && (
+                    {status === 'validation_error' && (
                       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 text-red-400 text-sm font-semibold">
-                        <AlertCircle size={18} /> Please fix the errors above.
+                        <AlertCircle size={18} /> Please fix the validation errors above.
+                      </motion.div>
+                    )}
+                    {status === 'database_error' && (
+                      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 text-amber-400 text-sm font-semibold">
+                        <AlertCircle size={18} /> Connection Blocked. Ensure SQL policies are enabled.
                       </motion.div>
                     )}
                   </AnimatePresence>
