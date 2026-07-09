@@ -12,8 +12,10 @@ import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import DreamCreations from './pages/DreamCreations';
 import DataAnalyst from './pages/DataAnalyst';
-import AIDeveloper from './pages/AIDeveloper';
+import AiDeveloper from './pages/AiDeveloper'; // Adjusted to match your component name
 import Contact from './pages/Contact';
+
+// Admin Pages (Isolated)
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
 
@@ -23,18 +25,24 @@ export default function App() {
       {/* Universal Modular direct-to-top navigation wrapper implemented */}
       <ScrollToTop>
         <Routes>
-          {/* Public Microsite Routes wrapped inside Global MainLayout Wrapper */}
+          
+          {/* ================= PUBLIC MICROSITES ================= */}
+          {/* Wrapped inside Global MainLayout Wrapper (contains Navbar & Footer) */}
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Home />} />
             <Route path="dream-creations" element={<DreamCreations />} />
             <Route path="data-analyst" element={<DataAnalyst />} />
-            <Route path="ai-developer" element={<AIDeveloper />} />
+            <Route path="ai-developer" element={<AiDeveloper />} />
             <Route path="contact" element={<Contact />} />
           </Route>
 
-          {/* Isolated Secure Control Dashboards */}
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
+          {/* ================= SECURE ADMIN CONTROL ================= */}
+          {/* Isolated from MainLayout so Navbar/Footer do not show here */}
+          <Route path="/admin">
+            <Route index element={<AdminDashboard />} />
+            <Route path="login" element={<AdminLogin />} />
+          </Route>
+
         </Routes>
       </ScrollToTop>
     </BrowserRouter>
