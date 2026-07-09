@@ -1,25 +1,38 @@
 // src/pages/AdminLogin.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Mail, Key, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
+import { Lock, Mail, Key, ShieldCheck, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function AdminLogin() {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [status, setStatus] = useState('idle'); // 'idle', 'loading', 'error'
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setStatus('loading');
+    setErrorMessage('');
     
-    // Simulate Supabase Authentication
-    setTimeout(() => {
-      if (credentials.email === 'hello@jeffersongonzales.com' && credentials.password === 'admin') {
-        navigate('/admin'); // Successful login route
-      } else {
-        setStatus('error');
-      }
-    }, 1500);
+    try {
+      // Execute cloud cryptographic check against Supabase Auth engine
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: credentials.email.trim(),
+        password: credentials.password,
+      });
+
+      if (error) throw error;
+
+      // Authenticated successfully. Forward token session context to dashboard.
+      setStatus('idle');
+      navigate('/admin');
+
+    } catch (error) {
+      console.error('Authentication gate reject:', error.message);
+      setErrorMessage(error.message || 'Invalid login details. Access denied.');
+      setStatus('error');
+    }
   };
 
   return (
@@ -47,10 +60,11 @@ export default function AdminLogin() {
                 <input 
                   type="email" 
                   required
+                  disabled={status === 'loading'}
                   value={credentials.email}
                   onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
-                  className="w-full bg-black/40 border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-all"
-                  placeholder="admin@domain.com"
+                  className="w-full bg-black/40 border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-all disabled:opacity-50"
+                  placeholder="hello@jeffersongonzales.com"
                 />
               </div>
             </div>
@@ -62,24 +76,26 @@ export default function AdminLogin() {
                 <input 
                   type="password" 
                   required
+                  disabled={status === 'loading'}
                   value={credentials.password}
                   onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-                  className="w-full bg-black/40 border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-all"
+                  className="w-full bg-black/40 border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-all disabled:opacity-50"
                   placeholder="••••••••"
                 />
               </div>
             </div>
 
             {status === 'error' && (
-              <div className="text-xs text-red-400 bg-red-400/10 border border-red-400/20 rounded-lg p-3 text-center">
-                Invalid credentials. Please try again.
+              <div className="text-xs text-red-400 bg-red-400/10 border border-red-400/20 rounded-xl p-3 flex items-start gap-2">
+                <AlertCircle size={16} className="shrink-0 mt-0.5" />
+                <span>{errorMessage}</span>
               </div>
             )}
 
             <button 
               type="submit" 
               disabled={status === 'loading'}
-              className="w-full flex items-center justify-center gap-2 py-3.5 mt-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 py-3.5 mt-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all disabled:opacity-50 shadow-[0_4px_20px_rgba(59,130,246,0.2)]"
             >
               {status === 'loading' ? <Loader2 className="animate-spin" size={18} /> : <ShieldCheck size={18} />}
               {status === 'loading' ? 'Authenticating...' : 'Secure Login'}
@@ -89,7 +105,7 @@ export default function AdminLogin() {
 
         <button 
           onClick={() => navigate('/')}
-          className="mt-8 mx-auto flex items-center gap-2 text-xs text-slate-500 hover:text-white transition-colors"
+          className="mt-8 mx-auto flex items-center gap-2 text-xs text-slate-500 hover:text-white transition-colors focus:outline-none"
         >
           <ArrowRight size={14} className="rotate-180" /> Return to Public Site
         </button>
