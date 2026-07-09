@@ -1,120 +1,111 @@
-import { useState, useEffect } from 'react';
+// src/pages/AdminDashboard.jsx
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
-import { LogOut, Inbox, Trash2, Mail } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { 
+  LayoutDashboard, Palette, Database, BrainCircuit, 
+  Mail, Settings, LogOut, FileText, Image as ImageIcon,
+  Activity, Users
+} from 'lucide-react';
+
+const sidebarModules = [
+  { name: 'Dashboard', icon: <LayoutDashboard size={18} /> },
+  { name: 'Home Config', icon: <Activity size={18} /> },
+  { name: 'Dream Creations', icon: <Palette size={18} /> },
+  { name: 'Data Analyst', icon: <Database size={18} /> },
+  { name: 'AI Developer', icon: <BrainCircuit size={18} /> },
+  { name: 'Media Library', icon: <ImageIcon size={18} /> },
+  { name: 'Messages', icon: <Mail size={18} /> },
+  { name: 'Settings', icon: <Settings size={18} /> }
+];
 
 export default function AdminDashboard() {
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [activeModule, setActiveModule] = useState('Dashboard');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    checkAuth();
-    fetchMessages();
-  }, []);
-
-  // Security Guard: Kick out unauthenticated users
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/admin/login');
-    }
-  };
-
-  const fetchMessages = async () => {
-    const { data, error } = await supabase
-      .from('messages')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (!error && data) {
-      setMessages(data);
-    }
-    setLoading(false);
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    // In the future, this will trigger Supabase sign-out
     navigate('/admin/login');
   };
 
-  const deleteMessage = async (id) => {
-    // Optimistic UI update
-    setMessages(messages.filter((msg) => msg.id !== id));
-    // Delete from database
-    await supabase.from('messages').delete().eq('id', id);
-  };
-
   return (
-    <div className="min-h-screen bg-background-primary flex flex-col">
+    <div className="flex h-screen bg-[#02040a] text-slate-200 overflow-hidden font-sans">
       
-      {/* Top Navigation Bar */}
-      <header className="bg-glass-card border-b border-glass-border px-6 py-4 flex justify-between items-center sticky top-0 z-50 backdrop-blur-md">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 border border-red-500/20">
-            <Inbox size={18} />
-          </div>
-          <h1 className="text-xl font-bold text-text-primary tracking-tight">Command Center</h1>
-        </div>
-        <button 
-          onClick={handleLogout}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-red-500/10 text-text-secondary hover:text-red-400 transition-colors text-sm font-medium"
-        >
-          <LogOut size={16} />
-          Disconnect
-        </button>
-      </header>
-
-      {/* Main Dashboard Content */}
-      <main className="flex-1 max-w-5xl mx-auto w-full px-6 py-12">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-text-primary mb-2">Direct Messages</h2>
-          <p className="text-text-secondary">Inquiries securely routed from the public portfolio.</p>
+      {/* Sidebar */}
+      <aside className="w-64 flex-shrink-0 bg-white/[0.02] border-r border-white/10 flex flex-col">
+        <div className="p-6 border-b border-white/10">
+          <h2 className="text-lg font-black text-white tracking-tight">JG CMS <span className="text-blue-500">Pro</span></h2>
+          <span className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mt-1 block">Super Admin</span>
         </div>
 
-        {loading ? (
-          <div className="text-text-muted animate-pulse">Decrypting messages...</div>
-        ) : messages.length === 0 ? (
-          <div className="p-12 border border-dashed border-glass-border rounded-2xl flex flex-col items-center justify-center text-text-muted">
-            <Mail size={48} className="mb-4 opacity-50" />
-            <p>Inbox is currently empty.</p>
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {messages.map((msg, index) => (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-                key={msg.id} 
-                className="p-6 rounded-2xl bg-glass-card border border-glass-border hover:border-blue-500/30 transition-colors group relative"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-bold text-text-primary">{msg.name}</h3>
-                    <a href={`mailto:${msg.email}`} className="text-sm text-blue-400 hover:underline">{msg.email}</a>
-                  </div>
-                  <span className="text-xs text-text-muted font-mono">
-                    {new Date(msg.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-                
-                <div className="p-4 rounded-xl bg-background-secondary/50 border border-glass-border text-text-secondary whitespace-pre-wrap text-sm md:text-base">
-                  {msg.message}
-                </div>
+        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 custom-scrollbar">
+          {sidebarModules.map((module) => (
+            <button
+              key={module.name}
+              onClick={() => setActiveModule(module.name)}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                activeModule === module.name 
+                  ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20' 
+                  : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+              }`}
+            >
+              {module.icon} {module.name}
+            </button>
+          ))}
+        </nav>
 
-                <button 
-                  onClick={() => deleteMessage(msg.id)}
-                  className="absolute top-6 right-6 p-2 rounded-lg text-text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors opacity-0 group-hover:opacity-100"
-                  title="Delete Message"
-                >
-                  <Trash2 size={18} />
-                </button>
-              </motion.div>
-            ))}
+        <div className="p-4 border-t border-white/10">
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors"
+          >
+            <LogOut size={18} /> Sign Out
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col overflow-hidden relative">
+        {/* Topbar */}
+        <header className="h-16 flex-shrink-0 bg-white/[0.01] border-b border-white/10 flex items-center justify-between px-8">
+          <h1 className="text-xl font-bold text-white">{activeModule} Overview</h1>
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-2 text-xs font-mono text-slate-400">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Supabase Connected
+            </span>
           </div>
-        )}
+        </header>
+
+        {/* Dynamic Content Space */}
+        <div className="flex-1 overflow-y-auto p-8">
+          {activeModule === 'Dashboard' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {/* Stat Cards */}
+              <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                <div className="flex items-center gap-3 text-slate-400 mb-2"><FileText size={16}/> Total Projects</div>
+                <div className="text-3xl font-bold text-white">42</div>
+              </div>
+              <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                <div className="flex items-center gap-3 text-slate-400 mb-2"><Users size={16}/> Active Clients</div>
+                <div className="text-3xl font-bold text-white">18</div>
+              </div>
+              <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                <div className="flex items-center gap-3 text-slate-400 mb-2"><Mail size={16}/> Unread Messages</div>
+                <div className="text-3xl font-bold text-blue-400">5</div>
+              </div>
+              <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                <div className="flex items-center gap-3 text-slate-400 mb-2"><Activity size={16}/> System Health</div>
+                <div className="text-3xl font-bold text-emerald-400">100%</div>
+              </div>
+            </div>
+          )}
+
+          {activeModule !== 'Dashboard' && (
+            <div className="flex flex-col items-center justify-center h-64 border border-dashed border-white/10 rounded-2xl text-slate-500">
+              <Database size={32} className="mb-4 opacity-50" />
+              <p>Module "{activeModule}" is ready for Supabase Data Integration.</p>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

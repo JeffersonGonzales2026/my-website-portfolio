@@ -595,6 +595,36 @@ export default function DreamCreations() {
         </div>
       </section>
 
+{/* ================= FEATURED CLIENTS ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
+        <div className="mb-16 text-center">
+          <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Trusted By</h3>
+          <div className="w-16 h-1 bg-[#1095d2] rounded-full mx-auto" />
+          <p className="text-sm text-white/60 mt-4 max-w-2xl mx-auto">
+            Delivering premium visual solutions across diverse industries.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {featuredClients.map((client, index) => (
+            <motion.div
+              key={client.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+              className="group flex flex-col items-center justify-center p-6 rounded-2xl border border-white/5 bg-black/20 hover:bg-black/40 hover:border-[#1095d2]/30 transition-all duration-300 text-center"
+            >
+              <div className="text-white/40 group-hover:text-[#1095d2] transition-colors duration-300 mb-3">
+                {client.icon}
+              </div>
+              <h4 className="text-sm font-bold text-white mb-1 leading-tight">{client.name}</h4>
+              <p className="text-[10px] text-white/50 uppercase tracking-wider">{client.industry}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
       {/* ================= 36. TESTIMONIALS ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-16 text-center">
@@ -633,36 +663,6 @@ export default function DreamCreations() {
                   <p className="text-[10px] text-white/50">{testimonial.project} • {testimonial.company}</p>
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* ================= FEATURED CLIENTS ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
-        <div className="mb-16 text-center">
-          <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Trusted By</h3>
-          <div className="w-16 h-1 bg-[#1095d2] rounded-full mx-auto" />
-          <p className="text-sm text-white/60 mt-4 max-w-2xl mx-auto">
-            Delivering premium visual solutions across diverse industries.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {featuredClients.map((client, index) => (
-            <motion.div
-              key={client.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
-              className="group flex flex-col items-center justify-center p-6 rounded-2xl border border-white/5 bg-black/20 hover:bg-black/40 hover:border-[#1095d2]/30 transition-all duration-300 text-center"
-            >
-              <div className="text-white/40 group-hover:text-[#1095d2] transition-colors duration-300 mb-3">
-                {client.icon}
-              </div>
-              <h4 className="text-sm font-bold text-white mb-1 leading-tight">{client.name}</h4>
-              <p className="text-[10px] text-white/50 uppercase tracking-wider">{client.industry}</p>
             </motion.div>
           ))}
         </div>
