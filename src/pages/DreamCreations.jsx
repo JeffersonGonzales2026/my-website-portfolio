@@ -1,8 +1,28 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp } from 'lucide-react';
-import { supabase } from '../lib/supabase'; // <-- ADDED DATABASE HOOK
+import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
+import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+
+// Helper component for counting numbers
+const AnimatedNumber = ({ value, suffix }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+
+  useEffect(() => {
+    if (isInView && ref.current) {
+      animate(0, value, {
+        duration: 2.5,
+        ease: "easeOut",
+        onUpdate: (v) => {
+          if (ref.current) ref.current.textContent = Math.floor(v) + suffix;
+        }
+      });
+    }
+  }, [isInView, value, suffix]);
+
+  return <span ref={ref}>0{suffix}</span>;
+};
 
 const featuredClients = [
   { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
@@ -112,9 +132,12 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
 export default function DreamCreations() {
   const containerRef = useRef(null);
   const processScrollRef = useRef(null); 
+  const teamScrollRef = useRef(null);
+  const feedbackScrollRef = useRef(null);
+
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
-  const [projects, setProjects] = useState([]); // <-- STATE ADDED
+  const [projects, setProjects] = useState([]); 
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -127,7 +150,6 @@ export default function DreamCreations() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // <-- SUPABASE FETCH HOOK ADDED HERE
   useEffect(() => {
     const fetchPublicProjects = async () => {
       try {
@@ -154,10 +176,10 @@ export default function DreamCreations() {
     }
   };
 
-  const scrollProcess = (direction) => {
-    if (processScrollRef.current) {
-      const scrollAmount = 320; 
-      processScrollRef.current.scrollBy({ 
+  const scrollContainer = (ref, direction) => {
+    if (ref.current) {
+      const scrollAmount = 350; 
+      ref.current.scrollBy({ 
         left: direction === 'left' ? -scrollAmount : scrollAmount, 
         behavior: 'smooth' 
       });
@@ -266,27 +288,45 @@ export default function DreamCreations() {
           transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }}
           className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10"
         />
-        
-        {/* <-- BANNER IMAGE INJECTED HERE --> */}
         <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="mb-8 relative z-20 w-full max-w-2xl px-6"
+          initial={{ y: 150, scale: 0.5, opacity: 0 }}
+          animate={{ y: 0, scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }}
+          className="-mt-12 mb-16" 
         >
-          <img 
-            src="/Logo Banner.png" 
-            alt="Dream Creations Banner" 
-            className="w-full h-auto drop-shadow-2xl"
-          />
+          <svg viewBox="0 0 200 200" className="w-40 h-40 drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]">
+            <defs>
+              <filter id="moon-texture" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="5" result="noise" />
+                <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.6 0" in="noise" result="coloredNoise" />
+                <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="texture" />
+                <feBlend mode="multiply" in="texture" in2="SourceGraphic" />
+              </filter>
+              <mask id="crescent-mask">
+                <circle cx="100" cy="100" r="95" fill="white" />
+                <circle cx="70" cy="95" r="85" fill="black" />
+              </mask>
+              <radialGradient id="moon-glow" cx="60%" cy="40%" r="60%">
+                <stop offset="0%" stopColor="#cffafe" />
+                <stop offset="40%" stopColor="#1095d2" />
+                <stop offset="100%" stopColor="#1e3a8a" />
+              </radialGradient>
+            </defs>
+            <g mask="url(#crescent-mask)">
+              <circle cx="100" cy="100" r="95" fill="url(#moon-glow)" filter="url(#moon-texture)" />
+            </g>
+          </svg>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
           className="max-w-4xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl border border-transparent z-10"
         >
+          <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
+            Let's make your <span className="text-[#1095d2]">dream</span> a reality.
+          </h2>
           <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
             <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">
             For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.
@@ -317,7 +357,7 @@ export default function DreamCreations() {
 
       <div id="creations-grid" className="scroll-mt-24" />
 
-      {/* ================= 29. CREATIONS SECTION (SUPER SMALLER BOXES) ================= */}
+      {/* ================= 29. CREATIONS SECTION ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative">
         <div className="mb-12 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
@@ -349,9 +389,26 @@ export default function DreamCreations() {
         </div>
       </section>
 
+      {/* ================= BRAND BANNER ================= */}
+      <section className="max-w-5xl mx-auto w-full px-6 py-10 z-10 relative">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="flex justify-center"
+        >
+          <img 
+            src="/Logo Banner.png" 
+            alt="Dream Creations Brand Banner" 
+            className="w-full h-auto drop-shadow-[0_0_30px_rgba(16,149,210,0.3)] rounded-3xl border border-white/5 bg-black/40 p-2 md:p-4"
+          />
+        </motion.div>
+      </section>
+
       <div id="founder-bio" className="scroll-mt-24" />
 
-      {/* ================= 27. MEET THE FOUNDER SECTION ================= */}
+      {/* ================= 27. MEET THE FOUNDER SECTION (WITH ANIMATED COUNTERS) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <motion.div
@@ -408,11 +465,15 @@ export default function DreamCreations() {
             
             <div className="grid grid-cols-2 gap-4 pt-4">
               <div className="p-4 rounded-xl border border-white/10 bg-black/20 hover:border-[#1095d2]/30 transition-colors">
-                <div className="text-2xl font-bold text-[#1095d2] mb-1">10+</div>
+                <div className="text-2xl font-bold text-[#1095d2] mb-1">
+                  <AnimatedNumber value={10} suffix="+" />
+                </div>
                 <div className="text-xs text-white/60 uppercase tracking-wider">Years Experience</div>
               </div>
               <div className="p-4 rounded-xl border border-white/10 bg-black/20 hover:border-[#1095d2]/30 transition-colors">
-                <div className="text-2xl font-bold text-[#1095d2] mb-1">200+</div>
+                <div className="text-2xl font-bold text-[#1095d2] mb-1">
+                  <AnimatedNumber value={200} suffix="+" />
+                </div>
                 <div className="text-xs text-white/60 uppercase tracking-wider">Projects Delivered</div>
               </div>
             </div>
@@ -420,17 +481,27 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 28. OUR TEAM ================= */}
+      {/* ================= 28. OUR TEAM (HORIZONTAL SWIPE) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
-        <div className="mb-16 text-center">
-          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Team</h3>
-          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
-          <p className="text-base text-white/70 mt-4 max-w-2xl mx-auto">
-            The creative minds driving the studio's vision.
-          </p>
+        <div className="mb-16 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left">
+          <div>
+            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Team</h3>
+            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+            <p className="text-base text-white/70 mt-4 max-w-2xl">
+              The creative minds driving the studio's vision.
+            </p>
+          </div>
+          <div className="flex items-center gap-3 relative z-20">
+             <button onClick={() => scrollContainer(teamScrollRef, 'left')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
+               <ArrowLeft size={16} />
+             </button>
+             <button onClick={() => scrollContainer(teamScrollRef, 'right')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
+               <ArrowRight size={16} />
+             </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div ref={teamScrollRef} className="flex overflow-x-auto gap-8 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth">
           {teamMembers.map((member) => (
             <motion.div
               key={member.id}
@@ -438,7 +509,7 @@ export default function DreamCreations() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className={`rounded-3xl bg-black/30 border border-white/10 backdrop-blur-md overflow-hidden hover:border-[#1095d2]/40 transition-all group flex flex-col h-full ${member.status === 'Hiring' ? 'border-dashed opacity-60 hover:opacity-100' : ''}`}
+              className={`shrink-0 w-[85vw] md:w-[400px] lg:w-[380px] snap-center rounded-3xl bg-black/30 border border-white/10 backdrop-blur-md overflow-hidden hover:border-[#1095d2]/40 transition-all group flex flex-col h-full ${member.status === 'Hiring' ? 'border-dashed opacity-60 hover:opacity-100' : ''}`}
             >
               <div className="p-6 pb-4 border-b border-white/5 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#1095d2]/20 to-transparent opacity-50" />
@@ -542,7 +613,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 35. CREATIVE PROCESS ================= */}
+      {/* ================= 35. CREATIVE PROCESS (REMOVED SWIPE TEXT) ================= */}
       <section className="w-full py-20 z-10 relative border-t border-white/10">
         <div className="max-w-7xl mx-auto mb-10 px-6 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left">
           <div>
@@ -554,11 +625,10 @@ export default function DreamCreations() {
           </div>
           
           <div className="flex items-center gap-3 relative z-20">
-             <button onClick={() => scrollProcess('left')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
+             <button onClick={() => scrollContainer(processScrollRef, 'left')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
                <ArrowLeft size={16} />
              </button>
-             <span className="text-[10px] text-white/40 uppercase tracking-widest px-2">(Use arrows or swipe)</span>
-             <button onClick={() => scrollProcess('right')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
+             <button onClick={() => scrollContainer(processScrollRef, 'right')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
                <ArrowRight size={16} />
              </button>
           </div>
@@ -597,7 +667,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-{/* ================= FEATURED CLIENTS ================= */}
+      {/* ================= FEATURED CLIENTS ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-16 text-center">
           <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Trusted By</h3>
@@ -627,17 +697,27 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 36. TESTIMONIALS ================= */}
+      {/* ================= 36. TESTIMONIALS (HORIZONTAL SWIPE) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
-        <div className="mb-16 text-center">
-          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Client Feedback</h3>
-          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
-          <p className="text-base text-white/70 mt-4 max-w-2xl mx-auto">
-            What our partners and clients have to say about the Dream Creations experience.
-          </p>
+        <div className="mb-16 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left">
+          <div>
+            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Client Feedback</h3>
+            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+            <p className="text-base text-white/70 mt-4 max-w-2xl">
+              What our partners and clients have to say about the Dream Creations experience.
+            </p>
+          </div>
+          <div className="flex items-center gap-3 relative z-20">
+             <button onClick={() => scrollContainer(feedbackScrollRef, 'left')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
+               <ArrowLeft size={16} />
+             </button>
+             <button onClick={() => scrollContainer(feedbackScrollRef, 'right')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
+               <ArrowRight size={16} />
+             </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div ref={feedbackScrollRef} className="flex overflow-x-auto gap-6 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth">
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={testimonial.id}
@@ -645,7 +725,7 @@ export default function DreamCreations() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="p-8 rounded-3xl bg-black/20 border border-white/10 backdrop-blur-md flex flex-col relative group hover:border-[#1095d2]/40 transition-colors"
+              className="shrink-0 w-[85vw] md:w-[400px] snap-center p-8 rounded-3xl bg-black/20 border border-white/10 backdrop-blur-md flex flex-col relative group hover:border-[#1095d2]/40 transition-colors"
             >
               <Quote size={40} className="text-[#1095d2]/10 absolute top-6 right-6 group-hover:text-[#1095d2]/20 transition-colors" />
               <div className="flex gap-1 mb-6 text-[#1095d2]">
@@ -763,7 +843,6 @@ export default function DreamCreations() {
                 Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span>
               </h4>
 
-              {/* <-- REPLACED STATIC GRID WITH LIVE CMS DATA MAPPING --> */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {projects.length > 0 ? (
                   projects.map((project) => (
@@ -832,40 +911,50 @@ export default function DreamCreations() {
         </motion.div>
       </section>
 
-      {/* ================= 40. TRANSITION TO THE NEXT JOURNEY ================= */}
-      <section className="w-full relative border-t border-white/10 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-800/60 to-slate-950 -z-10" />
+      {/* ================= 40. TRANSITION TO THE NEXT JOURNEY (UPGRADED CARD) ================= */}
+      <section className="max-w-5xl mx-auto w-full px-6 pt-32 pb-24 z-10 relative">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="group relative rounded-3xl overflow-hidden cursor-pointer"
+          onClick={() => window.location.href = '/data-analyst'}
+        >
+          {/* Card Background Layers */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1095d2]/20 via-black to-black opacity-80 z-0" />
+          <div className="absolute inset-0 border-2 border-white/5 group-hover:border-[#1095d2]/50 rounded-3xl transition-colors duration-500 z-10" />
 
-        <div className="max-w-4xl mx-auto text-center relative z-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
-              Ready for the Next Chapter?
-            </h2>
-            <p className="text-base md:text-lg text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Every stage of my career builds upon the previous one. The transition from a creative professional to a data-driven analyst reflects my evolution from crafting visual stories to uncovering the insights that drive them.
-            </p>
-            
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <button 
-                onClick={() => window.location.href = '/data-analyst'}
-                className="px-8 py-4 rounded-xl bg-slate-100 text-slate-900 font-bold text-sm hover:bg-white transition-colors shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] flex items-center gap-2 cursor-pointer relative z-20"
-              >
-                Continue as Data Analyst <ArrowRight size={16} />
-              </button>
-              
-              <button 
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="px-8 py-4 rounded-xl bg-slate-800/50 border border-slate-600 hover:bg-slate-700 text-white font-bold text-sm transition-colors flex items-center gap-2 backdrop-blur-md cursor-pointer relative z-20"
-              >
-                <ArrowUp size={16} /> Back to Top 
-              </button>
+          {/* Card Content */}
+          <div className="relative z-20 p-12 md:p-20 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="text-center md:text-left flex-1">
+              <span className="text-[#1095d2] text-sm font-bold tracking-widest uppercase mb-2 block">
+                Next Chapter
+              </span>
+              <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-4 group-hover:text-[#1095d2] transition-colors">
+                Data Analyst
+              </h2>
+              <p className="text-base text-slate-400 max-w-xl leading-relaxed mx-auto md:mx-0">
+                Every stage of my career builds upon the previous one. Transition from crafting visual stories to uncovering the insights that drive them.
+              </p>
             </div>
-          </motion.div>
+            
+            <div className="shrink-0 hidden md:block">
+              <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#1095d2] group-hover:scale-110 transition-all duration-300">
+                <ArrowRight size={24} className="text-white" />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+        
+        {/* Back to top button */}
+        <div className="mt-12 text-center">
+          <button 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="inline-flex items-center gap-2 text-xs font-bold text-white/40 hover:text-white uppercase tracking-widest transition-colors cursor-pointer relative z-20"
+          >
+            <ArrowUp size={14} /> Back to Top
+          </button>
         </div>
       </section>
 
