@@ -613,7 +613,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 35. CREATIVE PROCESS (REMOVED SWIPE TEXT) ================= */}
+      {/* ================= 35. CREATIVE PROCESS ================= */}
       <section className="w-full py-20 z-10 relative border-t border-white/10">
         <div className="max-w-7xl mx-auto mb-10 px-6 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left">
           <div>
@@ -911,50 +911,55 @@ export default function DreamCreations() {
         </motion.div>
       </section>
 
-      {/* ================= 40. TRANSITION TO THE NEXT JOURNEY (UPGRADED CARD) ================= */}
-      <section className="max-w-5xl mx-auto w-full px-6 pt-32 pb-24 z-10 relative">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="group relative rounded-3xl overflow-hidden cursor-pointer"
-          onClick={() => window.location.href = '/data-analyst'}
-        >
-          {/* Card Background Layers */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1095d2]/20 via-black to-black opacity-80 z-0" />
-          <div className="absolute inset-0 border-2 border-white/5 group-hover:border-[#1095d2]/50 rounded-3xl transition-colors duration-500 z-10" />
+      {/* ================= 40. TRANSITION TO THE NEXT JOURNEY (CENTERED CINEMATIC) ================= */}
+      <section className="w-full relative border-t border-white/10 mt-16 pt-32 pb-32 px-6 overflow-hidden z-10 flex flex-col items-center text-center">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#021f1a] to-[#011410] -z-10" />
 
-          {/* Card Content */}
-          <div className="relative z-20 p-12 md:p-20 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="text-center md:text-left flex-1">
-              <span className="text-[#1095d2] text-sm font-bold tracking-widest uppercase mb-2 block">
-                Next Chapter
-              </span>
-              <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-4 group-hover:text-[#1095d2] transition-colors">
-                Data Analyst
-              </h2>
-              <p className="text-base text-slate-400 max-w-xl leading-relaxed mx-auto md:mx-0">
-                Every stage of my career builds upon the previous one. Transition from crafting visual stories to uncovering the insights that drive them.
+        <div className="max-w-3xl mx-auto relative z-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-col items-center"
+          >
+            {/* Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-8">
+              <Database size={14} /> The Next Chapter
+            </div>
+
+            {/* Headline matching screenshot layout */}
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight mb-8">
+              Evolution of <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Design & Data.</span>
+            </h2>
+
+            {/* Subtext */}
+            <div className="space-y-6 text-base md:text-lg text-slate-300 mb-12 leading-relaxed">
+              <p>
+                Every stage of my career builds upon the previous one. The transition from a creative professional to a data-driven analyst reflects my evolution from crafting visual stories to uncovering the insights that drive them.
+              </p>
+              <p>
+                The next chapter introduces my journey into Data Analytics, where structured logic, reporting, and dashboarding converge with creative problem-solving.
               </p>
             </div>
             
-            <div className="shrink-0 hidden md:block">
-              <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#1095d2] group-hover:scale-110 transition-all duration-300">
-                <ArrowRight size={24} className="text-white" />
-              </div>
+            {/* Buttons matching screenshot layout */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+              <button 
+                onClick={() => window.location.href = '/data-analyst'}
+                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-emerald-500 text-black font-bold text-sm hover:bg-emerald-400 transition-colors shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 cursor-pointer relative z-20"
+              >
+                Continue as Data Analyst <ArrowRight size={16} />
+              </button>
+              
+              <button 
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-sm transition-colors flex items-center justify-center gap-2 backdrop-blur-md cursor-pointer relative z-20"
+              >
+                <ArrowUp size={16} /> Back to Top 
+              </button>
             </div>
-          </div>
-        </motion.div>
-        
-        {/* Back to top button */}
-        <div className="mt-12 text-center">
-          <button 
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="inline-flex items-center gap-2 text-xs font-bold text-white/40 hover:text-white uppercase tracking-widest transition-colors cursor-pointer relative z-20"
-          >
-            <ArrowUp size={14} /> Back to Top
-          </button>
+          </motion.div>
         </div>
       </section>
 
