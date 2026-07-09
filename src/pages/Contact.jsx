@@ -3,22 +3,25 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Send, Loader2, CheckCircle2, AlertCircle, Mail, 
-  Download, FileText, MessageSquare, Phone, Globe, Briefcase, Terminal
+  Download, FileText, MessageSquare, Phone, Globe, 
+  Briefcase, Terminal, MessageCircle, Activity
 } from 'lucide-react';
 
-// ================= PLATFORM DATA =================
+// ================= PLATFORM DATA (WITH REAL LINKS) =================
 const connectPlatforms = [
-  { id: 'email', name: 'Email', username: 'hello@jeffersongonzales.com', icon: <Mail size={20} />, status: 'active', desc: 'Direct professional inquiries.' },
-  { id: 'linkedin', name: 'LinkedIn', username: 'in/jeffersongonzales', icon: <Briefcase size={20} />, status: 'active', desc: 'Professional network & updates.' },
-  { id: 'github', name: 'GitHub', username: 'jeffersongonzales', icon: <Terminal size={20} />, status: 'active', desc: 'Code repositories & contributions.' },
-  { id: 'facebook', name: 'Facebook', username: 'Jefferson Gonzales', icon: <Globe size={20} />, status: 'active', desc: 'Community & announcements.' },
-  { id: 'instagram', name: 'Instagram', username: '@jeffersongonzales', icon: <Globe size={20} />, status: 'active', desc: 'Behind the scenes & visual work.' },
-  { id: 'discord', name: 'Discord', username: 'jeffgonzales#1234', icon: <MessageSquare size={20} />, status: 'active', desc: 'Real-time chat & collaboration.' },
-  { id: 'telegram', name: 'Telegram', username: '@jeffersongonzales', icon: <Send size={20} />, status: 'active', desc: 'Quick secure messaging.' },
-  { id: 'whatsapp', name: 'WhatsApp', username: '+63 900 000 0000', icon: <Phone size={20} />, status: 'active', desc: 'Direct business messaging.' },
-  { id: 'youtube', name: 'YouTube', username: 'JeffersonGonzalesTV', icon: <Terminal size={20} />, status: 'future', desc: 'Tutorials & case studies.' },
-  { id: 'x', name: 'X (Twitter)', username: '@jeffgonzales_x', icon: <MessageSquare size={20} />, status: 'future', desc: 'Tech thoughts & industry news.' },
-  { id: 'medium', name: 'Medium', username: '@jeffersongonzales', icon: <FileText size={20} />, status: 'future', desc: 'Long-form technical articles.' }
+  { id: 'email', name: 'Email', username: 'hello@jeffersongonzales.com', link: 'mailto:hello@jeffersongonzales.com', icon: <Mail size={20} />, status: 'active', desc: 'Direct professional inquiries.' },
+  { id: 'linkedin', name: 'LinkedIn', username: 'in/jeffersongonzales', link: 'https://linkedin.com/in/jeffersongonzales', icon: <Briefcase size={20} />, status: 'active', desc: 'Professional network & updates.' },
+  { id: 'github', name: 'GitHub', username: 'jeffersongonzales', link: 'https://github.com/jeffersongonzales', icon: <Terminal size={20} />, status: 'active', desc: 'Code repositories & contributions.' },
+  { id: 'facebook', name: 'Facebook', username: 'Jefferson Gonzales', link: 'https://facebook.com', icon: <Globe size={20} />, status: 'active', desc: 'Community & announcements.' },
+  { id: 'instagram', name: 'Instagram', username: '@jeffersongonzales', link: 'https://instagram.com/jeffersongonzales', icon: <Globe size={20} />, status: 'active', desc: 'Behind the scenes & visual work.' },
+  { id: 'discord', name: 'Discord', username: 'jeffgonzales#1234', link: 'https://discord.com', icon: <MessageSquare size={20} />, status: 'active', desc: 'Real-time chat & collaboration.' },
+  { id: 'telegram', name: 'Telegram', username: '@jeffersongonzales', link: 'https://t.me/jeffersongonzales', icon: <Send size={20} />, status: 'active', desc: 'Quick secure messaging.' },
+  { id: 'whatsapp', name: 'WhatsApp', username: '+63 900 000 0000', link: 'https://wa.me/639000000000', icon: <Phone size={20} />, status: 'active', desc: 'Direct business messaging.' },
+  { id: 'viber', name: 'Viber', username: '+63 900 000 0000', link: 'viber://chat?number=639000000000', icon: <MessageCircle size={20} />, status: 'active', desc: 'Voice and messaging connectivity.' },
+  { id: 'lark', name: 'Lark', username: 'Jefferson Gonzales', link: 'https://larksuite.com', icon: <Activity size={20} />, status: 'active', desc: 'Enterprise team collaboration.' },
+  { id: 'youtube', name: 'YouTube', username: 'JeffersonGonzalesTV', link: 'https://youtube.com', icon: <Terminal size={20} />, status: 'future', desc: 'Tutorials & case studies.' },
+  { id: 'x', name: 'X (Twitter)', username: '@jeffgonzales_x', link: 'https://twitter.com', icon: <MessageSquare size={20} />, status: 'future', desc: 'Tech thoughts & industry news.' },
+  { id: 'medium', name: 'Medium', username: '@jeffersongonzales', link: 'https://medium.com', icon: <FileText size={20} />, status: 'future', desc: 'Long-form technical articles.' }
 ];
 
 const fadeUp = {
@@ -241,7 +244,7 @@ export default function Contact() {
             </motion.div>
 
             <motion.div variants={fadeUp} className="grid grid-cols-2 gap-4 mb-8">
-              <a href="#" className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
+              <a href="/Jefferson_Gonzales_Resume.pdf" target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
                 <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Download size={18} />
                 </div>
@@ -250,7 +253,7 @@ export default function Contact() {
                   <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
                 </div>
               </a>
-              <a href="#" className="p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
+              <a href="/Jefferson_Gonzales_Portfolio.pdf" target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
                 <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <FileText size={18} />
                 </div>
@@ -268,15 +271,21 @@ export default function Contact() {
                 <motion.a 
                   variants={fadeUp}
                   key={platform.id}
-                  href="#"
+                  href={platform.link}
+                  target="_blank" 
+                  rel="noopener noreferrer"
                   className={`p-4 rounded-xl border flex flex-col gap-3 transition-all group ${
                     platform.status === 'future' 
                     ? 'bg-black/20 border-white/5 opacity-60 hover:opacity-100 cursor-default' 
-                    : 'bg-white/5 border-white/10 hover:border-cyan-500/30 hover:bg-cyan-500/5 cursor-pointer'
+                    : 'bg-white/5 border-white/10 hover:border-blue-500/30 hover:bg-blue-500/5 cursor-pointer'
                   }`}
+                  onClick={(e) => {
+                    // Prevent click action if the platform is marked as 'future'
+                    if (platform.status === 'future') e.preventDefault();
+                  }}
                 >
                   <div className="flex items-center justify-between">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${platform.status === 'future' ? 'bg-white/5 text-slate-500' : 'bg-cyan-500/10 text-cyan-400 group-hover:scale-110 transition-transform'}`}>
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${platform.status === 'future' ? 'bg-white/5 text-slate-500' : 'bg-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform'}`}>
                       {platform.icon}
                     </div>
                     {platform.status === 'future' && (
