@@ -48,11 +48,11 @@ export default function Home() {
       <div className="relative z-10 pt-32 pb-24 space-y-32">
         {/* Pass the fetched data into your components as props */}
         <Hero homeData={homeData} />
-        <JourneySelector />
         <AboutMe homeData={homeData} />
         <QuickStats />
         <SkillsOverview />
         <CareerTimeline />
+        <JourneySelector />
       </div>
     </div>
   );

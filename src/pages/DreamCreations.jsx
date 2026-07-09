@@ -2,6 +2,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp } from 'lucide-react';
+import { supabase } from '../lib/supabase'; // <-- ADDED DATABASE HOOK
 
 const featuredClients = [
   { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
@@ -113,6 +114,7 @@ export default function DreamCreations() {
   const processScrollRef = useRef(null); 
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
+  const [projects, setProjects] = useState([]); // <-- STATE ADDED
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -123,6 +125,26 @@ export default function DreamCreations() {
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // <-- SUPABASE FETCH HOOK ADDED HERE
+  useEffect(() => {
+    const fetchPublicProjects = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('portfolio_projects')
+          .select('*')
+          .eq('is_published', true)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        setProjects(data || []);
+      } catch (error) {
+        console.error('Error fetching projects:', error.message);
+      }
+    };
+
+    fetchPublicProjects();
   }, []);
 
   const scrollToSection = (id) => {
@@ -142,7 +164,6 @@ export default function DreamCreations() {
     }
   };
 
-  // Restored the exact, perfectly timed 350ms smooth scroll logic that fixed the bug
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
     setTimeout(() => {
@@ -245,45 +266,27 @@ export default function DreamCreations() {
           transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }}
           className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10"
         />
+        
+        {/* <-- BANNER IMAGE INJECTED HERE --> */}
         <motion.div
-          initial={{ y: 150, scale: 0.5, opacity: 0 }}
-          animate={{ y: 0, scale: 1, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }}
-          className="-mt-12 mb-16" 
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="mb-8 relative z-20 w-full max-w-2xl px-6"
         >
-          <svg viewBox="0 0 200 200" className="w-40 h-40 drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]">
-            <defs>
-              <filter id="moon-texture" x="0%" y="0%" width="100%" height="100%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="5" result="noise" />
-                <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.6 0" in="noise" result="coloredNoise" />
-                <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="texture" />
-                <feBlend mode="multiply" in="texture" in2="SourceGraphic" />
-              </filter>
-              <mask id="crescent-mask">
-                <circle cx="100" cy="100" r="95" fill="white" />
-                <circle cx="70" cy="95" r="85" fill="black" />
-              </mask>
-              <radialGradient id="moon-glow" cx="60%" cy="40%" r="60%">
-                <stop offset="0%" stopColor="#cffafe" />
-                <stop offset="40%" stopColor="#1095d2" />
-                <stop offset="100%" stopColor="#1e3a8a" />
-              </radialGradient>
-            </defs>
-            <g mask="url(#crescent-mask)">
-              <circle cx="100" cy="100" r="95" fill="url(#moon-glow)" filter="url(#moon-texture)" />
-            </g>
-          </svg>
+          <img 
+            src="/Logo Banner.png" 
+            alt="Dream Creations Banner" 
+            className="w-full h-auto drop-shadow-2xl"
+          />
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
           className="max-w-4xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl border border-transparent z-10"
         >
-          <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
-            Let's make your <span className="text-[#1095d2]">dream</span> a reality.
-          </h2>
           <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
             <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">
             For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.
@@ -324,7 +327,6 @@ export default function DreamCreations() {
           </p>
         </div>
 
-        {/* Shrunk the gap, height, padding, and text for ultra-dense premium layout */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
           {creationsCategories.map((category, index) => (
             <motion.button
@@ -670,18 +672,20 @@ export default function DreamCreations() {
 
       <div id="portfolio-directory" className="scroll-mt-24" />
 
-      {/* ================= 30 & 31. UNIFIED PORTFOLIO DIRECTORY ================= */}
-      {/* Retained rock-solid min-h-[120vh] layer to maintain stable layout height boundaries */}
+      {/* ================= 30 & 31. UNIFIED PORTFOLIO DIRECTORY (LIVE DATABASE FETCH) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-[120vh]">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
           <div className="text-center md:text-left">
             <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Archive</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
             <p className="text-sm text-white/60 mt-4">
-              Explore our specific visual solutions organized by category.
+              Explore our specific visual solutions. These works are pulled directly from our live CMS.
             </p>
           </div>
-          <button className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20">
+          <button 
+            onClick={() => setActivePortfolioSubtitle(null)}
+            className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20"
+          >
             View Full Archive
           </button>
         </div>
@@ -759,18 +763,35 @@ export default function DreamCreations() {
                 Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span>
               </h4>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {[1, 2, 3, 4].map((work) => (
-                  <div key={work} className="relative h-64 rounded-xl border border-white/10 bg-black/40 overflow-hidden group">
-                     <div className="absolute inset-0 flex items-center justify-center text-white/20 group-hover:scale-110 transition-transform duration-500">
-                       <ImagePlaceholder size={48} />
-                     </div>
-                     <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
-                        <p className="text-xs font-semibold text-white">Project Feature {work}</p>
-                     </div>
+              {/* <-- REPLACED STATIC GRID WITH LIVE CMS DATA MAPPING --> */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {projects.length > 0 ? (
+                  projects.map((project) => (
+                    <div key={project.id} className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors">
+                       <div className="aspect-video relative overflow-hidden bg-black/60">
+                         {project.featured_image_url ? (
+                           <img src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                         ) : (
+                           <div className="absolute inset-0 flex items-center justify-center text-white/20">
+                             <ImagePlaceholder size={48} />
+                           </div>
+                         )}
+                       </div>
+                       <div className="p-6">
+                          <h4 className="text-lg font-bold text-white mb-1 group-hover:text-[#1095d2] transition-colors">{project.title}</h4>
+                          <p className="text-xs text-[#1095d2] font-mono mb-4">{project.client_name || 'Independent Project'}</p>
+                          <p className="text-sm text-white/60 line-clamp-3 leading-relaxed">{project.description}</p>
+                       </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm border border-dashed border-white/10 rounded-2xl">
+                    <ImageIcon size={32} className="mb-4 opacity-30" />
+                    No projects have been published to the archive yet.
                   </div>
-                ))}
+                )}
               </div>
+
             </motion.div>
           )}
         </AnimatePresence>
