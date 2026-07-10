@@ -574,7 +574,7 @@ export default function DreamCreations() {
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-16 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left">
           <div>
-            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Team</h3>
+            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Creators</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
             <p className="text-base text-white/70 mt-4 max-w-2xl">
               The creative minds driving the studio's vision.
