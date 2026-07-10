@@ -1,6 +1,5 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
-// ADDED THE PHYSICS HOOKS HERE
 import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
 import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -163,7 +162,7 @@ export default function DreamCreations() {
     const moveCursor = (e) => {
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      cursorX.set(clientX - 32); // Offset to center the 64x64 spaceship image
+      cursorX.set(clientX - 32); 
       cursorY.set(clientY - 32);
     };
 
@@ -356,34 +355,24 @@ export default function DreamCreations() {
           transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }}
           className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10"
         />
+        
+        {/* NEW MOON IMAGE WITH FLOATING EFFECT */}
         <motion.div
           initial={{ y: 150, scale: 0.5, opacity: 0 }}
           animate={{ y: 0, scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }}
-          className="-mt-12 mb-16" 
+          className="-mt-12 mb-16 relative" 
         >
-          <svg viewBox="0 0 200 200" className="w-40 h-40 drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]">
-            <defs>
-              <filter id="moon-texture" x="0%" y="0%" width="100%" height="100%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="5" result="noise" />
-                <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.6 0" in="noise" result="coloredNoise" />
-                <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="texture" />
-                <feBlend mode="multiply" in="texture" in2="SourceGraphic" />
-              </filter>
-              <mask id="crescent-mask">
-                <circle cx="100" cy="100" r="95" fill="white" />
-                <circle cx="70" cy="95" r="85" fill="black" />
-              </mask>
-              <radialGradient id="moon-glow" cx="60%" cy="40%" r="60%">
-                <stop offset="0%" stopColor="#cffafe" />
-                <stop offset="40%" stopColor="#1095d2" />
-                <stop offset="100%" stopColor="#1e3a8a" />
-              </radialGradient>
-            </defs>
-            <g mask="url(#crescent-mask)">
-              <circle cx="100" cy="100" r="95" fill="url(#moon-glow)" filter="url(#moon-texture)" />
-            </g>
-          </svg>
+          <motion.div
+            animate={{ y: [-8, 8, -8], rotate: [-2, 2, -2] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <img 
+              src="/images/moon.png" 
+              alt="Dream Creations Moon" 
+              className="w-40 h-40 object-contain drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]"
+            />
+          </motion.div>
         </motion.div>
 
         <motion.div
