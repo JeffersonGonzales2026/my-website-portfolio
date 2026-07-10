@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Activity, Palette, Database, BrainCircuit, 
   Mail, LogOut, Save, Plus, Trash2, Image, ExternalLink, 
   Sliders, Layers, Eye, CheckCircle, FileText, User, HelpCircle, 
-  Briefcase, Star, Cpu, Settings, UploadCloud, File, Image as ImageIcon, Menu, X
+  Briefcase, Star, Cpu, Settings, UploadCloud, File, Image as ImageIcon, Menu, X, Loader2
 } from 'lucide-react';
 
 const sidebarModules = [
@@ -24,51 +24,48 @@ export default function AdminDashboard() {
   const [activeModule, setActiveModule] = useState('Dashboard Hub');
   const [activePortfolioTab, setActivePortfolioTab] = useState('dashboards');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  // Cloud Processing States
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
   const navigate = useNavigate();
 
   // =========================================================================
-  // ROUTE SECURITY: STRICT ADMIN EMAIL VERIFICATION
+  // ROUTE SECURITY: STRICT ADMIN EMAIL VERIFICATION & DATA FETCH
   // =========================================================================
   useEffect(() => {
-    const checkAuth = async () => {
+    const initializeAdmin = async () => {
+      // 1. Verify Authorization
       const { data: { session } } = await supabase.auth.getSession();
       
-      // CHANGE THIS TO YOUR EXACT SUPABASE ADMIN EMAIL
-      const ADMIN_EMAIL = "jeffersonguzmangonzales03@gmail.com"; 
+      // REPLACE WITH YOUR EXACT SUPABASE ADMIN EMAIL
+      const ADMIN_EMAIL = "YOUR_ADMIN_EMAIL@gmail.com"; 
 
       if (!session) {
         navigate('/admin/login');
+        return;
       } else if (session.user.email !== ADMIN_EMAIL) {
-        // If logged in but NOT the admin, sign them out and kick them to login
         await supabase.auth.signOut();
         navigate('/admin/login');
+        return;
       }
+
+      // 2. Fetch Live Cloud Data
+      await loadCloudData();
+      setIsLoading(false);
     };
-    checkAuth();
+
+    initializeAdmin();
   }, [navigate]);
 
   // =========================================================================
   // 1. HOME ENGINE BACKING DATA STATES
   // =========================================================================
   const [homeHeroPhoto, setHomeHeroPhoto] = useState("/images/profile.jpg");
-  const [homeStats, setHomeStats] = useState([
-    { num: 10, suffix: "+", label: "Years of Experience" },
-    { num: 15, suffix: "+", label: "Professional Roles" },
-    { num: 20, suffix: "+", label: "Companies Worked With" },
-    { num: 200, suffix: "+", label: "Projects Completed" },
-    { num: 10, suffix: "+", label: "Industries Served" },
-    { num: 25, suffix: "+", label: "Learning Technologies" }
-  ]);
-  const [homeSkills, setHomeSkills] = useState([
-    { category: "Creative", icon: "Palette", skills: "Graphic Design, Branding, Logo Design, Vector Illustration, Layout Composition, Typography, Mass Print Operations" },
-    { category: "Analytics", icon: "BarChart2", skills: "Data Cleaning, Data Validation, Data Reconciliation, Operational Reporting, Executive Reports, Dashboard Design, Metrics Modeling" },
-    { category: "Technology", icon: "Code", skills: "React, Vite, Tailwind CSS, JavaScript (ES6+), HTML5/CSS3, Git / GitHub, Node.js (Learning), SQL (Learning)" },
-    { category: "AI & Automation", icon: "Cpu", skills: "ChatGPT, Claude, Gemini, GitHub Copilot, Prompt Engineering, Automation Workflows" },
-    { category: "Leadership", icon: "Users", skills: "Project Management, Team Management, Client Acquisition, Milestone Tracking, Cross-functional Operations" }
-  ]);
-  const [homeTimeline, setHomeTimeline] = useState([
-    { year: "2014", title: "Multimedia Graphic Artist", company: "Visual Design Core", desc: "Began my professional journey crafting visual identities." }
-  ]);
+  const [homeStats, setHomeStats] = useState([]);
+  const [homeSkills, setHomeSkills] = useState([]);
+  const [homeTimeline, setHomeTimeline] = useState([]);
 
   // =========================================================================
   // 2. DREAM CREATIONS BACKING DATA STATES
@@ -77,107 +74,273 @@ export default function AdminDashboard() {
   const [dreamFounderPhoto, setDreamFounderPhoto] = useState("/images/jefferson.jpg");
   const [dreamFounderExp, setDreamFounderExp] = useState(10);
   const [dreamFounderProjects, setDreamFounderProjects] = useState(200);
-  
-  const [dreamTeam, setDreamTeam] = useState([
-    { id: 1, name: "Dexter Joy D. Bautista", positions: "Multimedia Designer", bio: "Creativity is more than just a skill for me, it's my lifestyle.", skills: "Package Design, UI/UX Design", software: "Photoshop, Illustrator", experience: "7+ Years", availability: "Full-Time", status: "Active", photo: "/images/dexter.jpg", portfolioUrl: "#" }
-  ]);
-  const [dreamSoftware, setDreamSoftware] = useState([
-    { name: "Photoshop", imageSrc: "/images/photoshop.png" },
-    { name: "Illustrator", imageSrc: "/images/illustrator.png" }
-  ]);
-  const [dreamClients, setDreamClients] = useState([
-    { name: "Responsive Health", industry: "Insurance & Healthcare", imageSrc: "/images/client1.png" }
-  ]);
-  const [dreamFeedback, setDreamFeedback] = useState([
-    { client_name: "Jane Doe", company: "Acme Corp", project_type: "Brand Refresh", rating: 5, feedback: "Dream Creations delivered an outstanding visual package.", face_image_url: "/images/face1.jpg" }
-  ]);
-  const [dreamArchive, setDreamArchive] = useState([
-    { category: "Branding & Identity", subtitle: "Logo Design", title: "Corporate Rebrand", client_name: "Acme Corp", description: "Complete brand visual identity overhaul.", featured_image_url: "/images/project1.jpg", video_url: "/videos/project.mp4" }
-  ]);
+  const [dreamTeam, setDreamTeam] = useState([]);
+  const [dreamSoftware, setDreamSoftware] = useState([]);
+  const [dreamClients, setDreamClients] = useState([]);
+  const [dreamFeedback, setDreamFeedback] = useState([]);
+  const [dreamArchive, setDreamArchive] = useState([]);
 
   // =========================================================================
   // 3. DATA ANALYST BACKING DATA STATES
   // =========================================================================
-  const [analystStats, setAnalystStats] = useState([
-    { label: "Years in Analytics", value: 1, suffix: "+" },
-    { label: "Dashboards Built", value: 12, suffix: "" },
-    { label: "Reports Created", value: 45, suffix: "" },
-    { label: "Automation Projects", value: 8, suffix: "" },
-    { label: "Processes Improved", value: 15, suffix: "" },
-    { label: "Hours Saved", value: 120, suffix: "+" }
-  ]);
-  const [analystRoles, setRoles] = useState([
-    { id: 1, statusBadge: "Current Role", title: "Data Analyst Intern", company: "S.P. Madrid", responsibilities: "Data Cleaning, Power Query, Excel Automation", impact: "Support business reporting, Reduce manual processing", logoUrl: "/images/spmadrid.png" }
-  ]);
-  const [analystSkills, setAnalystSkills] = useState([
-    { category: "Data Analysis", skills: "Microsoft Excel, Power Query, Advanced Formulas" },
-    { category: "Database", skills: "Database Administration, SQL (Learning), PostgreSQL (Learning)" }
-  ]);
-  const [analystEcosystem, setAnalystEcosystem] = useState([
-    { category: "Office Productivity", tools: [{ name: "Microsoft Excel", imageSrc: "/images/excel.png" }] }
-  ]);
-  const [analystRoadmap, setAnalystRoadmap] = useState(["Power BI", "SQL", "Python", "Cloud Analytics", "Microsoft Fabric"]);
-  
-  // 5-Tab Structured Array Architecture (Fully Detailed)
-  const [portfolioDashboards, setPortfolioDashboards] = useState([
-    { id: 1, name: "Executive Sales Dashboard", purpose: "Track revenue", industry: "Corporate B2B", department: "Sales", description: "Sales metrics tracking overview.", software: "Excel", tech: "ODBC", date: "August 2024", status: "Deployed", kpis: "MRR, Churn", impact: "Saved 4 hours weekly", thumbnail: "/images/dashboard-thumb.jpg" }
-  ]);
-  const [portfolioReports, setPortfolioReports] = useState([
-    { id: 1, title: "Q3 Operational Efficiency Report", context: "Visibility needs", objective: "Resolve delays", audience: "C-Level", frequency: "Quarterly", source: "CRM", format: "PDF", viz: "Funnel Charts", findings: "Data errors caused 40% delays", recommendations: "Automate verification rules", impact: "Improved turnaround by 15%", tools: "Excel" }
-  ]);
-  const [portfolioAutomations, setPortfolioAutomations] = useState([
-    { id: 1, name: "Automated Reconciliation Script", problem: "Matching took 2 days", currentProcess: "VLOOKUPs", painPoints: "High error rates", objectives: "Reduce under 1 hour", steps: "Extract, Clean, Match", tech: "Power Query", ai: "ChatGPT optimized", timeSaved: "14 hours/month", errorReduction: "99%", productivity: "+300%" }
-  ]);
-  const [portfolioCaseStudies, setPortfolioCaseStudies] = useState([
-    { id: 1, problem: "Inconsistent lead tracking", background: "Scattered sheets", objectives: "Centralize data", collection: "Exported 5 sources", cleaning: "Standardized dates", analysis: "Peak converted times", visualization: "Heatmaps", insights: "Fast contact convert 4x higher", recommendations: "Set instant alert rules", impact: "+25% sales volume", lessons: "Governance starts at entry point" }
-  ]);
-  const [portfolioProjects, setPortfolioProjects] = useState([
-    { id: 1, name: "Healthcare Patient Flow Analysis", industry: "Healthcare", overview: "Analyzing wait times", problem: "Wait times over 2 hours", objectives: "Staff optimization", tools: "Excel", tech: "Data Modeling", role: "Intern", challenges: "Missing timestamps", solution: "Interpolated averages", results: "Optimized staffing matrix", status: "Completed" }
-  ]);
+  const [analystStats, setAnalystStats] = useState([]);
+  const [analystRoles, setRoles] = useState([]);
+  const [analystSkills, setAnalystSkills] = useState([]);
+  const [analystEcosystem, setAnalystEcosystem] = useState([]);
+  const [analystRoadmap, setAnalystRoadmap] = useState([]);
+  const [portfolioDashboards, setPortfolioDashboards] = useState([]);
+  const [portfolioReports, setPortfolioReports] = useState([]);
+  const [portfolioAutomations, setPortfolioAutomations] = useState([]);
+  const [portfolioCaseStudies, setPortfolioCaseStudies] = useState([]);
+  const [portfolioProjects, setPortfolioProjects] = useState([]);
 
   // =========================================================================
   // 4. AI DEVELOPER BACKING DATA STATES
   // =========================================================================
-  const [aiStats, setAiStats] = useState([
-    { label: "Git Repositories", value: 4, suffix: "" },
-    { label: "Dashboards Built", value: 12, suffix: "" },
-    { label: "Hours Coding", value: 320, suffix: "+" },
-    { label: "AI Prompts Optimized", value: 1200, suffix: "+" }
-  ]);
-  const [aiTimeline, setAiTimeline] = useState([
-    { year: "2014", desc: "Started career as Graphic Artist." },
-    { year: "2026 (Current)", desc: "Committed to learning modern web development." }
-  ]);
-  const [aiEcosystemState, setAiEcosystemState] = useState([
-    { name: "ChatGPT", role: "Primary planning, architecture, debugging.", imageSrc: "/images/chatgpt.png" },
-    { name: "Claude", role: "Long-form documentation, reasoning.", imageSrc: "/images/claude.png" }
-  ]);
-  const [aiArchitecture, setAiArchitecture] = useState([
-    { category: "Frontend", items: [{ name: "React", imageSrc: "/images/react.png" }, { name: "Vite", imageSrc: "/images/vite.png" }] }
-  ]);
-  const [aiShowcase, setAiShowcase] = useState([
-    { id: 1, type: "flagship", badge: "In Progress", meta: "Flagship Software v1", title: "Personal Portfolio Website", desc: "Custom portfolio platform built from scratch.", tech: "React, Vite, Tailwind CSS, Git", role: "Frontend Architect", actionText: "Inspect Source", link: "https://github.com" },
-    { id: 2, type: "pipeline", title: "Future AI Automation Pipelines", desc: "Upcoming systems for data layers.", status: "STATUS: WAITING_ON_DEPS" }
-  ]);
-  const [aiGithub, setAiGithub] = useState({
-    name: "Jefferson Gonzales", username: "jeffersongonzales", profileUrl: "https://github.com", badgeText: "Live Sync Ready", matrixPlaceholder: "[Simulated GitHub Contribution Matrix Grid Placeholder]"
-  });
+  const [aiStats, setAiStats] = useState([]);
+  const [aiTimeline, setAiTimeline] = useState([]);
+  const [aiEcosystemState, setAiEcosystemState] = useState([]);
+  const [aiArchitecture, setAiArchitecture] = useState([]);
+  const [aiShowcase, setAiShowcase] = useState([]);
+  const [aiGithub, setAiGithub] = useState({});
 
   // =========================================================================
   // 5. CONTACT, MEDIA, & INBOX DATA STATES
   // =========================================================================
-  const [contactResumeUrl, setContactResumeUrl] = useState("/Jefferson_Gonzales_Resume.pdf");
-  const [contactPortfolioUrl, setContactPortfolioUrl] = useState("/Jefferson_Gonzales_Portfolio.pdf");
-  const [contactPlatforms, setContactPlatforms] = useState([
-    { id: "linkedin", name: "LinkedIn", username: "jeffersongonzales", link: "https://linkedin.com", status: "active" },
-    { id: "github", name: "GitHub", username: "jeffersongonzales", link: "https://github.com", status: "active" }
-  ]);
-  const [messagesLog, setMessagesLog] = useState([
-    { id: 1, sender_name: "Jane Smith", sender_email: "jane@corp.com", company: "Metrics Inc", subject: "BI Project Pitch", service_interested: "Data Analytics", message: "Hi Jefferson, we checked your analytics profile and would love to review your dashboards portfolio for a current operational reporting pipeline opening.", status: "unread" }
-  ]);
-  const [mediaFiles, setMediaFiles] = useState([
-    { id: 1, file_name: "logo_banner.png", file_url: "/Logo Banner.png", type: "image" }
-  ]);
+  const [contactResumeUrl, setContactResumeUrl] = useState("");
+  const [contactPortfolioUrl, setContactPortfolioUrl] = useState("");
+  const [contactPlatforms, setContactPlatforms] = useState([]);
+  const [messagesLog, setMessagesLog] = useState([]);
+  const [mediaFiles, setMediaFiles] = useState([]);
+
+
+  // =========================================================================
+  // CLOUD DATABASE INTEGRATION LOGIC
+  // =========================================================================
+
+  // Fetch everything from Supabase into local React states
+  const loadCloudData = async () => {
+    try {
+      const { data: home } = await supabase.from('home_engine').select('*').single();
+      if (home) {
+        setHomeHeroPhoto(home.hero_photo || "");
+        setHomeStats(home.quick_stats || []);
+        setHomeSkills(home.core_skills || []);
+        setHomeTimeline(home.career_timeline || []);
+      }
+
+      const { data: dream } = await supabase.from('dream_creations').select('*').single();
+      if (dream) {
+        setDreamBanner(dream.banner_url || "");
+        setDreamFounderPhoto(dream.founder_photo || "");
+        setDreamFounderExp(dream.founder_experience || 0);
+        setDreamFounderProjects(dream.founder_projects || 0);
+        setDreamTeam(dream.team_roster || []);
+        setDreamSoftware(dream.software_stack || []);
+        setDreamClients(dream.trusted_clients || []);
+      }
+
+      const { data: analyst } = await supabase.from('data_analyst').select('*').single();
+      if (analyst) {
+        setAnalystStats(analyst.performance_counters || []);
+        setRoles(analyst.experience_roles || []);
+        setAnalystSkills(analyst.technical_competencies || []);
+        setAnalystEcosystem(analyst.software_ecosystem || []);
+        setAnalystRoadmap(analyst.future_roadmap || []);
+        setPortfolioDashboards(analyst.portfolio_dashboards || []);
+        setPortfolioReports(analyst.portfolio_reports || []);
+        setPortfolioAutomations(analyst.portfolio_automations || []);
+        setPortfolioCaseStudies(analyst.portfolio_case_studies || []);
+        setPortfolioProjects(analyst.portfolio_projects || []);
+      }
+
+      const { data: aiDev } = await supabase.from('ai_developer').select('*').single();
+      if (aiDev) {
+        setAiStats(aiDev.metrics_counters || []);
+        setAiTimeline(aiDev.development_timeline || []);
+        setAiEcosystemState(aiDev.ai_partners || []);
+        setAiArchitecture(aiDev.architecture_stack || []);
+        setAiShowcase(aiDev.engineering_showcase || []);
+        setAiGithub(aiDev.github_sync || {});
+      }
+
+      const { data: contact } = await supabase.from('contact_settings').select('*').single();
+      if (contact) {
+        setContactResumeUrl(contact.resume_url || "");
+        setContactPortfolioUrl(contact.portfolio_url || "");
+      }
+
+      // Fetch Standalone Feed Tables
+      const { data: platforms } = await supabase.from('contact_platforms').select('*').order('display_order');
+      if (platforms) setContactPlatforms(platforms);
+
+      const { data: reviews } = await supabase.from('client_reviews').select('*').order('created_at', {ascending: false});
+      if (reviews) setDreamFeedback(reviews);
+
+      const { data: archives } = await supabase.from('portfolio_projects').select('*').order('created_at', {ascending: false});
+      if (archives) setDreamArchive(archives);
+
+      const { data: messages } = await supabase.from('contact_messages').select('*').order('created_at', {ascending: false});
+      if (messages) setMessagesLog(messages);
+
+      const { data: media } = await supabase.from('media_library').select('*').order('created_at', {ascending: false});
+      if (media) setMediaFiles(media);
+
+    } catch (error) {
+      console.error("Initialization Sync Error:", error);
+    }
+  };
+
+  // Master router to save active module modifications back to Supabase
+  const handleSaveModule = async () => {
+    setIsSaving(true);
+    try {
+      if (activeModule === 'Home Engine') {
+        await supabase.from('home_engine').update({
+          hero_photo: homeHeroPhoto,
+          quick_stats: homeStats,
+          core_skills: homeSkills,
+          career_timeline: homeTimeline
+        }).eq('id', 1);
+        
+      } else if (activeModule === 'Dream Creations') {
+        await supabase.from('dream_creations').update({
+          banner_url: dreamBanner,
+          founder_photo: dreamFounderPhoto,
+          founder_experience: dreamFounderExp,
+          founder_projects: dreamFounderProjects,
+          team_roster: dreamTeam,
+          software_stack: dreamSoftware,
+          trusted_clients: dreamClients
+        }).eq('id', 1);
+
+        // Sync Reviews 
+        await supabase.from('client_reviews').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        if (dreamFeedback.length > 0) {
+          await supabase.from('client_reviews').insert(dreamFeedback.map(({ id, created_at, ...rest }) => rest));
+        }
+
+        // Sync Archives
+        await supabase.from('portfolio_projects').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        if (dreamArchive.length > 0) {
+          await supabase.from('portfolio_projects').insert(dreamArchive.map(({ id, created_at, ...rest }) => rest));
+        }
+
+      } else if (activeModule === 'Data Analyst') {
+        await supabase.from('data_analyst').update({
+          performance_counters: analystStats,
+          experience_roles: analystRoles,
+          technical_competencies: analystSkills,
+          software_ecosystem: analystEcosystem,
+          future_roadmap: analystRoadmap,
+          portfolio_dashboards: portfolioDashboards,
+          portfolio_reports: portfolioReports,
+          portfolio_automations: portfolioAutomations,
+          portfolio_case_studies: portfolioCaseStudies,
+          portfolio_projects: portfolioProjects
+        }).eq('id', 1);
+
+      } else if (activeModule === 'AI Developer') {
+        await supabase.from('ai_developer').update({
+          metrics_counters: aiStats,
+          development_timeline: aiTimeline,
+          ai_partners: aiEcosystemState,
+          architecture_stack: aiArchitecture,
+          engineering_showcase: aiShowcase,
+          github_sync: aiGithub
+        }).eq('id', 1);
+
+      } else if (activeModule === 'Contact Links') {
+        await supabase.from('contact_settings').update({
+          resume_url: contactResumeUrl,
+          portfolio_url: contactPortfolioUrl
+        }).eq('id', 1);
+
+        await supabase.from('contact_platforms').delete().neq('id', 'dummy');
+        if (contactPlatforms.length > 0) {
+          await supabase.from('contact_platforms').insert(contactPlatforms.map((p, i) => ({
+            id: p.id === 'new' ? `custom_${Date.now()}_${i}` : p.id,
+            name: p.name,
+            username: p.username,
+            link: p.link,
+            status: p.status,
+            display_order: i
+          })));
+        }
+      }
+      
+      alert(`SUCCESS: Transmitted "${activeModule}" updates to Supabase Database.`);
+    } catch (error) {
+      console.error("Save Execution Error:", error);
+      alert(`ERROR: Could not complete save sequence. ${error.message}`);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Live Server Handlers for Standalone items
+  const handleArchiveMessage = async (id, idx) => {
+    if(!id) return;
+    try {
+      await supabase.from('contact_messages').delete().eq('id', id);
+      const copy = [...messagesLog];
+      copy.splice(idx, 1);
+      setMessagesLog(copy);
+    } catch(err) {
+      console.error("Message Archive Error", err);
+    }
+  };
+
+  const handleDeleteMedia = async (id, idx) => {
+    if(!id) return;
+    try {
+      await supabase.from('media_library').delete().eq('id', id);
+      const copy = [...mediaFiles];
+      copy.splice(idx, 1);
+      setMediaFiles(copy);
+    } catch(err) {
+      console.error("Media Deletion Error", err);
+    }
+  };
+
+  const handleFileUploadLive = async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    
+    try {
+      // 1. Upload to storage bucket "portfolio_media"
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('portfolio_media')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      // 2. Get Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('portfolio_media')
+        .getPublicUrl(fileName);
+
+      // 3. Insert into media table
+      const { data: dbData, error: dbError } = await supabase
+        .from('media_library')
+        .insert([{ file_name: file.name, file_url: publicUrl, type: file.type.includes('image') ? 'image' : 'document' }])
+        .select()
+        .single();
+
+      if (dbError) throw dbError;
+
+      setMediaFiles([dbData, ...mediaFiles]);
+      alert('File successfully securely uploaded to Supabase Storage!');
+    } catch(err) {
+      console.error(err);
+      alert('Upload failed. Ensure bucket "portfolio_media" is created in Supabase Storage and set to public.');
+      // Local fallback for visual continuity
+      setMediaFiles([{id: Date.now(), file_name: file.name, file_url: URL.createObjectURL(file), type: file.type.includes('image') ? 'image' : 'document'}, ...mediaFiles]);
+    }
+  };
 
   // =========================================================================
   // STATE GENERIC MUTATION HELPERS
@@ -192,13 +355,10 @@ export default function AdminDashboard() {
     setState(state.filter((_, i) => i !== index));
   };
 
-  const handleFileUploadMock = (e) => {
-    const file = e.target.files[0];
-    if(file) {
-      alert(`Simulated upload for: ${file.name}. This will connect to Supabase Storage later.`);
-      setMediaFiles([{id: Date.now(), file_name: file.name, file_url: URL.createObjectURL(file), type: "image"}, ...mediaFiles]);
-    }
-  };
+
+  if (isLoading) {
+    return <div className="h-screen flex items-center justify-center bg-[#09090b] text-cyan-400 font-mono text-sm gap-2"><Loader2 className="animate-spin" size={16}/> ESTABLISHING SECURE CONNECTION...</div>;
+  }
 
   return (
     <div className="flex h-screen bg-[#09090b] text-zinc-200 overflow-hidden font-sans antialiased">
@@ -237,7 +397,7 @@ export default function AdminDashboard() {
           </nav>
         </div>
         <div className="p-4 border-t border-zinc-900">
-          <button onClick={() => navigate('/admin/login')} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold text-red-400 hover:bg-red-500/5 hover:border-red-500/20 transition-all cursor-pointer">
+          <button onClick={async () => { await supabase.auth.signOut(); navigate('/admin/login'); }} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold text-red-400 hover:bg-red-500/5 hover:border-red-500/20 transition-all cursor-pointer">
             <LogOut size={14} /> SIGN OUT CORE
           </button>
         </div>
@@ -262,15 +422,17 @@ export default function AdminDashboard() {
           </div>
           
           <button 
-            onClick={() => alert(`SUCCESS: Parameters for "${activeModule}" cached locally in component memory registers!`)}
-            className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white text-black text-[10px] sm:text-xs font-mono font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2 shadow-md cursor-pointer"
+            onClick={handleSaveModule}
+            disabled={isSaving || activeModule === 'Dashboard Hub' || activeModule === 'Messages Inbox' || activeModule === 'Media Library'}
+            className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white text-black text-[10px] sm:text-xs font-mono font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2 shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Save size={14} className="hidden sm:block" /> SAVE
+            {isSaving ? <Loader2 size={14} className="animate-spin hidden sm:block" /> : <Save size={14} className="hidden sm:block" />}
+            {isSaving ? 'SYNCING CLOUD...' : 'SAVE MODULE'}
           </button>
         </header>
 
         {/* INNER SCROLLABLE CANVAS CONTAINER */}
-        <div className="flex-1 overflow-y-auto p-8 max-w-5xl w-full mx-auto space-y-8">
+        <div className="flex-1 overflow-y-auto p-8 max-w-5xl w-full mx-auto space-y-8 pb-32">
           
           {/* ================= WORKSPACE PANEL: DASHBOARD HUB ================= */}
           {activeModule === 'Dashboard Hub' && (
@@ -291,7 +453,7 @@ export default function AdminDashboard() {
                   <p className="text-[10px] text-zinc-500 mt-1 font-mono">Upload images/documents to copy URLs into your dynamic fields.</p>
                 </div>
                 <div className="relative">
-                  <input type="file" onChange={handleFileUploadMock} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf" />
+                  <input type="file" onChange={handleFileUploadLive} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf,video/mp4" />
                   <button className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md">
                     <UploadCloud size={14} /> UPLOAD FILE ASSET
                   </button>
@@ -299,13 +461,13 @@ export default function AdminDashboard() {
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {mediaFiles.map((file, idx) => (
-                  <div key={idx} className="group relative rounded-xl bg-zinc-950 border border-zinc-900 overflow-hidden aspect-square flex flex-col items-center justify-center hover:border-blue-500/50 transition-colors">
+                  <div key={file.id || idx} className="group relative rounded-xl bg-zinc-950 border border-zinc-900 overflow-hidden aspect-square flex flex-col items-center justify-center hover:border-blue-500/50 transition-colors">
                     {file.type === 'image' ? <img src={file.file_url} alt="media" className="w-full h-full object-cover" /> : <File size={32} className="text-zinc-600" />}
                     <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center">
                       <p className="text-[10px] text-white truncate w-full mb-3 font-mono">{file.file_name}</p>
                       <div className="flex gap-2">
                         <button onClick={() => { navigator.clipboard.writeText(file.file_url); alert('URL Copied to clipboard!'); }} className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-mono font-bold cursor-pointer">Copy</button>
-                        <button onClick={() => handleRemoveArrayItem(mediaFiles, setMediaFiles, idx)} className="px-3 py-1.5 rounded-lg bg-red-900/50 hover:bg-red-900 text-white text-[10px] font-mono font-bold cursor-pointer"><Trash2 size={12}/></button>
+                        <button onClick={() => handleDeleteMedia(file.id, idx)} className="px-3 py-1.5 rounded-lg bg-red-900/50 hover:bg-red-900 text-white text-[10px] font-mono font-bold cursor-pointer"><Trash2 size={12}/></button>
                       </div>
                     </div>
                   </div>
@@ -420,7 +582,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="space-y-4">
                   {dreamTeam.map((member, idx) => (
-                    <div key={member.id} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative">
+                    <div key={member.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative">
                       <button onClick={() => handleRemoveArrayItem(dreamTeam, setDreamTeam, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <input type="text" value={member.name} onChange={(e) => handleUpdateArrayField(dreamTeam, setDreamTeam, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white font-bold" placeholder="Member Name" />
@@ -494,7 +656,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="space-y-4">
                   {dreamFeedback.map((review, idx) => (
-                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative">
+                    <div key={review.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative">
                       <button onClick={() => handleRemoveArrayItem(dreamFeedback, setDreamFeedback, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                       <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
                         <input type="text" value={review.client_name} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white" placeholder="Client Name" />
@@ -521,7 +683,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="space-y-4">
                   {dreamArchive.map((project, idx) => (
-                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative">
+                    <div key={project.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative">
                       <button onClick={() => handleRemoveArrayItem(dreamArchive, setDreamArchive, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         <input type="text" value={project.category} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'category', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 font-bold" placeholder="Category Map" />
@@ -565,7 +727,7 @@ export default function AdminDashboard() {
                   <button onClick={() => setRoles([...analystRoles, { id: Date.now(), statusBadge: "Role Block", title: "", company: "", responsibilities: "", impact: "", logoUrl: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD EXPERIENCE ROLE</button>
                 </div>
                 {analystRoles.map((role, idx) => (
-                  <div key={role.id} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative">
+                  <div key={role.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative">
                     <button onClick={() => handleRemoveArrayItem(analystRoles, setRoles, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pr-6">
                       <input type="text" value={role.statusBadge} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'statusBadge', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-emerald-400" placeholder="Badge (Current Role)" />
@@ -620,7 +782,7 @@ export default function AdminDashboard() {
                   <div className="space-y-4 pt-2">
                     <div className="flex justify-between items-center"><span className="text-[10px] font-mono text-zinc-500 uppercase font-black">&gt;_ Dashboards List Module</span><button onClick={() => setPortfolioDashboards([...portfolioDashboards, { id: Date.now(), name: "", purpose: "", industry: "", department: "", description: "", software: "", tech: "", date: "", status: "Deployed", kpis: "", impact: "", thumbnail: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 border border-zinc-800 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD DASHBOARD</button></div>
                     {portfolioDashboards.map((item, idx) => (
-                      <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
+                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
                         <button onClick={() => handleRemoveArrayItem(portfolioDashboards, setPortfolioDashboards, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pr-6">
                           <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Dashboard Name" />
@@ -652,7 +814,7 @@ export default function AdminDashboard() {
                   <div className="space-y-4 pt-2">
                     <div className="flex justify-between items-center"><span className="text-[10px] font-mono text-zinc-500 uppercase font-black">&gt;_ Reports List Module</span><button onClick={() => setPortfolioReports([...portfolioReports, { id: Date.now(), title: "", context: "", objective: "", audience: "", frequency: "", source: "", format: "", viz: "", findings: "", recommendations: "", impact: "", tools: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 border border-zinc-800 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD REPORT</button></div>
                     {portfolioReports.map((item, idx) => (
-                      <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
+                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
                         <button onClick={() => handleRemoveArrayItem(portfolioReports, setPortfolioReports, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pr-6">
                           <input type="text" value={item.title} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Report Title" />
@@ -684,7 +846,7 @@ export default function AdminDashboard() {
                   <div className="space-y-4 pt-2">
                     <div className="flex justify-between items-center"><span className="text-[10px] font-mono text-zinc-500 uppercase font-black">&gt;_ Automations List Module</span><button onClick={() => setPortfolioAutomations([...portfolioAutomations, { id: Date.now(), name: "", problem: "", currentProcess: "", painPoints: "", objectives: "", steps: "", tech: "", ai: "", timeSaved: "", errorReduction: "", productivity: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 border border-zinc-800 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD AUTOMATION</button></div>
                     {portfolioAutomations.map((item, idx) => (
-                      <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
+                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
                         <button onClick={() => handleRemoveArrayItem(portfolioAutomations, setPortfolioAutomations, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pr-6">
                           <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Automation System Name" />
@@ -713,7 +875,7 @@ export default function AdminDashboard() {
                   <div className="space-y-4 pt-2">
                     <div className="flex justify-between items-center"><span className="text-[10px] font-mono text-zinc-500 uppercase font-black">&gt;_ Case Studies Module</span><button onClick={() => setPortfolioCaseStudies([...portfolioCaseStudies, { id: Date.now(), problem: "", background: "", objectives: "", collection: "", cleaning: "", analysis: "", visualization: "", insights: "", recommendations: "", impact: "", lessons: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 border border-zinc-800 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD CASE STUDY</button></div>
                     {portfolioCaseStudies.map((item, idx) => (
-                      <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
+                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
                         <button onClick={() => handleRemoveArrayItem(portfolioCaseStudies, setPortfolioCaseStudies, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pr-6">
                           <input type="text" value={item.problem} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'problem', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Core Problem Context" />
@@ -742,7 +904,7 @@ export default function AdminDashboard() {
                   <div className="space-y-4 pt-2">
                     <div className="flex justify-between items-center"><span className="text-[10px] font-mono text-zinc-500 uppercase font-black">&gt;_ Intern Projects Module</span><button onClick={() => setPortfolioProjects([...portfolioProjects, { id: Date.now(), name: "", industry: "", overview: "", problem: "", objectives: "", tools: "", tech: "", role: "", challenges: "", solution: "", results: "", status: "Completed" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 border border-zinc-800 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD PROJECT</button></div>
                     {portfolioProjects.map((item, idx) => (
-                      <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
+                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
                         <button onClick={() => handleRemoveArrayItem(portfolioProjects, setPortfolioProjects, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pr-6">
                           <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Project Name" />
@@ -927,7 +1089,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="space-y-4">
                   {aiShowcase.map((project, idx) => (
-                    <div key={project.id} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative pr-8">
+                    <div key={project.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative pr-8">
                       <button onClick={() => handleRemoveArrayItem(aiShowcase, setAiShowcase, idx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                       <select value={project.type} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'type', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-[10px] font-mono text-zinc-400 cursor-pointer outline-none mb-2">
                         <option value="flagship">Flagship Project Type</option>
@@ -1007,9 +1169,9 @@ export default function AdminDashboard() {
                 </div>
                 <div className="space-y-3">
                   {contactPlatforms.map((platform, idx) => (
-                    <div key={platform.id} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 grid grid-cols-1 sm:grid-cols-4 gap-3 items-center relative pr-8">
+                    <div key={platform.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 grid grid-cols-1 sm:grid-cols-4 gap-3 items-center relative pr-8">
                       <button onClick={() => handleRemoveArrayItem(contactPlatforms, setContactPlatforms, idx)} className="absolute right-3 top-4 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
-                      <span className="text-xs font-mono font-bold text-white uppercase">{platform.name} Link Account</span>
+                      <input type="text" value={platform.name} onChange={(e) => handleUpdateArrayField(contactPlatforms, setContactPlatforms, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold uppercase" placeholder="Platform Name" />
                       <input type="text" value={platform.username} onChange={(e) => handleUpdateArrayField(contactPlatforms, setContactPlatforms, idx, 'username', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-300 font-mono" placeholder="Display Handle" />
                       <input type="text" value={platform.link} onChange={(e) => handleUpdateArrayField(contactPlatforms, setContactPlatforms, idx, 'link', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500 font-mono" placeholder="Target Endpoint Account Link" />
                       <select value={platform.status} onChange={(e) => handleUpdateArrayField(contactPlatforms, setContactPlatforms, idx, 'status', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-400 appearance-none text-center cursor-pointer">
@@ -1049,10 +1211,13 @@ export default function AdminDashboard() {
                       <div className="text-zinc-500 text-[11px] leading-relaxed whitespace-pre-wrap">{msg.message}</div>
                       <div className="text-center flex flex-col items-center justify-center gap-2">
                         <span className="inline-block px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-wider">{msg.status}</span>
-                        <button onClick={() => handleRemoveArrayItem(messagesLog, setMessagesLog, idx)} className="text-[10px] text-red-400/70 hover:text-red-400 border border-zinc-900 bg-zinc-950/40 px-2 py-0.5 rounded cursor-pointer">Archive Log</button>
+                        <button onClick={() => handleArchiveMessage(msg.id, idx)} className="text-[10px] text-red-400/70 hover:text-red-400 border border-zinc-900 bg-zinc-950/40 px-2 py-0.5 rounded cursor-pointer">Archive Log</button>
                       </div>
                     </div>
                   ))}
+                  {messagesLog.length === 0 && (
+                    <div className="p-8 text-center text-zinc-600 font-mono italic">No messages found in the incoming transmission queue.</div>
+                  )}
                 </div>
               </div>
             </div>
