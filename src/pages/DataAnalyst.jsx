@@ -1,8 +1,7 @@
 // src/pages/DataAnalyst.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
-import { BarChart3, PieChart, Database, FileSpreadsheet, Settings, Cpu, LineChart, Table, CheckCircle2, ArrowRight, ArrowUp, Briefcase, FileText, LayoutDashboard, BrainCircuit, GraduationCap, Code2, Quote } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { BarChart3, PieChart, Database, FileSpreadsheet, Settings, Cpu, LineChart, Table, CheckCircle2, ArrowRight, ArrowUp, Briefcase, FileText, LayoutDashboard, BrainCircuit, Code2, Quote } from 'lucide-react';
 
 // ================= CUSTOM ANIMATED COUNTER COMPONENT =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -27,8 +26,7 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
   return <span ref={ref} className="text-2xl font-black text-white mb-1 group-hover:text-emerald-400 transition-colors">0{suffix}</span>;
 };
 
-// ================= CMS SAFE FALLBACK DATA =================
-
+// ================= DEFAULT LOCAL DATA BASELINES =================
 const defaultQuickStats = [
   { label: "Years in Analytics", value: 1, suffix: "+" },
   { label: "Dashboards Built", value: 12, suffix: "" },
@@ -38,17 +36,24 @@ const defaultQuickStats = [
   { label: "Hours Saved", value: 120, suffix: "+" }
 ];
 
-const defaultExperienceResponsibilities = [
-  "Data Cleaning", "Data Validation", "Data Reconciliation", "Operational Reporting", 
-  "Executive Reporting", "Dashboard Preparation", "Power Query", "ODBC Connectivity", 
-  "Excel Automation", "Workflow Documentation", "Data Accuracy Verification", 
-  "Automation Planning", "Cross-functional Collaboration", "Continuous Improvement", "AI-assisted Productivity"
-];
-
-const defaultExperienceImpact = [
-  "Support business reporting.", "Improve data consistency.", "Reduce manual processing.",
-  "Assist in decision-making.", "Create reusable reporting solutions.", "Prepare business-ready dashboards.",
-  "Promote efficient workflows.", "Support process optimization."
+const defaultRolesData = [
+  {
+    id: 1,
+    statusBadge: "Current Role",
+    title: "Data Analyst Intern",
+    company: "S.P. Madrid",
+    responsibilities: [
+      "Data Cleaning", "Data Validation", "Data Reconciliation", "Operational Reporting", 
+      "Executive Reporting", "Dashboard Preparation", "Power Query", "ODBC Connectivity", 
+      "Excel Automation", "Workflow Documentation", "Data Accuracy Verification", 
+      "Automation Planning", "Cross-functional Collaboration", "Continuous Improvement", "AI-assisted Productivity"
+    ],
+    impact: [
+      "Support business reporting.", "Improve data consistency.", "Reduce manual processing.",
+      "Assist in decision-making.", "Create reusable reporting solutions.", "Prepare business-ready dashboards.",
+      "Promote efficient workflows.", "Support process optimization."
+    ]
+  }
 ];
 
 const defaultTechnicalSkills = [
@@ -103,11 +108,6 @@ const defaultToolsTechnologies = [
   }
 ];
 
-const defaultCertifications = {
-  current: ["Database Administration Seminar", "Engineering Seminar", "TESDA NCII", "Real Estate Certification"],
-  future: ["Microsoft Excel Expert", "Power BI Data Analyst", "Microsoft Fabric", "Google Data Analytics", "IBM Data Analyst", "SQL Certifications", "Python Certifications", "Azure Data Fundamentals"]
-};
-
 const defaultAnalyticsRoadmap = [
   "Power BI", "SQL", "Python", "Pandas", "NumPy", "Data Visualization", "Machine Learning", 
   "Artificial Intelligence", "Predictive Analytics", "Data Engineering Fundamentals", 
@@ -145,36 +145,22 @@ const defaultShowcaseData = {
 
 export default function DataAnalyst() {
   const [activeTab, setActiveTab] = useState('dashboards');
-  const [config, setConfig] = useState(null); // <-- NEW CLOUD STREAM CONFIGURATION PIPELINE STATE
   const containerRef = useRef(null);
 
-  useEffect(() => {
-    const fetchAnalyticsCoreData = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('data_analyst_config')
-          .select('*')
-          .eq('id', 1)
-          .single();
-        
-        if (error && error.code !== 'PGRST116') throw error;
-        if (data) setConfig(data);
-      } catch (err) {
-        console.error('Analytics engine cloud data fault:', err.message);
-      }
-    };
-    fetchAnalyticsCoreData();
-  }, []);
+  // ================= DECOUPLED STATE DRIVERS (READY FOR CMS MANAGER LATER) =================
+  const [stats, setStats] = useState(defaultQuickStats);
+  const [roles, setRoles] = useState(defaultRolesData);
+  const [techSkills, setTechSkills] = useState(defaultTechnicalSkills);
+  const [showcase, setShowcase] = useState(defaultShowcaseData);
+  const [ecosystem, setEcosystem] = useState(defaultToolsTechnologies);
+  const [roadmap, setRoadmap] = useState(defaultAnalyticsRoadmap);
 
-  // Multi-entity cloud synchronization mapping arrays
-  const quickStats = config?.quick_stats || defaultQuickStats;
-  const experienceResponsibilities = config?.responsibilities || defaultExperienceResponsibilities;
-  const experienceImpact = config?.impact || defaultExperienceImpact;
-  const technicalSkills = config?.technical_skills || defaultTechnicalSkills;
-  const toolsTechnologies = config?.tools_technologies || defaultToolsTechnologies;
-  const certifications = config?.certifications || defaultCertifications;
-  const analyticsRoadmap = config?.roadmap || defaultAnalyticsRoadmap;
-  const showcaseData = config?.showcase_data || defaultShowcaseData;
+  const scrollToSection = (id) => {
+    const targetElement = document.getElementById(id);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return (
     <div ref={containerRef} className="flex flex-col min-h-screen bg-[#020617] text-slate-200 overflow-x-hidden relative selection:bg-emerald-500/30 selection:text-emerald-200">
@@ -203,7 +189,7 @@ export default function DataAnalyst() {
 
           {/* Quick Statistics Grid with Animated Counters */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {quickStats.map((stat, idx) => (
+            {stats.map((stat, idx) => (
               <motion.div key={idx} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4, delay: 0.2 + (idx * 0.1) }}
                 className="p-4 rounded-2xl bg-slate-900/50 border border-slate-800 backdrop-blur-sm flex flex-col items-center justify-center hover:border-emerald-500/50 transition-colors group">
                 <AnimatedCounter value={stat.value} suffix={stat.suffix} />
@@ -214,10 +200,10 @@ export default function DataAnalyst() {
         </motion.div>
       </section>
 
-      {/* ================= PROFESSIONAL SUMMARY & EXPERIENCE ================= */}
+      {/* ================= PROFESSIONAL SUMMARY & HORIZONTAL SWIPEABLE ROLES ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
             {/* Professional Summary */}
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="lg:col-span-5 space-y-6">
@@ -231,36 +217,47 @@ export default function DataAnalyst() {
               </div>
             </motion.div>
 
-            {/* Professional Experience Card */}
-            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="lg:col-span-7">
-              <div className="p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl relative overflow-hidden group hover:border-emerald-500/30 transition-colors">
-                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:text-emerald-500 transition-colors"><Briefcase size={120} /></div>
-                
-                <div className="relative z-10">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">Current Role</span>
-                  </div>
-                  <h4 className="text-2xl font-black text-white">Data Analyst Intern</h4>
-                  <p className="text-lime-400 font-semibold mb-8">S.P. Madrid</p>
+            {/* Horizontally Swipeable Experience Tracks Container */}
+            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="lg:col-span-7 w-full overflow-hidden">
+              <div className="flex overflow-x-auto gap-6 pb-4 hide-scrollbar snap-x snap-mandatory scroll-smooth">
+                {roles.map((role) => (
+                  <div key={role.id} className="shrink-0 w-full snap-center p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl relative overflow-hidden group hover:border-emerald-500/30 transition-colors">
+                    <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:text-emerald-500 transition-colors pointer-events-none">
+                      <Briefcase size={120} />
+                    </div>
+                    
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
+                          {role.statusBadge}
+                        </span>
+                      </div>
+                      <h4 className="text-2xl font-black text-white">{role.title}</h4>
+                      <p className="text-lime-400 font-semibold mb-8">{role.company}</p>
 
-                  <h5 className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-4">Core Responsibilities</h5>
-                  <div className="flex flex-wrap gap-2 mb-8">
-                    {experienceResponsibilities.map((item, i) => (
-                      <span key={i} className="px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700 text-xs text-slate-300">{item}</span>
-                    ))}
-                  </div>
+                      <h5 className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-4">Core Responsibilities</h5>
+                      <div className="flex flex-wrap gap-2 mb-8">
+                        {role.responsibilities.map((item, i) => (
+                          <span key={i} className="px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700 text-xs text-slate-300">
+                            {item}
+                          </span>
+                        ))}
+                      </div>
 
-                  <h5 className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-4">Professional Impact</h5>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {experienceImpact.map((item, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                        <CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" /> <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                      <h5 className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-4">Professional Impact</h5>
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {role.impact.map((item, i) => (
+                          <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                            <CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" /> <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ))}
               </div>
             </motion.div>
+
           </div>
         </div>
       </section>
@@ -274,7 +271,7 @@ export default function DataAnalyst() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {technicalSkills.map((section, index) => (
+            {techSkills.map((section, index) => (
               <motion.div key={index} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }}
                 className="p-6 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-emerald-500/50 transition-colors group">
                 <h4 className="text-lg font-bold text-white mb-4 flex items-center gap-2 group-hover:text-emerald-400 transition-colors">
@@ -286,10 +283,10 @@ export default function DataAnalyst() {
                   {section.category}
                 </h4>
                 <ul className="space-y-2">
-                  {section.skills?.map((skill, i) => (
+                  {section.skills.map((skill, i) => (
                     <li key={i} className="text-sm text-slate-400 flex items-center gap-2">
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50" />
-                      <span className={skill?.includes('Learning') || skill?.includes('Future') ? 'italic text-slate-500' : ''}>{skill}</span>
+                      <span className={skill.includes('Learning') || skill.includes('Future') ? 'italic text-slate-500' : ''}>{skill}</span>
                     </li>
                   ))}
                 </ul>
@@ -312,7 +309,7 @@ export default function DataAnalyst() {
           <div className="flex flex-wrap justify-center gap-2 mb-12">
             {['dashboards', 'reports', 'automations', 'caseStudies', 'projects'].map((tab) => (
               <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all capitalize cursor-pointer ${activeTab === tab ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'}`}>
+                className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all capitalize ${activeTab === tab ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'}`}>
                 {tab.replace(/([A-Z])/g, ' $1').trim()}
               </button>
             ))}
@@ -323,23 +320,23 @@ export default function DataAnalyst() {
             <AnimatePresence mode="wait">
               {activeTab === 'dashboards' && (
                 <motion.div key="dashboards" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {showcaseData.dashboards?.map(item => (
+                  {showcase.dashboards?.map(item => (
                     <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden flex flex-col group hover:border-emerald-500/50 transition-colors">
                       <div className="h-48 bg-slate-800 relative flex items-center justify-center overflow-hidden">
                          <LayoutDashboard size={40} className="text-slate-700 group-hover:text-emerald-500/20 transition-colors" />
                          <div className="absolute top-4 right-4 px-2 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] uppercase font-bold rounded">{item.status}</div>
                       </div>
                       <div className="p-6 flex flex-col flex-grow">
-                        <span className="text-xs text-emerald-400 font-bold mb-1export">{item.department} • {item.industry}</span>
+                        <span className="text-xs text-emerald-400 font-bold mb-1">{item.department} • {item.industry}</span>
                         <h4 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">{item.name}</h4>
                         <p className="text-sm text-slate-400 mb-4">{item.purpose}</p>
                         <div className="grid grid-cols-2 gap-4 mb-4 text-xs">
                           <div><span className="text-slate-500 block">Software:</span><span className="text-slate-300">{item.software}</span></div>
-                          <div><span className="text-slate-500 block">KPIs Tracked:</span><span className="text-slate-300">{item.kpis?.join(", ")}</span></div>
+                          <div><span className="text-slate-500 block">KPIs Tracked:</span><span className="text-slate-300">{item.kpis.join(", ")}</span></div>
                         </div>
                         <div className="mt-auto pt-4 border-t border-slate-800 flex justify-between items-center">
                           <span className="text-xs text-lime-400 font-semibold">Impact: {item.impact}</span>
-                          <button className="text-xs text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 cursor-pointer">View Details <ArrowRight size={14} /></button>
+                          <button className="text-xs text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1">View Details <ArrowRight size={14} /></button>
                         </div>
                       </div>
                     </div>
@@ -349,7 +346,7 @@ export default function DataAnalyst() {
 
               {activeTab === 'reports' && (
                 <motion.div key="reports" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {showcaseData.reports?.map(item => (
+                  {showcase.reports?.map(item => (
                     <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-emerald-500/50 transition-colors">
                       <div className="flex justify-between items-start mb-4">
                         <div className="w-12 h-12 rounded-xl bg-lime-500/10 flex items-center justify-center text-lime-400"><FileSpreadsheet size={24} /></div>
@@ -362,7 +359,7 @@ export default function DataAnalyst() {
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Data Source</span><span className="text-slate-300">{item.source}</span></div>
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Key Finding</span><span className="text-emerald-300 font-semibold text-right w-2/3">{item.findings}</span></div>
                       </div>
-                      <button className="w-full py-2 rounded-lg bg-slate-800 text-white text-xs font-bold hover:bg-emerald-600 transition-colors cursor-pointer">Preview Report</button>
+                      <button className="w-full py-2 rounded-lg bg-slate-800 text-white text-xs font-bold hover:bg-emerald-600 transition-colors">Preview Report</button>
                     </div>
                   ))}
                 </motion.div>
@@ -370,7 +367,7 @@ export default function DataAnalyst() {
 
               {activeTab === 'automations' && (
                 <motion.div key="automations" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 gap-8">
-                  {showcaseData.automations?.map(item => (
+                  {showcase.automations?.map(item => (
                     <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 lg:p-8 flex flex-col md:flex-row gap-8 hover:border-emerald-500/50 transition-colors group">
                       <div className="md:w-1/3 border-r border-slate-800 pr-6">
                         <Cpu size={32} className="text-emerald-400 mb-4" />
@@ -405,7 +402,7 @@ export default function DataAnalyst() {
 
               {activeTab === 'caseStudies' && (
                 <motion.div key="caseStudies" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 gap-6">
-                   {showcaseData.caseStudies?.map(item => (
+                   {showcase.caseStudies?.map(item => (
                      <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-emerald-500/50 transition-colors">
                         <div className="flex items-center gap-3 mb-4">
                            <BrainCircuit className="text-emerald-400" size={24}/>
@@ -424,7 +421,7 @@ export default function DataAnalyst() {
 
               {activeTab === 'projects' && (
                 <motion.div key="projects" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                   {showcaseData.projects?.map(item => (
+                   {showcase.projects?.map(item => (
                      <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 flex flex-col hover:border-emerald-500/50 transition-colors group">
                         <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider mb-2">{item.industry}</span>
                         <h4 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">{item.name}</h4>
@@ -442,7 +439,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= SOFTWARE ECOSYSTEM ================= */}
+      {/* ================= 52. SOFTWARE ECOSYSTEM (WITH LOGOS) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -451,13 +448,13 @@ export default function DataAnalyst() {
           </div>
           
           <div className="space-y-16">
-            {toolsTechnologies.map((cat, idx) => (
+            {ecosystem.map((cat, idx) => (
               <div key={idx} className="relative">
                 <h4 className="text-[11px] text-emerald-400 font-bold uppercase tracking-widest mb-6 text-center border-b border-slate-800/60 pb-3 max-w-sm mx-auto">
                   {cat.category}
                 </h4>
                 <div className="flex flex-wrap justify-center gap-4 md:gap-8">
-                  {cat.tools?.map((tool, i) => (
+                  {cat.tools.map((tool, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, scale: 0.9 }}
@@ -472,8 +469,8 @@ export default function DataAnalyst() {
                           alt={tool.name} 
                           className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10" 
                           onError={(e) => { 
-                             e.target.style.display = 'none'; 
-                             e.target.nextSibling.style.display = 'block'; 
+                              e.target.style.display = 'none'; 
+                              e.target.nextSibling.style.display = 'block'; 
                           }}
                         />
                         {/* Fallback Icon if image file is not found */}
@@ -491,43 +488,26 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= CERTIFICATIONS & ROADMAP ================= */}
+      {/* ================= FUTURE ANALYTICS ROADMAP ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
-          
-          <div>
-            <h3 className="text-2xl font-black text-white mb-6 flex items-center gap-3"><GraduationCap className="text-emerald-500" /> Professional Certifications</h3>
-            <div className="space-y-6">
-               <div>
-                  <h4 className="text-sm font-bold text-slate-300 mb-3 border-b border-slate-800 pb-2">Current</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {certifications.current?.map((cert, i) => <span key={i} className="px-3 py-1.5 bg-emerald-900/20 border border-emerald-800/50 text-emerald-300 text-xs rounded-lg">{cert}</span>)}
-                  </div>
-               </div>
-               <div>
-                  <h4 className="text-sm font-bold text-slate-500 mb-3 border-b border-slate-800 pb-2">Future / In Progress</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {certifications.future?.map((cert, i) => <span key={i} className="px-3 py-1.5 bg-slate-800/50 border border-slate-700 text-slate-400 text-xs rounded-lg italic">{cert}</span>)}
-                  </div>
-               </div>
-            </div>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h3 className="text-2xl font-black text-white mb-4 flex items-center justify-center gap-3">
+              <ArrowRight className="text-lime-500" /> Future Analytics Roadmap
+            </h3>
+            <div className="w-12 h-[1px] bg-zinc-800 mx-auto mt-2" />
           </div>
-
-          <div>
-            <h3 className="text-2xl font-black text-white mb-6 flex items-center gap-3"><ArrowRight className="text-lime-500" /> Future Analytics Roadmap</h3>
-            <div className="flex flex-wrap gap-2">
-               {analyticsRoadmap.map((item, i) => (
-                 <span key={i} className="px-3 py-1.5 bg-slate-900 border border-slate-800 text-slate-400 text-xs rounded-lg hover:border-emerald-500/50 hover:text-emerald-300 transition-colors cursor-default">
-                   {item}
-                 </span>
-               ))}
-            </div>
+          <div className="flex flex-wrap gap-2 justify-center">
+             {roadmap.map((item, i) => (
+               <span key={i} className="px-3 py-1.5 bg-slate-900 border border-slate-800 text-slate-400 text-xs rounded-lg hover:border-emerald-500/50 hover:text-emerald-300 transition-colors cursor-default">
+                 {item}
+               </span>
+             ))}
           </div>
-
         </div>
       </section>
 
-      {/* ================= ANALYTICS PHILOSOPHY ================= */}
+      {/* ================= 54. ANALYTICS PHILOSOPHY ================= */}
       <section className="py-24 px-6 relative z-10 border-t border-slate-800/50 text-center">
         <div className="max-w-4xl mx-auto">
            <Quote size={40} className="text-emerald-500/30 mx-auto mb-6" />
@@ -541,10 +521,10 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= TRANSITION TO THE NEXT JOURNEY ================= */}
+      {/* ================= 56. TRANSITION TO THE NEXT JOURNEY ================= */}
       <section className="w-full relative border-t border-slate-800 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
         
-        {/* Aesthetic Shift Gradient: Fading from Data Analyst Neon Green to AI Developer Purple/Cyan */}
+        {/* Aesthetic Shift Gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-indigo-950/80 to-purple-950/90 -z-10" />
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[300px] bg-cyan-500/10 blur-[120px] -z-10 pointer-events-none" />
 

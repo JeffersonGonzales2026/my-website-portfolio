@@ -2,7 +2,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate } from 'framer-motion';
 import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 
 // ================= CUSTOM ANIMATED COUNTER =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -58,7 +57,7 @@ const futuristicReveal = {
   }
 };
 
-// ================= CMS SAFE FALLBACK DATA PARAMETERS =================
+// ================= DATA BASELINE GENERATORS =================
 const defaultDeveloperStats = [
   { label: "Git Repositories", value: 4, suffix: "" },
   { label: "Dashboards Built", value: 12, suffix: "" },
@@ -75,12 +74,6 @@ const defaultLearningTimeline = [
   { year: "2026 (Current)", desc: "Committed to learning modern web development. Started studying React, Vite, Tailwind CSS, Git, GitHub, JavaScript, Modern UI Architecture, Component Design, and Software Engineering." },
   { year: "2026 (Milestone)", desc: "Built this Personal Portfolio as the first flagship software engineering project." },
   { year: "Future Scope", desc: "AI Automation Platform, CRM System, Business Management Software, Analytics Platform, Mobile Applications, SaaS Products, Open Source Contributions, Teaching Software Engineering, and Technology Entrepreneurship." }
-];
-
-const defaultAiWorkflowSteps = [
-  "Idea", "Research", "Requirements Gathering", "Planning", "Architecture Design", "UI/UX Planning", 
-  "Prompt Engineering", "Prototype", "AI-Assisted Code Generation", "Manual Code Review", "Refactoring", 
-  "Debugging", "Testing", "Optimization", "Documentation", "Version Control", "Deployment", "Maintenance", "Continuous Improvement"
 ];
 
 const defaultAiEcosystem = [
@@ -123,34 +116,52 @@ const defaultTechStackData = [
   }
 ];
 
+const defaultShowcaseProjects = [
+  {
+    id: 1,
+    type: "flagship",
+    badge: "In Progress",
+    meta: "Flagship Software Engineering v1",
+    title: "Personal Portfolio Website",
+    desc: "A premium, custom-architected portfolio platform built entirely from scratch to showcase graphic design archives, data analytics systems, and modular web software while serving as an active production codebase.",
+    tech: ["React", "Vite", "Tailwind CSS", "Git", "GitHub", "VS Code", "AI Assistant Workflow"],
+    role: "Frontend Architect",
+    actionText: "Inspect Source",
+    link: "https://github.com"
+  },
+  {
+    id: 2,
+    type: "pipeline",
+    title: "Future AI Automation Pipelines",
+    desc: "Upcoming systems for centralizing enterprise data layers, processing natural language document pipelines, lead routing rules, and automated business flow orchestration.",
+    status: "STATUS: WAITING_ON_DEPS"
+  }
+];
+
+const defaultGithubProfile = {
+  name: "Jefferson Gonzales",
+  username: "jeffersongonzales",
+  profileUrl: "https://github.com",
+  badgeText: "Live Sync Standard ready",
+  matrixPlaceholder: "[Simulated GitHub Contribution Matrix Grid Placeholder]"
+};
+
+const aiWorkflowSteps = [
+  "Idea", "Research", "Requirements Gathering", "Planning", "Architecture Design", "UI/UX Planning", 
+  "Prompt Engineering", "Prototype", "AI-Assisted Code Generation", "Manual Code Review", "Refactoring", 
+  "Debugging", "Testing", "Optimization", "Documentation", "Version Control", "Deployment", "Maintenance", "Continuous Improvement"
+];
+
 export default function AiDeveloper() {
   const containerRef = useRef(null);
-  const [config, setConfig] = useState(null); // <-- UNIFIED CLOUD ENGINE HANDLER STATE
 
-  useEffect(() => {
-    const fetchAiDeveloperData = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('ai_developer_config')
-          .select('*')
-          .eq('id', 1)
-          .single();
-        
-        if (error && error.code !== 'PGRST116') throw error;
-        if (data) setConfig(data);
-      } catch (err) {
-        console.error('AI module data alignment delay:', err.message);
-      }
-    };
-    fetchAiDeveloperData();
-  }, []);
-
-  // Sync state token distributions with safe array mapping fallbacks
-  const developerStats = config?.developer_stats || defaultDeveloperStats;
-  const learningTimeline = config?.learning_timeline || defaultLearningTimeline;
-  const aiWorkflowSteps = config?.workflow_steps || defaultAiWorkflowSteps;
-  const aiEcosystem = config?.ai_ecosystem || defaultAiEcosystem;
-  const techStackData = config?.tech_stack || defaultTechStackData;
+  // ================= STATE CONTEXT IMPLEMENTATION FOR ENTIRE PAGE =================
+  const [stats, setStats] = useState(defaultDeveloperStats);
+  const [timeline, setTimeline] = useState(defaultLearningTimeline);
+  const [aiPartners, setAiPartners] = useState(defaultAiEcosystem);
+  const [architecture, setArchitecture] = useState(defaultTechStackData);
+  const [showcase, setShowcase] = useState(defaultShowcaseProjects);
+  const [github, setGithub] = useState(defaultGithubProfile);
 
   const scrollToSection = (id) => {
     const targetElement = document.getElementById(id);
@@ -190,7 +201,7 @@ export default function AiDeveloper() {
         .ambient-glow { animation: ambient-pulse ease-in-out infinite; will-change: opacity, transform; }
       `}</style>
 
-      {/* The STICKY Wrapper: Tracks scroll properly and is bounded perfectly to the page size (Footer safe!) */}
+      {/* The STICKY Wrapper */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#02040a]">
           
@@ -209,7 +220,7 @@ export default function AiDeveloper() {
             animation: 'pan-neural 25s linear infinite'
           }} />
 
-          {/* Hardware-Accelerated High-Speed Data Streams (Fiber Optics) */}
+          {/* Hardware-Accelerated High-Speed Data Streams */}
           <div className="absolute top-0 w-[2px] h-[150px] bg-gradient-to-b from-transparent via-cyan-400 to-transparent opacity-60 stream-y" style={{ left: '15%', animationDuration: '2.5s', animationDelay: '0s' }} />
           <div className="absolute top-0 w-[2px] h-[200px] bg-gradient-to-b from-transparent via-purple-500 to-transparent opacity-60 stream-y" style={{ left: '45%', animationDuration: '3s', animationDelay: '1.2s' }} />
           <div className="absolute top-0 w-[2px] h-[100px] bg-gradient-to-b from-transparent via-blue-400 to-transparent opacity-60 stream-y" style={{ left: '85%', animationDuration: '2s', animationDelay: '0.5s' }} />
@@ -228,7 +239,7 @@ export default function AiDeveloper() {
       {/* ================= PAGE CONTENT WRAPPER ================= */}
       <div className="relative z-10 overflow-x-hidden">
 
-        {/* ================= HERO SECTION ================= */}
+        {/* ================= 59. HERO SECTION ================= */}
         <section className="relative pt-44 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center">
           <div className="max-w-5xl mx-auto text-center relative">
             
@@ -246,16 +257,34 @@ export default function AiDeveloper() {
             </motion.h1>
 
             <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }}
-              className="text-base md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto space-y-4 mb-16">
+              className="text-base md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto space-y-4 mb-12">
               <p><strong>Software engineering is more than writing code.</strong> It is understanding problems, designing scalable solutions, collaborating with intelligent tools, and continuously improving through real-world experience.</p>
               <p>As an aspiring AI-Assisted Full-Stack Developer, I am building practical applications while learning modern technologies, software architecture, automation, and best development practices.</p>
               <p className="text-cyan-400/90 font-medium">This portfolio is my first flagship software engineering project—and the beginning of a much larger journey.</p>
             </motion.div>
 
+            {/* Call-to-Action Controls REORDERED: Transpositioned ABOVE Quick Stats */}
+            <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.4 }} className="flex flex-wrap justify-center gap-4 relative z-20 mb-16">
+              <button onClick={() => scrollToSection('current-projects')} className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-black text-sm hover:opacity-90 transition-opacity shadow-[0_0_25px_rgba(6,182,212,0.4)] cursor-pointer">
+                View Projects
+              </button>
+              <button onClick={() => scrollToSection('learning-timeline')} className="px-6 py-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-sm hover:bg-slate-800 hover:border-cyan-500/50 transition-colors flex items-center gap-2 cursor-pointer">
+                Explore My Journey <ChevronRight size={16} />
+              </button>
+              <a href={github.profileUrl} target="_blank" rel="noopener noreferrer" className="px-6 py-3.5 rounded-xl bg-black border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600 transition-colors flex items-center gap-2 text-sm font-semibold">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+                GitHub
+              </a>
+            </motion.div>
+
             {/* Quick Statistics Counter System */}
             <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-16">
-              {developerStats.map((stat, idx) => (
-                <motion.div variants={cardPop} key={idx} className="p-5 rounded-2xl bg-black/60 border border-slate-800 backdrop-blur-md flex flex-col items-center justify-center hover:border-cyan-500/60 transition-colors group relative overflow-hidden">
+              {stats.map((stat, idx) => (
+                <motion.div 
+                  variants={cardPop} 
+                  key={idx} 
+                  className="p-5 rounded-2xl bg-black/60 border border-slate-800 backdrop-blur-md flex flex-col items-center justify-center hover:border-cyan-500/60 transition-colors group relative overflow-hidden"
+                >
                   <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                   <span className="text-[10px] text-slate-400 uppercase tracking-widest text-center mt-1 font-bold group-hover:text-cyan-300 transition-colors">{stat.label}</span>
@@ -263,24 +292,10 @@ export default function AiDeveloper() {
               ))}
             </motion.div>
 
-            {/* Call-to-Action Controls */}
-            <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.4 }} className="flex flex-wrap justify-center gap-4 relative z-20">
-              <button onClick={() => scrollToSection('current-projects')} className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-black text-sm hover:opacity-90 transition-opacity shadow-[0_0_25px_rgba(6,182,212,0.4)] cursor-pointer">
-                View Projects
-              </button>
-              <button onClick={() => scrollToSection('learning-timeline')} className="px-6 py-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-sm hover:bg-slate-800 hover:border-cyan-500/50 transition-colors flex items-center gap-2 cursor-pointer">
-                Explore My Journey <ChevronRight size={16} />
-              </button>
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="px-6 py-3.5 rounded-xl bg-black border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600 transition-colors flex items-center gap-2 text-sm font-semibold">
-                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-                GitHub
-              </a>
-            </motion.div>
-
           </div>
         </section>
 
-        {/* ================= LEARNING PHILOSOPHY ================= */}
+        {/* ================= 61. LEARNING PHILOSOPHY ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -319,7 +334,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= DEVELOPMENT JOURNEY TIMELINE ================= */}
+        {/* ================= 62. DEVELOPMENT JOURNEY TIMELINE ================= */}
         <section id="learning-timeline" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-4xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -328,7 +343,7 @@ export default function AiDeveloper() {
             </motion.div>
 
             <div className="relative border-l border-slate-800 ml-4 md:ml-32 space-y-12">
-              {learningTimeline.map((item, idx) => (
+              {timeline.map((item, idx) => (
                 <motion.div variants={timelineSlide} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} transition={{ delay: idx * 0.1 }} key={idx} className="relative pl-8 group">
                   <div className="absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full bg-slate-900 group-hover:bg-cyan-400 transition-colors border border-cyan-500/50 z-20 shadow-[0_0_10px_rgba(6,182,212,0)] group-hover:shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
                   
@@ -347,7 +362,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= AI PHILOSOPHY & WORKFLOW ================= */}
+        {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
@@ -370,7 +385,7 @@ export default function AiDeveloper() {
               <div className="space-y-3 relative border-l border-purple-500/30 ml-2">
                 {aiWorkflowSteps.map((step, idx) => (
                   <div key={idx} className="flex items-center gap-3 pl-4 relative group cursor-default">
-                    <div className="absolute left-[-4.5px] top-2 w-2 h-2 rounded-full bg-slate-800 group-hover:bg-purple-400 transition-colors shadow-[0_0_10px_rgba(168,85,247,0.)] group-hover:shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
+                    <div className="absolute left-[-4.5px] top-2 w-2 h-2 rounded-full bg-slate-800 group-hover:bg-purple-400 transition-colors shadow-[0_0_10px_rgba(168,85,247,0)] group-hover:shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
                     <span className="text-xs font-mono text-slate-600 group-hover:text-purple-400 transition-colors">[{idx+1}]</span>
                     <span className="text-sm font-semibold text-slate-400 group-hover:text-white transition-colors">{step}</span>
                   </div>
@@ -381,7 +396,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= AI ECOSYSTEM ================= */}
+        {/* ================= 65. AI ECOSYSTEM (WITH LOGOS) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -390,7 +405,7 @@ export default function AiDeveloper() {
             </motion.div>
 
             <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {aiEcosystem.map((ai, idx) => (
+              {aiPartners.map((ai, idx) => (
                 <motion.div variants={cardPop} key={idx} className="p-6 rounded-2xl bg-slate-950/60 border border-slate-900 flex flex-col hover:border-purple-500/50 hover:bg-purple-500/5 transition-all group shadow-lg backdrop-blur-sm">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 rounded-xl border border-slate-800 bg-black flex items-center justify-center relative overflow-hidden shrink-0 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.5)]">
@@ -407,7 +422,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= TECH STACK ================= */}
+        {/* ================= 67. TECH STACK (WITH LOGOS) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-md">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -416,7 +431,7 @@ export default function AiDeveloper() {
             </motion.div>
 
             <div className="space-y-16">
-              {techStackData.map((stack, idx) => (
+              {architecture.map((stack, idx) => (
                 <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} key={idx}>
                   <h4 className="text-xs text-cyan-500 uppercase tracking-widest font-black mb-6 border-b border-slate-800 pb-2">{stack.category}</h4>
                   <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -437,7 +452,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= CURRENT PROJECTS ================= */}
+        {/* ================= 68. CURRENT PROJECTS ================= */}
         <section id="current-projects" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -446,47 +461,49 @@ export default function AiDeveloper() {
             </motion.div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Core Project Card */}
-              <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
-                className="lg:col-span-2 p-8 rounded-3xl bg-slate-950/80 border border-slate-800 flex flex-col h-full relative overflow-hidden hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] transition-all group backdrop-blur-md">
-                <div className="absolute top-4 right-4 px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] uppercase font-black tracking-wider rounded shadow-[0_0_10px_rgba(6,182,212,0.2)]">In Progress</div>
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2 block">Flagship Software Engineering v1</span>
-                <h4 className="text-2xl font-black text-white mb-4 group-hover:text-cyan-300 transition-colors">Personal Portfolio Website</h4>
-                <p className="text-sm text-slate-300 leading-relaxed mb-6">
-                  A premium, custom-architected portfolio platform built entirely from scratch to showcase graphic design archives, data analytics systems, and modular web software while serving as an active production codebase.
-                </p>
-                
-                <h5 className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-3">Technologies Managed</h5>
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {["React", "Vite", "Tailwind CSS", "Git", "GitHub", "VS Code", "AI Assistant Workflow"].map((tech, i) => (
-                    <span key={i} className="px-2.5 py-1 rounded bg-black border border-slate-800 text-xs text-slate-300 font-medium group-hover:border-cyan-500/50 transition-colors">{tech}</span>
-                  ))}
-                </div>
-                <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-800">
-                   <span className="text-xs text-cyan-400 font-bold">Role: Frontend Architect</span>
-                   <button className="text-xs text-white/80 hover:text-cyan-400 flex items-center gap-1 font-bold cursor-pointer bg-transparent border-none">Inspect Source <ExternalLink size={14}/></button>
-                </div>
-              </motion.div>
-
-              {/* Automation Pipeline Placeholder Card */}
-              <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.2 }}
-                className="p-6 rounded-3xl border border-dashed border-slate-700 bg-black/60 flex flex-col justify-between h-full opacity-80 hover:opacity-100 hover:border-purple-500/50 transition-all backdrop-blur-md">
-                <div>
-                  <Layers className="text-purple-400 mb-4" size={28} />
-                  <h4 className="text-lg font-bold text-white mb-2">Future AI Automation Pipelines</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                      Upcoming systems for centralizing enterprise data layers, processing natural language document pipelines, lead routing rules, and automated business flow orchestration.
-                  </p>
-                </div>
-                <div className="pt-6 border-t border-slate-800/60 text-[11px] text-purple-400/80 font-mono flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" /> STATUS: WAITING_ON_DEPS
-                </div>
-              </motion.div>
+              {showcase.map((project) => {
+                if (project.type === "flagship") {
+                  return (
+                    <motion.div key={project.id} variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
+                      className="lg:col-span-2 p-8 rounded-3xl bg-slate-950/80 border border-slate-800 flex flex-col h-full relative overflow-hidden hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] transition-all group backdrop-blur-md">
+                      <div className="absolute top-4 right-4 px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] uppercase font-black tracking-wider rounded shadow-[0_0_10px_rgba(6,182,212,0.2)]">{project.badge}</div>
+                      <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2 block">{project.meta}</span>
+                      <h4 className="text-2xl font-black text-white mb-4 group-hover:text-cyan-300 transition-colors">{project.title}</h4>
+                      <p className="text-sm text-slate-300 leading-relaxed mb-6">{project.desc}</p>
+                      
+                      <h5 className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-3">Technologies Managed</h5>
+                      <div className="flex flex-wrap gap-2 mb-8">
+                        {project.tech.map((tech, i) => (
+                          <span key={i} className="px-2.5 py-1 rounded bg-black border border-slate-800 text-xs text-slate-300 font-medium group-hover:border-cyan-500/50 transition-colors">{tech}</span>
+                        ))}
+                      </div>
+                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-800">
+                         <span className="text-xs text-cyan-400 font-bold">Role: {project.role}</span>
+                         <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-xs text-white/80 hover:text-cyan-400 flex items-center gap-1 font-bold">{project.actionText} <ExternalLink size={14}/></a>
+                      </div>
+                    </motion.div>
+                  );
+                } else {
+                  return (
+                    <motion.div key={project.id} variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.2 }}
+                      className="p-6 rounded-3xl border border-dashed border-slate-700 bg-black/60 flex flex-col justify-between h-full opacity-80 hover:opacity-100 hover:border-purple-500/50 transition-all backdrop-blur-md">
+                      <div>
+                        <Layers className="text-purple-400 mb-4" size={28} />
+                        <h4 className="text-lg font-bold text-white mb-2">{project.title}</h4>
+                        <p className="text-xs text-slate-400 leading-relaxed">{project.desc}</p>
+                      </div>
+                      <div className="pt-6 border-t border-slate-800/60 text-[11px] text-purple-400/80 font-mono flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" /> {project.status}
+                      </div>
+                    </motion.div>
+                  );
+                }
+              })}
             </div>
           </div>
         </section>
 
-        {/* ================= GITHUB SYSTEM ================= */}
+        {/* ================= 69. GITHUB SYSTEM (STATE ATTACHED) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
           <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
              <div className="flex flex-col sm:flex-row items-center gap-5 justify-between mb-6">
@@ -494,22 +511,22 @@ export default function AiDeveloper() {
                    <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-white font-bold text-lg border border-slate-700 shadow-inner">JG</div>
                    <div>
                       <h4 className="text-base font-bold text-white flex items-center gap-2">
-                        Jefferson Gonzales 
+                        {github.name} 
                         <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" className="text-slate-500"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
                       </h4>
-                      <p className="text-xs text-slate-500">github.com/jeffersongonzales</p>
+                      <p className="text-xs text-slate-500">github.com/{github.username}</p>
                    </div>
                 </div>
-                <span className="text-[10px] px-2 py-1 border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 rounded uppercase font-mono shadow-[0_0_10px_rgba(6,182,212,0.2)]">Live Sync Standard ready</span>
+                <span className="text-[10px] px-2 py-1 border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 rounded uppercase font-mono shadow-[0_0_10px_rgba(6,182,212,0.2)]">{github.badgeText}</span>
              </div>
              <div className="h-32 bg-black border border-slate-900 rounded-xl flex items-center justify-center text-xs text-slate-700 font-mono relative overflow-hidden">
                 <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #334155 1px, transparent 1px), linear-gradient(to bottom, #334155 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
-                <span className="relative z-10">[Simulated GitHub Contribution Matrix Grid Placeholder]</span>
+                <span className="relative z-10">{github.matrixPlaceholder}</span>
              </div>
           </motion.div>
         </section>
 
-        {/* ================= VISION STATEMENT ================= */}
+        {/* ================= 71. VISION STATEMENT ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 text-center bg-black/20">
           <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto">
              <Quote size={40} className="text-purple-500/30 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
@@ -522,14 +539,14 @@ export default function AiDeveloper() {
           </motion.div>
         </section>
 
-        {/* ================= TRANSITION TO CONTACT ================= */}
+        {/* ================= 72. TRANSITION TO CONTACT ================= */}
         <section className="w-full relative border-t border-slate-900 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
           
           {/* Aesthetic Shift Gradient */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/90 to-[#0c0c0e] z-[-1]" />
 
           <div className="max-w-4xl mx-auto text-center relative z-20">
-            <motion.div futuristicreveal="true" variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }}>
               <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
                 Every Project Begins with a Conversation.
               </h2>

@@ -1,146 +1,103 @@
 // src/sections/home/SkillsOverview.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Palette, BarChart2, Code2, Cpu, Users } from 'lucide-react';
+import { Palette, BarChart2, Code, Cpu, Users } from 'lucide-react';
 
-const defaultSkillCategories = [
+// Dictionary mapping icon names to actual Lucide component elements
+const iconMap = {
+  Palette: <Palette size={16} />,
+  BarChart2: <BarChart2 size={16} />,
+  Code: <Code size={16} />,
+  Cpu: <Cpu size={16} />,
+  Users: <Users size={16} />
+};
+
+const defaultSkillsData = [
   {
-    title: "Creative",
-    icon: <Palette size={20} className="text-dreamCreations-brandBlue" />,
-    borderColor: "hover:border-dreamCreations-brandBlue/40",
-    skills: [
-      "Graphic Design", "Branding", "Logo Design", "Motion Graphics", 
-      "Photo Editing", "Photo Restoration", "Vector Illustration", 
-      "Presentation Design", "Print Production", "Photography"
-    ]
+    category: "Creative",
+    icon: "Palette",
+    skills: ["Graphic Design", "Branding", "Logo Design", "Vector Illustration", "Layout Composition", "Typography", "Mass Print Operations"]
   },
   {
-    title: "Analytics",
-    icon: <BarChart2 size={20} className="text-blue-500" />,
-    borderColor: "hover:border-blue-500/40",
-    skills: [
-      "Data Cleaning", "Dashboard Design", "Reporting", "Business Analysis", 
-      "Power Query", "Microsoft Excel", "Data Validation", "Automation", "Documentation"
-    ]
+    category: "Analytics",
+    icon: "BarChart2",
+    skills: ["Data Cleaning", "Data Validation", "Data Reconciliation", "Operational Reporting", "Executive Reports", "Dashboard Design", "Metrics Modeling"]
   },
   {
-    title: "Technology",
-    icon: <Code2 size={20} className="text-aiDeveloper-neonCyan" />,
-    borderColor: "hover:border-aiDeveloper-neonCyan/40",
-    skills: [
-      { name: "React", status: "Core" },
-      { name: "Vite", status: "Core" },
-      { name: "Tailwind CSS", status: "Core" },
-      { name: "HTML/CSS", status: "Core" },
-      { name: "JavaScript", status: "Core" },
-      { name: "Git & GitHub", status: "Core" },
-      { name: "VS Code", status: "Core" },
-      { name: "npm", status: "Core" },
-      { name: "Supabase", status: "Learning" },
-      { name: "PostgreSQL", status: "Learning" },
-      { name: "Python", status: "Learning" }
-    ]
+    category: "Technology",
+    icon: "Code",
+    skills: ["React", "Vite", "Tailwind CSS", "JavaScript (ES6+)", "HTML5/CSS3", "Git / GitHub", "Node.js (Learning)", "SQL (Learning)"]
   },
   {
-    title: "AI & Automation",
-    icon: <Cpu size={20} className="text-aiDeveloper-neonPurple" />,
-    borderColor: "hover:border-aiDeveloper-neonPurple/40",
-    skills: [
-      "ChatGPT", "Claude", "Gemini", "GitHub Copilot", 
-      "Prompt Engineering", "AI Workflow Design",
-      { name: "Amazon Q", status: "Learning" },
-      { name: "OpenClaw", status: "Learning" },
-      { name: "n8n", status: "Learning" }
-    ]
+    category: "AI & Automation",
+    icon: "Cpu",
+    skills: ["ChatGPT", "Claude", "Gemini", "GitHub Copilot", "Prompt Engineering", "Automation Workflows"]
   },
   {
-    title: "Leadership",
-    icon: <Users size={20} className="text-zinc-400" />,
-    borderColor: "hover:border-zinc-500/40",
-    skills: [
-      "Project Management", "Team Management", "Client Communication", 
-      "Quality Assurance", "Business Operations", "Entrepreneurship", 
-      "Problem Solving", "Continuous Learning"
-    ]
+    category: "Leadership",
+    icon: "Users",
+    skills: ["Project Management", "Team Management", "Client Acquisition", "Milestone Tracking", "Cross-functional Operations"]
   }
 ];
 
-// Lookup engine to map textual names to their respective live components if parsed via database
-const iconMap = {
-  "Creative": <Palette size={20} className="text-dreamCreations-brandBlue" />,
-  "Analytics": <BarChart2 size={20} className="text-blue-500" />,
-  "Technology": <Code2 size={20} className="text-aiDeveloper-neonCyan" />,
-  "AI & Automation": <Cpu size={20} className="text-aiDeveloper-neonPurple" />,
-  "Leadership": <Users size={20} className="text-zinc-400" />
-};
-
 export default function SkillsOverview({ homeData }) {
-  // Gracefully use live database records if present, otherwise fall back to your native array layout
-  const skillCategories = homeData?.skills_matrix || defaultSkillCategories;
+  // Use data block from database if loaded, otherwise fallback gracefully to native arrangements
+  const skillsData = homeData?.skills_overview || defaultSkillsData;
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-20 relative">
+    <section className="max-w-7xl mx-auto px-6 py-20 relative z-10">
       
-      {/* Background Atmosphere Adjustment */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden" />
-
-      {/* Section Headings */}
-      <div className="mb-16 space-y-3 relative z-10">
+      {/* Section Headers */}
+      <div className="text-center mb-16 space-y-3">
         <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
-          {homeData?.skills_title || 'Capability Matrix'}
+          Core Competencies
         </h2>
-        <p className="text-sm text-slate-400 max-w-xl">
-          {homeData?.skills_subtitle || 'An honest, documented breakdown of my technical proficiencies, specialized software skill sets, and active areas of professional learning.'}
+        <div className="w-12 h-[1px] bg-zinc-700 mx-auto" />
+        <p className="text-sm text-slate-500 max-w-md mx-auto">
+          A structured layout detailing my current engineering capabilities, visual methodologies, and technical stack.
         </p>
       </div>
 
-      {/* Grid Track Layout Container */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
-        {skillCategories.map((cat, idx) => (
-          <motion.div
+      {/* Responsive Structural Grid Matrix */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {skillsData.map((group, idx) => (
+          <motion.div 
             key={idx}
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.4, delay: idx * 0.05 }}
-            className={`p-6 rounded-2xl border border-white/5 bg-white/[0.01] backdrop-blur-sm transition-all duration-300 flex flex-col ${cat.borderColor || 'hover:border-zinc-700'}`}
+            className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/10 backdrop-blur-sm hover:border-zinc-800 hover:bg-zinc-900/10 transition-all duration-300 flex flex-col h-full group"
           >
-            {/* Category Header Card Line */}
-            <div className="flex items-center gap-3 mb-6 border-b border-zinc-800/60 pb-3">
-              <div className="p-2 rounded-lg bg-zinc-950 border border-zinc-800">
-                {iconMap[cat.title] || cat.icon || <Cpu size={20} />}
+            {/* Category Sub-Header */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 text-slate-400 flex items-center justify-center group-hover:text-white group-hover:border-zinc-700 transition-colors">
+                {iconMap[group.icon] || <Code size={16} />}
               </div>
-              <h3 className="text-lg font-bold text-white tracking-tight">
-                {cat.title}
+              <h3 className="text-base font-bold text-white tracking-tight">
+                {group.category}
               </h3>
             </div>
 
-            {/* Pills Wrap Field */}
-            <div className="flex flex-wrap gap-2 flex-grow content-start">
-              {cat.skills?.map((skill, sIdx) => {
-                const isObject = typeof skill === 'object';
-                const name = isObject ? skill.name : skill;
-                const isLearning = isObject && skill.status === 'Learning';
-
+            {/* Injected Skill Pills List */}
+            <div className="flex flex-wrap gap-2 mt-auto">
+              {group.skills.map((skill, sIdx) => {
+                const isLearning = skill.includes('(Learning)');
                 return (
-                  <span
+                  <span 
                     key={sIdx}
-                    className={`text-xs px-2.5 py-1 rounded-md font-medium border transition-colors ${
-                      isLearning
-                        ? 'bg-purple-950/20 border-purple-800/40 text-purple-300 font-mono'
-                        : 'bg-zinc-900/40 border-zinc-800/80 text-slate-400 hover:text-white hover:border-zinc-700'
+                    className={`px-2.5 py-1 rounded-lg text-xs font-medium tracking-wide transition-colors ${
+                      isLearning 
+                        ? 'bg-zinc-950/40 border border-zinc-900/60 text-slate-600 italic'
+                        : 'bg-zinc-900/40 border border-zinc-800/50 text-slate-300 hover:border-zinc-700 hover:text-white'
                     }`}
                   >
-                    {name}
-                    {isLearning && (
-                      <span className="ml-1 text-[9px] uppercase tracking-wider text-purple-400 opacity-80">
-                        &middot; learning 
-                      </span>
-                    )}
+                    {skill}
                   </span>
                 );
               })}
             </div>
+
           </motion.div>
         ))}
       </div>

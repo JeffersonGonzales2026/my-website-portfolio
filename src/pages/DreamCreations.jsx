@@ -1,29 +1,8 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
-import { PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database } from 'lucide-react';
+import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-
-// High-fidelity component matrix map to resolve text parameters into secure JSX icons safely
-const iconLookup = {
-  Fingerprint: <Fingerprint size={14} />,
-  PenTool: <PenTool size={14} />,
-  Share2: <Share2 size={14} />,
-  FileText: <FileText size={14} />,
-  Video: <Video size={14} />,
-  MousePointerClick: <MousePointerClick size={14} />,
-  ImageIcon: <ImageIcon size={14} />,
-  Shirt: <Shirt size={14} />,
-  Printer: <Printer size={14} />,
-  Box: <Box size={14} />,
-  Pencil: <Pencil size={14} />,
-  HeartPulse: <HeartPulse size={32} />,
-  Building2: <Building2 size={32} />,
-  ShoppingBag: <ShoppingBag size={32} />,
-  MonitorPlay: <MonitorPlay size={32} />,
-  Globe: <Globe size={32} />,
-  Briefcase: <Briefcase size={32} />
-};
 
 // Helper component for counting numbers
 const AnimatedNumber = ({ value, suffix }) => {
@@ -42,10 +21,10 @@ const AnimatedNumber = ({ value, suffix }) => {
     }
   }, [isInView, value, suffix]);
 
-  return <span ref={ref} className="font-sans">0{suffix}</span>;
+  return <span ref={ref}>0{suffix}</span>;
 };
 
-const localFeaturedClients = [
+const featuredClients = [
   { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
   { id: 2, name: "Real Estate Partners", industry: "Property Development", icon: <Building2 size={32} /> },
   { id: 3, name: "Rich Ams Global", industry: "E-Commerce", icon: <ShoppingBag size={32} /> },
@@ -54,7 +33,7 @@ const localFeaturedClients = [
   { id: 6, name: "Corporate B2B", industry: "Consulting & Finance", icon: <Briefcase size={32} /> },
 ];
 
-const localCreationsCategories = [
+const creationsCategories = [
   { id: 1, category: "Branding & Identity", icon: <Fingerprint size={14} />, items: ["Logo Design", "Brand Guidelines", "Visual Identity", "Brand Refresh", "Brand Assets", "Business Identity Systems"] },
   { id: 2, category: "Graphic Design", icon: <PenTool size={14} />, items: ["Marketing Graphics", "Corporate Graphics", "Advertising Materials", "Print Design", "Creative Campaigns", "Promotional Graphics"] },
   { id: 3, category: "Social Media Design", icon: <Share2 size={14} />, items: ["Facebook Graphics", "Instagram Posts", "Carousel Posts", "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"] },
@@ -68,7 +47,7 @@ const localCreationsCategories = [
   { id: 11, category: "Illustration", icon: <Pencil size={14} />, items: ["Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"] }
 ];
 
-const localSoftwareExpertise = [
+const softwareExpertise = [
   { id: 1, name: "Photoshop", imageSrc: "/images/photoshop.png" },
   { id: 2, name: "Illustrator", imageSrc: "/images/illustrator.png" },
   { id: 3, name: "Premiere Pro", imageSrc: "/images/premiere.png" },
@@ -80,7 +59,7 @@ const localSoftwareExpertise = [
   { id: 9, name: "AI Design Tools", imageSrc: "/images/ai-tools.png" },
 ];
 
-const localCreativeProcess = [
+const creativeProcess = [
   { step: 1, title: "Client Consultation", desc: "Understand goals & vision." },
   { step: 2, title: "Requirements Gathering", desc: "Scope & timelines." },
   { step: 3, title: "Research", desc: "Competitors & audience." },
@@ -96,7 +75,7 @@ const localCreativeProcess = [
   { step: 13, title: "Post-Project Support", desc: "Ongoing assistance." }
 ];
 
-const localTeamMembers = [
+const teamMembers = [
   {
     id: 1,
     name: "Dexter Joy D. Bautista",
@@ -108,7 +87,8 @@ const localTeamMembers = [
     experience: "7+ Years",
     availability: "Full-Time",
     status: "Active",
-    portfolioUrl: "https://www.behance.net/gallery/190745335/PORTFOLIO-V2"
+    portfolioUrl: "https://www.behance.net/gallery/190745335/PORTFOLIO-V2",
+    socialUrl: "#"
   },
   {
     id: 2,
@@ -121,7 +101,8 @@ const localTeamMembers = [
     experience: "-",
     availability: "-",
     status: "Hiring",
-    portfolioUrl: "#"
+    portfolioUrl: "#",
+    socialUrl: "#"
   }
 ];
 
@@ -152,7 +133,15 @@ export default function DreamCreations() {
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
   const [projects, setProjects] = useState([]); 
   const [reviews, setReviews] = useState([]); 
-  const [config, setConfig] = useState(null); // <-- UNIFIED CMS CONFIG LINK LAYERING STATE
+
+  // ================= TUNED LOCAL STATES FOR CMS SIMULATION =================
+  const [bannerUrl, setBannerUrl] = useState("/Logo Banner.png");
+  const [founderPhoto, setFounderPhoto] = useState("");
+  const [founderExp, setFounderExp] = useState(10);
+  const [founderProjects, setFounderProjects] = useState(200);
+  const [teamList, setTeamList] = useState(teamMembers);
+  const [softwareList, setSoftwareList] = useState(softwareExpertise);
+  const [clientsList, setClientsList] = useState(featuredClients);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -168,15 +157,7 @@ export default function DreamCreations() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch Master Content Matrix Config
-        const { data: configData } = await supabase
-          .from('dream_creations_config')
-          .select('*')
-          .eq('id', 1)
-          .single();
-        if (configData) setConfig(configData);
-
-        // Fetch Projects Archive
+        // Fetch Projects
         const { data: projectData, error: projectError } = await supabase
           .from('portfolio_projects')
           .select('*')
@@ -201,13 +182,6 @@ export default function DreamCreations() {
 
     fetchData();
   }, []);
-
-  // Multi-threading state distribution fallback hooks
-  const creationsCategories = config?.categories || localCreationsCategories;
-  const softwareExpertise = config?.software || localSoftwareExpertise;
-  const creativeProcess = config?.process || localCreativeProcess;
-  const featuredClients = config?.clients || localFeaturedClients;
-  const teamMembers = config?.team || localTeamMembers;
 
   const scrollToSection = (id) => {
     const targetElement = document.getElementById(id);
@@ -397,7 +371,7 @@ export default function DreamCreations() {
 
       <div id="creations-grid" className="scroll-mt-24" />
 
-      {/* ================= CREATIONS SECTION ================= */}
+      {/* ================= 29. CREATIONS SECTION ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative">
         <div className="mb-12 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
@@ -419,7 +393,7 @@ export default function DreamCreations() {
               className="p-2 h-20 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md hover:-translate-y-1 hover:border-[#1095d2]/50 hover:bg-[#1095d2]/10 transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer relative z-20"
             >
               <div className="text-white/60 group-hover:text-[#1095d2] transition-colors duration-300 mb-1 group-hover:scale-110">
-                {typeof category.icon === 'string' ? iconLookup[category.icon] : category.icon}
+                {category.icon}
               </div>
               <h4 className="text-[10px] font-bold text-white/90 group-hover:text-white transition-colors leading-tight px-1">
                 {category.category}
@@ -439,7 +413,7 @@ export default function DreamCreations() {
           className="flex justify-center"
         >
           <img 
-            src={config?.banner_url || "/Logo Banner.png"} 
+            src={bannerUrl} 
             alt="Dream Creations Brand Banner" 
             className="w-full h-auto drop-shadow-[0_0_30px_rgba(16,149,210,0.3)] rounded-3xl border border-white/5 bg-black/40 p-2 md:p-4"
           />
@@ -448,7 +422,7 @@ export default function DreamCreations() {
 
       <div id="founder-bio" className="scroll-mt-24" />
 
-      {/* ================= MEET THE FOUNDER SECTION ================= */}
+      {/* ================= 27. MEET THE FOUNDER SECTION ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <motion.div
@@ -460,12 +434,18 @@ export default function DreamCreations() {
           >
             <div className="relative w-full max-w-md aspect-square rounded-3xl border border-white/10 bg-black/40 overflow-hidden flex items-center justify-center group">
                <div className="absolute inset-0 bg-gradient-to-tr from-[#1095d2]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-               <div className="w-32 h-32 rounded-full border border-[#1095d2]/50 bg-black/50 flex items-center justify-center text-4xl font-bold text-white shadow-[0_0_30px_rgba(16,149,210,0.3)] z-10 group-hover:scale-105 transition-transform duration-500">
-                 JG
-               </div>
+               
+               {founderPhoto ? (
+                 <img src={founderPhoto} alt="Jefferson Gonzales" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+               ) : (
+                 <div className="w-32 h-32 rounded-full border border-[#1095d2]/50 bg-black/50 flex items-center justify-center text-4xl font-bold text-white shadow-[0_0_30px_rgba(16,149,210,0.3)] z-10 group-hover:scale-105 transition-transform duration-500">
+                   JG
+                 </div>
+               )}
+
                <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 z-10">
-                 <p className="text-[#1095d2] text-xs font-bold uppercase tracking-wider mb-1">{config?.founder_title || 'Founder & Creative Director'}</p>
-                 <h4 className="text-white font-bold text-lg">{config?.founder_name || 'Jefferson Gonzales'}</h4>
+                 <p className="text-[#1095d2] text-xs font-bold uppercase tracking-wider mb-1">Founder & Creative Director</p>
+                 <h4 className="text-white font-bold text-lg">Jefferson Gonzales</h4>
                </div>
             </div>
           </motion.div>
@@ -489,36 +469,30 @@ export default function DreamCreations() {
                ))}
             </div>
             <div className="space-y-4">
-              {config?.founder_bio ? (
-                <p className="text-base md:text-lg text-white/70 leading-relaxed">{config.founder_bio}</p>
-              ) : (
-                <>
-                  <p className="text-base md:text-lg text-white/70 leading-relaxed">
-                    Jefferson founded Dream Creations with the vision of helping businesses communicate more effectively through thoughtful and impactful visual design.
-                  </p>
-                  <p className="text-base md:text-lg text-white/70 leading-relaxed">
-                    With more than ten years of professional experience, he has worked across multiple industries including healthcare, finance, insurance, technology, apparel, education, e-commerce, printing, media, and real estate, in both onsite and work-from-home setups for local and international clients.
-                  </p>
-                  <p className="text-base md:text-lg text-white/70 leading-relaxed">
-                    Inspired by his former team manager, he started building his own team of graphic designers with a vision to empower more dreamers (clients) and creators (designers).
-                  </p>
-                  <p className="text-base md:text-lg text-white/70 leading-relaxed">
-                    Today, he continues leading Dream Creations while expanding its capabilities through data analytics, automation, and software development.
-                  </p>
-                </>
-              )}
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">
+                Jefferson founded Dream Creations with the vision of helping businesses communicate more effectively through thoughtful and impactful visual design.
+              </p>
+              <p className="text-base md:text-lg text-white/70 hobbies leading-relaxed">
+                With more than ten years of professional experience, he has worked across multiple industries including healthcare, finance, insurance, technology, apparel, education, e-commerce, printing, media, and real estate, in both onsite and work-from-home setups for local and international clients.
+              </p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">
+                Inspired by his former team manager, he started building his own team of graphic designers with a vision to empower more dreamers (clients) and creators (designers).
+              </p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">
+                Today, he continues leading Dream Creations while expanding its capabilities through data analytics, automation, and software development.
+              </p>
             </div>
             
             <div className="grid grid-cols-2 gap-4 pt-4">
               <div className="p-4 rounded-xl border border-white/10 bg-black/20 hover:border-[#1095d2]/30 transition-colors">
                 <div className="text-2xl font-bold text-[#1095d2] mb-1">
-                  <AnimatedNumber value={config?.experience_years || 10} suffix="+" />
+                  <AnimatedNumber value={founderExp} suffix="+" />
                 </div>
                 <div className="text-xs text-white/60 uppercase tracking-wider">Years Experience</div>
               </div>
               <div className="p-4 rounded-xl border border-white/10 bg-black/20 hover:border-[#1095d2]/30 transition-colors">
                 <div className="text-2xl font-bold text-[#1095d2] mb-1">
-                  <AnimatedNumber value={config?.projects_delivered || 200} suffix="+" />
+                  <AnimatedNumber value={founderProjects} suffix="+" />
                 </div>
                 <div className="text-xs text-white/60 uppercase tracking-wider">Projects Delivered</div>
               </div>
@@ -527,7 +501,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= OUR TEAM ================= */}
+      {/* ================= 28. OUR TEAM ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-16 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left">
           <div>
@@ -548,7 +522,7 @@ export default function DreamCreations() {
         </div>
 
         <div ref={teamScrollRef} className="flex overflow-x-auto gap-8 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth">
-          {teamMembers.map((member) => (
+          {teamList.map((member) => (
             <motion.div
               key={member.id}
               initial={{ opacity: 0, y: 20 }}
@@ -580,7 +554,7 @@ export default function DreamCreations() {
               </div>
 
                <div className="px-6 py-4 flex flex-wrap gap-2">
-                {member.positions?.map((pos, idx) => (
+                {member.positions.map((pos, idx) => (
                   <span key={idx} className="px-2.5 py-1 rounded-md bg-white/5 border border-white/5 text-[10px] text-white/80">
                     {pos}
                   </span>
@@ -597,13 +571,13 @@ export default function DreamCreations() {
                 <div>
                   <h5 className="text-[10px] text-white/40 uppercase tracking-widest mb-2 font-semibold">Core Skills</h5>
                   <div className="text-xs text-white/80 leading-relaxed">
-                    {member.skills?.join(" • ")}
+                    {member.skills.join(" • ")}
                   </div>
                 </div>
                 <div>
                   <h5 className="text-[10px] text-white/40 uppercase tracking-widest mb-2 font-semibold">Software Expertise</h5>
                   <div className="text-xs text-white/80 leading-relaxed">
-                    {member.software?.join(" • ")}
+                    {member.software.join(" • ")}
                   </div>
                 </div>
               </div>
@@ -614,11 +588,9 @@ export default function DreamCreations() {
                   <span className="text-xs font-semibold">{member.experience}</span>
                 </div>
                 <div className="flex gap-2">
-                  {member.portfolioUrl && (
-                    <a href={member.portfolioUrl} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#1095d2] flex items-center justify-center transition-colors cursor-pointer relative z-20">
-                      <LinkIcon size={14} className="text-white" />
-                    </a>
-                  )}
+                  <a href={member.portfolioUrl} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#1095d2] flex items-center justify-center transition-colors cursor-pointer relative z-20">
+                    <LinkIcon size={14} className="text-white" />
+                  </a>
                 </div>
               </div>
             </motion.div>
@@ -626,7 +598,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= SOFTWARE EXPERTISE ================= */}
+      {/* ================= 34. SOFTWARE EXPERTISE ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-12 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Software Expertise</h3>
@@ -637,7 +609,7 @@ export default function DreamCreations() {
         </div>
 
         <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6">
-          {softwareExpertise.map((tool, index) => (
+          {softwareList.map((tool, index) => (
             <motion.div
               key={tool.id}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -661,7 +633,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= CREATIVE PROCESS ================= */}
+      {/* ================= 35. CREATIVE PROCESS ================= */}
       <section className="w-full py-20 z-10 relative border-t border-white/10">
         <div className="max-w-7xl mx-auto mb-10 px-6 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left">
           <div>
@@ -726,7 +698,7 @@ export default function DreamCreations() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {featuredClients.map((client, index) => (
+          {clientsList.map((client, index) => (
             <motion.div
               key={client.id}
               initial={{ opacity: 0, y: 20 }}
@@ -736,7 +708,7 @@ export default function DreamCreations() {
               className="group flex flex-col items-center justify-center p-6 rounded-2xl border border-white/5 bg-black/20 hover:bg-black/40 hover:border-[#1095d2]/30 transition-all duration-300 text-center"
             >
               <div className="text-white/40 group-hover:text-[#1095d2] transition-colors duration-300 mb-3">
-                {typeof client.icon === 'string' ? iconLookup[client.icon] : client.icon}
+                {client.icon}
               </div>
               <h4 className="text-sm font-bold text-white mb-1 leading-tight">{client.name}</h4>
               <p className="text-[10px] text-white/50 uppercase tracking-wider">{client.industry}</p>
@@ -745,7 +717,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= TESTIMONIALS (LIVE DATABASE) ================= */}
+      {/* ================= 36. TESTIMONIALS (LIVE DATABASE) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-16 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left">
           <div>
@@ -790,7 +762,7 @@ export default function DreamCreations() {
                     <img src={testimonial.face_image_url} alt={testimonial.client_name} className="w-10 h-10 rounded-full object-cover border border-white/10" />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 border border-white/5">
-                      {testimonial.client_name?.charAt(0)}
+                      {testimonial.client_name.charAt(0)}
                     </div>
                   )}
                   <div>
@@ -810,7 +782,7 @@ export default function DreamCreations() {
 
       <div id="portfolio-directory" className="scroll-mt-24" />
 
-      {/* ================= UNIFIED PORTFOLIO DIRECTORY ================= */}
+      {/* ================= 30 & 31. UNIFIED PORTFOLIO DIRECTORY (LIVE DATABASE FETCH) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-[120vh]">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
           <div className="text-center md:text-left">
@@ -845,7 +817,7 @@ export default function DreamCreations() {
                   </h4>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {cat.items?.map((subtitle, idx) => (
+                    {cat.items.map((subtitle, idx) => (
                       <button
                         key={idx}
                         id={subtitle.toLowerCase().replace(/\s+/g, '-')}
@@ -944,8 +916,8 @@ export default function DreamCreations() {
         </AnimatePresence>
       </section>
 
-      {/* ================= PRICING / PROJECT INVESTMENT ================= */}
-      <section className="max-w-4xl mx-auto w-full px-6 pt-24 pb-12 z-10 relative text-center mt-10">
+      {/* ================= 38. PRICING / PROJECT INVESTMENT ================= */}
+      <section className="max-w-4xl mx-auto w-full px-6 py-24 z-10 relative text-center mt-10">
         <div className="mb-12">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Investment</h3>
           <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
@@ -979,7 +951,7 @@ export default function DreamCreations() {
         </motion.div>
       </section>
 
-      {/* ================= TRANSITION TO THE NEXT JOURNEY ================= */}
+      {/* ================= 40. TRANSITION TO THE NEXT JOURNEY ================= */}
       <section className="w-full relative border-t border-white/10 mt-16 pt-32 pb-32 px-6 overflow-hidden z-10 flex flex-col items-center text-center">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#021f1a] to-[#011410] -z-10" />
 
@@ -1058,7 +1030,7 @@ export default function DreamCreations() {
 
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-12 h-12 rounded-xl bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center shrink-0">
-                  {typeof activeCreationPopup.icon === 'string' ? iconLookup[activeCreationPopup.icon] : activeCreationPopup.icon}
+                  {activeCreationPopup.icon}
                 </div>
                 <div>
                   <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">
@@ -1069,7 +1041,7 @@ export default function DreamCreations() {
               </div>
 
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {activeCreationPopup.items?.map((item, idx) => (
+                {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
                     <button 
                       onClick={() => handleSubtitleModalClick(item)}

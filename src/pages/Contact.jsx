@@ -44,6 +44,10 @@ export default function Contact() {
   const [errors, setErrors] = useState({});
   const [platforms, setPlatforms] = useState([]);
 
+  // ================= DECOUPLED MEDIA ASSET LINKS STATE =================
+  const [resumeUrl, setResumeUrl] = useState("/Jefferson_Gonzales_Resume.pdf");
+  const [portfolioUrl, setPortfolioUrl] = useState("/Jefferson_Gonzales_Portfolio.pdf");
+
   // Fetch dynamic platform listings directly from live cloud database instance
   useEffect(() => {
     const fetchPlatforms = async () => {
@@ -252,7 +256,7 @@ export default function Contact() {
 
                 <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <button type="submit" disabled={status === 'loading'}
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white text-black font-bold text-sm hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white text-black font-bold text-sm hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                     {status === 'loading' ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                     {status === 'loading' ? 'Sending Message...' : 'Send Message'}
                   </button>
@@ -288,8 +292,9 @@ export default function Contact() {
               <p className="text-sm text-slate-400 mb-8">Reach out across platforms or download my professional resources.</p>
             </motion.div>
 
+            {/* Resume & Portfolio PDF Blocks Driven Dynamically via Local Component State */}
             <motion.div variants={fadeUp} className="grid grid-cols-2 gap-4 mb-8">
-              <a href="/Jefferson_Gonzales_Resume.pdf" target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
+              <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
                 <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Download size={18} />
                 </div>
@@ -298,7 +303,7 @@ export default function Contact() {
                   <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
                 </div>
               </a>
-              <a href="/Jefferson_Gonzales_Portfolio.pdf" target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
+              <a href={portfolioUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
                 <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <FileText size={18} />
                 </div>
@@ -309,6 +314,7 @@ export default function Contact() {
               </a>
             </motion.div>
 
+            {/* Social Grid Channels Fed via Live Cloud Engine Database Table */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 h-[500px] overflow-y-auto pr-2 hide-scrollbar">
               <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
               

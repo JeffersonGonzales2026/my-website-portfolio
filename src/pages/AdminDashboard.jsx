@@ -1,839 +1,1018 @@
 // src/pages/AdminDashboard.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  LayoutDashboard, Palette, Database, BrainCircuit, 
-  Mail, Settings, LogOut, FileText, Image as ImageIcon,
-  Activity, Users, Loader2, CheckCircle, UploadCloud, File, Save, Plus, Trash2, Video, MessageSquare, Star, Eye
+  LayoutDashboard, Activity, Palette, Database, BrainCircuit, 
+  Mail, LogOut, Save, Plus, Trash2, Image, ExternalLink, 
+  Sliders, Layers, Eye, CheckCircle, FileText, User, HelpCircle, 
+  Briefcase, Star, Cpu, Settings, UploadCloud, File, Image as ImageIcon 
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 
 const sidebarModules = [
-  { name: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-  { name: 'Home Config', icon: <Activity size={18} /> },
-  { name: 'Dream Creations', icon: <Palette size={18} /> },
-  { name: 'Data Analyst', icon: <Database size={18} /> },
-  { name: 'AI Developer', icon: <BrainCircuit size={18} /> },
-  { name: 'Media Library', icon: <ImageIcon size={18} /> },
-  { name: 'Messages', icon: <Mail size={18} /> }
+  { name: 'Dashboard Hub', icon: <LayoutDashboard size={16} /> },
+  { name: 'Home Engine', icon: <Activity size={16} /> },
+  { name: 'Dream Creations', icon: <Palette size={16} /> },
+  { name: 'Data Analyst', icon: <Database size={16} /> },
+  { name: 'AI Developer', icon: <BrainCircuit size={16} /> },
+  { name: 'Contact Links', icon: <Settings size={16} /> },
+  { name: 'Media Library', icon: <ImageIcon size={16} /> },
+  { name: 'Messages Inbox', icon: <Mail size={16} /> }
 ];
 
 export default function AdminDashboard() {
-  const [activeModule, setActiveModule] = useState('Dashboard');
-  const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState(null);
-  
-  // Data States
-  const [messages, setMessages] = useState([]);
-  const [stats, setStats] = useState({ totalMessages: 0, unreadMessages: 0 });
-  const [mediaFiles, setMediaFiles] = useState([]);
-  const [uploading, setUploading] = useState(false);
-  
-  // Home Config States
-  const [homeData, setHomeData] = useState({
-    hero_title: '', hero_subtitle: '', about_text: '', profile_image_url: '', resume_url: ''
-  });
-  const [savingHome, setSavingHome] = useState(false);
-
-  // Dream Creations States
-  const [dreamTab, setDreamTab] = useState('projects'); 
-  const [portfolioProjects, setPortfolioProjects] = useState([]);
-  const [savingProject, setSavingProject] = useState(false);
-  const [projectForm, setProjectForm] = useState({
-    title: '', client_name: '', description: '', featured_image_url: '', video_url: '', is_published: false
-  });
-  const [clientReviews, setClientReviews] = useState([]);
-  const [savingReview, setSavingReview] = useState(false);
-  const [reviewForm, setReviewForm] = useState({
-    client_name: '', company: '', project_type: '', rating: 5, feedback: '', face_image_url: '', is_published: true
-  });
-
-  // Data Analyst Config States
-  const [analystData, setAnalystData] = useState({
-    hero_title: '', hero_subtitle: '', intern_bio: '', analytics_years: 1, dashboards_built: 0, reports_created: 0, automation_projects: 0, processes_improved: 0, hours_saved: 0
-  });
-  const [savingAnalyst, setSavingAnalyst] = useState(false);
-
-  // AI Developer Config States
-  const [aiDevData, setAiDevData] = useState({
-    git_repos: 4, hours_coding: 320, prompts_optimized: 1200, dashboards_count: 12
-  });
-  const [savingAiDev, setSavingAiDev] = useState(false);
-
+  const [activeModule, setActiveModule] = useState('Dashboard Hub');
+  const [activePortfolioTab, setActivePortfolioTab] = useState('dashboards');
   const navigate = useNavigate();
-  const fileInputRef = useRef(null);
 
-  // Enforce Cloud Session Security
-  useEffect(() => {
-    const checkUserSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) navigate('/admin/login');
-      else {
-        setSession(session);
-        setLoading(false);
-      }
-    };
-    checkUserSession();
-  }, [navigate]);
+  // =========================================================================
+  // 1. HOME ENGINE BACKING DATA STATES
+  // =========================================================================
+  const [homeHeroPhoto, setHomeHeroPhoto] = useState("/images/profile.jpg");
+  const [homeStats, setHomeStats] = useState([
+    { num: 10, suffix: "+", label: "Years of Experience" },
+    { num: 15, suffix: "+", label: "Professional Roles" },
+    { num: 20, suffix: "+", label: "Companies Worked With" },
+    { num: 200, suffix: "+", label: "Projects Completed" },
+    { num: 10, suffix: "+", label: "Industries Served" },
+    { num: 25, suffix: "+", label: "Learning Technologies" }
+  ]);
+  const [homeSkills, setHomeSkills] = useState([
+    { category: "Creative", icon: "Palette", skills: "Graphic Design, Branding, Logo Design, Vector Illustration, Layout Composition, Typography, Mass Print Operations" },
+    { category: "Analytics", icon: "BarChart2", skills: "Data Cleaning, Data Validation, Data Reconciliation, Operational Reporting, Executive Reports, Dashboard Design, Metrics Modeling" },
+    { category: "Technology", icon: "Code", skills: "React, Vite, Tailwind CSS, JavaScript (ES6+), HTML5/CSS3, Git / GitHub, Node.js (Learning), SQL (Learning)" },
+    { category: "AI & Automation", icon: "Cpu", skills: "ChatGPT, Claude, Gemini, GitHub Copilot, Prompt Engineering, Automation Workflows" },
+    { category: "Leadership", icon: "Users", skills: "Project Management, Team Management, Client Acquisition, Milestone Tracking, Cross-functional Operations" }
+  ]);
+  const [homeTimeline, setHomeTimeline] = useState([
+    { year: "2014", title: "Multimedia Graphic Artist", company: "Visual Design Core", desc: "Began my professional journey crafting visual identities." }
+  ]);
 
-  // Fetch data dynamically based on selected workflow module
-  useEffect(() => {
-    if (!session) return;
-    
-    if (activeModule === 'Dashboard' || activeModule === 'Messages') {
-      fetchLiveMessages();
-      fetchPortfolioProjects(); 
-    }
-    else if (activeModule === 'Media Library') fetchMediaLibrary();
-    else if (activeModule === 'Home Config') fetchHomeConfig();
-    else if (activeModule === 'Data Analyst') fetchDataAnalystConfig();
-    else if (activeModule === 'AI Developer') fetchAiDeveloperConfig();
-    else if (activeModule === 'Dream Creations') {
-      fetchPortfolioProjects();
-      fetchClientReviews();
-    }
-  }, [activeModule, session]);
+  // =========================================================================
+  // 2. DREAM CREATIONS BACKING DATA STATES
+  // =========================================================================
+  const [dreamBanner, setDreamBanner] = useState("/Logo Banner.png");
+  const [dreamFounderPhoto, setDreamFounderPhoto] = useState("/images/jefferson.jpg");
+  const [dreamFounderExp, setDreamFounderExp] = useState(10);
+  const [dreamFounderProjects, setDreamFounderProjects] = useState(200);
+  
+  const [dreamTeam, setDreamTeam] = useState([
+    { id: 1, name: "Dexter Joy D. Bautista", positions: "Multimedia Designer", bio: "Creativity is more than just a skill for me, it's my lifestyle.", skills: "Package Design, UI/UX Design", software: "Photoshop, Illustrator", experience: "7+ Years", availability: "Full-Time", status: "Active", photo: "/images/dexter.jpg", portfolioUrl: "#" }
+  ]);
+  const [dreamSoftware, setDreamSoftware] = useState([
+    { name: "Photoshop", imageSrc: "/images/photoshop.png" },
+    { name: "Illustrator", imageSrc: "/images/illustrator.png" }
+  ]);
+  const [dreamClients, setDreamClients] = useState([
+    { name: "Responsive Health", industry: "Insurance & Healthcare", imageSrc: "/images/client1.png" }
+  ]);
+  const [dreamFeedback, setDreamFeedback] = useState([
+    { client_name: "Jane Doe", company: "Acme Corp", project_type: "Brand Refresh", rating: 5, feedback: "Dream Creations delivered an outstanding visual package.", face_image_url: "/images/face1.jpg" }
+  ]);
+  const [dreamArchive, setDreamArchive] = useState([
+    { category: "Branding & Identity", subtitle: "Logo Design", title: "Corporate Rebrand", client_name: "Acme Corp", description: "Complete brand visual identity overhaul.", featured_image_url: "/images/project1.jpg", video_url: "/videos/project.mp4" }
+  ]);
 
-  // ================= MODULE: DATA ANALYST CONFIG LINK LAYER =================
-  const fetchDataAnalystConfig = async () => {
-    try {
-      const { data, error } = await supabase.from('data_analyst_config').select('*').eq('id', 1).single();
-      if (error && error.code !== 'PGRST116') throw error;
-      if (data) {
-        setAnalystData({
-          hero_title: data.hero_title || '',
-          hero_subtitle: data.hero_subtitle || '',
-          intern_bio: data.intern_bio || '',
-          analytics_years: data.analytics_years || 1,
-          dashboards_built: data.dashboards_built || 0,
-          reports_created: data.reports_created || 0,
-          automation_projects: data.automation_projects || 0,
-          processes_improved: data.processes_improved || 0,
-          hours_saved: data.hours_saved || 0
-        });
-      }
-    } catch (error) {
-      console.error('Data Analyst core capture anomaly:', error.message);
-    }
+  // =========================================================================
+  // 3. DATA ANALYST BACKING DATA STATES
+  // =========================================================================
+  const [analystStats, setAnalystStats] = useState([
+    { label: "Years in Analytics", value: 1, suffix: "+" },
+    { label: "Dashboards Built", value: 12, suffix: "" },
+    { label: "Reports Created", value: 45, suffix: "" },
+    { label: "Automation Projects", value: 8, suffix: "" },
+    { label: "Processes Improved", value: 15, suffix: "" },
+    { label: "Hours Saved", value: 120, suffix: "+" }
+  ]);
+  const [analystRoles, setRoles] = useState([
+    { id: 1, statusBadge: "Current Role", title: "Data Analyst Intern", company: "S.P. Madrid", responsibilities: "Data Cleaning, Power Query, Excel Automation", impact: "Support business reporting, Reduce manual processing", logoUrl: "/images/spmadrid.png" }
+  ]);
+  const [analystSkills, setAnalystSkills] = useState([
+    { category: "Data Analysis", skills: "Microsoft Excel, Power Query, Advanced Formulas" },
+    { category: "Database", skills: "Database Administration, SQL (Learning), PostgreSQL (Learning)" }
+  ]);
+  const [analystEcosystem, setAnalystEcosystem] = useState([
+    { category: "Office Productivity", tools: [{ name: "Microsoft Excel", imageSrc: "/images/excel.png" }] }
+  ]);
+  const [analystRoadmap, setAnalystRoadmap] = useState(["Power BI", "SQL", "Python", "Cloud Analytics", "Microsoft Fabric"]);
+  
+  // 5-Tab Structured Array Architecture (Fully Detailed)
+  const [portfolioDashboards, setPortfolioDashboards] = useState([
+    { id: 1, name: "Executive Sales Dashboard", purpose: "Track revenue", industry: "Corporate B2B", department: "Sales", description: "Sales metrics tracking overview.", software: "Excel", tech: "ODBC", date: "August 2024", status: "Deployed", kpis: "MRR, Churn", impact: "Saved 4 hours weekly", thumbnail: "/images/dashboard-thumb.jpg" }
+  ]);
+  const [portfolioReports, setPortfolioReports] = useState([
+    { id: 1, title: "Q3 Operational Efficiency Report", context: "Visibility needs", objective: "Resolve delays", audience: "C-Level", frequency: "Quarterly", source: "CRM", format: "PDF", viz: "Funnel Charts", findings: "Data errors caused 40% delays", recommendations: "Automate verification rules", impact: "Improved turnaround by 15%", tools: "Excel" }
+  ]);
+  const [portfolioAutomations, setPortfolioAutomations] = useState([
+    { id: 1, name: "Automated Reconciliation Script", problem: "Matching took 2 days", currentProcess: "VLOOKUPs", painPoints: "High error rates", objectives: "Reduce under 1 hour", steps: "Extract, Clean, Match", tech: "Power Query", ai: "ChatGPT optimized", timeSaved: "14 hours/month", errorReduction: "99%", productivity: "+300%" }
+  ]);
+  const [portfolioCaseStudies, setPortfolioCaseStudies] = useState([
+    { id: 1, problem: "Inconsistent lead tracking", background: "Scattered sheets", objectives: "Centralize data", collection: "Exported 5 sources", cleaning: "Standardized dates", analysis: "Peak converted times", visualization: "Heatmaps", insights: "Fast contact convert 4x higher", recommendations: "Set instant alert rules", impact: "+25% sales volume", lessons: "Governance starts at entry point" }
+  ]);
+  const [portfolioProjects, setPortfolioProjects] = useState([
+    { id: 1, name: "Healthcare Patient Flow Analysis", industry: "Healthcare", overview: "Analyzing wait times", problem: "Wait times over 2 hours", objectives: "Staff optimization", tools: "Excel", tech: "Data Modeling", role: "Intern", challenges: "Missing timestamps", solution: "Interpolated averages", results: "Optimized staffing matrix", status: "Completed" }
+  ]);
+
+  // =========================================================================
+  // 4. AI DEVELOPER BACKING DATA STATES
+  // =========================================================================
+  const [aiStats, setAiStats] = useState([
+    { label: "Git Repositories", value: 4, suffix: "" },
+    { label: "Dashboards Built", value: 12, suffix: "" },
+    { label: "Hours Coding", value: 320, suffix: "+" },
+    { label: "AI Prompts Optimized", value: 1200, suffix: "+" }
+  ]);
+  const [aiTimeline, setAiTimeline] = useState([
+    { year: "2014", desc: "Started career as Graphic Artist." },
+    { year: "2026 (Current)", desc: "Committed to learning modern web development." }
+  ]);
+  const [aiEcosystemState, setAiEcosystemState] = useState([
+    { name: "ChatGPT", role: "Primary planning, architecture, debugging.", imageSrc: "/images/chatgpt.png" },
+    { name: "Claude", role: "Long-form documentation, reasoning.", imageSrc: "/images/claude.png" }
+  ]);
+  const [aiArchitecture, setAiArchitecture] = useState([
+    { category: "Frontend", items: [{ name: "React", imageSrc: "/images/react.png" }, { name: "Vite", imageSrc: "/images/vite.png" }] }
+  ]);
+  const [aiShowcase, setAiShowcase] = useState([
+    { id: 1, type: "flagship", badge: "In Progress", meta: "Flagship Software v1", title: "Personal Portfolio Website", desc: "Custom portfolio platform built from scratch.", tech: "React, Vite, Tailwind CSS, Git", role: "Frontend Architect", actionText: "Inspect Source", link: "https://github.com" },
+    { id: 2, type: "pipeline", title: "Future AI Automation Pipelines", desc: "Upcoming systems for data layers.", status: "STATUS: WAITING_ON_DEPS" }
+  ]);
+  const [aiGithub, setAiGithub] = useState({
+    name: "Jefferson Gonzales", username: "jeffersongonzales", profileUrl: "https://github.com", badgeText: "Live Sync Ready", matrixPlaceholder: "[Simulated GitHub Contribution Matrix Grid Placeholder]"
+  });
+
+  // =========================================================================
+  // 5. CONTACT, MEDIA, & INBOX DATA STATES
+  // =========================================================================
+  const [contactResumeUrl, setContactResumeUrl] = useState("/Jefferson_Gonzales_Resume.pdf");
+  const [contactPortfolioUrl, setContactPortfolioUrl] = useState("/Jefferson_Gonzales_Portfolio.pdf");
+  const [contactPlatforms, setContactPlatforms] = useState([
+    { id: "linkedin", name: "LinkedIn", username: "jeffersongonzales", link: "https://linkedin.com", status: "active" },
+    { id: "github", name: "GitHub", username: "jeffersongonzales", link: "https://github.com", status: "active" }
+  ]);
+  const [messagesLog, setMessagesLog] = useState([
+    { id: 1, sender_name: "Jane Smith", sender_email: "jane@corp.com", company: "Metrics Inc", subject: "BI Project Pitch", service_interested: "Data Analytics", message: "Hi Jefferson, we checked your analytics profile and would love to review your dashboards portfolio for a current operational reporting pipeline opening.", status: "unread" }
+  ]);
+  const [mediaFiles, setMediaFiles] = useState([
+    { id: 1, file_name: "logo_banner.png", file_url: "/Logo Banner.png", type: "image" }
+  ]);
+
+  // =========================================================================
+  // STATE GENERIC MUTATION HELPERS
+  // =========================================================================
+  const handleUpdateArrayField = (state, setState, index, field, value) => {
+    const copy = [...state];
+    copy[index][field] = value;
+    setState(copy);
   };
 
-  const handleSaveAnalyst = async () => {
-    setSavingAnalyst(true);
-    try {
-      // Package payload safely to synchronize statistical grids
-      const updatePayload = {
-        id: 1,
-        ...analystData,
-        quick_stats: [
-          { label: "Years in Analytics", value: parseInt(analystData.analytics_years), suffix: "+" },
-          { label: "Dashboards Built", value: parseInt(analystData.dashboards_built), suffix: "" },
-          { label: "Reports Created", value: parseInt(analystData.reports_created), suffix: "" },
-          { label: "Automation Projects", value: parseInt(analystData.automation_projects), suffix: "" },
-          { label: "Processes Improved", value: parseInt(analystData.processes_improved), suffix: "" },
-          { label: "Hours Saved", value: parseInt(analystData.hours_saved), suffix: "+" }
-        ],
-        updated_at: new Date()
-      };
-
-      const { error } = await supabase.from('data_analyst_config').upsert(updatePayload);
-      if (error) throw error;
-      alert('Data Analyst structural attributes synced live!');
-    } catch (error) {
-      console.error('Analyst save failure:', error.message);
-      alert('Error updating analysis profile configuration.');
-    } finally {
-      setSavingAnalyst(false);
-    }
+  const handleRemoveArrayItem = (state, setState, index) => {
+    setState(state.filter((_, i) => i !== index));
   };
 
-  // ================= MODULE: AI DEVELOPER CONFIG LINK LAYER =================
-  const fetchAiDeveloperConfig = async () => {
-    try {
-      const { data, error } = await supabase.from('ai_developer_config').select('*').eq('id', 1).single();
-      if (error && error.code !== 'PGRST116') throw error;
-      if (data) {
-        setAiDevData({
-          git_repos: data.git_repos || 4,
-          hours_coding: data.hours_coding || 320,
-          prompts_optimized: data.prompts_optimized || 1200,
-          dashboards_count: data.dashboards_count || 12
-        });
-      }
-    } catch (error) {
-      console.error('AI dev core query mismatch:', error.message);
-    }
-  };
-
-  const handleSaveAiDev = async () => {
-    setSavingAiDev(true);
-    try {
-      const updatePayload = {
-        id: 1,
-        ...aiDevData,
-        developer_stats: [
-          { label: "Git Repositories", value: parseInt(aiDevData.git_repos), suffix: "" },
-          { label: "Dashboards Built", value: parseInt(aiDevData.dashboards_count), suffix: "" },
-          { label: "Hours Coding", value: parseInt(aiDevData.hours_coding), suffix: "+" },
-          { label: "AI Prompts Optimized", value: parseInt(aiDevData.prompts_optimized), suffix: "+" }
-        ],
-        updated_at: new Date()
-      };
-
-      const { error } = await supabase.from('ai_developer_config').upsert(updatePayload);
-      if (error) throw error;
-      alert('AI Developer engineering metrics updated!');
-    } catch (error) {
-      console.error('AI dev save fault:', error.message);
-    } finally {
-      setSavingAiDev(false);
-    }
-  };
-
-  // ================= MODULE: DREAM CREATIONS (PROJECTS) =================
-  const fetchPortfolioProjects = async () => {
-    try {
-      const { data, error } = await supabase.from('portfolio_projects').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
-      setPortfolioProjects(data || []);
-    } catch (error) {
-      console.error('Error fetching projects:', error.message);
-    }
-  };
-
-  const handleSaveProject = async (e) => {
-    e.preventDefault();
-    setSavingProject(true);
-    try {
-      const { error } = await supabase.from('portfolio_projects').insert([projectForm]);
-      if (error) throw error;
-      
-      setProjectForm({ title: '', client_name: '', description: '', featured_image_url: '', video_url: '', is_published: false });
-      await fetchPortfolioProjects();
-      alert('Project added successfully!');
-    } catch (error) {
-      console.error('Failed to save project:', error.message);
-      alert('Error saving project.');
-    } finally {
-      setSavingProject(false);
-    }
-  };
-
-  const handleTogglePublish = async (id, currentStatus, table = 'portfolio_projects') => {
-    try {
-      const { error } = await supabase.from(table).update({ is_published: !currentStatus }).eq('id', id);
-      if (error) throw error;
-      if (table === 'portfolio_projects') fetchPortfolioProjects();
-      else fetchClientReviews();
-    } catch (error) {
-      console.error(`Failed to toggle status on ${table}:`, error.message);
-    }
-  };
-
-  const handleDeleteRecord = async (id, table) => {
-    if (!window.confirm('Are you sure you want to delete this record?')) return;
-    try {
-      const { error } = await supabase.from(table).delete().eq('id', id);
-      if (error) throw error;
-      if (table === 'portfolio_projects') fetchPortfolioProjects();
-      else fetchClientReviews();
-    } catch (error) {
-      console.error(`Failed to delete record from ${table}:`, error.message);
-    }
-  };
-
-  // ================= MODULE: DREAM CREATIONS (REVIEWS) =================
-  const fetchClientReviews = async () => {
-    try {
-      const { data, error } = await supabase.from('client_reviews').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
-      setClientReviews(data || []);
-    } catch (error) {
-      console.error('Error fetching reviews:', error.message);
-    }
-  };
-
-  const handleSaveReview = async (e) => {
-    e.preventDefault();
-    setSavingReview(true);
-    try {
-      const { error } = await supabase.from('client_reviews').insert([reviewForm]);
-      if (error) throw error;
-      
-      setReviewForm({ client_name: '', company: '', project_type: '', rating: 5, feedback: '', face_image_url: '', is_published: true });
-      await fetchClientReviews();
-      alert('Testimonial added successfully!');
-    } catch (error) {
-      console.error('Failed to save review:', error.message);
-      alert('Error saving testimonial.');
-    } finally {
-      setSavingReview(false);
-    }
-  };
-
-  // ================= MODULE: HOME CONFIG =================
-  const fetchHomeConfig = async () => {
-    try {
-      const { data, error } = await supabase.from('home_settings').select('*').eq('id', 1).single();
-      if (error && error.code !== 'PGRST116') throw error;
-      if (data) setHomeData(data);
-    } catch (error) {
-      console.error('Error fetching home config:', error.message);
-    }
-  };
-
-  const handleSaveHome = async () => {
-    setSavingHome(true);
-    try {
-      const { error } = await supabase.from('home_settings').upsert({ id: 1, ...homeData, updated_at: new Date() });
-      if (error) throw error;
-      alert('Homepage configuration saved successfully!');
-    } catch (error) {
-      console.error('Save failed:', error.message);
-    } finally {
-      setSavingHome(false);
-    }
-  };
-
-  // ================= MODULE: MESSAGES =================
-  const fetchLiveMessages = async () => {
-    try {
-      const { data, error } = await supabase.from('contact_messages').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
-      setMessages(data || []);
-      setStats({ totalMessages: data.length, unreadMessages: data.filter(msg => msg.status === 'unread').length });
-    } catch (error) {
-      console.error('Error fetching messages:', error.message);
-    }
-  };
-
-  const handleMarkAsRead = async (id) => {
-    try {
-      const { error } = await supabase.from('contact_messages').update({ status: 'read' }).eq('id', id);
-      if (error) throw error;
-      fetchLiveMessages();
-    } catch (error) {
-      console.error('Failed to update message:', error.message);
-    }
-  };
-
-  // ================= MODULE: MEDIA LIBRARY =================
-  const fetchMediaLibrary = async () => {
-    try {
-      const { data, error } = await supabase.from('media_library').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
-      setMediaFiles(data || []);
-    } catch (error) {
-      console.error('Error fetching media:', error.message);
-    }
-  };
-
-  const handleFileUpload = async (e) => {
+  const handleFileUploadMock = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
-
-    setUploading(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage.from('media').upload(fileName, file);
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage.from('media').getPublicUrl(fileName);
-      const { error: dbError } = await supabase.from('media_library').insert([{
-        uploader_id: session.user.id, file_name: file.name, file_url: publicUrl, file_type: file.type, size_bytes: file.size
-      }]);
-
-      if (dbError) throw dbError;
-      await fetchMediaLibrary();
-    } catch (error) {
-      console.error('Upload failed:', error.message);
-      alert('Upload failed.');
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
+    if(file) {
+      alert(`Simulated upload for: ${file.name}. This will connect to Supabase Storage later.`);
+      setMediaFiles([{id: Date.now(), file_name: file.name, file_url: URL.createObjectURL(file), type: "image"}, ...mediaFiles]);
     }
   };
-
-  // ================= GLOBAL ACTIONS =================
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/admin/login');
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#02040a] flex items-center justify-center text-slate-400 gap-3 font-mono text-xs">
-        <Loader2 className="animate-spin text-blue-500" size={18} /> VERIFYING SESSION ENCRYPTION...
-      </div>
-    );
-  }
 
   return (
-    <div className="flex h-screen bg-[#02040a] text-slate-200 overflow-hidden font-sans">
+    <div className="flex h-screen bg-[#09090b] text-zinc-200 overflow-hidden font-sans antialiased">
       
-      {/* Sidebar Panel */}
-      <aside className="w-64 flex-shrink-0 bg-white/[0.02] border-r border-white/10 flex flex-col">
-        <div className="p-6 border-b border-white/10">
-          <h2 className="text-lg font-black text-white tracking-tight">JG CMS <span className="text-blue-500">Pro</span></h2>
-          <span className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mt-1 block">Super Admin</span>
+      {/* UNIVERSAL SIDEBAR CONTROL DRAWER */}
+      <aside className="w-64 flex-shrink-0 bg-[#09090b] border-r border-zinc-900 flex flex-col justify-between">
+        <div>
+          <div className="p-6 border-b border-zinc-900">
+            <h2 className="text-sm font-black text-white tracking-widest uppercase font-mono">JG PANEL // 2026</h2>
+            <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mt-1 block">Unified Core CMS Shell</span>
+          </div>
+          <nav className="p-4 space-y-1">
+            {sidebarModules.map((module) => (
+              <button
+                key={module.name}
+                onClick={() => setActiveModule(module.name)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs uppercase tracking-wider font-mono font-bold transition-all border text-left cursor-pointer ${
+                  activeModule === module.name 
+                    ? 'bg-zinc-900 text-white border-zinc-800 shadow-md' 
+                    : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/30 border-transparent'
+                }`}
+              >
+                {module.icon} {module.name}
+              </button>
+            ))}
+          </nav>
         </div>
-
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 hide-scrollbar">
-          {sidebarModules.map((module) => (
-            <button
-              key={module.name}
-              onClick={() => setActiveModule(module.name)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-                activeModule === module.name 
-                  ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20' 
-                  : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
-              }`}
-            >
-              {module.icon} {module.name}
-            </button>
-          ))}
-        </nav>
-
-        <div className="p-4 border-t border-white/10">
-          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors cursor-pointer">
-            <LogOut size={18} /> Sign Out
+        <div className="p-4 border-t border-zinc-900">
+          <button onClick={() => navigate('/admin/login')} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold text-red-400 hover:bg-red-500/5 hover:border-red-500/20 transition-all cursor-pointer">
+            <LogOut size={14} /> SIGN OUT CORE
           </button>
         </div>
       </aside>
 
-      {/* Main Content Dashboard Workspace */}
-      <main className="flex-1 flex flex-col overflow-hidden relative">
-        <header className="h-16 flex-shrink-0 bg-white/[0.01] border-b border-white/10 flex items-center justify-between px-8">
-          <h1 className="text-xl font-bold text-white">{activeModule} Overview</h1>
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-2 text-xs font-mono text-slate-400">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Live Session Active
-            </span>
+      {/* PRIMARY MODULE CONTENT VIEWPORT WORKSPACE */}
+      <main className="flex-1 flex flex-col overflow-hidden bg-[#09090b]">
+        
+        {/* TIER 3: THE GLOBAL ACTIONS STICKY HEADER BAR */}
+        <header className="h-16 flex-shrink-0 border-b border-zinc-900 flex items-center justify-between px-8 bg-[#09090b]/80 backdrop-blur-md sticky top-0 z-50">
+          <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-zinc-400">
+            <Sliders size={14} className="text-zinc-500" />
+            <span>Active Module Frame:</span>
+            <span className="text-white bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800 font-mono font-bold">{activeModule}</span>
           </div>
+          <button 
+            onClick={() => alert(`SUCCESS: Parameters for "${activeModule}" cached locally in component memory registers!`)}
+            className="px-4 py-2 rounded-xl bg-white text-black text-xs font-mono font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2 shadow-md cursor-pointer"
+          >
+            <Save size={14} /> SAVE MODULE REGISTRIES
+          </button>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-8">
+        {/* INNER SCROLLABLE CANVAS CONTAINER */}
+        <div className="flex-1 overflow-y-auto p-8 max-w-5xl w-full mx-auto space-y-8">
           
-          {/* ================= DASHBOARD VIEW ================= */}
-          {activeModule === 'Dashboard' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                  <div className="flex items-center gap-3 text-slate-400 mb-2"><Mail size={16}/> Total Messages</div>
-                  <div className="text-3xl font-bold text-white">{stats.totalMessages}</div>
-                </div>
-                <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                  <div className="flex items-center gap-3 text-slate-400 mb-2"><Activity size={16}/> Unread Count</div>
-                  <div className="text-3xl font-bold text-blue-400">{stats.unreadMessages}</div>
-                </div>
-                <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                  <div className="flex items-center gap-3 text-slate-400 mb-2"><Palette size={16}/> Published Designs</div>
-                  <div className="text-3xl font-bold text-white">{portfolioProjects.filter(p => p.is_published).length}</div>
-                </div>
-                <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                  <div className="flex items-center gap-3 text-slate-400 mb-2"><Activity size={16}/> Sync Engine</div>
-                  <div className="text-3xl font-bold text-emerald-400">RLS Active</div>
-                </div>
-              </div>
+          {/* ================= WORKSPACE PANEL: DASHBOARD HUB ================= */}
+          {activeModule === 'Dashboard Hub' && (
+            <div className="p-8 rounded-2xl border border-zinc-900 bg-zinc-950/20 text-left space-y-4 max-w-xl">
+              <h3 className="text-sm font-mono font-black text-white uppercase tracking-wider">// System Interface Diagnostics Ready</h3>
+              <p className="text-xs text-zinc-400 leading-relaxed font-mono">
+                Welcome to your Three-Tier administrative dashboard configuration environment. Select any channel stream from the left drawer menu to modify or append data objects live.
+              </p>
             </div>
           )}
 
-          {/* ================= DATA ANALYST VIEW ================= */}
-          {activeModule === 'Data Analyst' && (
-            <div className="max-w-4xl space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-bold text-white">Data Analyst Matrix</h3>
-                  <p className="text-sm text-slate-400 mt-1">Control your analytics headers and matching fluid counter stats.</p>
-                </div>
-                <button onClick={handleSaveAnalyst} disabled={savingAnalyst} className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition-all flex items-center gap-2 shadow-lg cursor-pointer disabled:opacity-50">
-                  {savingAnalyst ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Save Metrics
-                </button>
-              </div>
-
-              <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-8 space-y-6">
-                <div className="grid grid-cols-1 gap-6">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Hero Main Title</label>
-                    <input type="text" value={analystData.hero_title} onChange={e => setAnalystData({...analystData, hero_title: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Hero Analytical Description</label>
-                    <textarea rows={3} value={analystData.hero_subtitle} onChange={e => setAnalystData({...analystData, hero_subtitle: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 resize-none" />
-                  </div>
-                </div>
-
-                <div className="pt-6 border-t border-white/5">
-                  <h4 className="text-sm font-bold text-emerald-400 mb-4 uppercase tracking-wider">Animated Dashboard Counters</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-400 mb-2">Years in Analytics</label>
-                      <input type="number" value={analystData.analytics_years} onChange={e => setAnalystData({...analystData, analytics_years: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-400 mb-2">Dashboards Built</label>
-                      <input type="number" value={analystData.dashboards_built} onChange={e => setAnalystData({...analystData, dashboards_built: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-400 mb-2">Reports Created</label>
-                      <input type="number" value={analystData.reports_created} onChange={e => setAnalystData({...analystData, reports_created: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-400 mb-2">Automation Projects</label>
-                      <input type="number" value={analystData.automation_projects} onChange={e => setAnalystData({...analystData, automation_projects: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-400 mb-2">Processes Improved</label>
-                      <input type="number" value={analystData.processes_improved} onChange={e => setAnalystData({...analystData, processes_improved: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-400 mb-2">Hours Saved</label>
-                      <input type="number" value={analystData.hours_saved} onChange={e => setAnalystData({...analystData, hours_saved: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ================= AI DEVELOPER VIEW ================= */}
-          {activeModule === 'AI Developer' && (
-            <div className="max-w-4xl space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-bold text-white">AI Developer Node Config</h3>
-                  <p className="text-sm text-slate-400 mt-1">Manage numbers running inside your digital contribution grid.</p>
-                </div>
-                <button onClick={handleSaveAiDev} disabled={savingAiDev} className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center gap-2 shadow-lg cursor-pointer disabled:opacity-50">
-                  {savingAiDev ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Deploy Parameters
-                </button>
-              </div>
-
-              <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-8 grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-2">Git Repositories</label>
-                  <input type="number" value={aiDevData.git_repos} onChange={e => setAiDevData({...aiDevData, git_repos: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-2">Dashboards Built</label>
-                  <input type="number" value={aiDevData.dashboards_count} onChange={e => setAiDevData({...aiDevData, dashboards_count: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-2">Hours Coding</label>
-                  <input type="number" value={aiDevData.hours_coding} onChange={e => setAiDevData({...aiDevData, hours_coding: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-2">AI Prompts Optimized</label>
-                  <input type="number" value={aiDevData.prompts_optimized} onChange={e => setAiDevData({...aiDevData, prompts_optimized: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ================= MESSAGES VIEW ================= */}
-          {activeModule === 'Messages' && (
-            <div className="space-y-6">
-              <div className="flex flex-col gap-1">
-                <h3 className="text-lg font-bold text-white">Incoming Client Request Influx</h3>
-                <p className="text-sm text-slate-400">Live operational pipelines capturing public form entries.</p>
-              </div>
-              
-              <div className="bg-white/[0.01] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
-                {messages.length > 0 ? (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm border-collapse">
-                      <thead>
-                        <tr className="bg-white/5 text-slate-400 font-mono text-xs border-b border-white/10">
-                          <th className="p-4">Sender Profile</th>
-                          <th className="p-4">Contact Subject</th>
-                          <th className="p-4">Message Context</th>
-                          <th className="p-4 text-center">Pipeline Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-white/5 font-medium">
-                        {messages.map((msg) => (
-                          <tr key={msg.id} className="hover:bg-white/[0.02] transition-colors">
-                            <td className="p-4 whitespace-nowrap">
-                              <div className="text-white font-bold">{msg.sender_name}</div>
-                              <div className="text-xs text-slate-400 font-mono mt-0.5">{msg.sender_email}</div>
-                              {msg.company && <div className="text-[10px] text-blue-400 uppercase tracking-wide mt-1">{msg.company}</div>}
-                            </td>
-                            <td className="p-4 max-w-[200px] truncate">
-                              <div className="text-slate-200 truncate">{msg.subject}</div>
-                              {msg.service_interested && <span className="inline-block px-1.5 py-0.5 bg-purple-500/10 border border-purple-500/20 rounded text-[10px] text-purple-300 mt-1">{msg.service_interested}</span>}
-                            </td>
-                            <td className="p-4 text-xs text-slate-400 max-w-sm whitespace-pre-line leading-relaxed">{msg.message}</td>
-                            <td className="p-4 text-center whitespace-nowrap">
-                              {msg.status === 'unread' ? (
-                                <button onClick={() => handleMarkAsRead(msg.id)} className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all cursor-pointer shadow-md flex items-center gap-1.5 mx-auto">
-                                  <Eye size={12}/> Mark Read
-                                </button>
-                              ) : (
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-full mx-auto font-mono">
-                                  <CheckCircle size={12} /> Processed
-                                </span>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <div className="p-16 text-center text-slate-500 font-mono text-sm">No incoming data transmissions detected inside your cloud instance inbox table.</div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* ================= DREAM CREATIONS VIEW ================= */}
-          {activeModule === 'Dream Creations' && (
-            <div className="space-y-8">
-              
-              {/* Internal Tab Navigation */}
-              <div className="flex gap-2 border-b border-white/10 pb-4">
-                <button 
-                  onClick={() => setDreamTab('projects')}
-                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer ${dreamTab === 'projects' ? 'bg-[#1095d2] text-white' : 'bg-white/5 text-slate-400 hover:text-white'}`}
-                >
-                  Portfolio Projects
-                </button>
-                <button 
-                  onClick={() => setDreamTab('reviews')}
-                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer ${dreamTab === 'reviews' ? 'bg-[#1095d2] text-white' : 'bg-white/5 text-slate-400 hover:text-white'}`}
-                >
-                  Client Testimonials
-                </button>
-              </div>
-
-              {/* ----- SUB-TAB: PORTFOLIO PROJECTS ----- */}
-              {dreamTab === 'projects' && (
-                <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-                  {/* Add New Project Form */}
-                  <div className="xl:col-span-4">
-                    <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 sticky top-0">
-                      <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2"><Plus size={18}/> New Project</h3>
-                      <form onSubmit={handleSaveProject} className="space-y-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-400 mb-1">Project Title</label>
-                          <input required type="text" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="Brand Redesign..." />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-400 mb-1">Client / Agency <span className="font-normal">(Optional)</span></label>
-                          <input type="text" value={projectForm.client_name} onChange={e => setProjectForm({...projectForm, client_name: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="Acme Corp" />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-400 mb-1">Featured Image URL</label>
-                          <input required type="url" value={projectForm.featured_image_url} onChange={e => setProjectForm({...projectForm, featured_image_url: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="https://..." />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-400 mb-1">Video URL <span className="font-normal">(Optional YouTube/Vimeo/Direct)</span></label>
-                          <input type="url" value={projectForm.video_url} onChange={e => setProjectForm({...projectForm, video_url: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="https://youtube.com/..." />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-400 mb-1">Project Description</label>
-                          <textarea required rows={4} value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50 resize-none" placeholder="Describe the design process and goals..." />
-                        </div>
-                        <div className="flex items-center gap-3 pt-2">
-                          <input type="checkbox" id="publish" checked={projectForm.is_published} onChange={e => setProjectForm({...projectForm, is_published: e.target.checked})} className="w-4 h-4 rounded border-white/20 bg-black/40 text-blue-500 focus:ring-0" />
-                          <label htmlFor="publish" className="text-sm text-slate-300 cursor-pointer">Publish immediately</label>
-                        </div>
-                        <button type="submit" disabled={savingProject} className="w-full py-3 mt-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer">
-                          {savingProject ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Save Project
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-
-                  {/* Projects Grid */}
-                  <div className="xl:col-span-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {portfolioProjects.map((project) => (
-                        <div key={project.id} className={`rounded-2xl border overflow-hidden transition-all flex flex-col ${project.is_published ? 'bg-white/[0.02] border-white/10' : 'bg-black/40 border-white/5 opacity-75'}`}>
-                          <div className="aspect-video relative bg-black/50 border-b border-white/5">
-                            {project.featured_image_url ? (
-                              <img src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-slate-600"><ImageIcon size={32} /></div>
-                            )}
-                            {project.video_url && (
-                              <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur border border-white/10 flex items-center justify-center text-white">
-                                <Video size={14} />
-                              </div>
-                            )}
-                            <div className="absolute top-3 left-3 px-2 py-1 rounded text-[10px] font-bold tracking-wider uppercase backdrop-blur-md bg-black/50 border border-white/10 text-white">
-                              {project.is_published ? <span className="text-emerald-400">Published</span> : <span className="text-amber-400">Draft</span>}
-                            </div>
-                          </div>
-                          <div className="p-5 flex-1 flex flex-col">
-                            <h4 className="text-lg font-bold text-white mb-1">{project.title}</h4>
-                            <p className="text-xs text-blue-400 font-mono mb-3">{project.client_name || 'Independent Project'}</p>
-                            <p className="text-sm text-slate-400 line-clamp-3 mb-6 flex-1">{project.description}</p>
-                            
-                            <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                              <button onClick={() => handleTogglePublish(project.id, project.is_published, 'portfolio_projects')} className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${project.is_published ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'}`}>
-                                {project.is_published ? 'Unpublish' : 'Publish'}
-                              </button>
-                              <button onClick={() => handleDeleteRecord(project.id, 'portfolio_projects')} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors cursor-pointer">
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              { dreamTab === 'reviews' && (
-                <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-                  {/* Add New Review Form */}
-                  <div className="xl:col-span-4">
-                    <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 sticky top-0">
-                      <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2"><MessageSquare size={18}/> New Testimonial</h3>
-                      <form onSubmit={handleSaveReview} className="space-y-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-400 mb-1">Client Name</label>
-                          <input required type="text" value={reviewForm.client_name} onChange={e => setReviewForm({...reviewForm, client_name: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="Jane Doe" />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-400 mb-1">Company / Organization <span className="font-normal">(Optional)</span></label>
-                          <input type="text" value={reviewForm.company} onChange={e => setReviewForm({...reviewForm, company: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="Acme Corp" />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-400 mb-1">Project Type</label>
-                          <input type="text" value={reviewForm.project_type} onChange={e => setReviewForm({...reviewForm, project_type: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="e.g. Brand Identity" />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-400 mb-1">Rating (1-5)</label>
-                          <input type="number" min="1" max="5" value={reviewForm.rating} onChange={e => setReviewForm({...reviewForm, rating: parseInt(e.target.value)})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-400 mb-1">Client Face Image URL <span className="font-normal">(Optional)</span></label>
-                          <input type="url" value={reviewForm.face_image_url} onChange={e => setReviewForm({...reviewForm, face_image_url: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50" placeholder="https://..." />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-400 mb-1">Feedback Quote</label>
-                          <textarea required rows={4} value={reviewForm.feedback} onChange={e => setReviewForm({...reviewForm, feedback: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50 resize-none" placeholder="Dream Creations did an amazing job..." />
-                        </div>
-                        <div className="flex items-center gap-3 pt-2">
-                          <input type="checkbox" id="publishRev" checked={reviewForm.is_published} onChange={e => setReviewForm({...reviewForm, is_published: e.target.checked})} className="w-4 h-4 rounded border-white/20 bg-black/40 text-blue-500 focus:ring-0" />
-                          <label htmlFor="publishRev" className="text-sm text-slate-300 cursor-pointer">Publish immediately</label>
-                        </div>
-                        <button type="submit" disabled={savingReview} className="w-full py-3 mt-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer">
-                          {savingReview ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Save Testimonial
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-
-                  {/* Reviews Grid */}
-                  <div className="xl:col-span-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {clientReviews.map((review) => (
-                        <div key={review.id} className={`p-6 rounded-2xl border flex flex-col transition-all ${review.is_published ? 'bg-white/[0.02] border-white/10' : 'bg-black/40 border-white/5 opacity-75'}`}>
-                          <div className="flex gap-1 mb-4 text-[#1095d2]">
-                            {[...Array(review.rating)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
-                          </div>
-                          <p className="text-sm text-slate-300 italic mb-6 flex-grow">"{review.feedback}"</p>
-                          <div className="flex items-center gap-3 mb-6">
-                            {review.face_image_url ? (
-                              <img src={review.face_image_url} alt="client" className="w-10 h-10 rounded-full object-cover border border-white/10" />
-                            ) : (
-                              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50">{review.client_name.charAt(0)}</div>
-                            )}
-                            <div>
-                              <h4 className="text-sm font-bold text-white leading-tight">{review.client_name}</h4>
-                              <p className="text-[10px] text-slate-400">{review.project_type} • {review.company}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                            <button onClick={() => handleTogglePublish(review.id, review.is_published, 'client_reviews')} className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${review.is_published ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'}`}>
-                              {review.is_published ? 'Unpublish' : 'Publish'}
-                            </button>
-                            <button onClick={() => handleDeleteRecord(review.id, 'client_reviews')} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors cursor-pointer">
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* ================= HOME CONFIG VIEW ================= */}
-          {activeModule === 'Home Config' && (
-            <div className="max-w-3xl">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h3 className="text-lg font-bold text-white">Homepage Configuration</h3>
-                  <p className="text-sm text-slate-400 mt-1">Update the public-facing details on your main landing page.</p>
-                </div>
-                <button onClick={handleSaveHome} disabled={savingHome} className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition-all flex items-center gap-2 shadow-lg disabled:opacity-50 cursor-pointer">
-                  {savingHome ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Save Changes
-                </button>
-              </div>
-              <div className="space-y-6 bg-white/[0.02] border border-white/10 rounded-3xl p-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Hero Title</label>
-                    <input type="text" value={homeData.hero_title || ''} onChange={e => setHomeData({...homeData, hero_title: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Hero Subtitle</label>
-                    <input type="text" value={homeData.hero_subtitle || ''} onChange={e => setHomeData({...homeData, hero_subtitle: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-2">About Me</label>
-                  <textarea rows={4} value={homeData.about_text || ''} onChange={e => setHomeData({...homeData, about_text: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 resize-none" />
-                </div>
-                <div className="pt-4 border-t border-white/10 space-y-6">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Profile Image URL</label>
-                    <div className="flex gap-4 items-center">
-                      <input type="text" value={homeData.profile_image_url || ''} onChange={e => setHomeData({...homeData, profile_image_url: e.target.value})} className="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
-                      {homeData.profile_image_url && <img src={homeData.profile_image_url} alt="Preview" className="w-12 h-12 rounded-lg object-cover border border-white/20" />}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Resume PDF URL</label>
-                    <input type="text" value={homeData.resume_url || ''} onChange={e => setHomeData({...homeData, resume_url: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ================= MEDIA LIBRARY VIEW ================= */}
+          {/* ================= WORKSPACE PANEL: MEDIA LIBRARY ================= */}
           {activeModule === 'Media Library' && (
-             <div>
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div className="space-y-8 text-left">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-2xl bg-zinc-950/40 border border-zinc-900">
                 <div>
-                  <h3 className="text-lg font-bold text-white">Cloud Media Storage</h3>
-                  <p className="text-sm text-slate-400 mt-1">Upload images to use across your portfolio projects.</p>
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><ImageIcon size={14}/> Cloud Media Storage</h4>
+                  <p className="text-[10px] text-zinc-500 mt-1 font-mono">Upload images/documents to copy URLs into your dynamic fields.</p>
                 </div>
-                <div>
-                  <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept="image/*,application/pdf" />
-                  <button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all flex items-center gap-2 cursor-pointer">
-                    {uploading ? <Loader2 size={16} className="animate-spin" /> : <UploadCloud size={16} />} Upload File
+                <div className="relative">
+                  <input type="file" onChange={handleFileUploadMock} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf" />
+                  <button className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md">
+                    <UploadCloud size={14} /> UPLOAD FILE ASSET
                   </button>
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {mediaFiles.map((file) => (
-                  <div key={file.id} className="group relative rounded-xl bg-black/50 border border-white/10 overflow-hidden aspect-square flex flex-col items-center justify-center hover:border-blue-500/50 transition-colors">
-                    {file.file_type?.includes('image') ? <img src={file.file_url} alt="media" className="w-full h-full object-cover" /> : <File size={32} className="text-slate-500" />}
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {mediaFiles.map((file, idx) => (
+                  <div key={idx} className="group relative rounded-xl bg-zinc-950 border border-zinc-900 overflow-hidden aspect-square flex flex-col items-center justify-center hover:border-blue-500/50 transition-colors">
+                    {file.type === 'image' ? <img src={file.file_url} alt="media" className="w-full h-full object-cover" /> : <File size={32} className="text-zinc-600" />}
                     <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center">
-                      <p className="text-xs text-white truncate w-full mb-3">{file.file_name}</p>
-                      <button onClick={() => { navigator.clipboard.writeText(file.file_url); alert('Copied!'); }} className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold cursor-pointer">Copy Link</button>
+                      <p className="text-[10px] text-white truncate w-full mb-3 font-mono">{file.file_name}</p>
+                      <div className="flex gap-2">
+                        <button onClick={() => { navigator.clipboard.writeText(file.file_url); alert('URL Copied to clipboard!'); }} className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-mono font-bold cursor-pointer">Copy</button>
+                        <button onClick={() => handleRemoveArrayItem(mediaFiles, setMediaFiles, idx)} className="px-3 py-1.5 rounded-lg bg-red-900/50 hover:bg-red-900 text-white text-[10px] font-mono font-bold cursor-pointer"><Trash2 size={12}/></button>
+                      </div>
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* ================= WORKSPACE PANEL: HOME ENGINE ================= */}
+          {activeModule === 'Home Engine' && (
+            <div className="space-y-8 text-left">
+              {/* Tier 1: Static Attributes Card */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><Image size={14}/> Hero Assets Layer</h4>
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase">Profile Photo Image URL Link Source</label>
+                  <input type="text" value={homeHeroPhoto} onChange={(e) => setHomeHeroPhoto(e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:outline-none" />
+                </div>
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Quick Stats) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Quick Stats Counters Matrix</h4>
+                  <button onClick={() => setHomeStats([...homeStats, { num: 0, suffix: "+", label: "New Metric Title" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD BLOCK</button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {homeStats.map((stat, idx) => (
+                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 grid grid-cols-4 gap-2 items-end relative group">
+                      <div><input type="number" value={stat.num} onChange={(e) => handleUpdateArrayField(homeStats, setHomeStats, idx, 'num', parseInt(e.target.value) || 0)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white text-center font-mono" /></div>
+                      <div><input type="text" value={stat.suffix} onChange={(e) => handleUpdateArrayField(homeStats, setHomeStats, idx, 'suffix', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white text-center font-mono" /></div>
+                      <div className="col-span-2 flex items-center gap-1">
+                        <input type="text" value={stat.label} onChange={(e) => handleUpdateArrayField(homeStats, setHomeStats, idx, 'label', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-mono" />
+                        <button onClick={() => handleRemoveArrayItem(homeStats, setHomeStats, idx)} className="text-zinc-600 hover:text-red-400 p-1 cursor-pointer"><Trash2 size={14}/></button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Skills Array) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Core Competencies Data Streams</h4>
+                  <button onClick={() => setHomeSkills([...homeSkills, { category: "New Category", icon: "Code", skills: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD CATEGORY</button>
+                </div>
+                {homeSkills.map((group, catIdx) => (
+                  <div key={catIdx} className="p-4 rounded-xl bg-zinc-950/20 border border-zinc-900 space-y-2 relative pr-8">
+                    <button onClick={() => handleRemoveArrayItem(homeSkills, setHomeSkills, catIdx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                    <input type="text" value={group.category} onChange={(e) => handleUpdateArrayField(homeSkills, setHomeSkills, catIdx, 'category', e.target.value)} className="bg-transparent text-xs font-mono text-white font-bold outline-none border-b border-zinc-800 pb-1 mb-2" placeholder="Category Name" />
+                    <textarea value={group.skills} onChange={(e) => handleUpdateArrayField(homeSkills, setHomeSkills, catIdx, 'skills', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-xl p-3 text-xs text-zinc-300 font-mono h-20 resize-none focus:outline-none focus:border-zinc-800" placeholder="Comma separated strings tag list..." />
+                  </div>
+                ))}
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Career Timeline) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Chronological Progression Tracks</h4>
+                  <button onClick={() => setHomeTimeline([...homeTimeline, { year: "", title: "", company: "", desc: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD ROW</button>
+                </div>
+                <div className="space-y-3">
+                  {homeTimeline.map((item, idx) => (
+                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/10 space-y-2 relative">
+                      <button onClick={() => handleRemoveArrayItem(homeTimeline, setHomeTimeline, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                      <div className="grid grid-cols-12 gap-2">
+                        <input type="text" value={item.year} onChange={(e) => handleUpdateArrayField(homeTimeline, setHomeTimeline, idx, 'year', e.target.value)} className="col-span-2 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-center text-white font-mono" placeholder="Year" />
+                        <input type="text" value={item.title} onChange={(e) => handleUpdateArrayField(homeTimeline, setHomeTimeline, idx, 'title', e.target.value)} className="col-span-5 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-mono" placeholder="Title" />
+                        <input type="text" value={item.company} onChange={(e) => handleUpdateArrayField(homeTimeline, setHomeTimeline, idx, 'company', e.target.value)} className="col-span-5 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 font-mono" placeholder="Company" />
+                      </div>
+                      <textarea value={item.desc} onChange={(e) => handleUpdateArrayField(homeTimeline, setHomeTimeline, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-500 font-mono h-16 resize-none focus:outline-none" placeholder="Description..." />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ================= WORKSPACE PANEL: DREAM CREATIONS ================= */}
+          {activeModule === 'Dream Creations' && (
+            <div className="space-y-8 text-left">
+              {/* Tier 1: Static Attributes Card */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><Palette size={14}/> Studio Headers & Founder Parameters</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase">Dream Creation Main Banner Image URL Link</label>
+                    <input type="text" value={dreamBanner} onChange={(e) => setDreamBanner(e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:outline-none" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase">Founder Direct Photo Asset URL Source</label>
+                    <input type="text" value={dreamFounderPhoto} onChange={(e) => setDreamFounderPhoto(e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:outline-none" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-zinc-900/60 text-xs font-mono">
+                  <div>
+                    <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Founder Experience Years</label>
+                    <input type="number" value={dreamFounderExp} onChange={(e) => setDreamFounderExp(parseInt(e.target.value) || 0)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white w-24" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Founder Total Projects Count</label>
+                    <input type="number" value={dreamFounderProjects} onChange={(e) => setDreamFounderProjects(parseInt(e.target.value) || 0)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white w-24" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Core Team Roster Allocations) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Core Team Roster Allocations Matrix</h4>
+                  <button onClick={() => setDreamTeam([...dreamTeam, { id: Date.now(), name: "New Creator", positions: "", bio: "", skills: "", software: "", experience: "", availability: "", status: "Active", photo: "", portfolioUrl: "#" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD MEMBER</button>
+                </div>
+                <div className="space-y-4">
+                  {dreamTeam.map((member, idx) => (
+                    <div key={member.id} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative">
+                      <button onClick={() => handleRemoveArrayItem(dreamTeam, setDreamTeam, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input type="text" value={member.name} onChange={(e) => handleUpdateArrayField(dreamTeam, setDreamTeam, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white font-bold" placeholder="Member Name" />
+                        <input type="text" value={member.positions} onChange={(e) => handleUpdateArrayField(dreamTeam, setDreamTeam, idx, 'positions', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-400" placeholder="Positions" />
+                        <input type="text" value={member.photo} onChange={(e) => handleUpdateArrayField(dreamTeam, setDreamTeam, idx, 'photo', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-400" placeholder="Picture URL Slot" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-mono font-bold text-zinc-600 uppercase mb-1">Professional Summary Bio</label>
+                        <textarea value={member.bio} onChange={(e) => handleUpdateArrayField(dreamTeam, setDreamTeam, idx, 'bio', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-400 h-16 resize-none" placeholder="Professional Summary Bio Narrative..." />
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[10px] font-mono font-bold text-zinc-600 uppercase mb-1">Core Skills (Comma Separated)</label>
+                          <input type="text" value={member.skills} onChange={(e) => handleUpdateArrayField(dreamTeam, setDreamTeam, idx, 'skills', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-300" placeholder="e.g. Package Design, UI/UX Design" />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-mono font-bold text-zinc-600 uppercase mb-1">Software Field (Comma Separated)</label>
+                          <input type="text" value={member.software} onChange={(e) => handleUpdateArrayField(dreamTeam, setDreamTeam, idx, 'software', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-300" placeholder="e.g. Photoshop, Illustrator" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
+                        <input type="text" value={member.experience} onChange={(e) => handleUpdateArrayField(dreamTeam, setDreamTeam, idx, 'experience', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-2" placeholder="Experience (e.g., 7+ Years)" />
+                        <input type="text" value={member.availability} onChange={(e) => handleUpdateArrayField(dreamTeam, setDreamTeam, idx, 'availability', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-2" placeholder="Availability" />
+                        <input type="text" value={member.portfolioUrl} onChange={(e) => handleUpdateArrayField(dreamTeam, setDreamTeam, idx, 'portfolioUrl', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-zinc-500 font-mono" placeholder="Portfolio Redirect Link" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Software & Trusted Clients Arrays) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                  <div className="flex justify-between items-center border-b border-zinc-900 pb-1.5">
+                    <span className="text-xs font-mono font-bold text-zinc-400 block">Software Stack Matrix</span>
+                    <button onClick={() => setDreamSoftware([...dreamSoftware, { name: "New Tool", imageSrc: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD</button>
+                  </div>
+                  <div className="space-y-2">
+                    {dreamSoftware.map((tool, idx) => (
+                      <div key={idx} className="flex gap-2">
+                        <input type="text" value={tool.name} onChange={(e) => handleUpdateArrayField(dreamSoftware, setDreamSoftware, idx, 'name', e.target.value)} className="w-1/3 bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-300" placeholder="Name" />
+                        <input type="text" value={tool.imageSrc} onChange={(e) => handleUpdateArrayField(dreamSoftware, setDreamSoftware, idx, 'imageSrc', e.target.value)} className="flex-1 bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-500" placeholder="Image URL" />
+                        <button onClick={() => handleRemoveArrayItem(dreamSoftware, setDreamSoftware, idx)} className="text-zinc-600 hover:text-red-400 p-2 cursor-pointer"><Trash2 size={14}/></button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                  <div className="flex justify-between items-center border-b border-zinc-900 pb-1.5">
+                    <span className="text-xs font-mono font-bold text-zinc-400 block">Trusted Client Log Grid</span>
+                    <button onClick={() => setDreamClients([...dreamClients, { name: "New Client", industry: "", imageSrc: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD</button>
+                  </div>
+                  <div className="space-y-2">
+                    {dreamClients.map((client, idx) => (
+                      <div key={idx} className="grid grid-cols-2 gap-2 relative pr-6">
+                        <button onClick={() => handleRemoveArrayItem(dreamClients, setDreamClients, idx)} className="absolute right-0 top-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                        <input type="text" value={client.name} onChange={(e) => handleUpdateArrayField(dreamClients, setDreamClients, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white" placeholder="Client Name" />
+                        <input type="text" value={client.industry} onChange={(e) => handleUpdateArrayField(dreamClients, setDreamClients, idx, 'industry', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Industry" />
+                        <input type="text" value={client.imageSrc} onChange={(e) => handleUpdateArrayField(dreamClients, setDreamClients, idx, 'imageSrc', e.target.value)} className="col-span-2 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500 font-mono" placeholder="Logo URL Slot" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Client Feedback Testimonials) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Client Feedback Testimonial Submissions</h4>
+                  <button onClick={() => setDreamFeedback([...dreamFeedback, { client_name: "", company: "", project_type: "", rating: 5, feedback: "", face_image_url: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD FEEDBACK</button>
+                </div>
+                <div className="space-y-4">
+                  {dreamFeedback.map((review, idx) => (
+                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative">
+                      <button onClick={() => handleRemoveArrayItem(dreamFeedback, setDreamFeedback, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                        <input type="text" value={review.client_name} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white" placeholder="Client Name" />
+                        <input type="text" value={review.company} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'company', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Job/Company" />
+                        <input type="text" value={review.project_type} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'project_type', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Project Type" />
+                        <select value={review.rating} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'rating', parseInt(e.target.value))} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-300 outline-none">
+                          <option value="5">5 Stars</option><option value="4">4 Stars</option><option value="3">3 Stars</option><option value="2">2 Stars</option><option value="1">1 Star</option>
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <input type="text" value={review.face_image_url} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'face_image_url', e.target.value)} className="sm:col-span-1 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Face Image URL" />
+                        <input type="text" value={review.feedback} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'feedback', e.target.value)} className="sm:col-span-2 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-300" placeholder="Comment Quote..." />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Project Archive Matrix) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Project Archive Matrix Registries</h4>
+                  <button onClick={() => setDreamArchive([...dreamArchive, { category: "Branding & Identity", subtitle: "", title: "", client_name: "", description: "", featured_image_url: "", video_url: "/videos/project.mp4" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD PROJECT</button>
+                </div>
+                <div className="space-y-4">
+                  {dreamArchive.map((project, idx) => (
+                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative">
+                      <button onClick={() => handleRemoveArrayItem(dreamArchive, setDreamArchive, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <input type="text" value={project.category} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'category', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 font-bold" placeholder="Category Map" />
+                        <input type="text" value={project.subtitle} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Subtitle Filter" />
+                        <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white" placeholder="Project Title" />
+                        <input type="text" value={project.client_name} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500" placeholder="Client Name" />
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <input type="text" value={project.featured_image_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'featured_image_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Featured Image URL" />
+                        <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Video Link (.mp4)" />
+                        <input type="text" value={project.description} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'description', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Description Meta..." />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ================= WORKSPACE PANEL: DATA ANALYST ================= */}
+          {activeModule === 'Data Analyst' && (
+            <div className="space-y-8 text-left">
+              {/* Tier 2: Dynamic Items Matrix (Quick Stats counters array) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><Database size={14}/> Analytics Matrix Performance Counters</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {analystStats.map((stat, idx) => (
+                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 grid grid-cols-4 gap-2 items-end">
+                      <div><input type="number" value={stat.value} onChange={(e) => handleUpdateArrayField(analystStats, setAnalystStats, idx, 'value', parseInt(e.target.value) || 0)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white text-center font-mono" /></div>
+                      <div><input type="text" value={stat.suffix} onChange={(e) => handleUpdateArrayField(analystStats, setAnalystStats, idx, 'suffix', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white text-center font-mono" /></div>
+                      <div className="col-span-2"><input type="text" value={stat.label} onChange={(e) => handleUpdateArrayField(analystStats, setAnalystStats, idx, 'label', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-mono" /></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Extensible Role Track Container) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Extensible Experience Roles Stack</h4>
+                  <button onClick={() => setRoles([...analystRoles, { id: Date.now(), statusBadge: "Role Block", title: "", company: "", responsibilities: "", impact: "", logoUrl: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD EXPERIENCE ROLE</button>
+                </div>
+                {analystRoles.map((role, idx) => (
+                  <div key={role.id} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative">
+                    <button onClick={() => handleRemoveArrayItem(analystRoles, setRoles, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pr-6">
+                      <input type="text" value={role.statusBadge} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'statusBadge', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-emerald-400" placeholder="Badge (Current Role)" />
+                      <input type="text" value={role.title} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Role Title" />
+                      <input type="text" value={role.company} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'company', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-300" placeholder="Company" />
+                      <input type="text" value={role.logoUrl} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'logoUrl', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Company Logo URL" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase mb-1">Core Responsibilities (Comma Separated)</label>
+                      <textarea value={role.responsibilities} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'responsibilities', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-400 h-16 resize-none" placeholder="e.g. Data Cleaning, Data Validation, Data Reconciliation" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase mb-1">Professional Impact (Comma Separated)</label>
+                      <textarea value={role.impact} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'impact', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-400 h-16 resize-none" placeholder="e.g. Support business reporting., Improve data consistency." />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Technical Competencies Arrays) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Technical Analytical Competencies</h4>
+                  <button onClick={() => setAnalystSkills([...analystSkills, { category: "New Cluster", skills: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD CLUSTER</button>
+                </div>
+                <div className="space-y-4">
+                  {analystSkills.map((section, catIdx) => (
+                    <div key={catIdx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/10 space-y-2 relative pr-8">
+                      <button onClick={() => handleRemoveArrayItem(analystSkills, setAnalystSkills, catIdx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                      <input type="text" value={section.category} onChange={(e) => handleUpdateArrayField(analystSkills, setAnalystSkills, catIdx, 'category', e.target.value)} className="bg-transparent text-xs font-mono text-white font-bold outline-none border-b border-zinc-800 pb-1 mb-2" placeholder="Cluster Name" />
+                      <textarea value={section.skills} onChange={(e) => handleUpdateArrayField(analystSkills, setAnalystSkills, catIdx, 'skills', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-300 font-mono h-16 resize-none" placeholder="Comma separated skills..." />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (5-Tabbed Showcase Content Fields COMPLETE) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2">// Analytics Portfolio Showcase Core (5 Completed Tabs)</h4>
+                
+                {/* Horizontal internal structural tabs controller view */}
+                <div className="flex flex-wrap gap-1 bg-zinc-950 p-1 rounded-xl border border-zinc-900">
+                  {['dashboards', 'reports', 'automations', 'caseStudies', 'projects'].map((tab) => (
+                    <button key={tab} type="button" onClick={() => setActivePortfolioTab(tab)} className={`px-3 py-1.5 text-[11px] font-mono rounded-lg transition-colors cursor-pointer capitalize ${activePortfolioTab === tab ? 'bg-zinc-900 text-white font-bold border border-zinc-800' : 'text-zinc-500 hover:bg-zinc-900/50'}`}>
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+
+                {/* SHOWCASE TAB PANEL 1: DASHBOARDS */}
+                {activePortfolioTab === 'dashboards' && (
+                  <div className="space-y-4 pt-2">
+                    <div className="flex justify-between items-center"><span className="text-[10px] font-mono text-zinc-500 uppercase font-black">&gt;_ Dashboards List Module</span><button onClick={() => setPortfolioDashboards([...portfolioDashboards, { id: Date.now(), name: "", purpose: "", industry: "", department: "", description: "", software: "", tech: "", date: "", status: "Deployed", kpis: "", impact: "", thumbnail: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 border border-zinc-800 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD DASHBOARD</button></div>
+                    {portfolioDashboards.map((item, idx) => (
+                      <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
+                        <button onClick={() => handleRemoveArrayItem(portfolioDashboards, setPortfolioDashboards, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pr-6">
+                          <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Dashboard Name" />
+                          <input type="text" value={item.department} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'department', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Department" />
+                          <input type="text" value={item.industry} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'industry', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Industry" />
+                          <input type="text" value={item.status} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'status', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500" placeholder="Status (e.g. Deployed)" />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <input type="text" value={item.purpose} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'purpose', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-300" placeholder="Purpose Statement" />
+                          <input type="text" value={item.description} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'description', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-300" placeholder="Full Description" />
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                          <input type="text" value={item.software} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'software', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Software" />
+                          <input type="text" value={item.tech} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'tech', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Tech / DB" />
+                          <input type="text" value={item.kpis} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'kpis', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="KPIs" />
+                          <input type="text" value={item.date} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'date', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Date (e.g. Aug 2024)" />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <input type="text" value={item.impact} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'impact', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400 font-semibold" placeholder="Business Impact Summary" />
+                          <input type="text" value={item.thumbnail} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'thumbnail', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500 font-mono" placeholder="Thumbnail URL Link Slot" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* SHOWCASE TAB PANEL 2: REPORTS */}
+                {activePortfolioTab === 'reports' && (
+                  <div className="space-y-4 pt-2">
+                    <div className="flex justify-between items-center"><span className="text-[10px] font-mono text-zinc-500 uppercase font-black">&gt;_ Reports List Module</span><button onClick={() => setPortfolioReports([...portfolioReports, { id: Date.now(), title: "", context: "", objective: "", audience: "", frequency: "", source: "", format: "", viz: "", findings: "", recommendations: "", impact: "", tools: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 border border-zinc-800 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD REPORT</button></div>
+                    {portfolioReports.map((item, idx) => (
+                      <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
+                        <button onClick={() => handleRemoveArrayItem(portfolioReports, setPortfolioReports, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pr-6">
+                          <input type="text" value={item.title} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Report Title" />
+                          <input type="text" value={item.objective} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'objective', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Objective" />
+                          <input type="text" value={item.frequency} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'frequency', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Frequency (e.g. Quarterly)" />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <input type="text" value={item.audience} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'audience', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded" placeholder="Audience" />
+                          <input type="text" value={item.source} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'source', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded" placeholder="Data Source" />
+                          <input type="text" value={item.format} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'format', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded" placeholder="Format" />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <input type="text" value={item.context} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'context', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Context Background" />
+                          <input type="text" value={item.viz} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'viz', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Visualizations Used" />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <input type="text" value={item.findings} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'findings', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400" placeholder="Key Findings" />
+                          <input type="text" value={item.recommendations} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'recommendations', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400" placeholder="Recommendations" />
+                          <input type="text" value={item.impact} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'impact', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Impact" />
+                        </div>
+                        <input type="text" value={item.tools} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'tools', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500" placeholder="Tools (Excel, Power Query)" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* SHOWCASE TAB PANEL 3: AUTOMATIONS */}
+                {activePortfolioTab === 'automations' && (
+                  <div className="space-y-4 pt-2">
+                    <div className="flex justify-between items-center"><span className="text-[10px] font-mono text-zinc-500 uppercase font-black">&gt;_ Automations List Module</span><button onClick={() => setPortfolioAutomations([...portfolioAutomations, { id: Date.now(), name: "", problem: "", currentProcess: "", painPoints: "", objectives: "", steps: "", tech: "", ai: "", timeSaved: "", errorReduction: "", productivity: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 border border-zinc-800 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD AUTOMATION</button></div>
+                    {portfolioAutomations.map((item, idx) => (
+                      <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
+                        <button onClick={() => handleRemoveArrayItem(portfolioAutomations, setPortfolioAutomations, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pr-6">
+                          <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Automation System Name" />
+                          <input type="text" value={item.problem} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'problem', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Core Problem Statement" />
+                          <input type="text" value={item.objectives} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'objectives', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Objectives" />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <input type="text" value={item.currentProcess} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'currentProcess', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-rose-400" placeholder="Before (Current Process)" />
+                          <input type="text" value={item.steps} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'steps', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400" placeholder="After (Steps)" />
+                          <input type="text" value={item.painPoints} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'painPoints', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-rose-400" placeholder="Pain Points" />
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                          <input type="text" value={item.timeSaved} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'timeSaved', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Time Saved" />
+                          <input type="text" value={item.productivity} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'productivity', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Productivity" />
+                          <input type="text" value={item.errorReduction} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'errorReduction', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Error Reduction" />
+                          <input type="text" value={item.tech} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'tech', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Tech Used" />
+                          <input type="text" value={item.ai} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'ai', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-purple-400" placeholder="AI Used" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* SHOWCASE TAB PANEL 4: CASE STUDIES */}
+                {activePortfolioTab === 'caseStudies' && (
+                  <div className="space-y-4 pt-2">
+                    <div className="flex justify-between items-center"><span className="text-[10px] font-mono text-zinc-500 uppercase font-black">&gt;_ Case Studies Module</span><button onClick={() => setPortfolioCaseStudies([...portfolioCaseStudies, { id: Date.now(), problem: "", background: "", objectives: "", collection: "", cleaning: "", analysis: "", visualization: "", insights: "", recommendations: "", impact: "", lessons: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 border border-zinc-800 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD CASE STUDY</button></div>
+                    {portfolioCaseStudies.map((item, idx) => (
+                      <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
+                        <button onClick={() => handleRemoveArrayItem(portfolioCaseStudies, setPortfolioCaseStudies, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pr-6">
+                          <input type="text" value={item.problem} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'problem', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Core Problem Context" />
+                          <input type="text" value={item.background} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'background', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Background" />
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                          <input type="text" value={item.objectives} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'objectives', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Objectives" />
+                          <input type="text" value={item.collection} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'collection', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Data Collection" />
+                          <input type="text" value={item.cleaning} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'cleaning', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Data Cleaning" />
+                          <input type="text" value={item.analysis} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'analysis', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Analysis Done" />
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                          <input type="text" value={item.visualization} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'visualization', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Visualization" />
+                          <input type="text" value={item.insights} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'insights', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Insights" />
+                          <input type="text" value={item.recommendations} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'recommendations', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400" placeholder="Recommendations" />
+                          <input type="text" value={item.impact} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'impact', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400" placeholder="Business Impact" />
+                          <input type="text" value={item.lessons} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'lessons', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500" placeholder="Lessons Learned" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* SHOWCASE TAB PANEL 5: PROJECTS */}
+                {activePortfolioTab === 'projects' && (
+                  <div className="space-y-4 pt-2">
+                    <div className="flex justify-between items-center"><span className="text-[10px] font-mono text-zinc-500 uppercase font-black">&gt;_ Intern Projects Module</span><button onClick={() => setPortfolioProjects([...portfolioProjects, { id: Date.now(), name: "", industry: "", overview: "", problem: "", objectives: "", tools: "", tech: "", role: "", challenges: "", solution: "", results: "", status: "Completed" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 border border-zinc-800 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD PROJECT</button></div>
+                    {portfolioProjects.map((item, idx) => (
+                      <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
+                        <button onClick={() => handleRemoveArrayItem(portfolioProjects, setPortfolioProjects, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pr-6">
+                          <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Project Name" />
+                          <input type="text" value={item.industry} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'industry', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Industry Layer" />
+                          <input type="text" value={item.role} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'role', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Role" />
+                          <input type="text" value={item.status} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'status', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500" placeholder="Execution Status" />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <input type="text" value={item.overview} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'overview', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Overview" />
+                          <input type="text" value={item.problem} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'problem', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Problem" />
+                          <input type="text" value={item.objectives} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'objectives', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Objectives" />
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                          <input type="text" value={item.tools} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'tools', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Tools Used" />
+                          <input type="text" value={item.tech} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'tech', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Tech Modeling" />
+                          <input type="text" value={item.challenges} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'challenges', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-rose-400" placeholder="Challenges" />
+                          <input type="text" value={item.solution} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'solution', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400" placeholder="Solution" />
+                          <input type="text" value={item.results} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'results', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Results" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Software Ecosystem Matrix with Logos) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Software Ecosystem Registry</h4>
+                  <button onClick={() => setAnalystEcosystem([...analystEcosystem, { category: "New Stream", tools: [{ name: "New Tool", imageSrc: "" }] }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD CATEGORY</button>
+                </div>
+                {analystEcosystem.map((cat, catIdx) => (
+                  <div key={catIdx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/10 space-y-2 relative pr-8">
+                    <button onClick={() => handleRemoveArrayItem(analystEcosystem, setAnalystEcosystem, catIdx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                    <div className="flex justify-between items-center border-b border-zinc-800 pb-1 mb-2">
+                      <input type="text" value={cat.category} onChange={(e) => handleUpdateArrayField(analystEcosystem, setAnalystEcosystem, catIdx, 'category', e.target.value)} className="bg-transparent text-xs font-mono font-bold text-emerald-400 outline-none" placeholder="Category Name" />
+                      <button onClick={() => {
+                        const updated = [...analystEcosystem];
+                        updated[catIdx].tools.push({ name: "Linked Tool", imageSrc: "" });
+                        setAnalystEcosystem(updated);
+                      }} className="text-[9px] font-mono text-zinc-500 hover:text-white cursor-pointer">+ ADD TOOL</button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {cat.tools?.map((tool, tIdx) => (
+                        <div key={tIdx} className="grid grid-cols-2 gap-1 bg-zinc-950 p-1.5 rounded-lg border border-zinc-900">
+                          <input type="text" value={tool.name} onChange={(e) => {
+                            const updated = [...analystEcosystem];
+                            updated[catIdx].tools[tIdx].name = e.target.value;
+                            setAnalystEcosystem(updated);
+                          }} className="bg-transparent text-xs text-white outline-none" placeholder="Tool Name" />
+                          <input type="text" value={tool.imageSrc} onChange={(e) => {
+                            const updated = [...analystEcosystem];
+                            updated[catIdx].tools[tIdx].imageSrc = e.target.value;
+                            setAnalystEcosystem(updated);
+                          }} className="bg-transparent text-xs text-zinc-600 font-mono outline-none" placeholder="Logo Image URL" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Future Roadmap badges) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Future Strategic Analytics Roadmap Array</h4>
+                  <button onClick={() => setAnalystRoadmap([...analystRoadmap, "New Item"])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD ITEM</button>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                  {analystRoadmap.map((item, idx) => (
+                    <div key={idx} className="relative flex items-center">
+                      <input type="text" value={item} onChange={(e) => {
+                        const copy = [...analystRoadmap];
+                        copy[idx] = e.target.value;
+                        setAnalystRoadmap(copy);
+                      }} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg pl-2 pr-6 py-1.5 text-xs text-center font-mono text-zinc-300 focus:outline-none" />
+                      <button onClick={() => {
+                        const copy = analystRoadmap.filter((_, i) => i !== idx);
+                        setAnalystRoadmap(copy);
+                      }} className="absolute right-1 text-zinc-600 hover:text-red-400 cursor-pointer p-1"><Trash2 size={12}/></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {/* ================= WORKSPACE PANEL: AI DEVELOPER ================= */}
+          {activeModule === 'AI Developer' && (
+            <div className="space-y-8 text-left">
+              {/* Tier 2: Dynamic Items Matrix (Developer Stats) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><BrainCircuit size={14}/> Engineering Metrics Counters</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {aiStats.map((stat, idx) => (
+                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 text-center space-y-2">
+                      <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider block">{stat.label}</span>
+                      <input type="number" value={stat.value} onChange={(e) => handleUpdateArrayField(aiStats, setAiStats, idx, 'value', parseInt(e.target.value) || 0)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-center text-white w-20 font-mono mx-auto" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Journey Timeline) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Development Chronology Flow</h4>
+                  <button onClick={() => setAiTimeline([...aiTimeline, { year: "", desc: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD TIMELINE NODE</button>
+                </div>
+                <div className="space-y-2">
+                  {aiTimeline.map((item, idx) => (
+                    <div key={idx} className="p-3 rounded-xl border border-zinc-900 bg-zinc-950/20 flex gap-4 items-center relative pr-8">
+                      <button onClick={() => handleRemoveArrayItem(aiTimeline, setAiTimeline, idx)} className="absolute right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                      <input type="text" value={item.year} onChange={(e) => handleUpdateArrayField(aiTimeline, setAiTimeline, idx, 'year', e.target.value)} className="w-24 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-center text-white font-mono" placeholder="Year" />
+                      <input type="text" value={item.desc} onChange={(e) => handleUpdateArrayField(aiTimeline, setAiTimeline, idx, 'desc', e.target.value)} className="flex-1 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-300 font-mono" placeholder="Description Node" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Current AI Ecosystem) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Current AI Ecosystem Partners</h4>
+                  <button onClick={() => setAiEcosystemState([...aiEcosystemState, { name: "New Engine", role: "", imageSrc: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD AI MODEL</button>
+                </div>
+                <div className="space-y-3">
+                  {aiEcosystemState.map((ai, idx) => (
+                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 relative grid grid-cols-1 sm:grid-cols-3 gap-2 pr-8">
+                      <button onClick={() => handleRemoveArrayItem(aiEcosystemState, setAiEcosystemState, idx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                      <input type="text" value={ai.name} onChange={(e) => handleUpdateArrayField(aiEcosystemState, setAiEcosystemState, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="AI Platform Model" />
+                      <input type="text" value={ai.imageSrc} onChange={(e) => handleUpdateArrayField(aiEcosystemState, setAiEcosystemState, idx, 'imageSrc', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Icon Image URL Slot" />
+                      <input type="text" value={ai.role} onChange={(e) => handleUpdateArrayField(aiEcosystemState, setAiEcosystemState, idx, 'role', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 sm:col-span-3" placeholder="Assigned Workflow Role..." />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Development Architecture with Logos) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Development Architecture Stack Matrix</h4>
+                  <button onClick={() => setAiArchitecture([...aiArchitecture, { category: "Infrastructure Track", items: [{ name: "Service Node", imageSrc: "" }] }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD STACK LAYER</button>
+                </div>
+                {aiArchitecture.map((stack, catIdx) => (
+                  <div key={catIdx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/10 space-y-2 relative pr-8">
+                    <button onClick={() => handleRemoveArrayItem(aiArchitecture, setAiArchitecture, catIdx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                    <div className="flex justify-between items-center border-b border-zinc-800 pb-1 mb-2">
+                      <input type="text" value={stack.category} onChange={(e) => handleUpdateArrayField(aiArchitecture, setAiArchitecture, catIdx, 'category', e.target.value)} className="bg-transparent text-xs font-mono font-bold text-cyan-400 outline-none" placeholder="Category" />
+                      <button onClick={() => {
+                        const updated = [...aiArchitecture];
+                        updated[catIdx].items.push({ name: "Linked Item", imageSrc: "" });
+                        setAiArchitecture(updated);
+                      }} className="text-[9px] font-mono text-zinc-500 hover:text-white cursor-pointer">+ ADD LAYER ITEM</button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {stack.items?.map((tool, tIdx) => (
+                        <div key={tIdx} className="grid grid-cols-2 gap-1 bg-zinc-950 p-1.5 rounded-lg border border-zinc-900">
+                          <input type="text" value={tool.name} onChange={(e) => {
+                            const updated = [...aiArchitecture];
+                            updated[catIdx].items[tIdx].name = e.target.value;
+                            setAiArchitecture(updated);
+                          }} className="bg-transparent text-xs text-white outline-none" placeholder="Item Name" />
+                          <input type="text" value={tool.imageSrc} onChange={(e) => {
+                            const updated = [...aiArchitecture];
+                            updated[catIdx].items[tIdx].imageSrc = e.target.value;
+                            setAiArchitecture(updated);
+                          }} className="bg-transparent text-xs text-zinc-600 font-mono outline-none" placeholder="Logo Asset URL" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Engineering Showcase - Portfolio with Tech list) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Flagship Engineering Showcase Projects Matrix</h4>
+                  <button onClick={() => setAiShowcase([...aiShowcase, { id: Date.now(), type: "flagship", badge: "In Progress", meta: "New Project", title: "", desc: "", tech: "", role: "", actionText: "Inspect Source", link: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD PROJECT</button>
+                </div>
+                <div className="space-y-4">
+                  {aiShowcase.map((project, idx) => (
+                    <div key={project.id} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative pr-8">
+                      <button onClick={() => handleRemoveArrayItem(aiShowcase, setAiShowcase, idx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                      <select value={project.type} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'type', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-[10px] font-mono text-zinc-400 cursor-pointer outline-none mb-2">
+                        <option value="flagship">Flagship Project Type</option>
+                        <option value="pipeline">Pipeline / Future Type</option>
+                      </select>
+
+                      {project.type === 'flagship' ? (
+                        <>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <input type="text" value={project.badge} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'badge', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Badge (e.g. In Progress)" />
+                            <input type="text" value={project.meta} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'meta', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Meta Subtitle" />
+                            <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
+                            <input type="text" value={project.role} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'role', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Role Assigned" />
+                          </div>
+                          <textarea value={project.desc} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-300 h-16 resize-none" placeholder="Project Description Narrative..." />
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <input type="text" value={project.tech} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'tech', e.target.value)} className="sm:col-span-2 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-400" placeholder="Technologies Managed (Comma separated)" />
+                            <input type="text" value={project.actionText} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'actionText', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Button Text (e.g. Inspect Source)" />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'title', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Pipeline Title" />
+                          <textarea value={project.desc} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-300 h-16 resize-none" placeholder="Pipeline Description..." />
+                          <input type="text" value={project.status} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'status', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-[10px] font-mono text-purple-400" placeholder="Status (e.g. STATUS: WAITING_ON_DEPS)" />
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tier 1: Static Attributes Card (GitHub Profile Meta Card) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><ExternalLink size={14}/> Attached GitHub Sync Panel Context</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase">Profile Custom Identity Name</label>
+                    <input type="text" value={aiGithub.name} onChange={(e) => setAiGithub({...aiGithub, name: e.target.value})} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white font-mono" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase">System Target Handle Username</label>
+                    <input type="text" value={aiGithub.username} onChange={(e) => setAiGithub({...aiGithub, username: e.target.value})} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white font-mono" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase">Target Redirect Profile URL</label>
+                    <input type="text" value={aiGithub.profileUrl} onChange={(e) => setAiGithub({...aiGithub, profileUrl: e.target.value})} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white font-mono" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ================= WORKSPACE PANEL: CONTACT LINKS ================= */}
+          {activeModule === 'Contact Links' && (
+            <div className="space-y-8 text-left">
+              {/* Tier 1: Static Attributes Card */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><FileText size={14}/> Verified Materials Download Registry</h4>
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase">Professional PDF Resume Download URL Link</label>
+                    <input type="text" value={contactResumeUrl} onChange={(e) => setContactResumeUrl(e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:outline-none" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase">Dynamic Portfolio Archive PDF Download URL Link</label>
+                    <input type="text" value={contactPortfolioUrl} onChange={(e) => setContactPortfolioUrl(e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:outline-none" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Tier 2: Dynamic Items Matrix (Social Accounts Grid table) */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Social Networking Directory Registry</h4>
+                  <button onClick={() => setContactPlatforms([...contactPlatforms, { id: "new", name: "New Link", username: "", link: "", status: "active" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD LINK</button>
+                </div>
+                <div className="space-y-3">
+                  {contactPlatforms.map((platform, idx) => (
+                    <div key={platform.id} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 grid grid-cols-1 sm:grid-cols-4 gap-3 items-center relative pr-8">
+                      <button onClick={() => handleRemoveArrayItem(contactPlatforms, setContactPlatforms, idx)} className="absolute right-3 top-4 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                      <span className="text-xs font-mono font-bold text-white uppercase">{platform.name} Link Account</span>
+                      <input type="text" value={platform.username} onChange={(e) => handleUpdateArrayField(contactPlatforms, setContactPlatforms, idx, 'username', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-300 font-mono" placeholder="Display Handle" />
+                      <input type="text" value={platform.link} onChange={(e) => handleUpdateArrayField(contactPlatforms, setContactPlatforms, idx, 'link', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500 font-mono" placeholder="Target Endpoint Account Link" />
+                      <select value={platform.status} onChange={(e) => handleUpdateArrayField(contactPlatforms, setContactPlatforms, idx, 'status', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-400 appearance-none text-center cursor-pointer">
+                        <option value="active">Active Channel</option>
+                        <option value="future">Future Allocation</option>
+                      </select>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ================= WORKSPACE PANEL: MESSAGES INBOX ================= */}
+          {activeModule === 'Messages Inbox' && (
+            <div className="space-y-6 text-left">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-sm font-mono font-black text-white uppercase tracking-wider">// Incoming Live Inquiries Transmissions Inbox</h3>
+                <p className="text-xs text-zinc-500 font-mono">Live logs capturing public form inputs directly from the endpoint user interfaces.</p>
+              </div>
+              <div className="rounded-2xl border border-zinc-900 overflow-hidden text-xs font-mono">
+                <div className="bg-zinc-900/50 p-3 font-bold text-zinc-500 border-b border-zinc-900 grid grid-cols-4">
+                  <span>Sender Information</span><span>Subject Inquiry</span><span>Message context Log</span><span className="text-center">Pipeline Actions</span>
+                </div>
+                <div className="divide-y divide-zinc-900 bg-zinc-950/10">
+                  {messagesLog.map((msg, idx) => (
+                    <div key={msg.id} className="p-4 grid grid-cols-4 gap-2 items-start relative hover:bg-zinc-900/10 transition-colors">
+                      <div>
+                        <div className="text-white font-bold">{msg.sender_name}</div>
+                        <div className="text-[11px] text-zinc-500 mt-0.5">{msg.sender_email}</div>
+                        {msg.company && <div className="text-[10px] text-cyan-400 uppercase mt-1 tracking-wide">{msg.company}</div>}
+                      </div>
+                      <div className="text-zinc-300">
+                        <div className="font-bold text-zinc-200">{msg.subject}</div>
+                        <span className="inline-block px-1.5 py-0.5 bg-zinc-900 border border-zinc-800 rounded text-[10px] text-zinc-400 mt-1.5">{msg.service_interested}</span>
+                      </div>
+                      <div className="text-zinc-500 text-[11px] leading-relaxed whitespace-pre-wrap">{msg.message}</div>
+                      <div className="text-center flex flex-col items-center justify-center gap-2">
+                        <span className="inline-block px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-wider">{msg.status}</span>
+                        <button onClick={() => handleRemoveArrayItem(messagesLog, setMessagesLog, idx)} className="text-[10px] text-red-400/70 hover:text-red-400 border border-zinc-900 bg-zinc-950/40 px-2 py-0.5 rounded cursor-pointer">Archive Log</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
