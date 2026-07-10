@@ -364,16 +364,6 @@ export default function DreamCreations() {
     }
   };
 
-  const scrollContainer = (ref, direction) => {
-    if (ref.current) {
-      const scrollAmount = 350; 
-      ref.current.scrollBy({ 
-        left: direction === 'left' ? -scrollAmount : scrollAmount, 
-        behavior: 'smooth' 
-      });
-    }
-  };
-
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
     setTimeout(() => {
@@ -461,6 +451,7 @@ export default function DreamCreations() {
           className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10"
         />
         
+        {/* FLOATING MOON IMAGE */}
         <motion.div
           initial={{ y: 150, scale: 0.5, opacity: 0 }}
           animate={{ y: 0, scale: 1, opacity: 1 }}
@@ -537,16 +528,17 @@ export default function DreamCreations() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               
-              // NEW: Sequential Continuous Glow "Paisa isa" Effect
+              // NEW: "Paisa-isa" 2-second sequential glow effect
               animate={{
                 borderColor: ["rgba(255,255,255,0.1)", "rgba(16,149,210,0.8)", "rgba(255,255,255,0.1)"],
                 backgroundColor: ["rgba(0,0,0,0.3)", "rgba(16,149,210,0.15)", "rgba(0,0,0,0.3)"],
                 boxShadow: ["none", "0 0 20px rgba(16,149,210,0.4)", "none"]
               }}
               transition={{
-                duration: 3,
+                duration: 2, // Glow lasts exactly 2 seconds
                 repeat: Infinity,
-                delay: index * 0.2, // This causes the sequential wave effect!
+                delay: index * 2, // Triggers every 2 seconds matching the box index
+                repeatDelay: (creationsCategories.length - 1) * 2, // Waits for the rest of the boxes before glowing again
                 ease: "easeInOut"
               }}
               whileHover={{
@@ -568,27 +560,26 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= BRAND BANNER ================= */}
-      <section className="max-w-5xl mx-auto w-full px-6 py-10 z-10 relative">
+      <div id="founder-bio" className="scroll-mt-24" />
+
+      {/* ================= 27. MEET THE FOUNDER SECTION (BRAND BANNER MOVED HERE) ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
+        
+        {/* BRAND BANNER NOW RIGHT ABOVE THE FOUNDER INFO */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="flex justify-center"
+          className="flex justify-center mb-16"
         >
           <img 
             src={bannerUrl} 
             alt="Dream Creations Brand Banner" 
-            className="w-full h-auto drop-shadow-[0_0_30px_rgba(16,149,210,0.3)] rounded-3xl border border-white/5 bg-black/40 p-2 md:p-4"
+            className="w-full max-w-5xl h-auto drop-shadow-[0_0_30px_rgba(16,149,210,0.3)] rounded-3xl border border-white/5 bg-black/40 p-2 md:p-4"
           />
         </motion.div>
-      </section>
 
-      <div id="founder-bio" className="scroll-mt-24" />
-
-      {/* ================= 27. MEET THE FOUNDER SECTION ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -677,10 +668,10 @@ export default function DreamCreations() {
             </p>
           </div>
           <div className="flex items-center gap-3 relative z-20">
-             <button onClick={() => scrollContainer(teamScrollRef, 'left')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
+             <button onClick={() => teamScrollRef.current?.scrollBy({ left: -350, behavior: 'smooth' })} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
                <ArrowLeft size={16} />
              </button>
-             <button onClick={() => scrollContainer(teamScrollRef, 'right')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
+             <button onClick={() => teamScrollRef.current?.scrollBy({ left: 350, behavior: 'smooth' })} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
                <ArrowRight size={16} />
              </button>
           </div>
@@ -810,10 +801,10 @@ export default function DreamCreations() {
           </div>
           
           <div className="flex items-center gap-3 relative z-20">
-             <button onClick={() => scrollContainer(processScrollRef, 'left')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
+             <button onClick={() => processScrollRef.current?.scrollBy({ left: -350, behavior: 'smooth' })} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
                <ArrowLeft size={16} />
              </button>
-             <button onClick={() => scrollContainer(processScrollRef, 'right')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
+             <button onClick={() => processScrollRef.current?.scrollBy({ left: 350, behavior: 'smooth' })} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
                <ArrowRight size={16} />
              </button>
           </div>
@@ -862,16 +853,12 @@ export default function DreamCreations() {
           </p>
         </div>
 
-        <div className="relative overflow-hidden w-full">
-          {/* Gradient Masks for smooth fade edges */}
-          <div className="absolute inset-y-0 left-0 w-12 md:w-32 bg-gradient-to-r from-[#050508] to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-12 md:w-32 bg-gradient-to-l from-[#050508] to-transparent z-10 pointer-events-none" />
-
-          {/* Interactive Native Horizontal Scroll Container */}
+        <div className="relative w-full">
+          {/* FADES REMOVED AS REQUESTED */}
           <div 
             ref={clientsScrollRef}
             {...clientsDragHandlers}
-            className="flex overflow-x-auto gap-4 py-4 hide-scrollbar w-full relative z-20 cursor-grab active:cursor-grabbing px-10"
+            className="flex overflow-x-auto gap-4 py-4 hide-scrollbar w-full relative z-20 cursor-grab active:cursor-grabbing px-6"
           >
             {[...clientsList, ...clientsList, ...clientsList, ...clientsList].map((client, index) => (
               <div
@@ -917,15 +904,12 @@ export default function DreamCreations() {
           </div>
         </div>
 
-        <div className="relative overflow-hidden w-full">
-          {/* Gradient Masks */}
-          <div className="absolute inset-y-0 left-0 w-8 md:w-20 bg-gradient-to-r from-[#050508] to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-8 md:w-20 bg-gradient-to-l from-[#050508] to-transparent z-10 pointer-events-none" />
-
+        <div className="relative w-full">
+          {/* FADES REMOVED AS REQUESTED */}
           <div 
             ref={feedbackScrollRef}
             {...feedbackDragHandlers}
-            className="flex overflow-x-auto gap-6 py-4 hide-scrollbar w-full relative z-20 cursor-grab active:cursor-grabbing px-10"
+            className="flex overflow-x-auto gap-6 py-4 hide-scrollbar w-full relative z-20 cursor-grab active:cursor-grabbing px-6"
           >
             {reviews.length > 0 ? (
               [...reviews, ...reviews, ...reviews, ...reviews].map((testimonial, index) => (
