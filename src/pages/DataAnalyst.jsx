@@ -2,6 +2,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
 import { BarChart3, PieChart, Database, FileSpreadsheet, Settings, Cpu, LineChart, Table, CheckCircle2, ArrowRight, ArrowUp, Briefcase, FileText, LayoutDashboard, BrainCircuit, Code2, Quote } from 'lucide-react';
+import { supabase } from '../lib/supabase'; // Added Supabase Import
 
 // ================= CUSTOM ANIMATED COUNTER COMPONENT =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -154,6 +155,65 @@ export default function DataAnalyst() {
   const [showcase, setShowcase] = useState(defaultShowcaseData);
   const [ecosystem, setEcosystem] = useState(defaultToolsTechnologies);
   const [roadmap, setRoadmap] = useState(defaultAnalyticsRoadmap);
+
+  // ================= FETCH CMS DATA =================
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('data_analyst')
+          .select('*')
+          .eq('id', 1)
+          .single();
+
+        if (error && error.code !== 'PGRST116') throw error;
+
+        if (data) {
+          if (data.performance_counters?.length > 0) setStats(data.performance_counters);
+          
+          if (data.experience_roles?.length > 0) {
+            // Parse comma-separated strings into arrays safely
+            const formattedRoles = data.experience_roles.map(r => ({
+              ...r,
+              responsibilities: typeof r.responsibilities === 'string' ? r.responsibilities.split(',').map(s => s.trim()).filter(Boolean) : r.responsibilities || [],
+              impact: typeof r.impact === 'string' ? r.impact.split(',').map(s => s.trim()).filter(Boolean) : r.impact || []
+            }));
+            setRoles(formattedRoles);
+          }
+          
+          if (data.technical_competencies?.length > 0) {
+            // Parse comma-separated strings into arrays safely
+            const formattedSkills = data.technical_competencies.map(c => ({
+              ...c,
+              skills: typeof c.skills === 'string' ? c.skills.split(',').map(s => s.trim()).filter(Boolean) : c.skills || []
+            }));
+            setTechSkills(formattedSkills);
+          }
+          
+          if (data.software_ecosystem?.length > 0) setEcosystem(data.software_ecosystem);
+          if (data.future_roadmap?.length > 0) setRoadmap(data.future_roadmap);
+
+          // Handle 5-Tab Showcase Logic safely
+          const formattedDashboards = (data.portfolio_dashboards || []).map(d => ({
+            ...d,
+            kpis: typeof d.kpis === 'string' ? d.kpis.split(',').map(s => s.trim()).filter(Boolean) : d.kpis || []
+          }));
+
+          setShowcase({
+            dashboards: formattedDashboards.length > 0 ? formattedDashboards : defaultShowcaseData.dashboards,
+            reports: data.portfolio_reports?.length > 0 ? data.portfolio_reports : defaultShowcaseData.reports,
+            automations: data.portfolio_automations?.length > 0 ? data.portfolio_automations : defaultShowcaseData.automations,
+            caseStudies: data.portfolio_case_studies?.length > 0 ? data.portfolio_case_studies : defaultShowcaseData.caseStudies,
+            projects: data.portfolio_projects?.length > 0 ? data.portfolio_projects : defaultShowcaseData.projects,
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching Data Analyst CMS data:', err.message);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const scrollToSection = (id) => {
     const targetElement = document.getElementById(id);

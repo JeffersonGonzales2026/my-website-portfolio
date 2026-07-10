@@ -157,7 +157,48 @@ export default function DreamCreations() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch Projects
+        // --- NEW: Fetch Dream Creations Config ---
+        const { data: dreamData, error: dreamError } = await supabase
+          .from('dream_creations')
+          .select('*')
+          .eq('id', 1)
+          .single();
+          
+        if (dreamError && dreamError.code !== 'PGRST116') throw dreamError;
+
+        if (dreamData) {
+          if (dreamData.banner_url) setBannerUrl(dreamData.banner_url);
+          if (dreamData.founder_photo) setFounderPhoto(dreamData.founder_photo);
+          if (dreamData.founder_experience !== null) setFounderExp(dreamData.founder_experience);
+          if (dreamData.founder_projects !== null) setFounderProjects(dreamData.founder_projects);
+          
+          if (dreamData.team_roster && dreamData.team_roster.length > 0) {
+            // Safely parse CSV strings to arrays so your mapped layout doesn't break
+            const formattedTeam = dreamData.team_roster.map(member => ({
+              ...member,
+              positions: typeof member.positions === 'string' ? member.positions.split(',').map(s => s.trim()) : member.positions || [],
+              skills: typeof member.skills === 'string' ? member.skills.split(',').map(s => s.trim()) : member.skills || [],
+              software: typeof member.software === 'string' ? member.software.split(',').map(s => s.trim()) : member.software || []
+            }));
+            setTeamList(formattedTeam);
+          }
+          if (dreamData.software_stack && dreamData.software_stack.length > 0) setSoftwareList(dreamData.software_stack);
+          if (dreamData.trusted_clients && dreamData.trusted_clients.length > 0) {
+            // Reattach your beautiful Lucide icons matching the industry name where possible, fallback to Globe
+            const clientsWithIcons = dreamData.trusted_clients.map(client => {
+              let iconComponent = <Globe size={32} />;
+              if (client.industry.toLowerCase().includes('health')) iconComponent = <HeartPulse size={32} />;
+              if (client.industry.toLowerCase().includes('property') || client.industry.toLowerCase().includes('real estate')) iconComponent = <Building2 size={32} />;
+              if (client.industry.toLowerCase().includes('commerce')) iconComponent = <ShoppingBag size={32} />;
+              if (client.industry.toLowerCase().includes('media')) iconComponent = <MonitorPlay size={32} />;
+              if (client.industry.toLowerCase().includes('consulting') || client.industry.toLowerCase().includes('finance')) iconComponent = <Briefcase size={32} />;
+              return { ...client, icon: iconComponent };
+            });
+            setClientsList(clientsWithIcons);
+          }
+        }
+
+        // --- EXISTING: Fetch Projects ---
         const { data: projectData, error: projectError } = await supabase
           .from('portfolio_projects')
           .select('*')
@@ -166,7 +207,7 @@ export default function DreamCreations() {
         if (projectError) throw projectError;
         setProjects(projectData || []);
 
-        // Fetch Client Reviews
+        // --- EXISTING: Fetch Client Reviews ---
         const { data: reviewData, error: reviewError } = await supabase
           .from('client_reviews')
           .select('*')

@@ -15,18 +15,28 @@ export default function Home() {
     hero_title: 'Jefferson Gonzales',
     hero_subtitle: 'Data Analyst & AI Developer',
     about_text: 'A multidisciplinary technology professional...',
-    profile_image_url: null
+    profile_image_url: null,
+    quick_stats: [],
+    core_skills: [],
+    career_timeline: []
   });
 
   // Fetch live CMS data on load
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
-        const { data, error } = await supabase.from('home_settings').select('*').eq('id', 1).single();
+        // Wired perfectly to our new 'home_engine' database table
+        const { data, error } = await supabase.from('home_engine').select('*').eq('id', 1).single();
         if (error && error.code !== 'PGRST116') throw error;
         
         if (data) {
-          setHomeData(prev => ({ ...prev, ...data }));
+          setHomeData(prev => ({ 
+            ...prev, 
+            profile_image_url: data.hero_photo,
+            quick_stats: data.quick_stats || [],
+            core_skills: data.core_skills || [],
+            career_timeline: data.career_timeline || []
+          }));
         }
       } catch (error) {
         console.error('Error fetching home data:', error.message);
@@ -37,14 +47,8 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-slate-200 overflow-x-hidden selection:bg-blue-500/30 selection:text-blue-200">
-      
-      {/* Background Ambient Glows */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px]" />
-        <div className="absolute top-[20%] right-[-10%] w-[600px] h-[600px] bg-emerald-600/10 rounded-full blur-[150px]" />
-      </div>
-
+    <div className="min-h-screen bg-[#09090b] bg-none text-slate-200 overflow-x-hidden selection:bg-blue-500/30 selection:text-blue-200">
+      {/* Clean, professional dark background with no grids or glows */}
       <div className="relative z-10 pt-32 pb-24 space-y-32">
         {/* Pass the fetched data into your components as props */}
         <Hero homeData={homeData} />

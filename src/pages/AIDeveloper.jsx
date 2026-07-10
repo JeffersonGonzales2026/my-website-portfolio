@@ -2,6 +2,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate } from 'framer-motion';
 import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail } from 'lucide-react';
+import { supabase } from '../lib/supabase'; // Added Supabase Import
 
 // ================= CUSTOM ANIMATED COUNTER =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -162,6 +163,43 @@ export default function AiDeveloper() {
   const [architecture, setArchitecture] = useState(defaultTechStackData);
   const [showcase, setShowcase] = useState(defaultShowcaseProjects);
   const [github, setGithub] = useState(defaultGithubProfile);
+
+  // ================= FETCH CMS DATA =================
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('ai_developer')
+          .select('*')
+          .eq('id', 1)
+          .single();
+
+        if (error && error.code !== 'PGRST116') throw error;
+
+        if (data) {
+          if (data.metrics_counters?.length > 0) setStats(data.metrics_counters);
+          if (data.development_timeline?.length > 0) setTimeline(data.development_timeline);
+          if (data.ai_partners?.length > 0) setAiPartners(data.ai_partners);
+          if (data.architecture_stack?.length > 0) setArchitecture(data.architecture_stack);
+          
+          if (data.engineering_showcase?.length > 0) {
+            // Safely parse comma-separated tech strings into arrays for the tags
+            const formattedShowcase = data.engineering_showcase.map(project => ({
+              ...project,
+              tech: typeof project.tech === 'string' ? project.tech.split(',').map(s => s.trim()).filter(Boolean) : project.tech || []
+            }));
+            setShowcase(formattedShowcase);
+          }
+          
+          if (data.github_sync && Object.keys(data.github_sync).length > 0) setGithub(data.github_sync);
+        }
+      } catch (err) {
+        console.error('Error fetching AI Developer CMS data:', err.message);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const scrollToSection = (id) => {
     const targetElement = document.getElementById(id);

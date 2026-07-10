@@ -24,6 +24,16 @@ const iconMap = {
   medium: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="6" cy="12" rx="6" ry="6"/><ellipse cx="16" cy="12" rx="3" ry="6"/><ellipse cx="21" cy="12" rx="1" ry="6"/></svg>
 };
 
+// STATIC PLATFORMS ARRAY - Edit these manually to change your social links
+const staticPlatforms = [
+  { id: 'linkedin', name: 'LinkedIn', username: 'jeffersongonzales', link: 'https://linkedin.com', status: 'active' },
+  { id: 'github', name: 'GitHub', username: 'jeffersongonzales', link: 'https://github.com', status: 'active' },
+  { id: 'email', name: 'Email', username: 'hello@example.com', link: 'mailto:hello@example.com', status: 'active' },
+  { id: 'facebook', name: 'Facebook', username: 'Jefferson Gonzales', link: 'https://facebook.com', status: 'future' },
+  { id: 'instagram', name: 'Instagram', username: '@jeff.creates', link: 'https://instagram.com', status: 'future' },
+  { id: 'discord', name: 'Discord', username: 'jeffgonzales#0000', link: '#', status: 'future' }
+];
+
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -42,28 +52,33 @@ export default function Contact() {
   
   const [status, setStatus] = useState('idle');
   const [errors, setErrors] = useState({});
-  const [platforms, setPlatforms] = useState([]);
+  const [platforms, setPlatforms] = useState(staticPlatforms); // Initialized with static array
 
   // ================= DECOUPLED MEDIA ASSET LINKS STATE =================
   const [resumeUrl, setResumeUrl] = useState("/Jefferson_Gonzales_Resume.pdf");
   const [portfolioUrl, setPortfolioUrl] = useState("/Jefferson_Gonzales_Portfolio.pdf");
 
-  // Fetch dynamic platform listings directly from live cloud database instance
+  // Fetch only Document Links (Resume & Portfolio) from live cloud database instance
   useEffect(() => {
-    const fetchPlatforms = async () => {
+    const fetchSettings = async () => {
       try {
         const { data, error } = await supabase
-          .from('contact_platforms')
+          .from('contact_settings')
           .select('*')
-          .order('display_order', { ascending: true });
+          .eq('id', 1)
+          .single();
         
-        if (error) throw error;
-        setPlatforms(data || []);
+        if (error && error.code !== 'PGRST116') throw error;
+        
+        if (data) {
+          if (data.resume_url) setResumeUrl(data.resume_url);
+          if (data.portfolio_url) setPortfolioUrl(data.portfolio_url);
+        }
       } catch (err) {
-        console.error("Platform directory fetch failure:", err.message);
+        console.error("Settings directory fetch failure:", err.message);
       }
     };
-    fetchPlatforms();
+    fetchSettings();
   }, []);
 
   const handleChange = (e) => {
@@ -314,7 +329,7 @@ export default function Contact() {
               </a>
             </motion.div>
 
-            {/* Social Grid Channels Fed via Live Cloud Engine Database Table */}
+            {/* Social Grid Channels Fed via STATIC ARRAY */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 h-[500px] overflow-y-auto pr-2 hide-scrollbar">
               <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
               
