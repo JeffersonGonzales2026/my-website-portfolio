@@ -52,7 +52,7 @@ export default function Hero({ homeData }) {
           <div className="h-8 flex items-center">
             <p className="text-lg md:text-xl font-medium text-slate-400">
               I'm <span className="text-white font-bold">Jefferson Gonzales</span>, your specialized{' '}
-              <span className="text-white transition-all duration-500 font-mono font-bold border-b border-white/20 pb-0.5">
+              <span className="text-white transition-all duration-500 font-mono font-bold pb-0.5">
                 {titles[currentTitleIndex]}
               </span>
             </p>
