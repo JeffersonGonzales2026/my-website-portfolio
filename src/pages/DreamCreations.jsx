@@ -174,7 +174,6 @@ export default function DreamCreations() {
       window.removeEventListener("touchmove", moveCursor);
     };
   }, [cursorX, cursorY]);
-  // ==========================================================
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -214,16 +213,34 @@ export default function DreamCreations() {
             setTeamList(formattedTeam);
           }
           if (dreamData.software_stack && dreamData.software_stack.length > 0) setSoftwareList(dreamData.software_stack);
+          
           if (dreamData.trusted_clients && dreamData.trusted_clients.length > 0) {
             const clientsWithIcons = dreamData.trusted_clients.map(client => {
-              // PREVENTS ICON OVERRIDE: Check if the CMS provided an actual image URL
-              const imgUrl = client.logo_url || client.icon_url || client.image_url || client.logo || (typeof client.icon === 'string' ? client.icon : null);
               
+              // ================= BRUTE FORCE IMAGE DETECTOR =================
+              let imgUrl = null;
+              
+              if (client.logo_url) imgUrl = client.logo_url;
+              else if (client.image_url) imgUrl = client.image_url;
+              else if (client.image) imgUrl = client.image;
+              else if (client.logo) imgUrl = client.logo;
+              else if (typeof client.icon === 'string' && client.icon.includes('http')) imgUrl = client.icon;
+              
+              if (!imgUrl) {
+                for (const key in client) {
+                  if (typeof client[key] === 'string' && (client[key].startsWith('http') || client[key].includes('supabase.co'))) {
+                    imgUrl = client[key];
+                    break;
+                  }
+                }
+              }
+
               if (imgUrl) {
                 return { ...client, customImage: imgUrl };
               }
+              // ==============================================================
 
-              // Fallback to Lucide React Icons if no image is uploaded
+              // Fallback to Lucide React Icons ONLY if no image exists
               let iconComponent = <Globe size={32} />;
               if (client.industry.toLowerCase().includes('health')) iconComponent = <HeartPulse size={32} />;
               if (client.industry.toLowerCase().includes('property') || client.industry.toLowerCase().includes('real estate')) iconComponent = <Building2 size={32} />;
@@ -365,6 +382,7 @@ export default function DreamCreations() {
           className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10"
         />
         
+        {/* NEW FLOATING MOON IMAGE */}
         <motion.div
           initial={{ y: 150, scale: 0.5, opacity: 0 }}
           animate={{ y: 0, scale: 1, opacity: 1 }}
@@ -372,7 +390,7 @@ export default function DreamCreations() {
           className="-mt-12 mb-16 relative" 
         >
           <motion.div
-            animate={{ y: [-8, 8, -8], rotate: [-2, 2, -2] }}
+            animate={{ y: [-15, 15, -15], rotate: [-3, 3, -3] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           >
             <img 
@@ -739,7 +757,6 @@ export default function DreamCreations() {
       </section>
 
       {/* ================= FEATURED CLIENTS ================= */}
-      {/* ================= FEATURED CLIENTS ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-16 text-center">
           <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Trusted By</h3>
@@ -757,7 +774,7 @@ export default function DreamCreations() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              // Added active: state so it lights up if tapped on mobile
+              // Active state added for mobile taps
               className="group flex flex-col items-center justify-center p-6 rounded-2xl border border-white/5 bg-black/20 hover:bg-black/40 hover:border-[#1095d2]/30 active:bg-black/40 active:border-[#1095d2]/30 transition-all duration-300 text-center"
             >
               <div className="text-[#1095d2] md:text-white/40 group-hover:text-[#1095d2] group-active:text-[#1095d2] transition-colors duration-300 mb-4 h-16 flex items-center justify-center w-full">
@@ -765,7 +782,7 @@ export default function DreamCreations() {
                   <img 
                     src={client.customImage} 
                     alt={client.name} 
-                    // Fully colored on mobile, grayscaled on desktop (md:), colored on hover/tap
+                    // Colored by default on mobile, grayscale on desktop until hover/active
                     className="max-h-full max-w-full object-contain grayscale-0 opacity-100 md:grayscale md:opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-active:grayscale-0 group-active:opacity-100 transition-all duration-300" 
                   />
                 ) : (
