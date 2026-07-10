@@ -141,6 +141,19 @@ export default function DreamCreations() {
   const [softwareList, setSoftwareList] = useState(softwareExpertise);
   const [clientsList, setClientsList] = useState(featuredClients);
 
+  // ================= RANDOM GLOW & PRESSED EFFECT LOGIC =================
+  const [randomGlowIndex, setRandomGlowIndex] = useState(null);
+
+  useEffect(() => {
+    // Pick a random box to "press" and glow every 2 seconds
+    const interval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * creationsCategories.length);
+      setRandomGlowIndex(randomIndex);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   // ================= SCROLL & SWIPE LOGIC FOR CLIENTS (LEFT TO RIGHT) =================
   const clientsScrollRef = useRef(null);
   const [isClientsPaused, setIsClientsPaused] = useState(false);
@@ -364,6 +377,16 @@ export default function DreamCreations() {
     }
   };
 
+  const scrollContainer = (ref, direction) => {
+    if (ref.current) {
+      const scrollAmount = 350; 
+      ref.current.scrollBy({ 
+        left: direction === 'left' ? -scrollAmount : scrollAmount, 
+        behavior: 'smooth' 
+      });
+    }
+  };
+
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
     setTimeout(() => {
@@ -520,49 +543,58 @@ export default function DreamCreations() {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-          {creationsCategories.map((category, index) => (
-            <motion.button
-              key={category.id}
-              onClick={() => setActiveCreationPopup(category)}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              
-              // NEW: "Paisa-isa" 2-second sequential glow effect
-              animate={{
-                borderColor: ["rgba(255,255,255,0.1)", "rgba(16,149,210,0.8)", "rgba(255,255,255,0.1)"],
-                backgroundColor: ["rgba(0,0,0,0.3)", "rgba(16,149,210,0.15)", "rgba(0,0,0,0.3)"],
-                boxShadow: ["none", "0 0 20px rgba(16,149,210,0.4)", "none"]
-              }}
-              transition={{
-                duration: 2, // Glow lasts exactly 2 seconds
-                repeat: Infinity,
-                delay: index * 2, // Triggers every 2 seconds matching the box index
-                repeatDelay: (creationsCategories.length - 1) * 2, // Waits for the rest of the boxes before glowing again
-                ease: "easeInOut"
-              }}
-              whileHover={{
-                scale: 1.05,
-                borderColor: "rgba(16,149,210,1)",
-                backgroundColor: "rgba(16,149,210,0.3)",
-                boxShadow: "0 0 30px rgba(16,149,210,0.8)"
-              }}
-              className="p-2 h-20 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer relative z-20"
-            >
-              <div className="text-white/60 group-hover:text-[#1095d2] transition-colors duration-300 mb-1 group-hover:scale-110">
-                {category.icon}
-              </div>
-              <h4 className="text-[10px] font-bold text-white/90 group-hover:text-white transition-colors leading-tight px-1">
-                {category.category}
-              </h4>
-            </motion.button>
-          ))}
+          {creationsCategories.map((category, index) => {
+            const isGlowing = randomGlowIndex === index;
+
+            return (
+              <motion.button
+                key={category.id}
+                onClick={() => setActiveCreationPopup(category)}
+                
+                // NEW: Randomized "Pressed & Glowing" effect. 
+                // Notice there is NO initial/whileInView fade-in animation here anymore!
+                animate={
+                  isGlowing
+                    ? {
+                        scale: 0.96, // Simulates being physically pressed down
+                        y: 4,        // Moves down slightly
+                        borderColor: "rgba(16,149,210,1)",
+                        backgroundColor: "rgba(16,149,210,0.3)",
+                        boxShadow: "0 0 30px rgba(16,149,210,0.8)",
+                      }
+                    : {
+                        scale: 1,
+                        y: 0,
+                        borderColor: "rgba(255,255,255,0.1)",
+                        backgroundColor: "rgba(0,0,0,0.3)",
+                        boxShadow: "none",
+                      }
+                }
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                whileHover={{
+                  scale: 1.05,
+                  y: 0,
+                  borderColor: "rgba(16,149,210,1)",
+                  backgroundColor: "rgba(16,149,210,0.3)",
+                  boxShadow: "0 0 30px rgba(16,149,210,0.8)"
+                }}
+                className="p-2 h-20 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer relative z-20"
+              >
+                <div className="text-white/60 group-hover:text-[#1095d2] transition-colors duration-300 mb-1 group-hover:scale-110">
+                  {category.icon}
+                </div>
+                <h4 className="text-[10px] font-bold text-white/90 group-hover:text-white transition-colors leading-tight px-1">
+                  {category.category}
+                </h4>
+              </motion.button>
+            );
+          })}
         </div>
       </section>
 
       <div id="founder-bio" className="scroll-mt-24" />
 
-      {/* ================= 27. MEET THE FOUNDER SECTION (BRAND BANNER MOVED HERE) ================= */}
+      {/* ================= 27. MEET THE FOUNDER SECTION ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         
         {/* BRAND BANNER NOW RIGHT ABOVE THE FOUNDER INFO */}
@@ -854,7 +886,6 @@ export default function DreamCreations() {
         </div>
 
         <div className="relative w-full">
-          {/* FADES REMOVED AS REQUESTED */}
           <div 
             ref={clientsScrollRef}
             {...clientsDragHandlers}
@@ -905,7 +936,6 @@ export default function DreamCreations() {
         </div>
 
         <div className="relative w-full">
-          {/* FADES REMOVED AS REQUESTED */}
           <div 
             ref={feedbackScrollRef}
             {...feedbackDragHandlers}
