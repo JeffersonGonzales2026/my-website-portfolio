@@ -145,14 +145,58 @@ export default function DreamCreations() {
   const [randomGlowIndex, setRandomGlowIndex] = useState(null);
 
   useEffect(() => {
-    // Pick a random box to "press" and glow every 2 seconds
+    // Pick a random box to glow every 5 seconds (as requested)
     const interval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * creationsCategories.length);
       setRandomGlowIndex(randomIndex);
-    }, 2000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
+
+  // ================= SCROLL & SWIPE LOGIC FOR TEAM =================
+  const isTeamDragging = useRef(false);
+  const teamStartX = useRef(0);
+  const teamScrollLeftPos = useRef(0);
+
+  const teamDragHandlers = {
+    onMouseDown: (e) => {
+      isTeamDragging.current = true;
+      teamStartX.current = e.pageX - teamScrollRef.current.offsetLeft;
+      teamScrollLeftPos.current = teamScrollRef.current.scrollLeft;
+    },
+    onMouseLeave: () => { isTeamDragging.current = false; },
+    onMouseUp: () => { isTeamDragging.current = false; },
+    onMouseMove: (e) => {
+      if (!isTeamDragging.current) return;
+      e.preventDefault();
+      const x = e.pageX - teamScrollRef.current.offsetLeft;
+      const walk = (x - teamStartX.current) * 2;
+      teamScrollRef.current.scrollLeft = teamScrollLeftPos.current - walk;
+    }
+  };
+
+  // ================= SCROLL & SWIPE LOGIC FOR CREATIVE PROCESS =================
+  const isProcessDragging = useRef(false);
+  const processStartX = useRef(0);
+  const processScrollLeftPos = useRef(0);
+
+  const processDragHandlers = {
+    onMouseDown: (e) => {
+      isProcessDragging.current = true;
+      processStartX.current = e.pageX - processScrollRef.current.offsetLeft;
+      processScrollLeftPos.current = processScrollRef.current.scrollLeft;
+    },
+    onMouseLeave: () => { isProcessDragging.current = false; },
+    onMouseUp: () => { isProcessDragging.current = false; },
+    onMouseMove: (e) => {
+      if (!isProcessDragging.current) return;
+      e.preventDefault();
+      const x = e.pageX - processScrollRef.current.offsetLeft;
+      const walk = (x - processStartX.current) * 2;
+      processScrollRef.current.scrollLeft = processScrollLeftPos.current - walk;
+    }
+  };
 
   // ================= SCROLL & SWIPE LOGIC FOR CLIENTS (LEFT TO RIGHT) =================
   const clientsScrollRef = useRef(null);
@@ -377,16 +421,6 @@ export default function DreamCreations() {
     }
   };
 
-  const scrollContainer = (ref, direction) => {
-    if (ref.current) {
-      const scrollAmount = 350; 
-      ref.current.scrollBy({ 
-        left: direction === 'left' ? -scrollAmount : scrollAmount, 
-        behavior: 'smooth' 
-      });
-    }
-  };
-
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
     setTimeout(() => {
@@ -550,40 +584,20 @@ export default function DreamCreations() {
               <motion.button
                 key={category.id}
                 onClick={() => setActiveCreationPopup(category)}
-                
-                // NEW: Randomized "Pressed & Glowing" effect. 
-                // Notice there is NO initial/whileInView fade-in animation here anymore!
-                animate={
-                  isGlowing
-                    ? {
-                        scale: 0.96, // Simulates being physically pressed down
-                        y: 4,        // Moves down slightly
-                        borderColor: "rgba(16,149,210,1)",
-                        backgroundColor: "rgba(16,149,210,0.3)",
-                        boxShadow: "0 0 30px rgba(16,149,210,0.8)",
-                      }
-                    : {
-                        scale: 1,
-                        y: 0,
-                        borderColor: "rgba(255,255,255,0.1)",
-                        backgroundColor: "rgba(0,0,0,0.3)",
-                        boxShadow: "none",
-                      }
-                }
-                transition={{ duration: 0.3, ease: "easeOut" }}
                 whileHover={{
                   scale: 1.05,
-                  y: 0,
                   borderColor: "rgba(16,149,210,1)",
                   backgroundColor: "rgba(16,149,210,0.3)",
                   boxShadow: "0 0 30px rgba(16,149,210,0.8)"
                 }}
+                // We removed initial/whileInView fade so the boxes are fully solid right away
                 className="p-2 h-20 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer relative z-20"
               >
-                <div className="text-white/60 group-hover:text-[#1095d2] transition-colors duration-300 mb-1 group-hover:scale-110">
+                {/* NEW: Minimal Glow Effect targets ONLY the icon and text */}
+                <div className={`transition-all duration-500 mb-1 ${isGlowing ? 'text-[#1095d2] scale-125 drop-shadow-[0_0_8px_rgba(16,149,210,0.8)]' : 'text-white/60 group-hover:text-[#1095d2] group-hover:scale-110'}`}>
                   {category.icon}
                 </div>
-                <h4 className="text-[10px] font-bold text-white/90 group-hover:text-white transition-colors leading-tight px-1">
+                <h4 className={`text-[10px] font-bold transition-all duration-500 leading-tight px-1 ${isGlowing ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]' : 'text-white/90 group-hover:text-white'}`}>
                   {category.category}
                 </h4>
               </motion.button>
@@ -597,7 +611,6 @@ export default function DreamCreations() {
       {/* ================= 27. MEET THE FOUNDER SECTION ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         
-        {/* BRAND BANNER NOW RIGHT ABOVE THE FOUNDER INFO */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -689,27 +702,21 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 28. OUR TEAM ================= */}
+      {/* ================= 28. OUR TEAM (MANUAL MOUSE SWIPE ENABLED) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
-        <div className="mb-16 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left">
-          <div>
-            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Team</h3>
-            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-            <p className="text-base text-white/70 mt-4 max-w-2xl">
-              The creative minds driving the studio's vision.
-            </p>
-          </div>
-          <div className="flex items-center gap-3 relative z-20">
-             <button onClick={() => teamScrollRef.current?.scrollBy({ left: -350, behavior: 'smooth' })} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
-               <ArrowLeft size={16} />
-             </button>
-             <button onClick={() => teamScrollRef.current?.scrollBy({ left: 350, behavior: 'smooth' })} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
-               <ArrowRight size={16} />
-             </button>
-          </div>
+        <div className="mb-16 text-center md:text-left">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Team</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+          <p className="text-base text-white/70 mt-4 max-w-2xl">
+            The creative minds driving the studio's vision.
+          </p>
         </div>
 
-        <div ref={teamScrollRef} className="flex overflow-x-auto gap-8 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth">
+        <div 
+          ref={teamScrollRef} 
+          {...teamDragHandlers}
+          className="flex overflow-x-auto gap-8 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth cursor-grab active:cursor-grabbing"
+        >
           {teamList.map((member) => (
             <motion.div
               key={member.id}
@@ -719,7 +726,7 @@ export default function DreamCreations() {
               transition={{ duration: 0.5 }}
               className={`shrink-0 w-[85vw] md:w-[400px] lg:w-[380px] snap-center rounded-3xl bg-black/30 border border-white/10 backdrop-blur-md overflow-hidden hover:border-[#1095d2]/40 transition-all group flex flex-col h-full ${member.status === 'Hiring' ? 'border-dashed opacity-60 hover:opacity-100' : ''}`}
             >
-              <div className="p-6 pb-4 border-b border-white/5 relative overflow-hidden">
+              <div className="p-6 pb-4 border-b border-white/5 relative overflow-hidden pointer-events-none">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#1095d2]/20 to-transparent opacity-50" />
                 <div className="flex gap-5 relative z-10">
                   <div className="w-24 h-24 rounded-2xl bg-black/50 border border-white/10 overflow-hidden shrink-0 flex items-center justify-center">
@@ -741,7 +748,7 @@ export default function DreamCreations() {
                 </div>
               </div>
 
-               <div className="px-6 py-4 flex flex-wrap gap-2">
+               <div className="px-6 py-4 flex flex-wrap gap-2 pointer-events-none">
                 {member.positions.map((pos, idx) => (
                   <span key={idx} className="px-2.5 py-1 rounded-md bg-white/5 border border-white/5 text-[10px] text-white/80">
                     {pos}
@@ -749,13 +756,13 @@ export default function DreamCreations() {
                 ))}
               </div>
 
-              <div className="px-6 py-2">
+              <div className="px-6 py-2 pointer-events-none">
                 <p className={`text-sm leading-relaxed ${member.status === 'Hiring' ? 'text-white/30 italic' : 'text-white/70'}`}>
                   {member.bio}
                 </p>
               </div>
 
-              <div className="px-6 py-4 space-y-4 flex-grow border-b border-white/5">
+              <div className="px-6 py-4 space-y-4 flex-grow border-b border-white/5 pointer-events-none">
                 <div>
                   <h5 className="text-[10px] text-white/40 uppercase tracking-widest mb-2 font-semibold">Core Skills</h5>
                   <div className="text-xs text-white/80 leading-relaxed">
@@ -821,28 +828,21 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 35. CREATIVE PROCESS ================= */}
+      {/* ================= 35. CREATIVE PROCESS (MANUAL MOUSE SWIPE ENABLED) ================= */}
       <section className="w-full py-20 z-10 relative border-t border-white/10">
-        <div className="max-w-7xl mx-auto mb-10 px-6 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left">
-          <div>
-            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
-            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-            <p className="text-base text-white/70 mt-4 max-w-2xl">
-              Journey through our structured, transparent workflow.
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-3 relative z-20">
-             <button onClick={() => processScrollRef.current?.scrollBy({ left: -350, behavior: 'smooth' })} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
-               <ArrowLeft size={16} />
-             </button>
-             <button onClick={() => processScrollRef.current?.scrollBy({ left: 350, behavior: 'smooth' })} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
-               <ArrowRight size={16} />
-             </button>
-          </div>
+        <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+          <p className="text-base text-white/70 mt-4 max-w-2xl">
+            Journey through our structured, transparent workflow.
+          </p>
         </div>
 
-        <div ref={processScrollRef} className="flex overflow-x-auto gap-4 px-6 md:px-12 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth">
+        <div 
+          ref={processScrollRef} 
+          {...processDragHandlers}
+          className="flex overflow-x-auto gap-4 px-6 md:px-12 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth cursor-grab active:cursor-grabbing"
+        >
           {creativeProcess.map((item, index) => (
             <React.Fragment key={item.step}>
               <motion.div 
@@ -850,21 +850,21 @@ export default function DreamCreations() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="shrink-0 w-64 snap-center p-6 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group shadow-lg"
+                className="shrink-0 w-64 snap-center p-6 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group shadow-lg select-none"
               >
-                <div className="w-10 h-10 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-sm font-black mb-4 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all shadow-[0_0_15px_rgba(16,149,210,0.3)]">
+                <div className="w-10 h-10 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-sm font-black mb-4 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all shadow-[0_0_15px_rgba(16,149,210,0.3)] pointer-events-none">
                   {item.step}
                 </div>
-                <h4 className="text-base font-bold text-white mb-2 leading-tight group-hover:text-[#1095d2] transition-colors">
+                <h4 className="text-base font-bold text-white mb-2 leading-tight group-hover:text-[#1095d2] transition-colors pointer-events-none">
                   {item.title}
                 </h4>
-                <p className="text-xs text-white/50 leading-snug">
+                <p className="text-xs text-white/50 leading-snug pointer-events-none">
                   {item.desc}
                 </p>
               </motion.div>
 
               {index < creativeProcess.length - 1 && (
-                <div className="shrink-0 text-[#1095d2]/30 flex items-center justify-center px-2">
+                <div className="shrink-0 text-[#1095d2]/30 flex items-center justify-center px-2 pointer-events-none">
                   <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}>
                     <ArrowRight size={24} />
                   </motion.div>
@@ -917,22 +917,12 @@ export default function DreamCreations() {
 
       {/* ================= 36. TESTIMONIALS (AUTO-SCROLL + MANUAL SWIPE - RIGHT TO LEFT) ================= */}
       <section className="max-w-7xl mx-auto w-full px-0 py-20 z-10 relative border-t border-white/10">
-        <div className="mb-12 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left px-6">
-          <div>
-            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Client Feedback</h3>
-            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-            <p className="text-base text-white/70 mt-4 max-w-2xl">
-              What our partners and clients have to say about the Dream Creations experience.
-            </p>
-          </div>
-          <div className="flex items-center gap-3 relative z-20">
-             <button onClick={() => feedbackScrollRef.current?.scrollBy({ left: -350, behavior: 'smooth' })} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
-               <ArrowLeft size={16} />
-             </button>
-             <button onClick={() => feedbackScrollRef.current?.scrollBy({ left: 350, behavior: 'smooth' })} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
-               <ArrowRight size={16} />
-             </button>
-          </div>
+        <div className="mb-12 text-center md:text-left px-6">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Client Feedback</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+          <p className="text-base text-white/70 mt-4 max-w-2xl">
+            What our partners and clients have to say about the Dream Creations experience.
+          </p>
         </div>
 
         <div className="relative w-full">
@@ -948,7 +938,7 @@ export default function DreamCreations() {
                   className="shrink-0 w-[85vw] md:w-[400px] p-8 rounded-3xl bg-black/20 border border-white/10 backdrop-blur-md flex flex-col relative group hover:border-[#1095d2]/40 transition-colors"
                 >
                   <Quote size={40} className="text-[#1095d2]/10 absolute top-6 right-6 group-hover:text-[#1095d2]/20 transition-colors pointer-events-none" />
-                  <div className="flex gap-1 mb-6 text-[#1095d2]">
+                  <div className="flex gap-1 mb-6 text-[#1095d2] pointer-events-none">
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <Star key={i} size={14} fill="currentColor" />
                     ))}
@@ -956,23 +946,23 @@ export default function DreamCreations() {
                   <p className="text-sm text-white/80 leading-relaxed mb-8 flex-grow italic select-none">
                     "{testimonial.feedback}"
                   </p>
-                  <div className="flex items-center gap-4 mt-auto">
+                  <div className="flex items-center gap-4 mt-auto pointer-events-none">
                     {testimonial.face_image_url ? (
-                      <img src={testimonial.face_image_url} alt={testimonial.client_name} className="w-10 h-10 rounded-full object-cover border border-white/10 pointer-events-none" />
+                      <img src={testimonial.face_image_url} alt={testimonial.client_name} className="w-10 h-10 rounded-full object-cover border border-white/10" />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 border border-white/5 select-none">
+                      <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 border border-white/5">
                         {testimonial.client_name.charAt(0)}
                       </div>
                     )}
                     <div>
-                      <h4 className="text-sm font-bold text-white leading-tight select-none">{testimonial.client_name}</h4>
-                      <p className="text-[10px] text-white/50 select-none">{testimonial.project_type} • {testimonial.company}</p>
+                      <h4 className="text-sm font-bold text-white leading-tight">{testimonial.client_name}</h4>
+                      <p className="text-[10px] text-white/50">{testimonial.project_type} • {testimonial.company}</p>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-               <div className="w-full py-16 text-center text-slate-500 font-mono text-sm border border-dashed border-white/10 rounded-2xl">
+               <div className="w-full py-16 text-center text-slate-500 font-mono text-sm border border-dashed border-white/10 rounded-2xl mx-6">
                  No client testimonials have been published yet.
                </div>
             )}
