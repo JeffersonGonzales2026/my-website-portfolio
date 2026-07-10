@@ -127,14 +127,12 @@ export default function DreamCreations() {
   const containerRef = useRef(null);
   const processScrollRef = useRef(null); 
   const teamScrollRef = useRef(null);
-  const feedbackScrollRef = useRef(null);
 
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
   const [projects, setProjects] = useState([]); 
   const [reviews, setReviews] = useState([]); 
 
-  // ================= TUNED LOCAL STATES FOR CMS SIMULATION =================
   const [bannerUrl, setBannerUrl] = useState("/Logo Banner.png");
   const [founderPhoto, setFounderPhoto] = useState("");
   const [founderExp, setFounderExp] = useState(10);
@@ -142,6 +140,96 @@ export default function DreamCreations() {
   const [teamList, setTeamList] = useState(teamMembers);
   const [softwareList, setSoftwareList] = useState(softwareExpertise);
   const [clientsList, setClientsList] = useState(featuredClients);
+
+  // ================= SCROLL & SWIPE LOGIC FOR CLIENTS (LEFT TO RIGHT) =================
+  const clientsScrollRef = useRef(null);
+  const [isClientsPaused, setIsClientsPaused] = useState(false);
+  const isClientsDragging = useRef(false);
+  const clientsStartX = useRef(0);
+  const clientsScrollLeftPos = useRef(0);
+
+  useEffect(() => {
+    let animationId;
+    const container = clientsScrollRef.current;
+    if (!container || clientsList.length === 0) return;
+    
+    const scroll = () => {
+      if (!isClientsPaused && !isClientsDragging.current) {
+        container.scrollLeft -= 1; // Moves Left to Right
+        if (container.scrollLeft <= 0) {
+          container.scrollLeft += container.scrollWidth / 2;
+        }
+      }
+      animationId = requestAnimationFrame(scroll);
+    };
+    animationId = requestAnimationFrame(scroll);
+    return () => cancelAnimationFrame(animationId);
+  }, [isClientsPaused, clientsList]);
+
+  const clientsDragHandlers = {
+    onMouseDown: (e) => {
+      isClientsDragging.current = true;
+      setIsClientsPaused(true);
+      clientsStartX.current = e.pageX - clientsScrollRef.current.offsetLeft;
+      clientsScrollLeftPos.current = clientsScrollRef.current.scrollLeft;
+    },
+    onMouseLeave: () => { isClientsDragging.current = false; setIsClientsPaused(false); },
+    onMouseUp: () => { isClientsDragging.current = false; setIsClientsPaused(false); },
+    onMouseMove: (e) => {
+      if (!isClientsDragging.current) return;
+      e.preventDefault();
+      const x = e.pageX - clientsScrollRef.current.offsetLeft;
+      const walk = (x - clientsStartX.current) * 2;
+      clientsScrollRef.current.scrollLeft = clientsScrollLeftPos.current - walk;
+    },
+    onTouchStart: () => setIsClientsPaused(true),
+    onTouchEnd: () => setIsClientsPaused(false)
+  };
+
+  // ================= SCROLL & SWIPE LOGIC FOR FEEDBACK (RIGHT TO LEFT) =================
+  const feedbackScrollRef = useRef(null);
+  const [isFeedbackPaused, setIsFeedbackPaused] = useState(false);
+  const isFeedbackDragging = useRef(false);
+  const feedbackStartX = useRef(0);
+  const feedbackScrollLeftPos = useRef(0);
+
+  useEffect(() => {
+    let animationId;
+    const container = feedbackScrollRef.current;
+    if (!container || reviews.length === 0) return;
+    
+    const scroll = () => {
+      if (!isFeedbackPaused && !isFeedbackDragging.current) {
+        container.scrollLeft += 1; // Moves Right to Left
+        if (container.scrollLeft >= container.scrollWidth / 2) {
+          container.scrollLeft -= container.scrollWidth / 2;
+        }
+      }
+      animationId = requestAnimationFrame(scroll);
+    };
+    animationId = requestAnimationFrame(scroll);
+    return () => cancelAnimationFrame(animationId);
+  }, [isFeedbackPaused, reviews]);
+
+  const feedbackDragHandlers = {
+    onMouseDown: (e) => {
+      isFeedbackDragging.current = true;
+      setIsFeedbackPaused(true);
+      feedbackStartX.current = e.pageX - feedbackScrollRef.current.offsetLeft;
+      feedbackScrollLeftPos.current = feedbackScrollRef.current.scrollLeft;
+    },
+    onMouseLeave: () => { isFeedbackDragging.current = false; setIsFeedbackPaused(false); },
+    onMouseUp: () => { isFeedbackDragging.current = false; setIsFeedbackPaused(false); },
+    onMouseMove: (e) => {
+      if (!isFeedbackDragging.current) return;
+      e.preventDefault();
+      const x = e.pageX - feedbackScrollRef.current.offsetLeft;
+      const walk = (x - feedbackStartX.current) * 2;
+      feedbackScrollRef.current.scrollLeft = feedbackScrollLeftPos.current - walk;
+    },
+    onTouchStart: () => setIsFeedbackPaused(true),
+    onTouchEnd: () => setIsFeedbackPaused(false)
+  };
 
   // ================= CUSTOM 3D CURSOR LOGIC =================
   const cursorX = useMotionValue(-100);
@@ -216,16 +304,12 @@ export default function DreamCreations() {
           
           if (dreamData.trusted_clients && dreamData.trusted_clients.length > 0) {
             const clientsWithIcons = dreamData.trusted_clients.map(client => {
-              
-              // ================= BRUTE FORCE IMAGE DETECTOR =================
               let imgUrl = null;
-              
               if (client.logo_url) imgUrl = client.logo_url;
               else if (client.image_url) imgUrl = client.image_url;
               else if (client.image) imgUrl = client.image;
               else if (client.logo) imgUrl = client.logo;
               else if (typeof client.icon === 'string' && client.icon.includes('http')) imgUrl = client.icon;
-              
               if (!imgUrl) {
                 for (const key in client) {
                   if (typeof client[key] === 'string' && (client[key].startsWith('http') || client[key].includes('supabase.co'))) {
@@ -234,13 +318,8 @@ export default function DreamCreations() {
                   }
                 }
               }
+              if (imgUrl) return { ...client, customImage: imgUrl };
 
-              if (imgUrl) {
-                return { ...client, customImage: imgUrl };
-              }
-              // ==============================================================
-
-              // Fallback to Lucide React Icons ONLY if no image exists
               let iconComponent = <Globe size={32} />;
               if (client.industry.toLowerCase().includes('health')) iconComponent = <HeartPulse size={32} />;
               if (client.industry.toLowerCase().includes('property') || client.industry.toLowerCase().includes('real estate')) iconComponent = <Building2 size={32} />;
@@ -347,20 +426,6 @@ export default function DreamCreations() {
         }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* NEW: INFINITE AUTO-SCROLL MARQUEE ANIMATION */
-        @keyframes infiniteScroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-infiniteScroll {
-          animation: infiniteScroll 40s linear infinite;
-        }
-        /* Stop animation on hover (mouse) or active (touch) */
-        .pause-on-interaction:hover .animate-infiniteScroll,
-        .pause-on-interaction:active .animate-infiniteScroll {
-          animation-play-state: paused;
-        }
       `}</style>
 
       {/* Background Elements */}
@@ -396,7 +461,6 @@ export default function DreamCreations() {
           className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10"
         />
         
-        {/* NEW FLOATING MOON IMAGE */}
         <motion.div
           initial={{ y: 150, scale: 0.5, opacity: 0 }}
           animate={{ y: 0, scale: 1, opacity: 1 }}
@@ -472,8 +536,26 @@ export default function DreamCreations() {
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: (index % 6) * 0.05 }}
-              className="p-2 h-20 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md hover:-translate-y-1 hover:border-[#1095d2]/50 hover:bg-[#1095d2]/10 transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer relative z-20"
+              
+              // NEW: Sequential Continuous Glow "Paisa isa" Effect
+              animate={{
+                borderColor: ["rgba(255,255,255,0.1)", "rgba(16,149,210,0.8)", "rgba(255,255,255,0.1)"],
+                backgroundColor: ["rgba(0,0,0,0.3)", "rgba(16,149,210,0.15)", "rgba(0,0,0,0.3)"],
+                boxShadow: ["none", "0 0 20px rgba(16,149,210,0.4)", "none"]
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                delay: index * 0.2, // This causes the sequential wave effect!
+                ease: "easeInOut"
+              }}
+              whileHover={{
+                scale: 1.05,
+                borderColor: "rgba(16,149,210,1)",
+                backgroundColor: "rgba(16,149,210,0.3)",
+                boxShadow: "0 0 30px rgba(16,149,210,0.8)"
+              }}
+              className="p-2 h-20 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer relative z-20"
             >
               <div className="text-white/60 group-hover:text-[#1095d2] transition-colors duration-300 mb-1 group-hover:scale-110">
                 {category.icon}
@@ -770,9 +852,9 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= FEATURED CLIENTS ================= */}
+      {/* ================= FEATURED CLIENTS (AUTO-SCROLL + MANUAL SWIPE - LEFT TO RIGHT) ================= */}
       <section className="max-w-7xl mx-auto w-full px-0 py-20 z-10 relative border-t border-white/10">
-        <div className="mb-16 text-center px-6">
+        <div className="mb-12 text-center px-6">
           <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Trusted By</h3>
           <div className="w-16 h-1 bg-[#1095d2] rounded-full mx-auto" />
           <p className="text-sm text-white/60 mt-4 max-w-2xl mx-auto">
@@ -780,15 +862,17 @@ export default function DreamCreations() {
           </p>
         </div>
 
-        {/* NEW: INFINITE AUTO-SCROLLING CAROUSEL */}
-        <div className="relative overflow-hidden w-full pause-on-interaction cursor-pointer">
-          
+        <div className="relative overflow-hidden w-full">
           {/* Gradient Masks for smooth fade edges */}
           <div className="absolute inset-y-0 left-0 w-12 md:w-32 bg-gradient-to-r from-[#050508] to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-12 md:w-32 bg-gradient-to-l from-[#050508] to-transparent z-10 pointer-events-none" />
 
-          {/* Scrolling Container: We duplicate the list 4 times for a seamless infinite loop */}
-          <div className="flex gap-4 w-max animate-infiniteScroll py-4">
+          {/* Interactive Native Horizontal Scroll Container */}
+          <div 
+            ref={clientsScrollRef}
+            {...clientsDragHandlers}
+            className="flex overflow-x-auto gap-4 py-4 hide-scrollbar w-full relative z-20 cursor-grab active:cursor-grabbing px-10"
+          >
             {[...clientsList, ...clientsList, ...clientsList, ...clientsList].map((client, index) => (
               <div
                 key={`${client.id}-${index}`}
@@ -799,24 +883,23 @@ export default function DreamCreations() {
                     <img 
                       src={client.customImage} 
                       alt={client.name} 
-                      // Fully colored on mobile, grayscaled on desktop (md:), colored on hover/tap
-                      className="max-h-full max-w-full object-contain grayscale-0 opacity-100 md:grayscale md:opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-active:grayscale-0 group-active:opacity-100 transition-all duration-300" 
+                      className="max-h-full max-w-full object-contain grayscale-0 opacity-100 md:grayscale md:opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-active:grayscale-0 group-active:opacity-100 transition-all duration-300 pointer-events-none" 
                     />
                   ) : (
                     client.icon
                   )}
                 </div>
-                <h4 className="text-sm font-bold text-white mb-1 leading-tight">{client.name}</h4>
-                <p className="text-[10px] text-white/50 uppercase tracking-wider">{client.industry}</p>
+                <h4 className="text-sm font-bold text-white mb-1 leading-tight select-none">{client.name}</h4>
+                <p className="text-[10px] text-white/50 uppercase tracking-wider select-none">{client.industry}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ================= 36. TESTIMONIALS (LIVE DATABASE) ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
-        <div className="mb-16 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left">
+      {/* ================= 36. TESTIMONIALS (AUTO-SCROLL + MANUAL SWIPE - RIGHT TO LEFT) ================= */}
+      <section className="max-w-7xl mx-auto w-full px-0 py-20 z-10 relative border-t border-white/10">
+        <div className="mb-12 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left px-6">
           <div>
             <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Client Feedback</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
@@ -825,55 +908,61 @@ export default function DreamCreations() {
             </p>
           </div>
           <div className="flex items-center gap-3 relative z-20">
-             <button onClick={() => scrollContainer(feedbackScrollRef, 'left')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
+             <button onClick={() => feedbackScrollRef.current?.scrollBy({ left: -350, behavior: 'smooth' })} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
                <ArrowLeft size={16} />
              </button>
-             <button onClick={() => scrollContainer(feedbackScrollRef, 'right')} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
+             <button onClick={() => feedbackScrollRef.current?.scrollBy({ left: 350, behavior: 'smooth' })} className="p-3 rounded-full bg-white/5 border border-white/10 hover:bg-[#1095d2] transition-colors cursor-pointer text-white">
                <ArrowRight size={16} />
              </button>
           </div>
         </div>
 
-        <div ref={feedbackScrollRef} className="flex overflow-x-auto gap-6 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth">
-          {reviews.length > 0 ? (
-            reviews.map((testimonial, index) => (
-              <motion.div
-                key={testimonial.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="shrink-0 w-[85vw] md:w-[400px] snap-center p-8 rounded-3xl bg-black/20 border border-white/10 backdrop-blur-md flex flex-col relative group hover:border-[#1095d2]/40 transition-colors"
-              >
-                <Quote size={40} className="text-[#1095d2]/10 absolute top-6 right-6 group-hover:text-[#1095d2]/20 transition-colors" />
-                <div className="flex gap-1 mb-6 text-[#1095d2]">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} size={14} fill="currentColor" />
-                  ))}
-                </div>
-                <p className="text-sm text-white/80 leading-relaxed mb-8 flex-grow italic">
-                  "{testimonial.feedback}"
-                </p>
-                <div className="flex items-center gap-4 mt-auto">
-                  {testimonial.face_image_url ? (
-                    <img src={testimonial.face_image_url} alt={testimonial.client_name} className="w-10 h-10 rounded-full object-cover border border-white/10" />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 border border-white/5">
-                      {testimonial.client_name.charAt(0)}
+        <div className="relative overflow-hidden w-full">
+          {/* Gradient Masks */}
+          <div className="absolute inset-y-0 left-0 w-8 md:w-20 bg-gradient-to-r from-[#050508] to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-8 md:w-20 bg-gradient-to-l from-[#050508] to-transparent z-10 pointer-events-none" />
+
+          <div 
+            ref={feedbackScrollRef}
+            {...feedbackDragHandlers}
+            className="flex overflow-x-auto gap-6 py-4 hide-scrollbar w-full relative z-20 cursor-grab active:cursor-grabbing px-10"
+          >
+            {reviews.length > 0 ? (
+              [...reviews, ...reviews, ...reviews, ...reviews].map((testimonial, index) => (
+                <div
+                  key={`${testimonial.id}-${index}`}
+                  className="shrink-0 w-[85vw] md:w-[400px] p-8 rounded-3xl bg-black/20 border border-white/10 backdrop-blur-md flex flex-col relative group hover:border-[#1095d2]/40 transition-colors"
+                >
+                  <Quote size={40} className="text-[#1095d2]/10 absolute top-6 right-6 group-hover:text-[#1095d2]/20 transition-colors pointer-events-none" />
+                  <div className="flex gap-1 mb-6 text-[#1095d2]">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} size={14} fill="currentColor" />
+                    ))}
+                  </div>
+                  <p className="text-sm text-white/80 leading-relaxed mb-8 flex-grow italic select-none">
+                    "{testimonial.feedback}"
+                  </p>
+                  <div className="flex items-center gap-4 mt-auto">
+                    {testimonial.face_image_url ? (
+                      <img src={testimonial.face_image_url} alt={testimonial.client_name} className="w-10 h-10 rounded-full object-cover border border-white/10 pointer-events-none" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 border border-white/5 select-none">
+                        {testimonial.client_name.charAt(0)}
+                      </div>
+                    )}
+                    <div>
+                      <h4 className="text-sm font-bold text-white leading-tight select-none">{testimonial.client_name}</h4>
+                      <p className="text-[10px] text-white/50 select-none">{testimonial.project_type} • {testimonial.company}</p>
                     </div>
-                  )}
-                  <div>
-                    <h4 className="text-sm font-bold text-white leading-tight">{testimonial.client_name}</h4>
-                    <p className="text-[10px] text-white/50">{testimonial.project_type} • {testimonial.company}</p>
                   </div>
                 </div>
-              </motion.div>
-            ))
-          ) : (
-             <div className="w-full py-16 text-center text-slate-500 font-mono text-sm border border-dashed border-white/10 rounded-2xl">
-               No client testimonials have been published yet.
-             </div>
-          )}
+              ))
+            ) : (
+               <div className="w-full py-16 text-center text-slate-500 font-mono text-sm border border-dashed border-white/10 rounded-2xl">
+                 No client testimonials have been published yet.
+               </div>
+            )}
+          </div>
         </div>
       </section>
 
