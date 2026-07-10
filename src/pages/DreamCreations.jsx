@@ -1,6 +1,7 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
+// ADDED THE PHYSICS HOOKS HERE
+import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
 import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -143,6 +144,39 @@ export default function DreamCreations() {
   const [softwareList, setSoftwareList] = useState(softwareExpertise);
   const [clientsList, setClientsList] = useState(featuredClients);
 
+  // ================= CUSTOM 3D CURSOR LOGIC =================
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+
+  const springConfig = { damping: 25, stiffness: 200, mass: 0.5 };
+  const smoothX = useSpring(cursorX, springConfig);
+  const smoothY = useSpring(cursorY, springConfig);
+
+  const velocityX = useVelocity(smoothX);
+  const velocityY = useVelocity(smoothY);
+  
+  const rotateZ = useTransform(velocityX, [-1000, 0, 1000], [-35, 0, 35]); 
+  const rotateY = useTransform(velocityX, [-1000, 0, 1000], [-40, 0, 40]); 
+  const rotateX = useTransform(velocityY, [-1000, 0, 1000], [40, 0, -40]); 
+
+  useEffect(() => {
+    const moveCursor = (e) => {
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      cursorX.set(clientX - 32); // Offset to center the 64x64 spaceship image
+      cursorY.set(clientY - 32);
+    };
+
+    window.addEventListener("mousemove", moveCursor);
+    window.addEventListener("touchmove", moveCursor, { passive: true });
+
+    return () => {
+      window.removeEventListener("mousemove", moveCursor);
+      window.removeEventListener("touchmove", moveCursor);
+    };
+  }, [cursorX, cursorY]);
+  // ==========================================================
+
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (containerRef.current) {
@@ -157,7 +191,6 @@ export default function DreamCreations() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // --- NEW: Fetch Dream Creations Config ---
         const { data: dreamData, error: dreamError } = await supabase
           .from('dream_creations')
           .select('*')
@@ -173,7 +206,6 @@ export default function DreamCreations() {
           if (dreamData.founder_projects !== null) setFounderProjects(dreamData.founder_projects);
           
           if (dreamData.team_roster && dreamData.team_roster.length > 0) {
-            // Safely parse CSV strings to arrays so your mapped layout doesn't break
             const formattedTeam = dreamData.team_roster.map(member => ({
               ...member,
               positions: typeof member.positions === 'string' ? member.positions.split(',').map(s => s.trim()) : member.positions || [],
@@ -184,7 +216,6 @@ export default function DreamCreations() {
           }
           if (dreamData.software_stack && dreamData.software_stack.length > 0) setSoftwareList(dreamData.software_stack);
           if (dreamData.trusted_clients && dreamData.trusted_clients.length > 0) {
-            // Reattach your beautiful Lucide icons matching the industry name where possible, fallback to Globe
             const clientsWithIcons = dreamData.trusted_clients.map(client => {
               let iconComponent = <Globe size={32} />;
               if (client.industry.toLowerCase().includes('health')) iconComponent = <HeartPulse size={32} />;
@@ -198,7 +229,6 @@ export default function DreamCreations() {
           }
         }
 
-        // --- EXISTING: Fetch Projects ---
         const { data: projectData, error: projectError } = await supabase
           .from('portfolio_projects')
           .select('*')
@@ -207,7 +237,6 @@ export default function DreamCreations() {
         if (projectError) throw projectError;
         setProjects(projectData || []);
 
-        // --- EXISTING: Fetch Client Reviews ---
         const { data: reviewData, error: reviewError } = await supabase
           .from('client_reviews')
           .select('*')
@@ -260,12 +289,10 @@ export default function DreamCreations() {
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
         targetElement.classList.add('ring-4', 'ring-[#1095d2]', 'scale-[1.02]');
         setTimeout(() => {
            targetElement.classList.remove('ring-4', 'ring-[#1095d2]', 'scale-[1.02]');
         }, 1500); 
-
       } else {
         scrollToSection('portfolio-directory');
       }
@@ -275,7 +302,7 @@ export default function DreamCreations() {
   return (
     <div 
       ref={containerRef}
-      className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-nightSkyCycle"
+      className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-nightSkyCycle cursor-none"
     >
       
       <div 
@@ -319,20 +346,6 @@ export default function DreamCreations() {
             transition={{ duration: cloud.duration, repeat: Infinity, delay: cloud.delay, ease: "linear" }}
           />
         ))}
-      </div>
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30 z-0">
-        <motion.div 
-          animate={{ y: [-10, 10, -10], rotate: [-2, 2, -2] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[20%] left-[10%] w-32 h-40 rounded-xl border border-[#1095d2]/20 bg-gradient-to-br from-[#1095d2]/10 to-transparent backdrop-blur-sm flex items-center justify-center"
-        >
-          <Palette size={40} className="text-[#1095d2]/40" />
-        </motion.div>
-        <motion.div 
-          animate={{ y: [15, -15, 15], rotate: [2, -2, 2] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-[30%] right-[12%] w-48 h-32 rounded-xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent backdrop-blur-sm"
-        />
       </div>
 
       {/* ================= HERO SECTION ================= */}
@@ -1009,12 +1022,10 @@ export default function DreamCreations() {
               <Database size={14} /> The Next Chapter
             </div>
 
-            {/* Headline matching screenshot layout */}
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight mb-8">
               Evolution of <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Design & Data.</span>
             </h2>
 
-            {/* Subtext */}
             <div className="space-y-6 text-base md:text-lg text-slate-300 mb-12 leading-relaxed">
               <p>
                 Every stage of my career builds upon the previous one. The transition from a creative professional to a data-driven analyst reflects my evolution from crafting visual stories to uncovering the insights that drive them.
@@ -1024,7 +1035,6 @@ export default function DreamCreations() {
               </p>
             </div>
             
-            {/* Buttons matching screenshot layout */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
               <button 
                 onClick={() => window.location.href = '/data-analyst'}
@@ -1098,6 +1108,38 @@ export default function DreamCreations() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* 🚀 Custom 3D Spaceship Cursor with Fire & Smoke (Follows Mouse & Touch) */}
+      <motion.div 
+        className="fixed top-0 left-0 w-16 h-16 z-[9999] pointer-events-none drop-shadow-[0_20px_20px_rgba(16,149,210,0.6)]"
+        style={{ 
+          x: smoothX, 
+          y: smoothY,
+          rotateX: rotateX,
+          rotateY: rotateY,
+          rotateZ: rotateZ,
+          perspective: 800 
+        }}
+      >
+        {/* Animated Fire Thruster */}
+        <motion.div 
+          className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-4 h-6 bg-gradient-to-t from-transparent via-orange-500 to-yellow-300 rounded-full blur-[2px] z-0"
+          animate={{ y: [0, 10], scale: [1, 1.5], opacity: [0.8, 0] }}
+          transition={{ duration: 0.3, repeat: Infinity, ease: "easeOut" }}
+        />
+        {/* Animated Smoke Trail */}
+        <motion.div 
+          className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/40 rounded-full blur-md z-0"
+          animate={{ y: [0, 20], scale: [1, 3], opacity: [0.4, 0] }}
+          transition={{ duration: 0.6, repeat: Infinity, ease: "easeOut", delay: 0.1 }}
+        />
+        
+        <img 
+          src="/images/spaceship.png" 
+          alt="Spaceship Cursor" 
+          className="w-full h-full object-contain relative z-10" 
+        />
+      </motion.div>
 
     </div>
   );
