@@ -216,12 +216,21 @@ export default function DreamCreations() {
           if (dreamData.software_stack && dreamData.software_stack.length > 0) setSoftwareList(dreamData.software_stack);
           if (dreamData.trusted_clients && dreamData.trusted_clients.length > 0) {
             const clientsWithIcons = dreamData.trusted_clients.map(client => {
+              // PREVENTS ICON OVERRIDE: Check if the CMS provided an actual image URL
+              const imgUrl = client.logo_url || client.icon_url || client.image_url || client.logo || (typeof client.icon === 'string' ? client.icon : null);
+              
+              if (imgUrl) {
+                return { ...client, customImage: imgUrl };
+              }
+
+              // Fallback to Lucide React Icons if no image is uploaded
               let iconComponent = <Globe size={32} />;
               if (client.industry.toLowerCase().includes('health')) iconComponent = <HeartPulse size={32} />;
               if (client.industry.toLowerCase().includes('property') || client.industry.toLowerCase().includes('real estate')) iconComponent = <Building2 size={32} />;
               if (client.industry.toLowerCase().includes('commerce')) iconComponent = <ShoppingBag size={32} />;
               if (client.industry.toLowerCase().includes('media')) iconComponent = <MonitorPlay size={32} />;
               if (client.industry.toLowerCase().includes('consulting') || client.industry.toLowerCase().includes('finance')) iconComponent = <Briefcase size={32} />;
+              
               return { ...client, icon: iconComponent };
             });
             setClientsList(clientsWithIcons);
@@ -356,7 +365,6 @@ export default function DreamCreations() {
           className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10"
         />
         
-        {/* NEW MOON IMAGE WITH FLOATING EFFECT */}
         <motion.div
           initial={{ y: 150, scale: 0.5, opacity: 0 }}
           animate={{ y: 0, scale: 1, opacity: 1 }}
@@ -750,8 +758,12 @@ export default function DreamCreations() {
               transition={{ duration: 0.4, delay: index * 0.1 }}
               className="group flex flex-col items-center justify-center p-6 rounded-2xl border border-white/5 bg-black/20 hover:bg-black/40 hover:border-[#1095d2]/30 transition-all duration-300 text-center"
             >
-              <div className="text-white/40 group-hover:text-[#1095d2] transition-colors duration-300 mb-3">
-                {client.icon}
+              <div className="text-white/40 group-hover:text-[#1095d2] transition-colors duration-300 mb-3 h-8 flex items-center justify-center">
+                {client.customImage ? (
+                  <img src={client.customImage} alt={client.name} className="w-8 h-8 object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" />
+                ) : (
+                  client.icon
+                )}
               </div>
               <h4 className="text-sm font-bold text-white mb-1 leading-tight">{client.name}</h4>
               <p className="text-[10px] text-white/50 uppercase tracking-wider">{client.industry}</p>
