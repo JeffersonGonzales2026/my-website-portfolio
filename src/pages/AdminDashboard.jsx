@@ -1,11 +1,12 @@
 // src/pages/AdminDashboard.jsx
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase'; // Make sure Supabase is imported!
 import { 
   LayoutDashboard, Activity, Palette, Database, BrainCircuit, 
   Mail, LogOut, Save, Plus, Trash2, Image, ExternalLink, 
   Sliders, Layers, Eye, CheckCircle, FileText, User, HelpCircle, 
-  Briefcase, Star, Cpu, Settings, UploadCloud, File, Image as ImageIcon 
+  Briefcase, Star, Cpu, Settings, UploadCloud, File, Image as ImageIcon, Menu, X
 } from 'lucide-react';
 
 const sidebarModules = [
@@ -22,8 +23,20 @@ const sidebarModules = [
 export default function AdminDashboard() {
   const [activeModule, setActiveModule] = useState('Dashboard Hub');
   const [activePortfolioTab, setActivePortfolioTab] = useState('dashboards');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Add this line
   const navigate = useNavigate();
-
+  // =========================================================================
+  // ROUTE SECURITY: KICK OUT UNAUTHENTICATED USERS
+  // =========================================================================
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/admin/login');
+      }
+    };
+    checkAuth();
+  }, [navigate]);
   // =========================================================================
   // 1. HOME ENGINE BACKING DATA STATES
   // =========================================================================
@@ -180,8 +193,18 @@ export default function AdminDashboard() {
   return (
     <div className="flex h-screen bg-[#09090b] text-zinc-200 overflow-hidden font-sans antialiased">
       
+      {{/* Mobile Overlay Background */}
+      {isSidebarOpen && (
+        <div className="fixed inset-0 bg-black/80 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />
+      )}
+
       {/* UNIVERSAL SIDEBAR CONTROL DRAWER */}
-      <aside className="w-64 flex-shrink-0 bg-[#09090b] border-r border-zinc-900 flex flex-col justify-between">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#09090b] border-r border-zinc-900 flex flex-col justify-between transition-transform duration-300 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        
+        {/* Mobile Close Button */}
+        <button onClick={() => setIsSidebarOpen(false)} className="absolute top-6 right-4 md:hidden text-zinc-500 hover:text-white">
+          <X size={20} />
+        </button>
         <div>
           <div className="p-6 border-b border-zinc-900">
             <h2 className="text-sm font-black text-white tracking-widest uppercase font-mono">JG PANEL // 2026</h2>
@@ -191,7 +214,7 @@ export default function AdminDashboard() {
             {sidebarModules.map((module) => (
               <button
                 key={module.name}
-                onClick={() => setActiveModule(module.name)}
+                onClick={() => { setActiveModule(module.name); setIsSidebarOpen(false); }}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs uppercase tracking-wider font-mono font-bold transition-all border text-left cursor-pointer ${
                   activeModule === module.name 
                     ? 'bg-zinc-900 text-white border-zinc-800 shadow-md' 
@@ -214,17 +237,25 @@ export default function AdminDashboard() {
       <main className="flex-1 flex flex-col overflow-hidden bg-[#09090b]">
         
         {/* TIER 3: THE GLOBAL ACTIONS STICKY HEADER BAR */}
-        <header className="h-16 flex-shrink-0 border-b border-zinc-900 flex items-center justify-between px-8 bg-[#09090b]/80 backdrop-blur-md sticky top-0 z-50">
-          <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-zinc-400">
-            <Sliders size={14} className="text-zinc-500" />
-            <span>Active Module Frame:</span>
-            <span className="text-white bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800 font-mono font-bold">{activeModule}</span>
+        <header className="h-16 flex-shrink-0 border-b border-zinc-900 flex items-center justify-between px-4 md:px-8 bg-[#09090b]/80 backdrop-blur-md sticky top-0 z-50">
+          <div className="flex items-center gap-3">
+            {/* Hamburger Button for Mobile */}
+            <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-2 -ml-2 text-zinc-400 hover:text-white cursor-pointer">
+              <Menu size={20} />
+            </button>
+            
+            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-zinc-400">
+              <Sliders size={14} className="text-zinc-500 hidden sm:block" />
+              <span className="hidden sm:block">Active Frame:</span>
+              <span className="text-white bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800 font-mono font-bold truncate max-w-[140px] sm:max-w-none">{activeModule}</span>
+            </div>
           </div>
+          
           <button 
             onClick={() => alert(`SUCCESS: Parameters for "${activeModule}" cached locally in component memory registers!`)}
-            className="px-4 py-2 rounded-xl bg-white text-black text-xs font-mono font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2 shadow-md cursor-pointer"
+            className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white text-black text-[10px] sm:text-xs font-mono font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2 shadow-md cursor-pointer"
           >
-            <Save size={14} /> SAVE MODULE REGISTRIES
+            <Save size={14} className="hidden sm:block" /> SAVE
           </button>
         </header>
 
