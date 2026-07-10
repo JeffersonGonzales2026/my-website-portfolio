@@ -1,7 +1,7 @@
 // src/pages/AdminDashboard.jsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase'; // Make sure Supabase is imported!
+import { supabase } from '../lib/supabase';
 import { 
   LayoutDashboard, Activity, Palette, Database, BrainCircuit, 
   Mail, LogOut, Save, Plus, Trash2, Image, ExternalLink, 
@@ -23,20 +23,30 @@ const sidebarModules = [
 export default function AdminDashboard() {
   const [activeModule, setActiveModule] = useState('Dashboard Hub');
   const [activePortfolioTab, setActivePortfolioTab] = useState('dashboards');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Add this line
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
+
   // =========================================================================
-  // ROUTE SECURITY: KICK OUT UNAUTHENTICATED USERS
+  // ROUTE SECURITY: STRICT ADMIN EMAIL VERIFICATION
   // =========================================================================
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      
+      // CHANGE THIS TO YOUR EXACT SUPABASE ADMIN EMAIL
+      const ADMIN_EMAIL = "jeffersonguzmangonzales03@gmail.com"; 
+
       if (!session) {
+        navigate('/admin/login');
+      } else if (session.user.email !== ADMIN_EMAIL) {
+        // If logged in but NOT the admin, sign them out and kick them to login
+        await supabase.auth.signOut();
         navigate('/admin/login');
       }
     };
     checkAuth();
   }, [navigate]);
+
   // =========================================================================
   // 1. HOME ENGINE BACKING DATA STATES
   // =========================================================================
@@ -193,7 +203,7 @@ export default function AdminDashboard() {
   return (
     <div className="flex h-screen bg-[#09090b] text-zinc-200 overflow-hidden font-sans antialiased">
       
-      {{/* Mobile Overlay Background */}
+      {/* Mobile Overlay Background */}
       {isSidebarOpen && (
         <div className="fixed inset-0 bg-black/80 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />
       )}
