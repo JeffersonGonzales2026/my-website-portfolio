@@ -25,9 +25,6 @@ export default function Hero({ homeData }) {
   return (
     <section className="relative min-h-[85vh] flex items-center justify-center py-12 px-6">
       
-      {/* Professional Monochromatic Technical Background Grid */}
-      <div className="absolute inset-0 -z-10 opacity-[0.03] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
-      
       {/* Subtle, Sophisticated Deep Wash Glow (Not Colorful) */}
       <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-10 pointer-events-none">
         <div className="w-[700px] h-[500px] bg-slate-500 rounded-full blur-[160px] absolute -top-40 -left-20" />
