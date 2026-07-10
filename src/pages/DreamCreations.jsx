@@ -705,7 +705,7 @@ export default function DreamCreations() {
       {/* ================= 28. OUR TEAM (MANUAL MOUSE SWIPE ENABLED) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-16 text-center md:text-left">
-          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Team</h3>
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Creators</h3>
           <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
           <p className="text-base text-white/70 mt-4 max-w-2xl">
             The creative minds driving the studio's vision.
@@ -878,7 +878,7 @@ export default function DreamCreations() {
       {/* ================= FEATURED CLIENTS (AUTO-SCROLL + MANUAL SWIPE - LEFT TO RIGHT) ================= */}
       <section className="max-w-7xl mx-auto w-full px-0 py-20 z-10 relative border-t border-white/10">
         <div className="mb-12 text-center px-6">
-          <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Trusted By</h3>
+          <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Our Valued Dreamers</h3>
           <div className="w-16 h-1 bg-[#1095d2] rounded-full mx-auto" />
           <p className="text-sm text-white/60 mt-4 max-w-2xl mx-auto">
             Delivering premium visual solutions across diverse industries.
