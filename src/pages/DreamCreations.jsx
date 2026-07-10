@@ -881,7 +881,7 @@ export default function DreamCreations() {
           <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Our Valued Dreamers</h3>
           <div className="w-16 h-1 bg-[#1095d2] rounded-full mx-auto" />
           <p className="text-sm text-white/60 mt-4 max-w-2xl mx-auto">
-            Delivering premium visual solutions across diverse industries.
+            Delivered and delivering premium visual solutions across diverse industries.
           </p>
         </div>
 
