@@ -759,7 +759,7 @@ export default function DreamCreations() {
       {/* ================= FEATURED CLIENTS ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-16 text-center">
-          <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Dreamers</h3>
+          <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Our Valued Dreamers</h3>
           <div className="w-16 h-1 bg-[#1095d2] rounded-full mx-auto" />
           <p className="text-sm text-white/60 mt-4 max-w-2xl mx-auto">
             Delivering premium visual solutions across diverse industries.
