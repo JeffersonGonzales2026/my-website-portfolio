@@ -347,6 +347,20 @@ export default function DreamCreations() {
         }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* NEW: INFINITE AUTO-SCROLL MARQUEE ANIMATION */
+        @keyframes infiniteScroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-infiniteScroll {
+          animation: infiniteScroll 40s linear infinite;
+        }
+        /* Stop animation on hover (mouse) or active (touch) */
+        .pause-on-interaction:hover .animate-infiniteScroll,
+        .pause-on-interaction:active .animate-infiniteScroll {
+          animation-play-state: paused;
+        }
       `}</style>
 
       {/* Background Elements */}
@@ -574,7 +588,7 @@ export default function DreamCreations() {
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-16 flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left">
           <div>
-            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Creators</h3>
+            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Team</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
             <p className="text-base text-white/70 mt-4 max-w-2xl">
               The creative minds driving the studio's vision.
@@ -757,42 +771,46 @@ export default function DreamCreations() {
       </section>
 
       {/* ================= FEATURED CLIENTS ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
-        <div className="mb-16 text-center">
-          <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Our Valued Dreamers</h3>
+      <section className="max-w-7xl mx-auto w-full px-0 py-20 z-10 relative border-t border-white/10">
+        <div className="mb-16 text-center px-6">
+          <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Trusted By</h3>
           <div className="w-16 h-1 bg-[#1095d2] rounded-full mx-auto" />
           <p className="text-sm text-white/60 mt-4 max-w-2xl mx-auto">
             Delivering premium visual solutions across diverse industries.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {clientsList.map((client, index) => (
-            <motion.div
-              key={client.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
-              // Active state added for mobile taps
-              className="group flex flex-col items-center justify-center p-6 rounded-2xl border border-white/5 bg-black/20 hover:bg-black/40 hover:border-[#1095d2]/30 active:bg-black/40 active:border-[#1095d2]/30 transition-all duration-300 text-center"
-            >
-              <div className="text-[#1095d2] md:text-white/40 group-hover:text-[#1095d2] group-active:text-[#1095d2] transition-colors duration-300 mb-4 h-16 flex items-center justify-center w-full">
-                {client.customImage ? (
-                  <img 
-                    src={client.customImage} 
-                    alt={client.name} 
-                    // Colored by default on mobile, grayscale on desktop until hover/active
-                    className="max-h-full max-w-full object-contain grayscale-0 opacity-100 md:grayscale md:opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-active:grayscale-0 group-active:opacity-100 transition-all duration-300" 
-                  />
-                ) : (
-                  client.icon
-                )}
+        {/* NEW: INFINITE AUTO-SCROLLING CAROUSEL */}
+        <div className="relative overflow-hidden w-full pause-on-interaction cursor-pointer">
+          
+          {/* Gradient Masks for smooth fade edges */}
+          <div className="absolute inset-y-0 left-0 w-12 md:w-32 bg-gradient-to-r from-[#050508] to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-12 md:w-32 bg-gradient-to-l from-[#050508] to-transparent z-10 pointer-events-none" />
+
+          {/* Scrolling Container: We duplicate the list 4 times for a seamless infinite loop */}
+          <div className="flex gap-4 w-max animate-infiniteScroll py-4">
+            {[...clientsList, ...clientsList, ...clientsList, ...clientsList].map((client, index) => (
+              <div
+                key={`${client.id}-${index}`}
+                className="shrink-0 w-44 md:w-48 group flex flex-col items-center justify-center p-6 rounded-2xl border border-white/5 bg-black/20 hover:bg-black/40 hover:border-[#1095d2]/30 active:bg-black/40 active:border-[#1095d2]/30 transition-all duration-300 text-center"
+              >
+                <div className="text-[#1095d2] md:text-white/40 group-hover:text-[#1095d2] group-active:text-[#1095d2] transition-colors duration-300 mb-4 h-16 flex items-center justify-center w-full">
+                  {client.customImage ? (
+                    <img 
+                      src={client.customImage} 
+                      alt={client.name} 
+                      // Fully colored on mobile, grayscaled on desktop (md:), colored on hover/tap
+                      className="max-h-full max-w-full object-contain grayscale-0 opacity-100 md:grayscale md:opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-active:grayscale-0 group-active:opacity-100 transition-all duration-300" 
+                    />
+                  ) : (
+                    client.icon
+                  )}
+                </div>
+                <h4 className="text-sm font-bold text-white mb-1 leading-tight">{client.name}</h4>
+                <p className="text-[10px] text-white/50 uppercase tracking-wider">{client.industry}</p>
               </div>
-              <h4 className="text-sm font-bold text-white mb-1 leading-tight">{client.name}</h4>
-              <p className="text-[10px] text-white/50 uppercase tracking-wider">{client.industry}</p>
-            </motion.div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
