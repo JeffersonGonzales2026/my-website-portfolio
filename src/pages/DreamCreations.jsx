@@ -212,7 +212,7 @@ export default function DreamCreations() {
     
     const scroll = () => {
       if (!isClientsPaused && !isClientsDragging.current) {
-        container.scrollLeft -= 1; // Moves Left to Right
+        container.scrollLeft += 1; // Moves Left to Right
         if (container.scrollLeft <= 0) {
           container.scrollLeft += container.scrollWidth / 2;
         }
@@ -257,7 +257,7 @@ export default function DreamCreations() {
     
     const scroll = () => {
       if (!isFeedbackPaused && !isFeedbackDragging.current) {
-        container.scrollLeft += 1; // Moves Right to Left
+        container.scrollLeft -= 1; // Moves Right to Left
         if (container.scrollLeft >= container.scrollWidth / 2) {
           container.scrollLeft -= container.scrollWidth / 2;
         }
