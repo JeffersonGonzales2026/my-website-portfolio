@@ -40,7 +40,7 @@ export default function AdminDashboard() {
       const { data: { session } } = await supabase.auth.getSession();
       
       // REPLACE WITH YOUR EXACT SUPABASE ADMIN EMAIL
-      const ADMIN_EMAIL = "YOUR_ADMIN_EMAIL@gmail.com"; 
+      const ADMIN_EMAIL = "jeffersonguzmangonzales03@gmail.com"; 
 
       if (!session) {
         navigate('/admin/login');
