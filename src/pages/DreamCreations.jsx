@@ -145,11 +145,11 @@ export default function DreamCreations() {
   const [randomGlowIndex, setRandomGlowIndex] = useState(null);
 
   useEffect(() => {
-    // Pick a random box to glow every 5 seconds (as requested)
+    // Pick a random box to glow every 3 seconds (as requested)
     const interval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * creationsCategories.length);
       setRandomGlowIndex(randomIndex);
-    }, 5000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, []);
