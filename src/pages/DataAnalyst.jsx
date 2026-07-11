@@ -4,8 +4,9 @@ import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
 import { BarChart3, PieChart, Database, FileSpreadsheet, Settings, Cpu, LineChart, Table, CheckCircle2, ArrowRight, ArrowUp, Briefcase, FileText, LayoutDashboard, BrainCircuit, Code2, Quote } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-// ================= CUSTOM ANIMATED COUNTER COMPONENT =================
+// ================= CUSTOM ANIMATED COUNTER COMPONENT (FIXED FOR REACT) =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
+  const [count, setCount] = useState(0);
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
 
@@ -15,16 +16,15 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
         duration: 2,
         ease: "easeOut",
         onUpdate(val) {
-          if (ref.current) {
-            ref.current.textContent = Math.floor(val) + suffix;
-          }
+          // Using React state prevents the 'removeChild' crash!
+          setCount(Math.floor(val));
         }
       });
       return () => controls.stop();
     }
-  }, [value, inView, suffix]);
+  }, [value, inView]);
 
-  return <span ref={ref} className="text-2xl font-black text-white mb-1 group-hover:text-emerald-400 transition-colors">0{suffix}</span>;
+  return <span ref={ref} className="text-2xl font-black text-white mb-1 group-hover:text-emerald-400 transition-colors">{count}{suffix}</span>;
 };
 
 // ================= DEFAULT LOCAL DATA BASELINES =================
@@ -212,7 +212,6 @@ export default function DataAnalyst() {
           
           if (Array.isArray(data.software_ecosystem) && data.software_ecosystem.length > 0) {
             const formattedEcosystem = data.software_ecosystem.map(cat => {
-              // Ensure tools is always treated as an array to prevent crashes
               let parsedTools = [];
               if (Array.isArray(cat.tools)) {
                 parsedTools = cat.tools;
@@ -350,8 +349,6 @@ export default function DataAnalyst() {
                   <div key={role.id} className="shrink-0 w-full snap-center p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl relative overflow-hidden group hover:border-emerald-500/30 transition-colors">
                     
                     <div className="relative z-10">
-                      
-                      {/* NEW LOGO PLACEMENT: Moved next to the Title/Company for High Visibility */}
                       <div className="flex justify-between items-start mb-8 gap-4">
                         <div>
                           <div className="flex items-center gap-3 mb-3">
