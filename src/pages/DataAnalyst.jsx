@@ -216,13 +216,15 @@ export default function DataAnalyst() {
               tools: (cat.tools || []).map(tool => {
                 // ================= BRUTE FORCE IMAGE DETECTOR FOR ECOSYSTEM =================
                 let imgUrl = null;
-                if (tool.imageSrc) imgUrl = tool.imageSrc;
-                else if (tool.logo_url) imgUrl = tool.logo_url;
+                
+                // 1. PRIORITIZE CMS UPLOADS OVER LOCAL DEFAULTS
+                if (tool.logo_url) imgUrl = tool.logo_url;
                 else if (tool.image_url) imgUrl = tool.image_url;
                 else if (tool.image) imgUrl = tool.image;
                 else if (tool.logo) imgUrl = tool.logo;
                 else if (typeof tool.icon === 'string' && tool.icon.includes('http')) imgUrl = tool.icon;
                 
+                // 2. DEEP SCAN CMS ROW FOR ANY SUPABASE LINK
                 if (!imgUrl) {
                   for (const key in tool) {
                     if (typeof tool[key] === 'string' && (tool[key].startsWith('http') || tool[key].includes('supabase.co'))) {
@@ -231,7 +233,13 @@ export default function DataAnalyst() {
                     }
                   }
                 }
-                return { ...tool, customImage: imgUrl || tool.imageSrc };
+
+                // 3. FALLBACK TO LOCAL DEFAULT ONLY IF NO CMS UPLOAD WAS FOUND
+                if (!imgUrl && tool.imageSrc) {
+                  imgUrl = tool.imageSrc;
+                }
+
+                return { ...tool, customImage: imgUrl };
                 // ============================================================================
               })
             }));
@@ -331,9 +339,10 @@ export default function DataAnalyst() {
                   <div key={role.id} className="shrink-0 w-full snap-center p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl relative overflow-hidden group hover:border-emerald-500/30 transition-colors">
                     
                     {/* CUSTOM ROLE IMAGE RENDERER */}
-                    <div className="absolute top-0 right-0 p-6 pointer-events-none">
+                    <div className="absolute top-0 right-0 p-6 pointer-events-none z-0">
                       {role.customImage ? (
-                         <img src={role.customImage} alt={role.company} className="w-32 h-32 object-contain opacity-10 group-hover:opacity-30 transition-opacity grayscale" />
+                         // REMOVED GRAYSCALE AND INCREASED DEFAULT OPACITY SO IT IS FULLY COLORED
+                         <img src={role.customImage} alt={role.company} className="w-32 h-32 object-contain opacity-40 group-hover:opacity-100 transition-opacity" />
                       ) : (
                          <div className="opacity-5 group-hover:text-emerald-500 transition-colors">
                            <Briefcase size={120} />
