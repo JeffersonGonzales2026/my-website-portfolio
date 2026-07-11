@@ -2,7 +2,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
 import { BarChart3, PieChart, Database, FileSpreadsheet, Settings, Cpu, LineChart, Table, CheckCircle2, ArrowRight, ArrowUp, Briefcase, FileText, LayoutDashboard, BrainCircuit, Code2, Quote } from 'lucide-react';
-import { supabase } from '../lib/supabase'; // Added Supabase Import
+import { supabase } from '../lib/supabase';
 
 // ================= CUSTOM ANIMATED COUNTER COMPONENT =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -148,7 +148,7 @@ export default function DataAnalyst() {
   const [activeTab, setActiveTab] = useState('dashboards');
   const containerRef = useRef(null);
 
-  // ================= DECOUPLED STATE DRIVERS (READY FOR CMS MANAGER LATER) =================
+  // ================= DECOUPLED STATE DRIVERS =================
   const [stats, setStats] = useState(defaultQuickStats);
   const [roles, setRoles] = useState(defaultRolesData);
   const [techSkills, setTechSkills] = useState(defaultTechnicalSkills);
@@ -156,7 +156,7 @@ export default function DataAnalyst() {
   const [ecosystem, setEcosystem] = useState(defaultToolsTechnologies);
   const [roadmap, setRoadmap] = useState(defaultAnalyticsRoadmap);
 
-  // ================= FETCH CMS DATA =================
+  // ================= FETCH CMS DATA (BULLETPROOF PARSER) =================
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -169,11 +169,13 @@ export default function DataAnalyst() {
         if (error && error.code !== 'PGRST116') throw error;
 
         if (data) {
-          if (data.performance_counters?.length > 0) setStats(data.performance_counters);
+          if (Array.isArray(data.performance_counters) && data.performance_counters.length > 0) {
+            setStats(data.performance_counters);
+          }
           
-          if (data.experience_roles?.length > 0) {
+          if (Array.isArray(data.experience_roles) && data.experience_roles.length > 0) {
             const formattedRoles = data.experience_roles.map(r => {
-              // ================= BRUTE FORCE IMAGE DETECTOR FOR ROLES =================
+              // BRUTE FORCE IMAGE DETECTOR FOR ROLES
               let imgUrl = null;
               if (r.logo_url) imgUrl = r.logo_url;
               else if (r.image_url) imgUrl = r.image_url;
@@ -189,77 +191,86 @@ export default function DataAnalyst() {
                   }
                 }
               }
-              // =========================================================================
               
               return {
                 ...r,
-                customImage: imgUrl, // Save detected image link
-                responsibilities: typeof r.responsibilities === 'string' ? r.responsibilities.split(',').map(s => s.trim()).filter(Boolean) : r.responsibilities || [],
-                impact: typeof r.impact === 'string' ? r.impact.split(',').map(s => s.trim()).filter(Boolean) : r.impact || []
+                customImage: imgUrl,
+                responsibilities: typeof r.responsibilities === 'string' ? r.responsibilities.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(r.responsibilities) ? r.responsibilities : []),
+                impact: typeof r.impact === 'string' ? r.impact.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(r.impact) ? r.impact : [])
               };
             });
             setRoles(formattedRoles);
           }
           
-          if (data.technical_competencies?.length > 0) {
-            // Parse comma-separated strings into arrays safely
+          if (Array.isArray(data.technical_competencies) && data.technical_competencies.length > 0) {
             const formattedSkills = data.technical_competencies.map(c => ({
               ...c,
-              skills: typeof c.skills === 'string' ? c.skills.split(',').map(s => s.trim()).filter(Boolean) : c.skills || []
+              skills: typeof c.skills === 'string' ? c.skills.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(c.skills) ? c.skills : [])
             }));
             setTechSkills(formattedSkills);
           }
           
-          if (data.software_ecosystem?.length > 0) {
-            const formattedEcosystem = data.software_ecosystem.map(cat => ({
-              ...cat,
-              tools: (cat.tools || []).map(tool => {
-                // ================= BRUTE FORCE IMAGE DETECTOR FOR ECOSYSTEM =================
-                let imgUrl = null;
-                
-                // 1. PRIORITIZE CMS UPLOADS OVER LOCAL DEFAULTS
-                if (tool.logo_url) imgUrl = tool.logo_url;
-                else if (tool.image_url) imgUrl = tool.image_url;
-                else if (tool.image) imgUrl = tool.image;
-                else if (tool.logo) imgUrl = tool.logo;
-                else if (typeof tool.icon === 'string' && tool.icon.includes('http')) imgUrl = tool.icon;
-                
-                // 2. DEEP SCAN CMS ROW FOR ANY SUPABASE LINK
-                if (!imgUrl) {
-                  for (const key in tool) {
-                    if (typeof tool[key] === 'string' && (tool[key].startsWith('http') || tool[key].includes('supabase.co'))) {
-                      imgUrl = tool[key];
-                      break;
+          if (Array.isArray(data.software_ecosystem) && data.software_ecosystem.length > 0) {
+            const formattedEcosystem = data.software_ecosystem.map(cat => {
+              // Ensure tools is always treated as an array to prevent crashes
+              let parsedTools = [];
+              if (Array.isArray(cat.tools)) {
+                parsedTools = cat.tools;
+              } else if (typeof cat.tools === 'string') {
+                parsedTools = cat.tools.split(',').map(t => ({ name: t.trim() }));
+              }
+
+              return {
+                ...cat,
+                tools: parsedTools.map(tool => {
+                  let imgUrl = null;
+                  
+                  if (typeof tool === 'object' && tool !== null) {
+                    if (tool.logo_url) imgUrl = tool.logo_url;
+                    else if (tool.image_url) imgUrl = tool.image_url;
+                    else if (tool.image) imgUrl = tool.image;
+                    else if (tool.logo) imgUrl = tool.logo;
+                    else if (tool.icon_url) imgUrl = tool.icon_url;
+                    else if (typeof tool.icon === 'string' && tool.icon.includes('http')) imgUrl = tool.icon;
+                    
+                    if (!imgUrl) {
+                      for (const key in tool) {
+                        if (typeof tool[key] === 'string' && (tool[key].startsWith('http') || tool[key].includes('supabase.co'))) {
+                          imgUrl = tool[key];
+                          break;
+                        }
+                      }
                     }
                   }
-                }
 
-                // 3. FALLBACK TO LOCAL DEFAULT ONLY IF NO CMS UPLOAD WAS FOUND
-                if (!imgUrl && tool.imageSrc) {
-                  imgUrl = tool.imageSrc;
-                }
+                  // Default Fallback
+                  if (!imgUrl && tool.imageSrc) {
+                    imgUrl = tool.imageSrc;
+                  }
 
-                return { ...tool, customImage: imgUrl };
-                // ============================================================================
-              })
-            }));
+                  return { ...(typeof tool === 'object' ? tool : { name: tool }), customImage: imgUrl };
+                })
+              };
+            });
             setEcosystem(formattedEcosystem);
           }
 
-          if (data.future_roadmap?.length > 0) setRoadmap(data.future_roadmap);
+          if (Array.isArray(data.future_roadmap) && data.future_roadmap.length > 0) {
+            setRoadmap(data.future_roadmap);
+          }
 
           // Handle 5-Tab Showcase Logic safely
-          const formattedDashboards = (data.portfolio_dashboards || []).map(d => ({
+          const formattedDashboards = Array.isArray(data.portfolio_dashboards) ? data.portfolio_dashboards.map(d => ({
             ...d,
-            kpis: typeof d.kpis === 'string' ? d.kpis.split(',').map(s => s.trim()).filter(Boolean) : d.kpis || []
-          }));
+            kpis: typeof d.kpis === 'string' ? d.kpis.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(d.kpis) ? d.kpis : [])
+          })) : [];
 
           setShowcase({
             dashboards: formattedDashboards.length > 0 ? formattedDashboards : defaultShowcaseData.dashboards,
-            reports: data.portfolio_reports?.length > 0 ? data.portfolio_reports : defaultShowcaseData.reports,
-            automations: data.portfolio_automations?.length > 0 ? data.portfolio_automations : defaultShowcaseData.automations,
-            caseStudies: data.portfolio_case_studies?.length > 0 ? data.portfolio_case_studies : defaultShowcaseData.caseStudies,
-            projects: data.portfolio_projects?.length > 0 ? data.portfolio_projects : defaultShowcaseData.projects,
+            reports: Array.isArray(data.portfolio_reports) && data.portfolio_reports.length > 0 ? data.portfolio_reports : defaultShowcaseData.reports,
+            automations: Array.isArray(data.portfolio_automations) && data.portfolio_automations.length > 0 ? data.portfolio_automations : defaultShowcaseData.automations,
+            caseStudies: Array.isArray(data.portfolio_case_studies) && data.portfolio_case_studies.length > 0 ? data.portfolio_case_studies : defaultShowcaseData.caseStudies,
+            projects: Array.isArray(data.portfolio_projects) && data.portfolio_projects.length > 0 ? data.portfolio_projects : defaultShowcaseData.projects,
           });
         }
       } catch (err) {
@@ -338,26 +349,28 @@ export default function DataAnalyst() {
                 {roles.map((role) => (
                   <div key={role.id} className="shrink-0 w-full snap-center p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl relative overflow-hidden group hover:border-emerald-500/30 transition-colors">
                     
-                    {/* CUSTOM ROLE IMAGE RENDERER */}
-                    <div className="absolute top-0 right-0 p-6 pointer-events-none z-0">
-                      {role.customImage ? (
-                         // REMOVED GRAYSCALE AND INCREASED DEFAULT OPACITY SO IT IS FULLY COLORED
-                         <img src={role.customImage} alt={role.company} className="w-32 h-32 object-contain opacity-40 group-hover:opacity-100 transition-opacity" />
-                      ) : (
-                         <div className="opacity-5 group-hover:text-emerald-500 transition-colors">
-                           <Briefcase size={120} />
-                         </div>
-                      )}
-                    </div>
-                    
                     <div className="relative z-10">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
-                          {role.statusBadge}
-                        </span>
+                      
+                      {/* NEW LOGO PLACEMENT: Moved next to the Title/Company for High Visibility */}
+                      <div className="flex justify-between items-start mb-8 gap-4">
+                        <div>
+                          <div className="flex items-center gap-3 mb-3">
+                            <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
+                              {role.statusBadge}
+                            </span>
+                          </div>
+                          <h4 className="text-2xl font-black text-white">{role.title}</h4>
+                          <p className="text-lime-400 font-semibold">{role.company}</p>
+                        </div>
+                        
+                        <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center p-2 shadow-lg group-hover:border-emerald-500/30 transition-colors">
+                          {role.customImage ? (
+                            <img src={role.customImage} alt={role.company} className="w-full h-full object-contain" />
+                          ) : (
+                            <Briefcase size={32} className="text-emerald-500/50" />
+                          )}
+                        </div>
                       </div>
-                      <h4 className="text-2xl font-black text-white">{role.title}</h4>
-                      <p className="text-lime-400 font-semibold mb-8">{role.company}</p>
 
                       <h5 className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-4">Core Responsibilities</h5>
                       <div className="flex flex-wrap gap-2 mb-8">
@@ -588,9 +601,8 @@ export default function DataAnalyst() {
                       className="flex flex-col items-center gap-3 w-24 sm:w-28 group"
                     >
                       <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-slate-800 bg-slate-900/50 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 overflow-hidden hover:border-emerald-500/40 relative">
-                        {/* ECOSYSTEM IMAGE RENDERING APPLIED HERE */}
                         <img 
-                          src={tool.customImage || tool.imageSrc} 
+                          src={tool.customImage} 
                           alt={tool.name} 
                           className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10" 
                           onError={(e) => { 
@@ -598,7 +610,6 @@ export default function DataAnalyst() {
                               e.target.nextSibling.style.display = 'block'; 
                           }}
                         />
-                        {/* Fallback Icon if image file is not found */}
                         <Settings size={24} className="text-slate-600 hidden absolute inset-0 m-auto z-0" />
                       </div>
                       <span className="text-[10px] md:text-xs text-center font-semibold text-slate-400 group-hover:text-emerald-300 transition-colors">
