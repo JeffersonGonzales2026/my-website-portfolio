@@ -172,12 +172,32 @@ export default function DataAnalyst() {
           if (data.performance_counters?.length > 0) setStats(data.performance_counters);
           
           if (data.experience_roles?.length > 0) {
-            // Parse comma-separated strings into arrays safely
-            const formattedRoles = data.experience_roles.map(r => ({
-              ...r,
-              responsibilities: typeof r.responsibilities === 'string' ? r.responsibilities.split(',').map(s => s.trim()).filter(Boolean) : r.responsibilities || [],
-              impact: typeof r.impact === 'string' ? r.impact.split(',').map(s => s.trim()).filter(Boolean) : r.impact || []
-            }));
+            const formattedRoles = data.experience_roles.map(r => {
+              // ================= BRUTE FORCE IMAGE DETECTOR FOR ROLES =================
+              let imgUrl = null;
+              if (r.logo_url) imgUrl = r.logo_url;
+              else if (r.image_url) imgUrl = r.image_url;
+              else if (r.image) imgUrl = r.image;
+              else if (r.logo) imgUrl = r.logo;
+              else if (r.company_logo) imgUrl = r.company_logo;
+              
+              if (!imgUrl) {
+                for (const key in r) {
+                  if (typeof r[key] === 'string' && (r[key].startsWith('http') || r[key].includes('supabase.co'))) {
+                    imgUrl = r[key];
+                    break;
+                  }
+                }
+              }
+              // =========================================================================
+              
+              return {
+                ...r,
+                customImage: imgUrl, // Save detected image link
+                responsibilities: typeof r.responsibilities === 'string' ? r.responsibilities.split(',').map(s => s.trim()).filter(Boolean) : r.responsibilities || [],
+                impact: typeof r.impact === 'string' ? r.impact.split(',').map(s => s.trim()).filter(Boolean) : r.impact || []
+              };
+            });
             setRoles(formattedRoles);
           }
           
@@ -190,7 +210,34 @@ export default function DataAnalyst() {
             setTechSkills(formattedSkills);
           }
           
-          if (data.software_ecosystem?.length > 0) setEcosystem(data.software_ecosystem);
+          if (data.software_ecosystem?.length > 0) {
+            const formattedEcosystem = data.software_ecosystem.map(cat => ({
+              ...cat,
+              tools: (cat.tools || []).map(tool => {
+                // ================= BRUTE FORCE IMAGE DETECTOR FOR ECOSYSTEM =================
+                let imgUrl = null;
+                if (tool.imageSrc) imgUrl = tool.imageSrc;
+                else if (tool.logo_url) imgUrl = tool.logo_url;
+                else if (tool.image_url) imgUrl = tool.image_url;
+                else if (tool.image) imgUrl = tool.image;
+                else if (tool.logo) imgUrl = tool.logo;
+                else if (typeof tool.icon === 'string' && tool.icon.includes('http')) imgUrl = tool.icon;
+                
+                if (!imgUrl) {
+                  for (const key in tool) {
+                    if (typeof tool[key] === 'string' && (tool[key].startsWith('http') || tool[key].includes('supabase.co'))) {
+                      imgUrl = tool[key];
+                      break;
+                    }
+                  }
+                }
+                return { ...tool, customImage: imgUrl || tool.imageSrc };
+                // ============================================================================
+              })
+            }));
+            setEcosystem(formattedEcosystem);
+          }
+
           if (data.future_roadmap?.length > 0) setRoadmap(data.future_roadmap);
 
           // Handle 5-Tab Showcase Logic safely
@@ -282,8 +329,16 @@ export default function DataAnalyst() {
               <div className="flex overflow-x-auto gap-6 pb-4 hide-scrollbar snap-x snap-mandatory scroll-smooth">
                 {roles.map((role) => (
                   <div key={role.id} className="shrink-0 w-full snap-center p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl relative overflow-hidden group hover:border-emerald-500/30 transition-colors">
-                    <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:text-emerald-500 transition-colors pointer-events-none">
-                      <Briefcase size={120} />
+                    
+                    {/* CUSTOM ROLE IMAGE RENDERER */}
+                    <div className="absolute top-0 right-0 p-6 pointer-events-none">
+                      {role.customImage ? (
+                         <img src={role.customImage} alt={role.company} className="w-32 h-32 object-contain opacity-10 group-hover:opacity-30 transition-opacity grayscale" />
+                      ) : (
+                         <div className="opacity-5 group-hover:text-emerald-500 transition-colors">
+                           <Briefcase size={120} />
+                         </div>
+                      )}
                     </div>
                     
                     <div className="relative z-10">
@@ -524,8 +579,9 @@ export default function DataAnalyst() {
                       className="flex flex-col items-center gap-3 w-24 sm:w-28 group"
                     >
                       <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-slate-800 bg-slate-900/50 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 overflow-hidden hover:border-emerald-500/40 relative">
+                        {/* ECOSYSTEM IMAGE RENDERING APPLIED HERE */}
                         <img 
-                          src={tool.imageSrc} 
+                          src={tool.customImage || tool.imageSrc} 
                           alt={tool.name} 
                           className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10" 
                           onError={(e) => { 
