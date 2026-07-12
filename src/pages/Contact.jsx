@@ -52,11 +52,14 @@ export default function Contact() {
   
   const [status, setStatus] = useState('idle');
   const [errors, setErrors] = useState({});
-  const [platforms, setPlatforms] = useState(staticPlatforms); // Initialized with static array
+  const [platforms, setPlatforms] = useState(staticPlatforms);
 
   // ================= DECOUPLED MEDIA ASSET LINKS STATE =================
   const [resumeUrl, setResumeUrl] = useState("/Jefferson_Gonzales_Resume.pdf");
   const [portfolioUrl, setPortfolioUrl] = useState("/Jefferson_Gonzales_Portfolio.pdf");
+  
+  // NEW: State for Unlimited CMS Resumes
+  const [cmsResumes, setCmsResumes] = useState([]);
 
   // Fetch only Document Links (Resume & Portfolio) from live cloud database instance
   useEffect(() => {
@@ -79,6 +82,28 @@ export default function Contact() {
       }
     };
     fetchSettings();
+  }, []);
+
+  // NEW: Fetch Unlimited Resumes from CMS
+  useEffect(() => {
+    const fetchResumes = async () => {
+      try {
+        // Looks for your new table: portfolio_resumes
+        const { data, error } = await supabase
+          .from('portfolio_resumes')
+          .select('*')
+          .order('id', { ascending: true });
+          
+        if (error && error.code !== '42P01') throw error; // Ignore if table doesn't exist yet
+        
+        if (data && data.length > 0) {
+          setCmsResumes(data);
+        }
+      } catch (err) {
+        console.error("CMS Resumes fetch failure:", err.message);
+      }
+    };
+    fetchResumes();
   }, []);
 
   const handleChange = (e) => {
@@ -302,31 +327,50 @@ export default function Contact() {
           {/* Connect With Me Panel */}
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="lg:col-span-5 space-y-6">
             
-            <motion.div variants={fadeUp}>
+            <motion.div id="resume-hub" className="scroll-mt-32" variants={fadeUp}>
               <h3 className="text-2xl font-bold text-white mb-2">Connect With Me</h3>
               <p className="text-sm text-slate-400 mb-8">Reach out across platforms or download my professional resources.</p>
             </motion.div>
 
-            {/* Resume & Portfolio PDF Blocks Driven Dynamically via Local Component State */}
-            <motion.div variants={fadeUp} className="grid grid-cols-2 gap-4 mb-8">
-              <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
-                <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Download size={18} />
-                </div>
-                <div>
-                  <span className="text-sm font-bold text-white block mb-0.5 group-hover:text-blue-300">Resume</span>
-                  <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
-                </div>
-              </a>
-              <a href={portfolioUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
-                <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <FileText size={18} />
-                </div>
-                <div>
-                  <span className="text-sm font-bold text-white block mb-0.5 group-hover:text-purple-300">Portfolio</span>
-                  <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
-                </div>
-              </a>
+            {/* ================= DYNAMIC CMS RESUME HUB ================= */}
+            <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+              {cmsResumes.length > 0 ? (
+                cmsResumes.map((resume, idx) => (
+                  <a key={resume.id || idx} href={resume.file_url || resume.pdf_url || '#'} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
+                    <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Download size={18} />
+                    </div>
+                    <div>
+                      <span className="text-sm font-bold text-white block mb-0.5 group-hover:text-blue-300">
+                        {resume.title || resume.profession_title || 'Resume'}
+                      </span>
+                      <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
+                    </div>
+                  </a>
+                ))
+              ) : (
+                /* Fallbacks if CMS is empty or loading */
+                <>
+                  <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
+                    <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Download size={18} />
+                    </div>
+                    <div>
+                      <span className="text-sm font-bold text-white block mb-0.5 group-hover:text-blue-300">Primary Resume</span>
+                      <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
+                    </div>
+                  </a>
+                  <a href={portfolioUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
+                    <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <FileText size={18} />
+                    </div>
+                    <div>
+                      <span className="text-sm font-bold text-white block mb-0.5 group-hover:text-purple-300">Portfolio</span>
+                      <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
+                    </div>
+                  </a>
+                </>
+              )}
             </motion.div>
 
             {/* Social Grid Channels Fed via STATIC ARRAY */}
