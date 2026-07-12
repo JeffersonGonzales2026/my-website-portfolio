@@ -153,6 +153,35 @@ const aiWorkflowSteps = [
   "Debugging", "Testing", "Optimization", "Documentation", "Version Control", "Deployment", "Maintenance", "Continuous Improvement"
 ];
 
+// ================= AGGRESSIVE URL SCANNER =================
+const extractImageDeep = (item) => {
+  if (!item || typeof item !== 'object') return null;
+  if (item.logo_url) return item.logo_url;
+  if (item.image_url) return item.image_url;
+  if (item.image) return item.image;
+  if (item.logo) return item.logo;
+  if (item.icon_url) return item.icon_url;
+  if (typeof item.icon === 'string' && item.icon.startsWith('http')) return item.icon;
+  
+  let foundUrl = null;
+  const searchObj = (obj) => {
+    if (!obj || typeof obj !== 'object') return;
+    for (const key in obj) {
+      if (typeof obj[key] === 'string' && (obj[key].startsWith('http') || obj[key].includes('supabase.co'))) {
+        foundUrl = obj[key];
+        return;
+      }
+      if (typeof obj[key] === 'object') {
+        searchObj(obj[key]);
+        if (foundUrl) return;
+      }
+    }
+  };
+  
+  searchObj(item);
+  return foundUrl;
+};
+
 export default function AiDeveloper() {
   const containerRef = useRef(null);
 
@@ -180,24 +209,15 @@ export default function AiDeveloper() {
           if (data.metrics_counters?.length > 0) setStats(data.metrics_counters);
           if (data.development_timeline?.length > 0) setTimeline(data.development_timeline);
           
-          // ================= BRUTE FORCE DETECTOR: AI ECOSYSTEM =================
+          // ================= ADVANCED BRUTE FORCE: AI ECOSYSTEM =================
           if (Array.isArray(data.ai_partners) && data.ai_partners.length > 0) {
             const formattedPartners = data.ai_partners.map(ai => {
-              let imgUrl = null;
-              if (ai.logo_url) imgUrl = ai.logo_url;
-              else if (ai.image_url) imgUrl = ai.image_url;
-              else if (ai.image) imgUrl = ai.image;
-              else if (ai.logo) imgUrl = ai.logo;
-              else if (ai.icon_url) imgUrl = ai.icon_url;
-              else if (typeof ai.icon === 'string' && ai.icon.includes('http')) imgUrl = ai.icon;
+              let imgUrl = extractImageDeep(ai);
               
+              // Fallback to local default if CMS erased it but didn't provide a new image
               if (!imgUrl) {
-                for (const key in ai) {
-                  if (typeof ai[key] === 'string' && (ai[key].startsWith('http') || ai[key].includes('supabase.co'))) {
-                    imgUrl = ai[key];
-                    break;
-                  }
-                }
+                const localMatch = defaultAiEcosystem.find(d => d.name?.toLowerCase() === ai.name?.toLowerCase());
+                if (localMatch) imgUrl = localMatch.imageSrc;
               }
               if (!imgUrl && ai.imageSrc) imgUrl = ai.imageSrc;
               
@@ -206,47 +226,34 @@ export default function AiDeveloper() {
             setAiPartners(formattedPartners);
           }
           
-          // ================= BRUTE FORCE DETECTOR: ARCHITECTURE STACK =================
+          // ================= ADVANCED BRUTE FORCE: ARCHITECTURE STACK =================
           if (Array.isArray(data.architecture_stack) && data.architecture_stack.length > 0) {
             const formattedArchitecture = data.architecture_stack.map(stack => {
-              // Parse nested items array safely
               let parsedTools = [];
               if (Array.isArray(stack.items)) {
                 parsedTools = stack.items;
               } else if (typeof stack.items === 'string') {
                 parsedTools = stack.items.split(',').map(t => ({ name: t.trim() }));
               } else if (Array.isArray(stack.tools)) {
-                parsedTools = stack.tools; // Fallback if CMS uses 'tools' instead of 'items'
+                parsedTools = stack.tools;
               }
 
               return {
                 ...stack,
                 items: parsedTools.map(tool => {
-                  let imgUrl = null;
+                  let toolObj = typeof tool === 'object' && tool !== null ? tool : { name: tool };
+                  let imgUrl = extractImageDeep(toolObj);
                   
-                  if (typeof tool === 'object' && tool !== null) {
-                    if (tool.logo_url) imgUrl = tool.logo_url;
-                    else if (tool.image_url) imgUrl = tool.image_url;
-                    else if (tool.image) imgUrl = tool.image;
-                    else if (tool.logo) imgUrl = tool.logo;
-                    else if (tool.icon_url) imgUrl = tool.icon_url;
-                    else if (typeof tool.icon === 'string' && tool.icon.includes('http')) imgUrl = tool.icon;
-                    
-                    if (!imgUrl) {
-                      for (const key in tool) {
-                        if (typeof tool[key] === 'string' && (tool[key].startsWith('http') || tool[key].includes('supabase.co'))) {
-                          imgUrl = tool[key];
-                          break;
-                        }
-                      }
-                    }
+                  // Cross-reference all local defaults across categories if CMS image is missing
+                  if (!imgUrl) {
+                    defaultTechStackData.forEach(defStack => {
+                      const match = defStack.items.find(d => d.name?.toLowerCase() === toolObj.name?.toLowerCase());
+                      if (match) imgUrl = match.imageSrc;
+                    });
                   }
+                  if (!imgUrl && toolObj.imageSrc) imgUrl = toolObj.imageSrc;
 
-                  if (!imgUrl && tool.imageSrc) {
-                    imgUrl = tool.imageSrc;
-                  }
-
-                  return { ...(typeof tool === 'object' ? tool : { name: tool }), customImage: imgUrl };
+                  return { ...toolObj, customImage: imgUrl };
                 })
               };
             });
@@ -254,7 +261,6 @@ export default function AiDeveloper() {
           }
           
           if (data.engineering_showcase?.length > 0) {
-            // Safely parse comma-separated tech strings into arrays for the tags
             const formattedShowcase = data.engineering_showcase.map(project => ({
               ...project,
               tech: typeof project.tech === 'string' ? project.tech.split(',').map(s => s.trim()).filter(Boolean) : project.tech || []
@@ -518,10 +524,11 @@ export default function AiDeveloper() {
                 <motion.div variants={cardPop} key={idx} className="p-6 rounded-2xl bg-slate-950/60 border border-slate-900 flex flex-col hover:border-purple-500/50 hover:bg-purple-500/5 transition-all group shadow-lg backdrop-blur-sm">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 rounded-xl border border-slate-800 bg-black flex items-center justify-center relative overflow-hidden shrink-0 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-                      {/* APPLIED BRUTE FORCE IMAGE PARSER LOGIC HERE */}
-                      <img src={ai.customImage || ai.imageSrc} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10" 
-                           onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
-                      <Cpu size={20} className="text-slate-700 hidden absolute inset-0 m-auto z-0" />
+                      {ai.customImage ? (
+                        <img src={ai.customImage} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10" 
+                             onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                      ) : null}
+                      <Cpu size={20} className={`text-slate-700 absolute inset-0 m-auto z-0 ${ai.customImage ? 'hidden' : 'block'}`} />
                     </div>
                     <h4 className="text-base font-bold text-white group-hover:text-purple-400 transition-colors">{ai.name}</h4>
                   </div>
@@ -548,10 +555,11 @@ export default function AiDeveloper() {
                     {stack.items?.map((tool, i) => (
                       <motion.div variants={cardPop} key={i} className="p-4 rounded-xl bg-slate-950/70 border border-slate-900 flex flex-col items-center justify-center text-center hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-300 group shadow-lg">
                         <div className="w-14 h-14 rounded-xl border border-slate-800 bg-black flex items-center justify-center mb-3 relative overflow-hidden group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all">
-                          {/* APPLIED BRUTE FORCE IMAGE PARSER LOGIC HERE */}
-                          <img src={tool.customImage || tool.imageSrc} alt={tool.name} className="w-8 h-8 object-contain opacity-60 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10"
-                               onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
-                          <Settings size={20} className="text-slate-700 hidden absolute inset-0 m-auto z-0" />
+                          {tool.customImage ? (
+                            <img src={tool.customImage} alt={tool.name} className="w-8 h-8 object-contain opacity-60 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10"
+                                 onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                          ) : null}
+                          <Settings size={20} className={`text-slate-700 absolute inset-0 m-auto z-0 ${tool.customImage ? 'hidden' : 'block'}`} />
                         </div>
                         <span className="text-[11px] font-semibold text-slate-400 group-hover:text-cyan-400 transition-colors">{tool.name}</span>
                       </motion.div>
