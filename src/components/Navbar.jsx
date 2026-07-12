@@ -87,10 +87,9 @@ export default function Navbar() {
 
           {/* Desktop Secondary Navigation (Resume) */}
           <div className="hidden md:block">
+            {/* UPDATED: Now links directly to the Contact Page Resume Hub */}
             <a 
-              href="/Jefferson_Gonzales_Resume.pdf" 
-              target="_blank" 
-              rel="noopener noreferrer"
+              href="/contact#resume-hub" 
               className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-colors shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
               <Download size={16} /> Resume
@@ -126,6 +125,7 @@ export default function Navbar() {
                   <Link
                     key={link.name}
                     to={link.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className={`px-4 py-4 rounded-xl text-lg font-bold transition-all ${
                       isActive 
                         ? 'bg-white/10 text-white' 
@@ -139,13 +139,13 @@ export default function Navbar() {
             </nav>
 
             <div className="mt-8 pt-8 border-t border-white/10">
+              {/* UPDATED: Now links directly to the Contact Page Resume Hub */}
               <a 
-                href="/Jefferson_Gonzales_Resume.pdf" 
-                target="_blank" 
-                rel="noopener noreferrer"
+                href="/contact#resume-hub" 
+                onClick={() => setIsMobileMenuOpen(false)}
                 className="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-base font-bold transition-colors shadow-[0_0_20px_rgba(59,130,246,0.3)]"
               >
-                <Download size={20} /> Download Resume
+                <Download size={20} /> View Resumes
               </a>
             </div>
           </motion.div>
