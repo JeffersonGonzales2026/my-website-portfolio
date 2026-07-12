@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Send, Loader2, CheckCircle2, AlertCircle, Mail, 
-  Download, FileText, Globe
+  Download, FileText, Globe, X
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -55,13 +55,13 @@ export default function Contact() {
   const [platforms, setPlatforms] = useState(staticPlatforms);
 
   // ================= DECOUPLED MEDIA ASSET LINKS STATE =================
-  const [resumeUrl, setResumeUrl] = useState("/Jefferson_Gonzales_Resume.pdf");
   const [portfolioUrl, setPortfolioUrl] = useState("/Jefferson_Gonzales_Portfolio.pdf");
   
-  // NEW: State for Unlimited CMS Resumes
+  // NEW: State for Unlimited CMS Resumes & Modal visibility
   const [cmsResumes, setCmsResumes] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetch only Document Links (Resume & Portfolio) from live cloud database instance
+  // Fetch Portfolio Link
   useEffect(() => {
     const fetchSettings = async () => {
       try {
@@ -73,9 +73,8 @@ export default function Contact() {
         
         if (error && error.code !== 'PGRST116') throw error;
         
-        if (data) {
-          if (data.resume_url) setResumeUrl(data.resume_url);
-          if (data.portfolio_url) setPortfolioUrl(data.portfolio_url);
+        if (data && data.portfolio_url) {
+          setPortfolioUrl(data.portfolio_url);
         }
       } catch (err) {
         console.error("Settings directory fetch failure:", err.message);
@@ -84,11 +83,10 @@ export default function Contact() {
     fetchSettings();
   }, []);
 
-  // NEW: Fetch Unlimited Resumes from CMS
+  // Fetch Unlimited Resumes from CMS
   useEffect(() => {
     const fetchResumes = async () => {
       try {
-        // Looks for your new table: portfolio_resumes
         const { data, error } = await supabase
           .from('portfolio_resumes')
           .select('*')
@@ -163,256 +161,308 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-slate-200 overflow-x-hidden relative selection:bg-blue-500/30 selection:text-blue-200 pt-32 pb-24 px-6">
-      
-      {/* Background Glow Atmospheric Nodes */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.15, 0.1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-blue-600/30 rounded-full blur-[150px]" />
-        <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.05, 0.1, 0.05] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute top-[30%] right-[-10%] w-[700px] h-[700px] bg-emerald-600/20 rounded-full blur-[160px]" />
-        <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.15, 0.1] }} transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-          className="absolute bottom-[-10%] left-[20%] w-[800px] h-[800px] bg-purple-600/20 rounded-full blur-[180px]" />
-      </div>
-
-      <div className="max-w-7xl mx-auto relative z-10">
+    <>
+      <div className="min-h-screen bg-[#09090b] text-slate-200 overflow-x-hidden relative selection:bg-blue-500/30 selection:text-blue-200 pt-32 pb-24 px-6">
         
-        {/* Contact Hero */}
-        <motion.div variants={fadeUp} initial="hidden" animate="visible" className="text-center max-w-3xl mx-auto mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-semibold mb-6">
-            <Globe size={14} /> Open for Opportunities
-          </div>
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-6">
-            Let's Build Something <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-emerald-400 to-purple-400 drop-shadow-sm">
-              Meaningful Together.
-            </span>
-          </h1>
-          <p className="text-base md:text-lg text-slate-400 leading-relaxed">
-            Whether you're looking for a Graphic Designer, Data Analyst, AI-Assisted Full-Stack Developer, business collaborator, or simply want to connect, I'd love to hear from you. 
-            <br/><br/>
-            Every successful project begins with a conversation. Let's create something great together.
-          </p>
-        </motion.div>
+        {/* Background Glow Atmospheric Nodes */}
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+          <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.15, 0.1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-blue-600/30 rounded-full blur-[150px]" />
+          <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.05, 0.1, 0.05] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            className="absolute top-[30%] right-[-10%] w-[700px] h-[700px] bg-emerald-600/20 rounded-full blur-[160px]" />
+          <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.15, 0.1] }} transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+            className="absolute bottom-[-10%] left-[20%] w-[800px] h-[800px] bg-purple-600/20 rounded-full blur-[180px]" />
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <div className="max-w-7xl mx-auto relative z-10">
           
-          {/* Contact Form Container */}
-          <motion.div variants={fadeUp} initial="hidden" animate="visible" className="lg:col-span-7">
-            <div className="p-6 md:p-10 rounded-3xl bg-white/[0.02] border border-white/10 shadow-2xl backdrop-blur-md relative overflow-hidden">
-              <h3 className="text-2xl font-bold text-white mb-8">Send a Message</h3>
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Full Name <span className="text-red-400">*</span></label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} disabled={status === 'loading'}
-                      className={`w-full bg-black/40 border ${errors.name ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-colors`}
-                      placeholder="John Doe" />
-                    {errors.name && <span className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle size={12}/> {errors.name}</span>}
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Email Address <span className="text-red-400">*</span></label>
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} disabled={status === 'loading'}
-                      className={`w-full bg-black/40 border ${errors.email ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-colors`}
-                      placeholder="john@company.com" />
-                    {errors.email && <span className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle size={12}/> {errors.email}</span>}
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Company <span className="text-slate-600 font-normal">(Optional)</span></label>
-                    <input type="text" name="company" value={formData.company} onChange={handleChange} disabled={status === 'loading'}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black/60 transition-colors"
-                      placeholder="Organization Name" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Phone / Country <span className="text-slate-600 font-normal">(Optional)</span></label>
-                    <div className="flex gap-2">
-                      <input type="text" name="country" value={formData.country} onChange={handleChange} disabled={status === 'loading'}
-                        className="w-1/3 bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black/60 transition-colors text-center"
-                        placeholder="US" />
-                      <input type="tel" name="phone" value={formData.phone} onChange={handleChange} disabled={status === 'loading'}
-                        className="w-2/3 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black/60 transition-colors"
-                        placeholder="+1 (555) 000-0000" />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-2">Subject <span className="text-red-400">*</span></label>
-                  <input type="text" name="subject" value={formData.subject} onChange={handleChange} disabled={status === 'loading'}
-                    className={`w-full bg-black/40 border ${errors.subject ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500/50 focus:bg-black/60 transition-colors`}
-                    placeholder="Project Inquiry" />
-                  {errors.subject && <span className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle size={12}/> {errors.subject}</span>}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Service Interested In</label>
-                    <select name="service" value={formData.service} onChange={handleChange} disabled={status === 'loading'}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:border-purple-500/50 focus:bg-black/60 transition-colors appearance-none cursor-pointer">
-                      <option value="">Select a Service...</option>
-                      <option value="Dream Creations">Dream Creations (Design)</option>
-                      <option value="Data Analytics">Data Analytics & Dashboards</option>
-                      <option value="AI Development">AI Development & Web Apps</option>
-                      <option value="Business Automation">Business Workflow Automation</option>
-                      <option value="Other">Other / General Inquiry</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Budget Range <span className="text-slate-600 font-normal">(Optional)</span></label>
-                    <select name="budget" value={formData.budget} onChange={handleChange} disabled={status === 'loading'}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:border-purple-500/50 focus:bg-black/60 transition-colors appearance-none cursor-pointer">
-                      <option value="">Select Range...</option>
-                      <option value="< $1,000">Less than $1,000</option>
-                      <option value="$1,000 - $5,000">$1,000 - $5,000</option>
-                      <option value="$5,000 - $10,000">$5,000 - $10,000</option>
-                      <option value="$10,000+">$10,000+</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-2">Message <span className="text-red-400">*</span></label>
-                  <textarea name="message" value={formData.message} onChange={handleChange} disabled={status === 'loading'} rows={5}
-                    className={`w-full bg-black/40 border ${errors.message ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-colors resize-none`}
-                    placeholder="Tell me about your project, timeline, and goals..." />
-                  {errors.message && <span className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle size={12}/> {errors.message}</span>}
-                </div>
-
-                <div>
-                  <label className="flex items-start gap-3 cursor-pointer group">
-                    <div className="relative flex items-center justify-center mt-0.5">
-                      <input type="checkbox" name="privacy" checked={formData.privacy} onChange={handleChange} disabled={status === 'loading'}
-                        className="peer appearance-none w-5 h-5 rounded border border-white/20 bg-black/40 checked:bg-blue-500 checked:border-blue-500 transition-colors cursor-pointer" />
-                      <CheckCircle2 size={14} className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
-                    </div>
-                    <span className="text-xs text-slate-400 group-hover:text-slate-300 transition-colors leading-relaxed">
-                      I agree to the processing of my personal data for the purpose of communicating regarding my inquiry. I understand that my information is secure and will not be shared. <span className="text-red-400">*</span>
-                    </span>
-                  </label>
-                  {errors.privacy && <span className="text-xs text-red-400 mt-2 flex items-center gap-1"><AlertCircle size={12}/> {errors.privacy}</span>}
-                </div>
-
-                <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <button type="submit" disabled={status === 'loading'}
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white text-black font-bold text-sm hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
-                    {status === 'loading' ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                    {status === 'loading' ? 'Sending Message...' : 'Send Message'}
-                  </button>
-
-                  <AnimatePresence mode="wait">
-                    {status === 'success' && (
-                      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 text-emerald-400 text-sm font-semibold">
-                        <CheckCircle2 size={18} /> Message Sent Successfully!
-                      </motion.div>
-                    )}
-                    {status === 'validation_error' && (
-                      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 text-red-400 text-sm font-semibold">
-                        <AlertCircle size={18} /> Please fix the validation errors above.
-                      </motion.div>
-                    )}
-                    {status === 'database_error' && (
-                      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 text-amber-400 text-sm font-semibold">
-                        <AlertCircle size={18} /> Connection Blocked. Ensure SQL policies are enabled.
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-              </form>
+          {/* Contact Hero */}
+          <motion.div variants={fadeUp} initial="hidden" animate="visible" className="text-center max-w-3xl mx-auto mb-20">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-semibold mb-6">
+              <Globe size={14} /> Open for Opportunities
             </div>
+            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-6">
+              Let's Build Something <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-emerald-400 to-purple-400 drop-shadow-sm">
+                Meaningful Together.
+              </span>
+            </h1>
+            <p className="text-base md:text-lg text-slate-400 leading-relaxed">
+              Whether you're looking for a Graphic Designer, Data Analyst, AI-Assisted Full-Stack Developer, business collaborator, or simply want to connect, I'd love to hear from you. 
+              <br/><br/>
+              Every successful project begins with a conversation. Let's create something great together.
+            </p>
           </motion.div>
 
-          {/* Connect With Me Panel */}
-          <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="lg:col-span-5 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
-            <motion.div id="resume-hub" className="scroll-mt-32" variants={fadeUp}>
-              <h3 className="text-2xl font-bold text-white mb-2">Connect With Me</h3>
-              <p className="text-sm text-slate-400 mb-8">Reach out across platforms or download my professional resources.</p>
-            </motion.div>
+            {/* Contact Form Container */}
+            <motion.div variants={fadeUp} initial="hidden" animate="visible" className="lg:col-span-7">
+              <div className="p-6 md:p-10 rounded-3xl bg-white/[0.02] border border-white/10 shadow-2xl backdrop-blur-md relative overflow-hidden">
+                <h3 className="text-2xl font-bold text-white mb-8">Send a Message</h3>
 
-            {/* ================= DYNAMIC CMS RESUME HUB ================= */}
-            <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-              {cmsResumes.length > 0 ? (
-                cmsResumes.map((resume, idx) => (
-                  <a key={resume.id || idx} href={resume.file_url || resume.pdf_url || '#'} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
-                    <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Download size={18} />
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-400 mb-2">Full Name <span className="text-red-400">*</span></label>
+                      <input type="text" name="name" value={formData.name} onChange={handleChange} disabled={status === 'loading'}
+                        className={`w-full bg-black/40 border ${errors.name ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-colors`}
+                        placeholder="John Doe" />
+                      {errors.name && <span className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle size={12}/> {errors.name}</span>}
                     </div>
                     <div>
-                      <span className="text-sm font-bold text-white block mb-0.5 group-hover:text-blue-300">
-                        {resume.title || resume.profession_title || 'Resume'}
+                      <label className="block text-xs font-semibold text-slate-400 mb-2">Email Address <span className="text-red-400">*</span></label>
+                      <input type="email" name="email" value={formData.email} onChange={handleChange} disabled={status === 'loading'}
+                        className={`w-full bg-black/40 border ${errors.email ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-colors`}
+                        placeholder="john@company.com" />
+                      {errors.email && <span className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle size={12}/> {errors.email}</span>}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-400 mb-2">Company <span className="text-slate-600 font-normal">(Optional)</span></label>
+                      <input type="text" name="company" value={formData.company} onChange={handleChange} disabled={status === 'loading'}
+                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black/60 transition-colors"
+                        placeholder="Organization Name" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-400 mb-2">Phone / Country <span className="text-slate-600 font-normal">(Optional)</span></label>
+                      <div className="flex gap-2">
+                        <input type="text" name="country" value={formData.country} onChange={handleChange} disabled={status === 'loading'}
+                          className="w-1/3 bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black/60 transition-colors text-center"
+                          placeholder="US" />
+                        <input type="tel" name="phone" value={formData.phone} onChange={handleChange} disabled={status === 'loading'}
+                          className="w-2/3 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black/60 transition-colors"
+                          placeholder="+1 (555) 000-0000" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-2">Subject <span className="text-red-400">*</span></label>
+                    <input type="text" name="subject" value={formData.subject} onChange={handleChange} disabled={status === 'loading'}
+                      className={`w-full bg-black/40 border ${errors.subject ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500/50 focus:bg-black/60 transition-colors`}
+                      placeholder="Project Inquiry" />
+                    {errors.subject && <span className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle size={12}/> {errors.subject}</span>}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-400 mb-2">Service Interested In</label>
+                      <select name="service" value={formData.service} onChange={handleChange} disabled={status === 'loading'}
+                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:border-purple-500/50 focus:bg-black/60 transition-colors appearance-none cursor-pointer">
+                        <option value="">Select a Service...</option>
+                        <option value="Dream Creations">Dream Creations (Design)</option>
+                        <option value="Data Analytics">Data Analytics & Dashboards</option>
+                        <option value="AI Development">AI Development & Web Apps</option>
+                        <option value="Business Automation">Business Workflow Automation</option>
+                        <option value="Other">Other / General Inquiry</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-400 mb-2">Budget Range <span className="text-slate-600 font-normal">(Optional)</span></label>
+                      <select name="budget" value={formData.budget} onChange={handleChange} disabled={status === 'loading'}
+                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:border-purple-500/50 focus:bg-black/60 transition-colors appearance-none cursor-pointer">
+                        <option value="">Select Range...</option>
+                        <option value="< $1,000">Less than $1,000</option>
+                        <option value="$1,000 - $5,000">$1,000 - $5,000</option>
+                        <option value="$5,000 - $10,000">$5,000 - $10,000</option>
+                        <option value="$10,000+">$10,000+</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-2">Message <span className="text-red-400">*</span></label>
+                    <textarea name="message" value={formData.message} onChange={handleChange} disabled={status === 'loading'} rows={5}
+                      className={`w-full bg-black/40 border ${errors.message ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-colors resize-none`}
+                      placeholder="Tell me about your project, timeline, and goals..." />
+                    {errors.message && <span className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle size={12}/> {errors.message}</span>}
+                  </div>
+
+                  <div>
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <div className="relative flex items-center justify-center mt-0.5">
+                        <input type="checkbox" name="privacy" checked={formData.privacy} onChange={handleChange} disabled={status === 'loading'}
+                          className="peer appearance-none w-5 h-5 rounded border border-white/20 bg-black/40 checked:bg-blue-500 checked:border-blue-500 transition-colors cursor-pointer" />
+                        <CheckCircle2 size={14} className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
+                      </div>
+                      <span className="text-xs text-slate-400 group-hover:text-slate-300 transition-colors leading-relaxed">
+                        I agree to the processing of my personal data for the purpose of communicating regarding my inquiry. I understand that my information is secure and will not be shared. <span className="text-red-400">*</span>
                       </span>
-                      <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
-                    </div>
-                  </a>
-                ))
-              ) : (
-                /* Fallbacks if CMS is empty or loading */
-                <>
-                  <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
-                    <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Download size={18} />
-                    </div>
-                    <div>
-                      <span className="text-sm font-bold text-white block mb-0.5 group-hover:text-blue-300">Primary Resume</span>
-                      <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
-                    </div>
-                  </a>
-                  <a href={portfolioUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
-                    <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <FileText size={18} />
-                    </div>
-                    <div>
-                      <span className="text-sm font-bold text-white block mb-0.5 group-hover:text-purple-300">Portfolio</span>
-                      <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
-                    </div>
-                  </a>
-                </>
-              )}
+                    </label>
+                    {errors.privacy && <span className="text-xs text-red-400 mt-2 flex items-center gap-1"><AlertCircle size={12}/> {errors.privacy}</span>}
+                  </div>
+
+                  <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <button type="submit" disabled={status === 'loading'}
+                      className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white text-black font-bold text-sm hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+                      {status === 'loading' ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                      {status === 'loading' ? 'Sending Message...' : 'Send Message'}
+                    </button>
+
+                    <AnimatePresence mode="wait">
+                      {status === 'success' && (
+                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 text-emerald-400 text-sm font-semibold">
+                          <CheckCircle2 size={18} /> Message Sent Successfully!
+                        </motion.div>
+                      )}
+                      {status === 'validation_error' && (
+                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 text-red-400 text-sm font-semibold">
+                          <AlertCircle size={18} /> Please fix the validation errors above.
+                        </motion.div>
+                      )}
+                      {status === 'database_error' && (
+                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 text-amber-400 text-sm font-semibold">
+                          <AlertCircle size={18} /> Connection Blocked. Ensure SQL policies are enabled.
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                </form>
+              </div>
             </motion.div>
 
-            {/* Social Grid Channels Fed via STATIC ARRAY */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 h-[500px] overflow-y-auto pr-2 hide-scrollbar">
-              <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
+            {/* Connect With Me Panel */}
+            <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="lg:col-span-5 space-y-6">
               
-              {platforms.map((platform) => (
-                <motion.a 
-                  variants={fadeUp}
-                  key={platform.id}
-                  href={platform.status === 'future' ? '#' : platform.link}
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className={`p-4 rounded-xl border flex flex-col gap-3 transition-all group ${
-                    platform.status === 'future' 
-                    ? 'bg-black/20 border-white/5 opacity-40 cursor-default select-none' 
-                    : 'bg-white/5 border-white/10 hover:border-blue-500/30 hover:bg-blue-500/5 cursor-pointer'
-                  }`}
-                  onClick={(e) => {
-                    if (platform.status === 'future') e.preventDefault();
-                  }}
+              <motion.div id="resume-hub" className="scroll-mt-32" variants={fadeUp}>
+                <h3 className="text-2xl font-bold text-white mb-2">Connect With Me</h3>
+                <p className="text-sm text-slate-400 mb-8">Reach out across platforms or download my professional resources.</p>
+              </motion.div>
+
+              {/* ================= RESUME BUTTON (OPENS MODAL) AND PORTFOLIO LINK ================= */}
+              <motion.div variants={fadeUp} className="grid grid-cols-2 gap-4 mb-8">
+                
+                <button 
+                  onClick={() => setIsModalOpen(true)}
+                  className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer w-full"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${platform.status === 'future' ? 'bg-white/5 text-slate-600' : 'bg-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform'}`}>
-                      {iconMap[platform.id] || <Globe size={20} />}
-                    </div>
-                    {platform.status === 'future' && (
-                      <span className="text-[9px] px-2 py-0.5 rounded border border-white/10 text-slate-500 font-semibold uppercase tracking-wider">Future</span>
-                    )}
+                  <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Download size={18} />
                   </div>
                   <div>
-                    <h4 className={`text-sm font-bold mb-0.5 ${platform.status === 'future' ? 'text-slate-500' : 'text-white'}`}>{platform.name}</h4>
-                    <p className="text-xs text-slate-500 truncate font-mono">{platform.username}</p>
+                    <span className="text-sm font-bold text-white block mb-0.5 group-hover:text-blue-300">Primary Resume</span>
+                    <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
                   </div>
-                </motion.a>
-              ))}
-            </div>
+                </button>
 
-          </motion.div>
+                <a href={portfolioUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
+                  <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <FileText size={18} />
+                  </div>
+                  <div>
+                    <span className="text-sm font-bold text-white block mb-0.5 group-hover:text-purple-300">Portfolio</span>
+                    <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
+                  </div>
+                </a>
+              </motion.div>
 
+              {/* Social Grid Channels Fed via STATIC ARRAY */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 h-[500px] overflow-y-auto pr-2 hide-scrollbar">
+                <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
+                
+                {platforms.map((platform) => (
+                  <motion.a 
+                    variants={fadeUp}
+                    key={platform.id}
+                    href={platform.status === 'future' ? '#' : platform.link}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className={`p-4 rounded-xl border flex flex-col gap-3 transition-all group ${
+                      platform.status === 'future' 
+                      ? 'bg-black/20 border-white/5 opacity-40 cursor-default select-none' 
+                      : 'bg-white/5 border-white/10 hover:border-blue-500/30 hover:bg-blue-500/5 cursor-pointer'
+                    }`}
+                    onClick={(e) => {
+                      if (platform.status === 'future') e.preventDefault();
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${platform.status === 'future' ? 'bg-white/5 text-slate-600' : 'bg-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform'}`}>
+                        {iconMap[platform.id] || <Globe size={20} />}
+                      </div>
+                      {platform.status === 'future' && (
+                        <span className="text-[9px] px-2 py-0.5 rounded border border-white/10 text-slate-500 font-semibold uppercase tracking-wider">Future</span>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className={`text-sm font-bold mb-0.5 ${platform.status === 'future' ? 'text-slate-500' : 'text-white'}`}>{platform.name}</h4>
+                      <p className="text-xs text-slate-500 truncate font-mono">{platform.username}</p>
+                    </div>
+                  </motion.a>
+                ))}
+              </div>
+
+            </motion.div>
+
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* ================= RESUME SELECTOR MODAL ================= */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[#02040a]/80 backdrop-blur-sm"
+            onClick={() => setIsModalOpen(false)}
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-[#09090b] border border-white/10 rounded-3xl w-full max-w-md p-8 relative shadow-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()} // Prevents closing when clicking inside modal
+            >
+              {/* Decorative top gradient */}
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500" />
+
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 p-2 rounded-full"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="mb-8 pr-10">
+                <h3 className="text-2xl font-black text-white tracking-tight mb-2">Select Resume</h3>
+                <p className="text-sm text-slate-400">Choose the version tailored to your specific requirements.</p>
+              </div>
+
+              <div className="space-y-3">
+                {cmsResumes.length > 0 ? (
+                  cmsResumes.map((resume, idx) => (
+                    <a 
+                      key={resume.id || idx} 
+                      href={resume.file_url || resume.pdf_url || '#'} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="flex items-center gap-4 p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-blue-500/10 hover:border-blue-500/30 transition-all group"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                        <FileText size={18} />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors">
+                          {resume.title || resume.profession_title || `Resume Version ${idx + 1}`}
+                        </h4>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">PDF Document</p>
+                      </div>
+                    </a>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-slate-500 text-sm italic">
+                    Loading resumes from CMS...
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
