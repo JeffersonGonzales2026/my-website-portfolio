@@ -179,8 +179,79 @@ export default function AiDeveloper() {
         if (data) {
           if (data.metrics_counters?.length > 0) setStats(data.metrics_counters);
           if (data.development_timeline?.length > 0) setTimeline(data.development_timeline);
-          if (data.ai_partners?.length > 0) setAiPartners(data.ai_partners);
-          if (data.architecture_stack?.length > 0) setArchitecture(data.architecture_stack);
+          
+          // ================= BRUTE FORCE DETECTOR: AI ECOSYSTEM =================
+          if (Array.isArray(data.ai_partners) && data.ai_partners.length > 0) {
+            const formattedPartners = data.ai_partners.map(ai => {
+              let imgUrl = null;
+              if (ai.logo_url) imgUrl = ai.logo_url;
+              else if (ai.image_url) imgUrl = ai.image_url;
+              else if (ai.image) imgUrl = ai.image;
+              else if (ai.logo) imgUrl = ai.logo;
+              else if (ai.icon_url) imgUrl = ai.icon_url;
+              else if (typeof ai.icon === 'string' && ai.icon.includes('http')) imgUrl = ai.icon;
+              
+              if (!imgUrl) {
+                for (const key in ai) {
+                  if (typeof ai[key] === 'string' && (ai[key].startsWith('http') || ai[key].includes('supabase.co'))) {
+                    imgUrl = ai[key];
+                    break;
+                  }
+                }
+              }
+              if (!imgUrl && ai.imageSrc) imgUrl = ai.imageSrc;
+              
+              return { ...ai, customImage: imgUrl };
+            });
+            setAiPartners(formattedPartners);
+          }
+          
+          // ================= BRUTE FORCE DETECTOR: ARCHITECTURE STACK =================
+          if (Array.isArray(data.architecture_stack) && data.architecture_stack.length > 0) {
+            const formattedArchitecture = data.architecture_stack.map(stack => {
+              // Parse nested items array safely
+              let parsedTools = [];
+              if (Array.isArray(stack.items)) {
+                parsedTools = stack.items;
+              } else if (typeof stack.items === 'string') {
+                parsedTools = stack.items.split(',').map(t => ({ name: t.trim() }));
+              } else if (Array.isArray(stack.tools)) {
+                parsedTools = stack.tools; // Fallback if CMS uses 'tools' instead of 'items'
+              }
+
+              return {
+                ...stack,
+                items: parsedTools.map(tool => {
+                  let imgUrl = null;
+                  
+                  if (typeof tool === 'object' && tool !== null) {
+                    if (tool.logo_url) imgUrl = tool.logo_url;
+                    else if (tool.image_url) imgUrl = tool.image_url;
+                    else if (tool.image) imgUrl = tool.image;
+                    else if (tool.logo) imgUrl = tool.logo;
+                    else if (tool.icon_url) imgUrl = tool.icon_url;
+                    else if (typeof tool.icon === 'string' && tool.icon.includes('http')) imgUrl = tool.icon;
+                    
+                    if (!imgUrl) {
+                      for (const key in tool) {
+                        if (typeof tool[key] === 'string' && (tool[key].startsWith('http') || tool[key].includes('supabase.co'))) {
+                          imgUrl = tool[key];
+                          break;
+                        }
+                      }
+                    }
+                  }
+
+                  if (!imgUrl && tool.imageSrc) {
+                    imgUrl = tool.imageSrc;
+                  }
+
+                  return { ...(typeof tool === 'object' ? tool : { name: tool }), customImage: imgUrl };
+                })
+              };
+            });
+            setArchitecture(formattedArchitecture);
+          }
           
           if (data.engineering_showcase?.length > 0) {
             // Safely parse comma-separated tech strings into arrays for the tags
@@ -447,9 +518,10 @@ export default function AiDeveloper() {
                 <motion.div variants={cardPop} key={idx} className="p-6 rounded-2xl bg-slate-950/60 border border-slate-900 flex flex-col hover:border-purple-500/50 hover:bg-purple-500/5 transition-all group shadow-lg backdrop-blur-sm">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 rounded-xl border border-slate-800 bg-black flex items-center justify-center relative overflow-hidden shrink-0 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-                      <img src={ai.imageSrc} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto" 
+                      {/* APPLIED BRUTE FORCE IMAGE PARSER LOGIC HERE */}
+                      <img src={ai.customImage || ai.imageSrc} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10" 
                            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
-                      <Cpu size={20} className="text-slate-700 hidden" />
+                      <Cpu size={20} className="text-slate-700 hidden absolute inset-0 m-auto z-0" />
                     </div>
                     <h4 className="text-base font-bold text-white group-hover:text-purple-400 transition-colors">{ai.name}</h4>
                   </div>
@@ -476,9 +548,10 @@ export default function AiDeveloper() {
                     {stack.items?.map((tool, i) => (
                       <motion.div variants={cardPop} key={i} className="p-4 rounded-xl bg-slate-950/70 border border-slate-900 flex flex-col items-center justify-center text-center hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-300 group shadow-lg">
                         <div className="w-14 h-14 rounded-xl border border-slate-800 bg-black flex items-center justify-center mb-3 relative overflow-hidden group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all">
-                          <img src={tool.imageSrc} alt={tool.name} className="w-8 h-8 object-contain opacity-60 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto"
+                          {/* APPLIED BRUTE FORCE IMAGE PARSER LOGIC HERE */}
+                          <img src={tool.customImage || tool.imageSrc} alt={tool.name} className="w-8 h-8 object-contain opacity-60 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10"
                                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
-                          <Settings size={20} className="text-slate-700 hidden" />
+                          <Settings size={20} className="text-slate-700 hidden absolute inset-0 m-auto z-0" />
                         </div>
                         <span className="text-[11px] font-semibold text-slate-400 group-hover:text-cyan-400 transition-colors">{tool.name}</span>
                       </motion.div>
