@@ -1,7 +1,7 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
-import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download } from 'lucide-react';
+import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Helper component for counting numbers
@@ -140,6 +140,11 @@ export default function DreamCreations() {
   const [teamList, setTeamList] = useState(teamMembers);
   const [softwareList, setSoftwareList] = useState(softwareExpertise);
   const [clientsList, setClientsList] = useState(featuredClients);
+
+  // ================= EXCLUSIVE MULTI-PAGE FLIPBOOK STATE =================
+  const [isFlipbookOpen, setIsFlipbookOpen] = useState(false);
+  const [flipbookPage, setFlipbookCurrentPage] = useState(1);
+  const totalFlipbookPages = 91; // UPDATED to 91 fully structured compliance pages
 
   // ================= DYNAMIC RESUME STATE =================
   const [pageResume, setPageResume] = useState(null);
@@ -333,6 +338,11 @@ export default function DreamCreations() {
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
+
+  // ================= HELPER FOR SECURE MIGRATED IMAGES BUCKET PATHS =================
+  const getFlipbookUrl = (pageIndex) => {
+    return `https://jeffersonguzmangonzales03.supabase.co/storage/v1/object/public/portfolio_media/page-${pageIndex}.jpg`;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -691,7 +701,7 @@ export default function DreamCreations() {
                 Jefferson founded Dream Creations with the vision of helping businesses communicate more effectively through thoughtful and impactful visual design.
               </p>
               <p className="text-base md:text-lg text-white/70 hobbies leading-relaxed">
-                With more than ten years of professional experience, he has worked across multiple industries including healthcare, finance, insurance, technology, apparel, education, e-commerce, printing, media, and real estate, in both onsite and work-from-home setups for local and international clients.
+                With more than ten years of professional experience, he has worked across multiple industries including healthcare, finance, insurance, technology, apparel, education, e-commerce, printing, media, and real estate.
               </p>
               <p className="text-base md:text-lg text-white/70 leading-relaxed">
                 Inspired by his former team manager, he started building his own team of graphic designers with a vision to empower more dreamers (clients) and creators (designers).
@@ -1083,7 +1093,17 @@ export default function DreamCreations() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {projects.length > 0 ? (
                   projects.map((project) => (
-                    <div key={project.id} className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors">
+                    <div 
+                      key={project.id} 
+                      onClick={() => {
+                        // DETECT IF THIS IS YOUR MIGRATED COMPANY PROFILE DOC
+                        if (project.title.toLowerCase().includes('profile') || project.category.toLowerCase().includes('profile') || project.description.toLowerCase().includes('company profile')) {
+                          setIsFlipbookOpen(true);
+                          setFlipbookCurrentPage(1);
+                        }
+                      }}
+                      className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer"
+                    >
                        <div className="aspect-video relative overflow-hidden bg-black/60">
                          {project.featured_image_url ? (
                            <img src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -1094,7 +1114,7 @@ export default function DreamCreations() {
                          )}
                          
                          {/* VIDEO PLAY BUTTON OVERLAY */}
-                         {project.video_url && (
+                         {project.video_url && !project.title.toLowerCase().includes('profile') && (
                            <a href={project.video_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
                              <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform">
                                <MonitorPlay size={24} className="ml-1" />
@@ -1274,7 +1294,15 @@ export default function DreamCreations() {
                 {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
                     <button 
-                      onClick={() => handleSubtitleModalClick(item)}
+                      onClick={() => {
+                        if (item.toLowerCase().includes('profile')) {
+                          setActiveCreationPopup(null);
+                          setIsFlipbookOpen(true);
+                          setFlipbookCurrentPage(1);
+                        } else {
+                          handleSubtitleModalClick(item);
+                        }
+                      }}
                       className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group cursor-pointer"
                     >
                       <span className="text-[#1095d2] group-hover:translate-x-1 transition-transform">▹</span>
@@ -1284,6 +1312,113 @@ export default function DreamCreations() {
                 ))}
               </ul>
             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= 3D BOOK BROWSING FLIPBOOK INTERACTIVE LAYOUT MODAL ================= */}
+      <AnimatePresence>
+        {isFlipbookOpen && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+            
+            {/* Modal Exit Click Area */}
+            <div className="absolute top-6 right-6 z-50 flex items-center gap-4">
+              <span className="text-xs font-mono text-white/40 hidden sm:block">Use Buttons below to Flip Pages</span>
+              <button 
+                onClick={() => setIsFlipbookOpen(false)}
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Core Flipbook Container */}
+            <div className="w-full max-w-6xl flex flex-col items-center gap-8">
+              
+              {/* Dynamic Spread Viewer Frame */}
+              <div className="w-full flex items-center justify-center min-h-[50vh] md:min-h-[65vh] select-none">
+                
+                {/* 1. DESKTOP VIEWPORT LAYOUT: DUAL-PAGE INTERACTIVE OPEN BOOK SPREAD */}
+                <div className="hidden md:flex w-full items-stretch justify-center relative max-w-5xl shadow-[0_30px_70px_rgba(0,0,0,0.8)] rounded-2xl overflow-hidden border border-white/5 bg-[#0e111a]">
+                  
+                  {/* Spine Realism Overlay Mask */}
+                  <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[30px] bg-gradient-to-r from-black/40 via-black/10 to-black/40 z-30 pointer-events-none" />
+
+                  {/* LEFT PAGE SLOT */}
+                  <div className="w-1/2 bg-black/40 relative aspect-[3/4] flex items-center justify-center border-r border-white/5">
+                    {flipbookPage === 1 ? (
+                      <div className="absolute inset-0 bg-black/60 font-mono text-white/10 flex items-center justify-center text-xs uppercase tracking-widest select-none">Inside Cover</div>
+                    ) : (
+                      <motion.img 
+                        key={`left-${flipbookPage}`}
+                        src={getFlipbookUrl(flipbookPage)} 
+                        alt={`Page ${flipbookPage}`}
+                        initial={{ opacity: 0, filter: 'blur(5px)' }}
+                        animate={{ opacity: 1, filter: 'blur(0px)' }}
+                        className="w-full h-full object-contain"
+                      />
+                    )}
+                  </div>
+
+                  {/* RIGHT PAGE SLOT */}
+                  <div className="w-1/2 bg-black/40 relative aspect-[3/4] flex items-center justify-center">
+                    {flipbookPage + 1 > totalFlipbookPages ? (
+                      <div className="absolute inset-0 bg-black/60 font-mono text-white/10 flex items-center justify-center text-xs uppercase tracking-widest select-none">Back Inside Cover</div>
+                    ) : (
+                      <motion.img 
+                        key={`right-${flipbookPage + 1}`}
+                        src={getFlipbookUrl(flipbookPage === 1 ? 1 : flipbookPage + 1)} 
+                        alt={`Page ${flipbookPage + 1}`}
+                        initial={{ opacity: 0, filter: 'blur(5px)' }}
+                        animate={{ opacity: 1, filter: 'blur(0px)' }}
+                        className="w-full h-full object-contain"
+                      />
+                    )}
+                  </div>
+                </div>
+
+                {/* 2. MOBILE VIEWPORT LAYOUT: SINGLE-PAGE HIGHSPEED CARD VIEW */}
+                <div className="block md:hidden w-full max-w-sm aspect-[3/4] rounded-xl overflow-hidden border border-white/10 bg-[#0e111a] shadow-2xl relative">
+                  <motion.img 
+                    key={`mobile-${flipbookPage}`}
+                    src={getFlipbookUrl(flipbookPage)} 
+                    alt={`Page ${flipbookPage}`}
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+
+              </div>
+
+              {/* Bottom Dock Control Panel */}
+              <div className="flex items-center gap-6 bg-black/40 border border-white/10 backdrop-blur-md px-6 py-3 rounded-full relative z-20">
+                <button 
+                  disabled={flipbookPage === 1}
+                  onClick={() => setFlipbookCurrentPage(prev => Math.max(1, prev - (window.innerWidth >= 768 ? 2 : 1)))}
+                  className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+
+                <span className="text-xs font-mono font-bold tracking-widest text-zinc-400 uppercase select-none min-w-[100px] text-center">
+                  {window.innerWidth >= 768 ? (
+                    flipbookPage === 1 ? 'Cover (1)' : `Pages ${flipbookPage}-${Math.min(totalFlipbookPages, flipbookPage + 1)} / ${totalFlipbookPages}`
+                  ) : (
+                    `Page ${flipbookPage} / ${totalFlipbookPages}`
+                  )}
+                </span>
+
+                <button 
+                  disabled={window.innerWidth >= 768 ? flipbookPage >= totalFlipbookPages - 1 : flipbookPage === totalFlipbookPages}
+                  onClick={() => setFlipbookCurrentPage(prev => Math.min(totalFlipbookPages, prev + (window.innerWidth >= 768 ? 2 : 1)))}
+                  className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+
+            </div>
           </div>
         )}
       </AnimatePresence>
