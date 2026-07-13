@@ -518,61 +518,6 @@ export default function AdminDashboard() {
           {/* ================= WORKSPACE PANEL: MEDIA LIBRARY ================= */}
           {activeModule === 'Media Library' && (
             <div className="space-y-8 text-left">
-                
-              {/* NEW TIER: Resume Management Block */}
-              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-6">
-                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-900 pb-4">
-                    <div>
-                        <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><FileText size={14}/> Dynamic Resume Subsystem</h4>
-                        <p className="text-[10px] text-zinc-500 mt-1 font-mono">Upload targeted PDF resumes. They will auto-sync to the Contact Page and their respective localized pages.</p>
-                    </div>
-                 </div>
-
-                 {/* Uploader UI */}
-                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-zinc-900/20 p-4 rounded-xl border border-zinc-800/50">
-                     <div className="md:col-span-1">
-                         <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Resume Title</label>
-                         <input type="text" value={resumeUploadState.title} onChange={(e) => setResumeUploadState({...resumeUploadState, title: e.target.value})} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white" placeholder="e.g. Graphic Artist Resume" />
-                     </div>
-                     <div className="md:col-span-1">
-                         <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Target Page Identifier</label>
-                         <select value={resumeUploadState.page_id} onChange={(e) => setResumeUploadState({...resumeUploadState, page_id: e.target.value})} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white cursor-pointer outline-none">
-                             <option value="dream-creations">Dream Creations</option>
-                             <option value="data-analyst">Data Analyst</option>
-                             <option value="ai-developer">AI Developer</option>
-                         </select>
-                     </div>
-                     <div className="md:col-span-2 relative h-[34px]">
-                        <input type="file" onChange={handleResumeUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="application/pdf" disabled={isUploadingResume} />
-                        <button disabled={isUploadingResume} className="absolute inset-0 w-full h-full rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-mono font-bold transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50">
-                            {isUploadingResume ? <Loader2 size={14} className="animate-spin" /> : <UploadCloud size={14} />} 
-                            {isUploadingResume ? 'UPLOADING TO DB...' : 'BROWSE & UPLOAD PDF'}
-                        </button>
-                     </div>
-                 </div>
-
-                 {/* Active Resumes Grid */}
-                 <div className="space-y-2">
-                    {cmsResumes.map((resume, idx) => (
-                        <div key={resume.id || idx} className="flex items-center justify-between p-3 rounded-lg border border-zinc-900 bg-zinc-950/50">
-                            <div className="flex items-center gap-3">
-                                <FileText size={16} className="text-blue-400" />
-                                <div>
-                                    <span className="text-xs font-bold text-white block">{resume.title || resume.profession_title}</span>
-                                    <span className="text-[9px] font-mono text-zinc-500 uppercase">Target: {resume.page_id}</span>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <a href={resume.file_url || resume.pdf_url} target="_blank" rel="noopener noreferrer" className="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded text-[10px] text-white hover:bg-zinc-800 transition-colors cursor-pointer">View URL</a>
-                                <button onClick={() => handleDeleteResume(resume.id, idx)} className="text-zinc-600 hover:text-red-400 p-1 cursor-pointer"><Trash2 size={14}/></button>
-                            </div>
-                        </div>
-                    ))}
-                    {cmsResumes.length === 0 && <div className="text-[10px] font-mono text-zinc-600 text-center py-4 italic">No dynamic resumes found in database.</div>}
-                 </div>
-              </div>
-
-
               {/* Original Raw Media Grid */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-2xl bg-zinc-950/40 border border-zinc-900">
                 <div>
@@ -1273,6 +1218,60 @@ export default function AdminDashboard() {
           {/* ================= WORKSPACE PANEL: CONTACT LINKS ================= */}
           {activeModule === 'Contact Links' && (
             <div className="space-y-8 text-left">
+              
+              {/* NEW TIER: Dynamic Resume Subsystem */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-6">
+                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-900 pb-4">
+                    <div>
+                        <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><FileText size={14}/> Dynamic Resume Subsystem</h4>
+                        <p className="text-[10px] text-zinc-500 mt-1 font-mono">Upload targeted PDF resumes. They will auto-sync to the Contact Page and their respective localized pages.</p>
+                    </div>
+                 </div>
+
+                 {/* Uploader UI */}
+                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-zinc-900/20 p-4 rounded-xl border border-zinc-800/50">
+                     <div className="md:col-span-1">
+                         <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Resume Title</label>
+                         <input type="text" value={resumeUploadState.title} onChange={(e) => setResumeUploadState({...resumeUploadState, title: e.target.value})} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white" placeholder="e.g. Graphic Artist Resume" />
+                     </div>
+                     <div className="md:col-span-1">
+                         <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Target Page Identifier</label>
+                         <select value={resumeUploadState.page_id} onChange={(e) => setResumeUploadState({...resumeUploadState, page_id: e.target.value})} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white cursor-pointer outline-none">
+                             <option value="dream-creations">Dream Creations</option>
+                             <option value="data-analyst">Data Analyst</option>
+                             <option value="ai-developer">AI Developer</option>
+                         </select>
+                     </div>
+                     <div className="md:col-span-2 relative h-[34px]">
+                        <input type="file" onChange={handleResumeUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="application/pdf" disabled={isUploadingResume} />
+                        <button disabled={isUploadingResume} className="absolute inset-0 w-full h-full rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-mono font-bold transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50">
+                            {isUploadingResume ? <Loader2 size={14} className="animate-spin" /> : <UploadCloud size={14} />} 
+                            {isUploadingResume ? 'UPLOADING TO DB...' : 'BROWSE & UPLOAD PDF'}
+                        </button>
+                     </div>
+                 </div>
+
+                 {/* Active Resumes Grid */}
+                 <div className="space-y-2">
+                    {cmsResumes.map((resume, idx) => (
+                        <div key={resume.id || idx} className="flex items-center justify-between p-3 rounded-lg border border-zinc-900 bg-zinc-950/50">
+                            <div className="flex items-center gap-3">
+                                <FileText size={16} className="text-blue-400" />
+                                <div>
+                                    <span className="text-xs font-bold text-white block">{resume.title || resume.profession_title}</span>
+                                    <span className="text-[9px] font-mono text-zinc-500 uppercase">Target: {resume.page_id}</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <a href={resume.file_url || resume.pdf_url} target="_blank" rel="noopener noreferrer" className="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded text-[10px] text-white hover:bg-zinc-800 transition-colors cursor-pointer">View URL</a>
+                                <button onClick={() => handleDeleteResume(resume.id, idx)} className="text-zinc-600 hover:text-red-400 p-1 cursor-pointer"><Trash2 size={14}/></button>
+                            </div>
+                        </div>
+                    ))}
+                    {cmsResumes.length === 0 && <div className="text-[10px] font-mono text-zinc-600 text-center py-4 italic">No dynamic resumes found in database.</div>}
+                 </div>
+              </div>
+              
               {/* Tier 1: Static Attributes Card */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><FileText size={14}/> Verified Materials Download Registry</h4>
