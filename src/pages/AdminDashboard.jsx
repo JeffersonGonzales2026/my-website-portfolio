@@ -125,6 +125,7 @@ export default function AdminDashboard() {
       if (home) {
         setHomeHeroPhoto(home.hero_photo || "");
         setHomeStats(home.quick_stats || []);
+        setHomeStats(home.quick_stats || []);
         setHomeSkills(home.core_skills || []);
         setHomeTimeline(home.career_timeline || []);
       }
@@ -314,43 +315,64 @@ export default function AdminDashboard() {
     }
   };
 
+  // =========================================================================
+  // UPGRADED LIVE FILE HANDLER: DYNAMIC SEQUENTIAL BULK UPLOAD PIPELINE
+  // =========================================================================
   const handleFileUploadLive = async (e) => {
-    const file = e.target.files[0];
-    if(!file) return;
+    const files = Array.from(e.target.files);
+    if(files.length === 0) return;
     
-    try {
-      // 1. Upload to storage bucket "portfolio_media"
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('portfolio_media')
-        .upload(fileName, file);
+    alert(`🚀 Initializing bulk deployment pipeline for ${files.length} asset(s). Processing stack sequentionally—please preserve session connectivity...`);
+    
+    const uploadedRecords = [];
+    let successCounter = 0;
+    let failureCounter = 0;
 
-      if (uploadError) throw uploadError;
+    for (const file of files) {
+      try {
+        // 1. Unique namespace hashing layout via timestamps and entropy seeds
+        const fileExt = file.name.split('.').pop();
+        const entropySeed = Math.random().toString(36).substring(2, 7);
+        const fileName = `${Date.now()}_${entropySeed}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('portfolio_media')
+          .upload(fileName, file);
 
-      // 2. Get Public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('portfolio_media')
-        .getPublicUrl(fileName);
+        if (uploadError) throw uploadError;
 
-      // 3. Insert into media table
-      const { data: dbData, error: dbError } = await supabase
-        .from('media_library')
-        .insert([{ file_name: file.name, file_url: publicUrl, type: file.type.includes('image') ? 'image' : 'document' }])
-        .select()
-        .single();
+        // 2. Fetch CDN endpoint mapping vector
+        const { data: { publicUrl } } = supabase.storage
+          .from('portfolio_media')
+          .getPublicUrl(fileName);
 
-      if (dbError) throw dbError;
+        // 3. Mount item logs directly into standard library table index
+        const { data: dbData, error: dbError } = await supabase
+          .from('media_library')
+          .insert([{ 
+            file_name: file.name, 
+            file_url: publicUrl, 
+            type: file.type.includes('image') ? 'image' : 'document' 
+          }])
+          .select()
+          .single();
 
-      setMediaFiles([dbData, ...mediaFiles]);
-      alert('File successfully securely uploaded to Supabase Storage!');
-    } catch(err) {
-      console.error(err);
-      alert('Upload failed. Ensure bucket "portfolio_media" is created in Supabase Storage and set to public.');
-      // Local fallback for visual continuity
-      setMediaFiles([{id: Date.now(), file_name: file.name, file_url: URL.createObjectURL(file), type: file.type.includes('image') ? 'image' : 'document'}, ...mediaFiles]);
+        if (dbError) throw dbError;
+
+        uploadedRecords.push(dbData);
+        successCounter++;
+      } catch(err) {
+        console.error(`Asset compilation abort block inside: ${file.name}`, err);
+        failureCounter++;
+      }
     }
+
+    // Refresh framework view dynamically with successfully inserted assets
+    if (uploadedRecords.length > 0) {
+      setMediaFiles(prev => [...uploadedRecords, ...prev]);
+    }
+    
+    alert(`🟢 ASSET TRANSACTION STACK PROCESSED!\nSuccessful Migrations: ${successCounter}\nFailed Discard Blocks: ${failureCounter}`);
   };
 
   // =========================================================================
@@ -464,7 +486,8 @@ export default function AdminDashboard() {
                   <p className="text-[10px] text-zinc-500 mt-1 font-mono">Upload images/documents to copy URLs into your dynamic fields.</p>
                 </div>
                 <div className="relative">
-                  <input type="file" onChange={handleFileUploadLive} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf,video/mp4,.xlsx,.xls,.csv" />
+                  {/* INJECTED DYNAMIC MULTIPLE VALUE SELECTOR ATTRIBUTE HERE */}
+                  <input type="file" multiple onChange={handleFileUploadLive} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf,video/mp4,.xlsx,.xls,.csv" />
                   <button className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md">
                     <UploadCloud size={14} /> RAW UPLOAD
                   </button>
@@ -903,7 +926,7 @@ export default function AdminDashboard() {
                           <input type="text" value={item.insights} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'insights', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Insights" />
                           <input type="text" value={item.recommendations} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'recommendations', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400" placeholder="Recommendations" />
                           <input type="text" value={item.impact} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'impact', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400" placeholder="Business Impact" />
-                          <input type="text" value={item.lessons} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'lessons', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500" placeholder="Lessons Learned" />
+                          <input type="text" value={item.lessons} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'lessons', text.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500" placeholder="Lessons Learned" />
                         </div>
                       </div>
                     ))}
@@ -950,7 +973,7 @@ export default function AdminDashboard() {
                 {analystEcosystem.map((cat, catIdx) => (
                   <div key={catIdx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/10 space-y-2 relative pr-8">
                     <button onClick={() => handleRemoveArrayItem(analystEcosystem, setAnalystEcosystem, catIdx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
-                    <div className="flex justify-between items-center border-b border-zinc-800 pb-1 mb-2">
+                    <div className="flex justify-between items-center border-b border-slate-800 pb-1 mb-2">
                       <input type="text" value={cat.category} onChange={(e) => handleUpdateArrayField(analystEcosystem, setAnalystEcosystem, catIdx, 'category', e.target.value)} className="bg-transparent text-xs font-mono font-bold text-emerald-400 outline-none" placeholder="Category Name" />
                       <button onClick={() => {
                         const updated = [...analystEcosystem];
@@ -1064,7 +1087,7 @@ export default function AdminDashboard() {
                 {aiArchitecture.map((stack, catIdx) => (
                   <div key={catIdx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/10 space-y-2 relative pr-8">
                     <button onClick={() => handleRemoveArrayItem(aiArchitecture, setAiArchitecture, catIdx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
-                    <div className="flex justify-between items-center border-b border-zinc-800 pb-1 mb-2">
+                    <div className="flex justify-between items-center border-b border-slate-800 pb-1 mb-2">
                       <input type="text" value={stack.category} onChange={(e) => handleUpdateArrayField(aiArchitecture, setAiArchitecture, catIdx, 'category', e.target.value)} className="bg-transparent text-xs font-mono font-bold text-cyan-400 outline-none" placeholder="Category" />
                       <button onClick={() => {
                         const updated = [...aiArchitecture];
