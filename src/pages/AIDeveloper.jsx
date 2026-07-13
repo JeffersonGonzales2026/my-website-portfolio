@@ -1,7 +1,7 @@
 // src/pages/AiDeveloper.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate } from 'framer-motion';
-import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail } from 'lucide-react';
+import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase'; // Added Supabase Import
 
 // ================= CUSTOM ANIMATED COUNTER =================
@@ -193,6 +193,9 @@ export default function AiDeveloper() {
   const [showcase, setShowcase] = useState(defaultShowcaseProjects);
   const [github, setGithub] = useState(defaultGithubProfile);
 
+  // ================= DYNAMIC RESUME STATE =================
+  const [pageResume, setPageResume] = useState(null);
+
   // ================= FETCH CMS DATA =================
   useEffect(() => {
     const fetchData = async () => {
@@ -270,6 +273,23 @@ export default function AiDeveloper() {
           
           if (data.github_sync && Object.keys(data.github_sync).length > 0) setGithub(data.github_sync);
         }
+
+        // ================= FETCH PAGE-SPECIFIC RESUME =================
+        const { data: allResumes, error: resumeError } = await supabase
+          .from('portfolio_resumes')
+          .select('*');
+        
+        if (allResumes && !resumeError && allResumes.length > 0) {
+          // Look for the AI Developer resume based on the title you typed in the CMS
+          const aiResume = allResumes.find(res => 
+            res.title.toLowerCase().includes('ai') || 
+            res.title.toLowerCase().includes('developer') ||
+            res.title.toLowerCase().includes('engineer')
+          ) || allResumes[0]; // Fallback to the first resume if name doesn't match perfectly
+          
+          setPageResume(aiResume);
+        }
+
       } catch (err) {
         console.error('Error fetching AI Developer CMS data:', err.message);
       }
@@ -657,6 +677,32 @@ export default function AiDeveloper() {
              </p>
           </motion.div>
         </section>
+
+        {/* ================= PAGE RESUME DOWNLOAD ================= */}
+        {pageResume && (
+          <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center border-t border-slate-900/80 bg-black/20">
+            <motion.a
+              href={pageResume.file_url || pageResume.pdf_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ scale: 1.02 }}
+              className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-cyan-500/10 to-slate-900 border border-cyan-500/30 hover:border-cyan-500 transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(6,182,212,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.25)]"
+            >
+              <div className="w-12 h-12 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                <Download size={20} />
+              </div>
+              <div className="text-left">
+                <span className="text-[10px] text-slate-400 uppercase tracking-widest block font-semibold mb-0.5">Download Professional Resume</span>
+                <span className="text-sm md:text-base font-bold text-white group-hover:text-cyan-400 transition-colors block">
+                  {pageResume.title || 'AI Developer Resume'}
+                </span>
+              </div>
+            </motion.a>
+          </section>
+        )}
 
         {/* ================= 72. TRANSITION TO CONTACT ================= */}
         <section className="w-full relative border-t border-slate-900 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
