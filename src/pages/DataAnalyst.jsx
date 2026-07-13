@@ -1,7 +1,7 @@
 // src/pages/DataAnalyst.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
-import { BarChart3, PieChart, Database, FileSpreadsheet, Settings, Cpu, LineChart, Table, CheckCircle2, ArrowRight, ArrowUp, Briefcase, FileText, LayoutDashboard, BrainCircuit, Code2, Quote } from 'lucide-react';
+import { BarChart3, PieChart, Database, FileSpreadsheet, Settings, Cpu, LineChart, Table, CheckCircle2, ArrowRight, ArrowUp, Briefcase, FileText, LayoutDashboard, BrainCircuit, Code2, Quote, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // ================= CUSTOM ANIMATED COUNTER COMPONENT (FIXED FOR REACT) =================
@@ -155,6 +155,9 @@ export default function DataAnalyst() {
   const [showcase, setShowcase] = useState(defaultShowcaseData);
   const [ecosystem, setEcosystem] = useState(defaultToolsTechnologies);
   const [roadmap, setRoadmap] = useState(defaultAnalyticsRoadmap);
+  
+  // ================= DYNAMIC RESUME STATE =================
+  const [pageResume, setPageResume] = useState(null);
 
   // ================= FETCH CMS DATA (BULLETPROOF PARSER) =================
   useEffect(() => {
@@ -272,6 +275,22 @@ export default function DataAnalyst() {
             projects: Array.isArray(data.portfolio_projects) && data.portfolio_projects.length > 0 ? data.portfolio_projects : defaultShowcaseData.projects,
           });
         }
+        
+        // ================= FETCH PAGE-SPECIFIC RESUME =================
+        const { data: allResumes, error: resumeError } = await supabase
+          .from('portfolio_resumes')
+          .select('*');
+        
+        if (allResumes && !resumeError && allResumes.length > 0) {
+          // Look for the Data Analyst resume based on the title you typed in the CMS
+          const analystResume = allResumes.find(res => 
+            res.title.toLowerCase().includes('data') || 
+            res.title.toLowerCase().includes('analyst')
+          ) || allResumes[0]; // Fallback to the first resume if name doesn't match perfectly
+          
+          setPageResume(analystResume);
+        }
+        
       } catch (err) {
         console.error('Error fetching Data Analyst CMS data:', err.message);
       }
@@ -653,6 +672,32 @@ export default function DataAnalyst() {
            </div>
         </div>
       </section>
+
+      {/* ================= PAGE RESUME DOWNLOAD ================= */}
+      {pageResume && (
+        <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center border-t border-slate-800/50 bg-slate-900/20">
+          <motion.a
+            href={pageResume.file_url || pageResume.pdf_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ scale: 1.02 }}
+            className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-slate-900 border border-emerald-500/30 hover:border-emerald-500 transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(16,185,129,0.1)] hover:shadow-[0_0_30px_rgba(16,185,129,0.25)]"
+          >
+            <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+              <Download size={20} />
+            </div>
+            <div className="text-left">
+              <span className="text-[10px] text-slate-400 uppercase tracking-widest block font-semibold mb-0.5">Download Professional Resume</span>
+              <span className="text-sm md:text-base font-bold text-white group-hover:text-emerald-400 transition-colors block">
+                {pageResume.title || 'Data Analyst Resume'}
+              </span>
+            </div>
+          </motion.a>
+        </section>
+      )}
 
       {/* ================= 56. TRANSITION TO THE NEXT JOURNEY ================= */}
       <section className="w-full relative border-t border-slate-800 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
