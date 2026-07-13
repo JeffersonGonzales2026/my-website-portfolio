@@ -1,7 +1,7 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
-import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database } from 'lucide-react';
+import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Helper component for counting numbers
@@ -140,6 +140,9 @@ export default function DreamCreations() {
   const [teamList, setTeamList] = useState(teamMembers);
   const [softwareList, setSoftwareList] = useState(softwareExpertise);
   const [clientsList, setClientsList] = useState(featuredClients);
+
+  // ================= DYNAMIC RESUME STATE =================
+  const [pageResume, setPageResume] = useState(null);
 
   // ================= RANDOM GLOW & PRESSED EFFECT LOGIC =================
   const [randomGlowIndex, setRandomGlowIndex] = useState(null);
@@ -406,6 +409,22 @@ export default function DreamCreations() {
         if (reviewError) throw reviewError;
         setReviews(reviewData || []);
 
+        // ================= FETCH PAGE-SPECIFIC RESUME =================
+        const { data: allResumes, error: resumeError } = await supabase
+          .from('portfolio_resumes')
+          .select('*');
+        
+        if (allResumes && !resumeError && allResumes.length > 0) {
+          // Look for the Graphic Artist resume based on the title you typed in the CMS
+          const graphicResume = allResumes.find(res => 
+            res.title.toLowerCase().includes('graphic') || 
+            res.title.toLowerCase().includes('artist') ||
+            res.title.toLowerCase().includes('dream')
+          ) || allResumes[0]; // Fallback to the first resume if name doesn't match perfectly
+          
+          setPageResume(graphicResume);
+        }
+
       } catch (error) {
         console.error('Error fetching CMS data:', error.message);
       }
@@ -590,10 +609,8 @@ export default function DreamCreations() {
                   backgroundColor: "rgba(16,149,210,0.3)",
                   boxShadow: "0 0 30px rgba(16,149,210,0.8)"
                 }}
-                // We removed initial/whileInView fade so the boxes are fully solid right away
                 className="p-2 h-20 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer relative z-20"
               >
-                {/* NEW: Minimal Glow Effect targets ONLY the icon and text */}
                 <div className={`transition-all duration-500 mb-1 ${isGlowing ? 'text-[#1095d2] scale-125 drop-shadow-[0_0_8px_rgba(16,149,210,0.8)]' : 'text-white/60 group-hover:text-[#1095d2] group-hover:scale-110'}`}>
                   {category.icon}
                 </div>
@@ -1140,6 +1157,32 @@ export default function DreamCreations() {
           </button>
         </motion.div>
       </section>
+
+      {/* ================= 39. PAGE RESUME DOWNLOAD ================= */}
+      {pageResume && (
+        <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center">
+          <motion.a
+            href={pageResume.file_url || pageResume.pdf_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ scale: 1.02 }}
+            className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-[#1095d2]/20 to-black/40 border border-[#1095d2]/30 hover:border-[#1095d2] transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(16,149,210,0.15)] hover:shadow-[0_0_30px_rgba(16,149,210,0.3)]"
+          >
+            <div className="w-12 h-12 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+              <Download size={20} />
+            </div>
+            <div className="text-left">
+              <span className="text-[10px] text-white/50 uppercase tracking-widest block font-semibold mb-0.5">Download Professional Resume</span>
+              <span className="text-sm md:text-base font-bold text-white group-hover:text-[#1095d2] transition-colors block">
+                {pageResume.title || 'Dream Creations Resume'}
+              </span>
+            </div>
+          </motion.a>
+        </section>
+      )}
 
       {/* ================= 40. TRANSITION TO THE NEXT JOURNEY ================= */}
       <section className="w-full relative border-t border-white/10 mt-16 pt-32 pb-32 px-6 overflow-hidden z-10 flex flex-col items-center text-center">
