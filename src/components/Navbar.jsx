@@ -1,6 +1,6 @@
 // src/components/Navbar.jsx
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Download } from 'lucide-react';
 
@@ -16,7 +16,6 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate(); // ADDED: For programmatic routing
 
   // Handle scroll detection for shrinking and glassmorphism
   useEffect(() => {
@@ -47,34 +46,29 @@ export default function Navbar() {
     return () => { document.body.style.overflow = 'unset'; };
   }, [isMobileMenuOpen]);
 
-  // ================= BULLETPROOF SCROLL LOGIC FOR MOBILE/DESKTOP =================
+  // ================= BULLETPROOF MOBILE/DESKTOP SCROLL LOGIC =================
   const handleResumeClick = (e) => {
-    e.preventDefault();
-    
-    // 1. Instantly close the menu to unlock document.body.overflow on mobile
+    // Force-unlock the screen immediately for mobile devices
+    document.body.style.overflow = 'unset';
     setIsMobileMenuOpen(false);
-    
-    // 2. Wait for the menu's exit animation to finish and body to unlock (200ms)
-    setTimeout(() => {
-      if (location.pathname === '/contact') {
-        // If already on contact page, just scroll down
+
+    if (location.pathname === '/contact') {
+      // If we are ALREADY on the contact page, stop the link and just scroll down
+      e.preventDefault();
+      const target = document.getElementById('resume-hub');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else {
+      // If we are NOT on the contact page, let the <Link> navigate naturally (synchronously),
+      // and use a timeout purely to wait for the new page to render before scrolling.
+      setTimeout(() => {
         const target = document.getElementById('resume-hub');
         if (target) {
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      } else {
-        // If on another page, navigate to contact page first
-        navigate('/contact');
-        
-        // Wait a split second for the new page to render, then scroll
-        setTimeout(() => {
-          const target = document.getElementById('resume-hub');
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, 300);
-      }
-    }, 200); 
+      }, 400); // 400ms gives the Contact page enough time to fully mount
+    }
   };
 
   return (
@@ -118,13 +112,13 @@ export default function Navbar() {
 
           {/* Desktop Secondary Navigation (Resume) */}
           <div className="hidden md:block">
-            <a
-              href="/contact#resume-hub"
+            <Link
+              to="/contact"
               onClick={handleResumeClick}
               className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-colors shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
             >
               <Download size={16} /> Resume
-            </a>
+            </Link>
           </div>
 
           {/* Mobile Menu Toggle Button */}
@@ -169,13 +163,13 @@ export default function Navbar() {
             </nav>
 
             <div className="mt-8 pt-8 border-t border-white/10">
-              <a
-                href="/contact#resume-hub"
+              <Link
+                to="/contact"
                 onClick={handleResumeClick}
                 className="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-base font-bold transition-colors shadow-[0_0_20px_rgba(59,130,246,0.3)] cursor-pointer"
               >
                 <Download size={20} /> Download Resume
-              </a>
+              </Link>
             </div>
           </motion.div>
         )}
