@@ -107,16 +107,11 @@ export default function AdminDashboard() {
   // =========================================================================
   // 5. CONTACT, MEDIA, & INBOX DATA STATES
   // =========================================================================
-  const [contactResumeUrl, setContactResumeUrl] = useState("");
+  const [dynamicResumes, setDynamicResumes] = useState([]); // <--- NEW STATE FOR DROPDOWN RESUMES
   const [contactPortfolioUrl, setContactPortfolioUrl] = useState("");
   const [contactPlatforms, setContactPlatforms] = useState([]);
   const [messagesLog, setMessagesLog] = useState([]);
   const [mediaFiles, setMediaFiles] = useState([]);
-  
-  // NEW: State for CMS Resumes
-  const [cmsResumes, setCmsResumes] = useState([]);
-  const [resumeUploadState, setResumeUploadState] = useState({ title: '', page_id: 'dream-creations' });
-  const [isUploadingResume, setIsUploadingResume] = useState(false);
 
 
   // =========================================================================
@@ -171,14 +166,16 @@ export default function AdminDashboard() {
 
       const { data: contact } = await supabase.from('contact_settings').select('*').single();
       if (contact) {
-        // We still keep the primary backup link for the UI
-        setContactResumeUrl(contact.resume_url || "");
         setContactPortfolioUrl(contact.portfolio_url || "");
       }
 
       // Fetch Standalone Feed Tables
       const { data: platforms } = await supabase.from('contact_platforms').select('*').order('display_order');
       if (platforms) setContactPlatforms(platforms);
+
+      // FETCH DYNAMIC RESUMES
+      const { data: resumes } = await supabase.from('portfolio_resumes').select('*').order('id', {ascending: true});
+      if (resumes) setDynamicResumes(resumes);
 
       const { data: reviews } = await supabase.from('client_reviews').select('*').order('created_at', {ascending: false});
       if (reviews) setDreamFeedback(reviews);
@@ -191,10 +188,6 @@ export default function AdminDashboard() {
 
       const { data: media } = await supabase.from('media_library').select('*').order('created_at', {ascending: false});
       if (media) setMediaFiles(media);
-      
-      // Fetch CMS Resumes
-      const { data: resumes } = await supabase.from('portfolio_resumes').select('*').order('id', {ascending: true});
-      if (resumes) setCmsResumes(resumes);
 
     } catch (error) {
       console.error("Initialization Sync Error:", error);
@@ -262,9 +255,17 @@ export default function AdminDashboard() {
 
       } else if (activeModule === 'Contact Links') {
         await supabase.from('contact_settings').update({
-          resume_url: contactResumeUrl,
           portfolio_url: contactPortfolioUrl
         }).eq('id', 1);
+
+        // SAVE DYNAMIC RESUMES
+        await supabase.from('portfolio_resumes').delete().neq('id', -1);
+        if (dynamicResumes.length > 0) {
+          await supabase.from('portfolio_resumes').insert(dynamicResumes.map((r) => ({
+            title: r.title,
+            file_url: r.file_url
+          })));
+        }
 
         await supabase.from('contact_platforms').delete().neq('id', 'dummy');
         if (contactPlatforms.length > 0) {
@@ -312,18 +313,6 @@ export default function AdminDashboard() {
       console.error("Media Deletion Error", err);
     }
   };
-  
-  const handleDeleteResume = async (id, idx) => {
-    if(!id) return;
-    try {
-      await supabase.from('portfolio_resumes').delete().eq('id', id);
-      const copy = [...cmsResumes];
-      copy.splice(idx, 1);
-      setCmsResumes(copy);
-    } catch(err) {
-      console.error("Resume Deletion Error", err);
-    }
-  };
 
   const handleFileUploadLive = async (e) => {
     const file = e.target.files[0];
@@ -361,55 +350,6 @@ export default function AdminDashboard() {
       alert('Upload failed. Ensure bucket "portfolio_media" is created in Supabase Storage and set to public.');
       // Local fallback for visual continuity
       setMediaFiles([{id: Date.now(), file_name: file.name, file_url: URL.createObjectURL(file), type: file.type.includes('image') ? 'image' : 'document'}, ...mediaFiles]);
-    }
-  };
-  
-  // ================= NEW: RESUME UPLOADER FUNCTION =================
-  const handleResumeUpload = async (e) => {
-    const file = e.target.files[0];
-    if(!file || !resumeUploadState.title) {
-        alert("Please provide a Title before selecting a file.");
-        return;
-    }
-    
-    setIsUploadingResume(true);
-    try {
-      // 1. Upload to storage bucket "resumes"
-      const fileExt = file.name.split('.').pop();
-      const fileName = `resume_${resumeUploadState.page_id}_${Date.now()}.${fileExt}`;
-      
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('resumes')
-        .upload(fileName, file);
-
-      if (uploadError) throw uploadError;
-
-      // 2. Get Public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('resumes')
-        .getPublicUrl(fileName);
-
-      // 3. Insert into portfolio_resumes table
-      const { data: dbData, error: dbError } = await supabase
-        .from('portfolio_resumes')
-        .insert([{ 
-            title: resumeUploadState.title, 
-            file_url: publicUrl, 
-            page_id: resumeUploadState.page_id 
-        }])
-        .select()
-        .single();
-
-      if (dbError) throw dbError;
-
-      setCmsResumes([...cmsResumes, dbData]);
-      setResumeUploadState({ title: '', page_id: 'dream-creations' });
-      alert('Resume securely uploaded and attached to CMS!');
-    } catch(err) {
-      console.error(err);
-      alert('Upload failed. Ensure bucket "resumes" is created in Supabase Storage and set to public.');
-    } finally {
-        setIsUploadingResume(false);
     }
   };
 
@@ -518,7 +458,6 @@ export default function AdminDashboard() {
           {/* ================= WORKSPACE PANEL: MEDIA LIBRARY ================= */}
           {activeModule === 'Media Library' && (
             <div className="space-y-8 text-left">
-              {/* Original Raw Media Grid */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-2xl bg-zinc-950/40 border border-zinc-900">
                 <div>
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><ImageIcon size={14}/> Raw Media Storage</h4>
@@ -1219,71 +1158,38 @@ export default function AdminDashboard() {
           {activeModule === 'Contact Links' && (
             <div className="space-y-8 text-left">
               
-              {/* NEW TIER: Dynamic Resume Subsystem */}
-              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-6">
-                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-900 pb-4">
-                    <div>
-                        <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><FileText size={14}/> Dynamic Resume Subsystem</h4>
-                        <p className="text-[10px] text-zinc-500 mt-1 font-mono">Upload targeted PDF resumes. They will auto-sync to the Contact Page and their respective localized pages.</p>
-                    </div>
-                 </div>
-
-                 {/* Uploader UI */}
-                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-zinc-900/20 p-4 rounded-xl border border-zinc-800/50">
-                     <div className="md:col-span-1">
-                         <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Resume Title</label>
-                         <input type="text" value={resumeUploadState.title} onChange={(e) => setResumeUploadState({...resumeUploadState, title: e.target.value})} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white" placeholder="e.g. Graphic Artist Resume" />
-                     </div>
-                     <div className="md:col-span-1">
-                         <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Target Page Identifier</label>
-                         <select value={resumeUploadState.page_id} onChange={(e) => setResumeUploadState({...resumeUploadState, page_id: e.target.value})} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white cursor-pointer outline-none">
-                             <option value="dream-creations">Dream Creations</option>
-                             <option value="data-analyst">Data Analyst</option>
-                             <option value="ai-developer">AI Developer</option>
-                         </select>
-                     </div>
-                     <div className="md:col-span-2 relative h-[34px]">
-                        <input type="file" onChange={handleResumeUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="application/pdf" disabled={isUploadingResume} />
-                        <button disabled={isUploadingResume} className="absolute inset-0 w-full h-full rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-mono font-bold transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50">
-                            {isUploadingResume ? <Loader2 size={14} className="animate-spin" /> : <UploadCloud size={14} />} 
-                            {isUploadingResume ? 'UPLOADING TO DB...' : 'BROWSE & UPLOAD PDF'}
-                        </button>
-                     </div>
-                 </div>
-
-                 {/* Active Resumes Grid */}
-                 <div className="space-y-2">
-                    {cmsResumes.map((resume, idx) => (
-                        <div key={resume.id || idx} className="flex items-center justify-between p-3 rounded-lg border border-zinc-900 bg-zinc-950/50">
-                            <div className="flex items-center gap-3">
-                                <FileText size={16} className="text-blue-400" />
-                                <div>
-                                    <span className="text-xs font-bold text-white block">{resume.title || resume.profession_title}</span>
-                                    <span className="text-[9px] font-mono text-zinc-500 uppercase">Target: {resume.page_id}</span>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <a href={resume.file_url || resume.pdf_url} target="_blank" rel="noopener noreferrer" className="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded text-[10px] text-white hover:bg-zinc-800 transition-colors cursor-pointer">View URL</a>
-                                <button onClick={() => handleDeleteResume(resume.id, idx)} className="text-zinc-600 hover:text-red-400 p-1 cursor-pointer"><Trash2 size={14}/></button>
-                            </div>
-                        </div>
-                    ))}
-                    {cmsResumes.length === 0 && <div className="text-[10px] font-mono text-zinc-600 text-center py-4 italic">No dynamic resumes found in database.</div>}
-                 </div>
-              </div>
-              
-              {/* Tier 1: Static Attributes Card */}
+              {/* TIER 1: DYNAMIC RESUMES DROPDOWN MATRIX */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
-                <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><FileText size={14}/> Verified Materials Download Registry</h4>
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase">Primary Default PDF Resume Backup Link</label>
-                    <input type="text" value={contactResumeUrl} onChange={(e) => setContactResumeUrl(e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:outline-none" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase">Dynamic Portfolio Archive PDF Download URL Link</label>
-                    <input type="text" value={contactPortfolioUrl} onChange={(e) => setContactPortfolioUrl(e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:outline-none" />
-                  </div>
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><FileText size={14}/> Dynamic Resumes Dropdown List</h4>
+                  <button onClick={() => setDynamicResumes([...dynamicResumes, { title: "", file_url: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD RESUME</button>
+                </div>
+                
+                <div className="space-y-3">
+                  {dynamicResumes.map((resume, idx) => (
+                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 grid grid-cols-1 sm:grid-cols-2 gap-3 items-center relative pr-8">
+                      <button onClick={() => handleRemoveArrayItem(dynamicResumes, setDynamicResumes, idx)} className="absolute right-3 top-4 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                      
+                      <div className="space-y-1">
+                        <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase">Resume Name (Dropdown Label)</label>
+                        <input type="text" value={resume.title} onChange={(e) => handleUpdateArrayField(dynamicResumes, setDynamicResumes, idx, 'title', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white font-bold" placeholder="e.g. Data Analyst Resume" />
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase">PDF URL Link (Paste from Media Library)</label>
+                        <input type="text" value={resume.file_url} onChange={(e) => handleUpdateArrayField(dynamicResumes, setDynamicResumes, idx, 'file_url', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-400 font-mono" placeholder="https://..." />
+                      </div>
+                    </div>
+                  ))}
+                  {dynamicResumes.length === 0 && (
+                    <div className="text-[10px] text-zinc-600 font-mono italic text-center py-2">No dynamic resumes active. Click "ADD RESUME" above.</div>
+                  )}
+                </div>
+
+                {/* Retained Portfolio URL Backup Link */}
+                <div className="pt-4 border-t border-zinc-900/60 space-y-1.5 mt-4">
+                  <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase">Dynamic Portfolio Archive PDF Download URL Link</label>
+                  <input type="text" value={contactPortfolioUrl} onChange={(e) => setContactPortfolioUrl(e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:outline-none" />
                 </div>
               </div>
 
