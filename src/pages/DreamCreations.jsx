@@ -5,7 +5,6 @@ import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Build
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
 
-// Helper component for counting numbers
 const AnimatedNumber = ({ value, suffix }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -25,9 +24,6 @@ const AnimatedNumber = ({ value, suffix }) => {
   return <span ref={ref}>0{suffix}</span>;
 };
 
-// =========================================================================
-// ANG ATING BAGONG 3D PAGE COMPONENT (MAY ERROR DETECTOR NA)
-// =========================================================================
 const BookPage = React.forwardRef((props, ref) => {
   return (
     <div className="bg-[#0e111a] border border-white/5 flex items-center justify-center overflow-hidden shadow-2xl relative" ref={ref} data-density="soft">
@@ -36,7 +32,6 @@ const BookPage = React.forwardRef((props, ref) => {
       <img 
         src={props.imageUrl} 
         onError={(e) => { 
-          // Kapag nag 404 Not Found, itatago niya yung sirang image at ipapakita ang error text
           e.target.style.display = 'none'; 
           e.target.nextSibling.style.display = 'flex';
         }}
@@ -44,7 +39,6 @@ const BookPage = React.forwardRef((props, ref) => {
         className="w-full h-full object-contain pointer-events-none relative z-0" 
       />
       
-      {/* ITO ANG LILITAW KAPAG WALA YUNG PICTURE */}
       <div className="hidden absolute inset-0 flex-col items-center justify-center text-xs text-red-400 font-mono text-center p-6 z-20">
         <span className="text-2xl mb-2">⚠️</span>
         <span className="font-bold mb-2">IMAGE NOT FOUND</span>
@@ -54,8 +48,6 @@ const BookPage = React.forwardRef((props, ref) => {
     </div>
   );
 });
-
-// =========================================================================
 
 const featuredClients = [
   { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
@@ -175,31 +167,19 @@ export default function DreamCreations() {
   const [softwareList, setSoftwareList] = useState(softwareExpertise);
   const [clientsList, setClientsList] = useState(featuredClients);
 
-  // ================= DYNAMIC FLIPBOOK STATES (UPGRADED WITH EXTENSION) =================
   const [isFlipbookOpen, setIsFlipbookOpen] = useState(false);
   const [flipbookPage, setFlipbookCurrentPage] = useState(0); 
   const [activeFlipbookConfig, setActiveFlipbookConfig] = useState({ prefix: 'page-', totalPages: 91, extension: 'jpg' });
 
-  const goNextPage = () => {
-    if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext();
-  };
-
-  const goPrevPage = () => {
-    if (flipBookRef.current) flipBookRef.current.pageFlip().flipPrev();
-  };
-
-  const onPageFlip = (e) => {
-    setFlipbookCurrentPage(e.data); 
-  };
+  const goNextPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext(); };
+  const goPrevPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipPrev(); };
+  const onPageFlip = (e) => { setFlipbookCurrentPage(e.data); };
 
   const getFlipbookUrl = (pageIndex, prefix = 'page-', ext = 'jpg') => {
     return `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/${prefix}${pageIndex}.${ext}`;
   };
 
-  // ================= DYNAMIC RESUME STATE =================
   const [pageResume, setPageResume] = useState(null);
-
-  // ================= RANDOM GLOW LOGIC =================
   const [randomGlowIndex, setRandomGlowIndex] = useState(null);
 
   useEffect(() => {
@@ -210,7 +190,6 @@ export default function DreamCreations() {
     return () => clearInterval(interval);
   }, []);
 
-  // SCROLL & SWIPE HANDLERS 
   const isTeamDragging = useRef(false);
   const teamStartX = useRef(0);
   const teamScrollLeftPos = useRef(0);
@@ -323,17 +302,13 @@ export default function DreamCreations() {
     onTouchEnd: () => setIsFeedbackPaused(false)
   };
 
-  // CUSTOM 3D CURSOR LOGIC
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
-
   const springConfig = { damping: 25, stiffness: 200, mass: 0.5 };
   const smoothX = useSpring(cursorX, springConfig);
   const smoothY = useSpring(cursorY, springConfig);
-
   const velocityX = useVelocity(smoothX);
   const velocityY = useVelocity(smoothY);
-  
   const rotateZ = useTransform(velocityX, [-1000, 0, 1000], [-35, 0, 35]); 
   const rotateY = useTransform(velocityX, [-1000, 0, 1000], [-40, 0, 40]); 
   const rotateX = useTransform(velocityY, [-1000, 0, 1000], [40, 0, -40]); 
@@ -735,21 +710,30 @@ export default function DreamCreations() {
         <AnimatePresence mode="wait">
           {!activePortfolioSubtitle ? (
             <motion.div key="subtitle-list" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="space-y-16 relative z-20">
+              
+              {/* LILITAW LAHAT NG CATEGORIES, MAY LAMAN MAN O WALA (REVERTED SMART HIDE) */}
               {creationsCategories.map((cat) => (
                 <div key={cat.id} className="pt-4">
                   <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block">{cat.category}</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {cat.items.map((subtitle, idx) => (
-                      <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
-                        <img src={`/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
-                        <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
-                        <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
-                        <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                          <span className="text-[#1095d2] text-[10px] font-black uppercase tracking-wider mb-2">View Works</span>
-                          <h4 className="text-white font-bold text-xl group-hover:text-[#1095d2] transition-colors">{subtitle}</h4>
-                        </div>
-                      </button>
-                    ))}
+                    {cat.items.map((subtitle, idx) => {
+                      
+                      // DYNAMIC COVER LOGIC: Kukunin ang pinakalatest na project kapag may laman
+                      const latestProject = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim());
+                      const coverImage = latestProject?.featured_image_url || `/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`;
+
+                      return (
+                        <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
+                          <img src={coverImage} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                          <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
+                          <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
+                          <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                            <span className="text-[#1095d2] text-[10px] font-black uppercase tracking-wider mb-2">View Works</span>
+                            <h4 className="text-white font-bold text-xl group-hover:text-[#1095d2] transition-colors">{subtitle}</h4>
+                          </div>
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               ))}
@@ -768,17 +752,16 @@ export default function DreamCreations() {
                     <div 
                       key={project.id} 
                       onClick={() => {
-                        // DETECT AND SET FLIPBOOK SETTINGS BASED ON DATABASE DATA (NOW SUPPORTS EXTENSIONS)
                         if (project.title.toLowerCase().includes('profile') || project.category.toLowerCase().includes('profile') || project.description.toLowerCase().includes('company profile')) {
                           let prefix = 'page-';
                           let pages = 91;
-                          let extension = 'jpg'; // DEFAULT TO JPG KUNG WALANG NILAGAY
+                          let extension = 'jpg'; 
                           
                           if (project.video_url && project.video_url.includes(',')) {
                              const parts = project.video_url.split(',');
                              prefix = parts[0].trim();
                              pages = parseInt(parts[1].trim()) || 91;
-                             if (parts[2]) extension = parts[2].trim().replace('.', ''); // Removes dot if they typed '.png'
+                             if (parts[2]) extension = parts[2].trim().replace('.', ''); 
                           }
                           setActiveFlipbookConfig({ prefix, totalPages: pages, extension });
                           setIsFlipbookOpen(true);
@@ -916,7 +899,6 @@ export default function DreamCreations() {
                   usePortrait={true} 
                   onFlip={onPageFlip} 
                 >
-                  {/* GENERATING PAGES DYNAMICALLY USING THE CONFIG STATE */}
                   {Array.from({ length: activeFlipbookConfig.totalPages }, (_, i) => (
                     <BookPage key={i} number={i + 1} imageUrl={getFlipbookUrl(i + 1, activeFlipbookConfig.prefix, activeFlipbookConfig.extension)} />
                   ))}
