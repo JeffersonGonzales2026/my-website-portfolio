@@ -3,7 +3,9 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
 import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import HTMLFlipBook from 'react-pageflip'; // <-- BAGONG LIBRARY PARA SA PAGE CURL!
 
+// Helper component for counting numbers
 const AnimatedNumber = ({ value, suffix }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -22,6 +24,27 @@ const AnimatedNumber = ({ value, suffix }) => {
 
   return <span ref={ref}>0{suffix}</span>;
 };
+
+// =========================================================================
+// ANG ATING BAGONG 3D PAGE COMPONENT (Kailangan ng forwardRef para sa page curl)
+// =========================================================================
+const BookPage = React.forwardRef((props, ref) => {
+  return (
+    <div className="bg-[#0e111a] border border-white/5 flex items-center justify-center overflow-hidden shadow-2xl relative" ref={ref} data-density="soft">
+      {/* Spine gradient effect for realism */}
+      <div className={`absolute inset-y-0 ${props.number % 2 === 0 ? 'right-0' : 'left-0'} w-8 bg-gradient-to-${props.number % 2 === 0 ? 'l' : 'r'} from-black/40 to-transparent z-10 pointer-events-none`} />
+      
+      <img 
+        src={props.imageUrl} 
+        onError={(e) => { if (e.target.src.endsWith('.jpg')) e.target.src = props.imageUrl.replace('.jpg', '.png'); }}
+        alt={`Page ${props.number}`} 
+        className="w-full h-full object-contain pointer-events-none relative z-0" 
+      />
+    </div>
+  );
+});
+
+// =========================================================================
 
 const featuredClients = [
   { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
@@ -126,6 +149,7 @@ export default function DreamCreations() {
   const containerRef = useRef(null);
   const processScrollRef = useRef(null); 
   const teamScrollRef = useRef(null);
+  const flipBookRef = useRef(null); // Reference for controlling the Book Turn Buttons
 
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
@@ -140,61 +164,25 @@ export default function DreamCreations() {
   const [softwareList, setSoftwareList] = useState(softwareExpertise);
   const [clientsList, setClientsList] = useState(featuredClients);
 
-  // ================= 3D FLIPBOOK STATES & LOGIC =================
+  // ================= FLIPBOOK STATES =================
   const [isFlipbookOpen, setIsFlipbookOpen] = useState(false);
-  const [flipbookPage, setFlipbookCurrentPage] = useState(1);
-  const [flipDirection, setFlipDirection] = useState(1); // 1 = Next, -1 = Prev
+  const [flipbookPage, setFlipbookCurrentPage] = useState(0); // HTMLFlipBook uses 0-index internally
   const totalFlipbookPages = 91; 
 
-  const turnNext = () => {
-    if (window.innerWidth >= 768) {
-      if (flipbookPage >= totalFlipbookPages - 1) return;
-      setFlipDirection(1);
-      setFlipbookCurrentPage(p => p + 2);
-    } else {
-      if (flipbookPage >= totalFlipbookPages) return;
-      setFlipDirection(1);
-      setFlipbookCurrentPage(p => p + 1);
-    }
+  const goNextPage = () => {
+    if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext();
   };
 
-  const turnPrev = () => {
-    if (window.innerWidth >= 768) {
-      if (flipbookPage === 1) return;
-      setFlipDirection(-1);
-      setFlipbookCurrentPage(p => p - 2);
-    } else {
-      if (flipbookPage === 1) return;
-      setFlipDirection(-1);
-      setFlipbookCurrentPage(p => p - 1);
-    }
+  const goPrevPage = () => {
+    if (flipBookRef.current) flipBookRef.current.pageFlip().flipPrev();
   };
 
-  // The 3D Flip Variants
-  const pageFlipVariants = {
-    enter: (direction) => ({
-      rotateY: direction > 0 ? 90 : -90,
-      opacity: 0,
-      scale: 0.95,
-      filter: 'blur(5px)',
-    }),
-    center: {
-      rotateY: 0,
-      opacity: 1,
-      scale: 1,
-      filter: 'blur(0px)',
-      transition: {
-        duration: 0.6,
-        ease: [0.22, 1, 0.36, 1] // Snappy book-flip ease
-      }
-    },
-    exit: (direction) => ({
-      rotateY: direction > 0 ? -90 : 90,
-      opacity: 0,
-      scale: 0.95,
-      filter: 'blur(5px)',
-      transition: { duration: 0.4 }
-    })
+  const onPageFlip = (e) => {
+    setFlipbookCurrentPage(e.data); // Update the dock indicator whenever page turns
+  };
+
+  const getFlipbookUrl = (pageIndex, ext = 'jpg') => {
+    return `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/page-${pageIndex}.${ext}`;
   };
 
   // ================= DYNAMIC RESUME STATE =================
@@ -208,15 +196,13 @@ export default function DreamCreations() {
       const randomIndex = Math.floor(Math.random() * creationsCategories.length);
       setRandomGlowIndex(randomIndex);
     }, 3000);
-
     return () => clearInterval(interval);
   }, []);
 
-  // SCROLL & SWIPE LOGIC FOR TEAM
+  // SCROLL & SWIPE HANDLERS (Team, Process, Clients, Feedback)
   const isTeamDragging = useRef(false);
   const teamStartX = useRef(0);
   const teamScrollLeftPos = useRef(0);
-
   const teamDragHandlers = {
     onMouseDown: (e) => {
       isTeamDragging.current = true;
@@ -228,17 +214,13 @@ export default function DreamCreations() {
     onMouseMove: (e) => {
       if (!isTeamDragging.current) return;
       e.preventDefault();
-      const x = e.pageX - teamScrollRef.current.offsetLeft;
-      const walk = (x - teamStartX.current) * 2;
-      teamScrollRef.current.scrollLeft = teamScrollLeftPos.current - walk;
+      teamScrollRef.current.scrollLeft = teamScrollLeftPos.current - (e.pageX - teamScrollRef.current.offsetLeft - teamStartX.current) * 2;
     }
   };
 
-  // SCROLL & SWIPE LOGIC FOR CREATIVE PROCESS
   const isProcessDragging = useRef(false);
   const processStartX = useRef(0);
   const processScrollLeftPos = useRef(0);
-
   const processDragHandlers = {
     onMouseDown: (e) => {
       isProcessDragging.current = true;
@@ -250,13 +232,10 @@ export default function DreamCreations() {
     onMouseMove: (e) => {
       if (!isProcessDragging.current) return;
       e.preventDefault();
-      const x = e.pageX - processScrollRef.current.offsetLeft;
-      const walk = (x - processStartX.current) * 2;
-      processScrollRef.current.scrollLeft = processScrollLeftPos.current - walk;
+      processScrollRef.current.scrollLeft = processScrollLeftPos.current - (e.pageX - processScrollRef.current.offsetLeft - processStartX.current) * 2;
     }
   };
 
-  // SCROLL & SWIPE LOGIC FOR CLIENTS
   const clientsScrollRef = useRef(null);
   const [isClientsPaused, setIsClientsPaused] = useState(false);
   const isClientsDragging = useRef(false);
@@ -267,13 +246,10 @@ export default function DreamCreations() {
     let animationId;
     const container = clientsScrollRef.current;
     if (!container || clientsList.length === 0) return;
-    
     const scroll = () => {
       if (!isClientsPaused && !isClientsDragging.current) {
         container.scrollLeft += 1; 
-        if (container.scrollLeft <= 0) {
-          container.scrollLeft += container.scrollWidth / 2;
-        }
+        if (container.scrollLeft <= 0) container.scrollLeft += container.scrollWidth / 2;
       }
       animationId = requestAnimationFrame(scroll);
     };
@@ -283,8 +259,7 @@ export default function DreamCreations() {
 
   const clientsDragHandlers = {
     onMouseDown: (e) => {
-      isClientsDragging.current = true;
-      setIsClientsPaused(true);
+      isClientsDragging.current = true; setIsClientsPaused(true);
       clientsStartX.current = e.pageX - clientsScrollRef.current.offsetLeft;
       clientsScrollLeftPos.current = clientsScrollRef.current.scrollLeft;
     },
@@ -293,15 +268,12 @@ export default function DreamCreations() {
     onMouseMove: (e) => {
       if (!isClientsDragging.current) return;
       e.preventDefault();
-      const x = e.pageX - clientsScrollRef.current.offsetLeft;
-      const walk = (x - clientsStartX.current) * 2;
-      clientsScrollRef.current.scrollLeft = clientsScrollLeftPos.current - walk;
+      clientsScrollRef.current.scrollLeft = clientsScrollLeftPos.current - (e.pageX - clientsScrollRef.current.offsetLeft - clientsStartX.current) * 2;
     },
     onTouchStart: () => setIsClientsPaused(true),
     onTouchEnd: () => setIsClientsPaused(false)
   };
 
-  // SCROLL & SWIPE LOGIC FOR FEEDBACK
   const feedbackScrollRef = useRef(null);
   const [isFeedbackPaused, setIsFeedbackPaused] = useState(false);
   const isFeedbackDragging = useRef(false);
@@ -312,13 +284,10 @@ export default function DreamCreations() {
     let animationId;
     const container = feedbackScrollRef.current;
     if (!container || reviews.length === 0) return;
-    
     const scroll = () => {
       if (!isFeedbackPaused && !isFeedbackDragging.current) {
         container.scrollLeft -= 1; 
-        if (container.scrollLeft >= container.scrollWidth / 2) {
-          container.scrollLeft -= container.scrollWidth / 2;
-        }
+        if (container.scrollLeft >= container.scrollWidth / 2) container.scrollLeft -= container.scrollWidth / 2;
       }
       animationId = requestAnimationFrame(scroll);
     };
@@ -328,8 +297,7 @@ export default function DreamCreations() {
 
   const feedbackDragHandlers = {
     onMouseDown: (e) => {
-      isFeedbackDragging.current = true;
-      setIsFeedbackPaused(true);
+      isFeedbackDragging.current = true; setIsFeedbackPaused(true);
       feedbackStartX.current = e.pageX - feedbackScrollRef.current.offsetLeft;
       feedbackScrollLeftPos.current = feedbackScrollRef.current.scrollLeft;
     },
@@ -338,9 +306,7 @@ export default function DreamCreations() {
     onMouseMove: (e) => {
       if (!isFeedbackDragging.current) return;
       e.preventDefault();
-      const x = e.pageX - feedbackScrollRef.current.offsetLeft;
-      const walk = (x - feedbackStartX.current) * 2;
-      feedbackScrollRef.current.scrollLeft = feedbackScrollLeftPos.current - walk;
+      feedbackScrollRef.current.scrollLeft = feedbackScrollLeftPos.current - (e.pageX - feedbackScrollRef.current.offsetLeft - feedbackStartX.current) * 2;
     },
     onTouchStart: () => setIsFeedbackPaused(true),
     onTouchEnd: () => setIsFeedbackPaused(false)
@@ -368,10 +334,8 @@ export default function DreamCreations() {
       cursorX.set(clientX - 32); 
       cursorY.set(clientY - 32);
     };
-
     window.addEventListener("mousemove", moveCursor);
     window.addEventListener("touchmove", moveCursor, { passive: true });
-
     return () => {
       window.removeEventListener("mousemove", moveCursor);
       window.removeEventListener("touchmove", moveCursor);
@@ -388,10 +352,6 @@ export default function DreamCreations() {
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
-
-  const getFlipbookUrl = (pageIndex, ext = 'jpg') => {
-    return `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/page-${pageIndex}.${ext}`;
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -462,31 +422,23 @@ export default function DreamCreations() {
         console.error('Error fetching CMS data:', error.message);
       }
     };
-
     fetchData();
   }, []);
 
   const scrollToSection = (id) => {
     const targetElement = document.getElementById(id);
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
-    setTimeout(() => {
-      scrollToSection('portfolio-directory');
-    }, 150); 
+    setTimeout(() => { scrollToSection('portfolio-directory'); }, 150); 
   };
 
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
     setActivePortfolioSubtitle(subtitleName); 
-    
-    setTimeout(() => {
-      scrollToSection('portfolio-directory');
-    }, 150);
+    setTimeout(() => { scrollToSection('portfolio-directory'); }, 150);
   };
 
   const filteredProjects = activePortfolioSubtitle 
@@ -494,15 +446,9 @@ export default function DreamCreations() {
     : projects;
 
   return (
-    <div 
-      ref={containerRef}
-      className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-nightSkyCycle cursor-none"
-    >
+    <div ref={containerRef} className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-nightSkyCycle cursor-none">
       
-      <div 
-        className="fixed inset-0 z-50 pointer-events-none mix-blend-screen"
-        style={{ background: 'radial-gradient(600px circle at var(--x, 50vw) var(--y, 50vh), rgba(16, 149, 210, 0.08), transparent 40%)' }}
-      />
+      <div className="fixed inset-0 z-50 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(600px circle at var(--x, 50vw) var(--y, 50vh), rgba(16, 149, 210, 0.08), transparent 40%)' }} />
 
       <style>{`
         @keyframes nightSkyCycle {
@@ -511,9 +457,7 @@ export default function DreamCreations() {
           66%  { background-color: #020617; } 
           100% { background-color: #050508; } 
         }
-        .animate-nightSkyCycle {
-          animation: nightSkyCycle 25s ease-in-out infinite alternate;
-        }
+        .animate-nightSkyCycle { animation: nightSkyCycle 25s ease-in-out infinite alternate; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
@@ -521,88 +465,32 @@ export default function DreamCreations() {
       {/* Background Elements */}
       <div className="absolute inset-0 z-0 opacity-80 pointer-events-none">
         {starsData.map((star) => (
-          <motion.div
-            key={star.id}
-            className="absolute bg-white rounded-full shadow-[0_0_4px_rgba(255,255,255,0.6)]"
-            style={{ top: star.top, left: star.left, width: star.size, height: star.size }}
-            animate={{ opacity: [0.1, 1, 0.1] }}
-            transition={{ duration: star.duration, repeat: Infinity, delay: star.delay, ease: "easeInOut" }}
-          />
+          <motion.div key={star.id} className="absolute bg-white rounded-full shadow-[0_0_4px_rgba(255,255,255,0.6)]" style={{ top: star.top, left: star.left, width: star.size, height: star.size }} animate={{ opacity: [0.1, 1, 0.1] }} transition={{ duration: star.duration, repeat: Infinity, delay: star.delay, ease: "easeInOut" }} />
         ))}
       </div>
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         {cloudsData.map((cloud) => (
-          <motion.div
-            key={cloud.id}
-            className="absolute bg-white/10 blur-[40px] rounded-[100%]"
-            style={{ top: cloud.top, width: `${450 * cloud.scale}px`, height: `${120 * cloud.scale}px` }}
-            animate={{ x: ["110vw", "-50vw"] }}
-            transition={{ duration: cloud.duration, repeat: Infinity, delay: cloud.delay, ease: "linear" }}
-          />
+          <motion.div key={cloud.id} className="absolute bg-white/10 blur-[40px] rounded-[100%]" style={{ top: cloud.top, width: `${450 * cloud.scale}px`, height: `${120 * cloud.scale}px` }} animate={{ x: ["110vw", "-50vw"] }} transition={{ duration: cloud.duration, repeat: Infinity, delay: cloud.delay, ease: "linear" }} />
         ))}
       </div>
 
       {/* ================= HERO SECTION ================= */}
       <section className="relative pt-40 pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center text-center z-10">
-        <motion.div 
-          initial={{ scaleX: 0, opacity: 0 }}
-          animate={{ scaleX: 1, opacity: 1 }}
-          transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }}
-          className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10"
-        />
-        
-        {/* FLOATING MOON IMAGE */}
-        <motion.div
-          initial={{ y: 150, scale: 0.5, opacity: 0 }}
-          animate={{ y: 0, scale: 1, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }}
-          className="-mt-12 mb-16 relative" 
-        >
-          <motion.div
-            animate={{ y: [-15, 15, -15], rotate: [-3, 3, -3] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <img 
-              src="/images/moon.png" 
-              alt="Dream Creations Moon" 
-              className="w-40 h-40 object-contain drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]"
-            />
+        <motion.div initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }} transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }} className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10" />
+        <motion.div initial={{ y: 150, scale: 0.5, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }} className="-mt-12 mb-16 relative" >
+          <motion.div animate={{ y: [-15, 15, -15], rotate: [-3, 3, -3] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
+            <img src="/images/moon.png" alt="Dream Creations Moon" className="w-40 h-40 object-contain drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]" />
           </motion.div>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="max-w-4xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl border border-transparent z-10"
-        >
-          <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
-            Let's make your <span className="text-[#1095d2]">dream</span> a reality.
-          </h2>
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="max-w-4xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl border border-transparent z-10">
+          <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">Let's make your <span className="text-[#1095d2]">dream</span> a reality.</h2>
           <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
-            <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">
-            For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.
-            </p>
+            <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.</p>
           </div>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <button 
-              onClick={() => scrollToSection('founder-bio')}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:border-[#1095d2]/50 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md cursor-pointer relative z-20"
-            >
-              <Info size={16} /> About Dream Creations
-            </button>
-            <button 
-              onClick={() => scrollToSection('creations-grid')}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:border-[#1095d2]/50 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md cursor-pointer relative z-20"
-            >
-              <LayoutGrid size={16} /> Our Creations
-            </button>
-            <button 
-              onClick={() => window.location.href = '/contact'}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#1095d2] hover:bg-[#0c7ab0] text-white text-sm font-semibold transition-all shadow-lg shadow-[#1095d2]/20 cursor-pointer relative z-20"
-            >
-              <Mail size={16} /> Contact Us
-            </button>
+            <button onClick={() => scrollToSection('founder-bio')} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:border-[#1095d2]/50 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md cursor-pointer relative z-20"><Info size={16} /> About Dream Creations</button>
+            <button onClick={() => scrollToSection('creations-grid')} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:border-[#1095d2]/50 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md cursor-pointer relative z-20"><LayoutGrid size={16} /> Our Creations</button>
+            <button onClick={() => window.location.href = '/contact'} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#1095d2] hover:bg-[#0c7ab0] text-white text-sm font-semibold transition-all shadow-lg shadow-[#1095d2]/20 cursor-pointer relative z-20"><Mail size={16} /> Contact Us</button>
           </div>
         </motion.div>
       </section>
@@ -614,33 +502,15 @@ export default function DreamCreations() {
         <div className="mb-12 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
           <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-          <p className="text-base text-white/70 mt-4 max-w-2xl">
-            Explore our specialized creative categories. Click any box to view our specific offerings and jump directly to our past works.
-          </p>
+          <p className="text-base text-white/70 mt-4 max-w-2xl">Explore our specialized creative categories. Click any box to view our specific offerings and jump directly to our past works.</p>
         </div>
-
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
           {creationsCategories.map((category, index) => {
             const isGlowing = randomGlowIndex === index;
-
             return (
-              <motion.button
-                key={category.id}
-                onClick={() => setActiveCreationPopup(category)}
-                whileHover={{
-                  scale: 1.05,
-                  borderColor: "rgba(16,149,210,1)",
-                  backgroundColor: "rgba(16,149,210,0.3)",
-                  boxShadow: "0 0 30px rgba(16,149,210,0.8)"
-                }}
-                className="p-2 h-20 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer relative z-20"
-              >
-                <div className={`transition-all duration-500 mb-1 ${isGlowing ? 'text-[#1095d2] scale-125 drop-shadow-[0_0_8px_rgba(16,149,210,0.8)]' : 'text-white/60 group-hover:text-[#1095d2] group-hover:scale-110'}`}>
-                  {category.icon}
-                </div>
-                <h4 className={`text-[10px] font-bold transition-all duration-500 leading-tight px-1 ${isGlowing ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]' : 'text-white/90 group-hover:text-white'}`}>
-                  {category.category}
-                </h4>
+              <motion.button key={category.id} onClick={() => setActiveCreationPopup(category)} whileHover={{ scale: 1.05, borderColor: "rgba(16,149,210,1)", backgroundColor: "rgba(16,149,210,0.3)", boxShadow: "0 0 30px rgba(16,149,210,0.8)" }} className="p-2 h-20 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer relative z-20">
+                <div className={`transition-all duration-500 mb-1 ${isGlowing ? 'text-[#1095d2] scale-125 drop-shadow-[0_0_8px_rgba(16,149,210,0.8)]' : 'text-white/60 group-hover:text-[#1095d2] group-hover:scale-110'}`}>{category.icon}</div>
+                <h4 className={`text-[10px] font-bold transition-all duration-500 leading-tight px-1 ${isGlowing ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]' : 'text-white/90 group-hover:text-white'}`}>{category.category}</h4>
               </motion.button>
             );
           })}
@@ -651,91 +521,38 @@ export default function DreamCreations() {
 
       {/* ================= MEET THE FOUNDER SECTION ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="flex justify-center mb-16"
-        >
-          <img 
-            src={bannerUrl} 
-            alt="Dream Creations Brand Banner" 
-            className="w-full max-w-5xl h-auto drop-shadow-[0_0_30px_rgba(16,149,210,0.3)] rounded-3xl border border-white/5 bg-black/40 p-2 md:p-4"
-          />
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="flex justify-center mb-16">
+          <img src={bannerUrl} alt="Dream Creations Brand Banner" className="w-full max-w-5xl h-auto drop-shadow-[0_0_30px_rgba(16,149,210,0.3)] rounded-3xl border border-white/5 bg-black/40 p-2 md:p-4" />
         </motion.div>
-
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="lg:col-span-5 flex justify-center"
-          >
+          <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="lg:col-span-5 flex justify-center">
             <div className="relative w-full max-w-md aspect-square rounded-3xl border border-white/10 bg-black/40 overflow-hidden flex items-center justify-center group">
                <div className="absolute inset-0 bg-gradient-to-tr from-[#1095d2]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-               
-               {founderPhoto ? (
-                 <img src={founderPhoto} alt="Jefferson Gonzales" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-               ) : (
-                 <div className="w-32 h-32 rounded-full border border-[#1095d2]/50 bg-black/50 flex items-center justify-center text-4xl font-bold text-white shadow-[0_0_30px_rgba(16,149,210,0.3)] z-10 group-hover:scale-105 transition-transform duration-500">
-                   JG
-                 </div>
-               )}
-
+               {founderPhoto ? ( <img src={founderPhoto} alt="Jefferson Gonzales" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" /> ) : ( <div className="w-32 h-32 rounded-full border border-[#1095d2]/50 bg-black/50 flex items-center justify-center text-4xl font-bold text-white shadow-[0_0_30px_rgba(16,149,210,0.3)] z-10 group-hover:scale-105 transition-transform duration-500">JG</div> )}
                <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 z-10">
                  <p className="text-[#1095d2] text-xs font-bold uppercase tracking-wider mb-1">Founder & Creative Director</p>
                  <h4 className="text-white font-bold text-lg">Jefferson Gonzales</h4>
                </div>
             </div>
           </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-7 space-y-6"
-          >
-            <div className="mb-6">
-              <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Meet the Founder</h3>
-              <div className="w-20 h-1 bg-[#1095d2] rounded-full" />
-            </div>
+          <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }} className="lg:col-span-7 space-y-6">
+            <div className="mb-6"><h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Meet the Founder</h3><div className="w-20 h-1 bg-[#1095d2] rounded-full" /></div>
             <div className="flex flex-wrap gap-2 mb-4">
-               {["Founder", "Owner", "Creative Director", "Team Manager", "Graphic Designer"].map((role, idx) => (
-                 <span key={idx} className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-medium text-white/80">
-                   {role}
-                 </span>
-               ))}
+               {["Founder", "Owner", "Creative Director", "Team Manager", "Graphic Designer"].map((role, idx) => ( <span key={idx} className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-medium text-white/80">{role}</span> ))}
             </div>
             <div className="space-y-4">
-              <p className="text-base md:text-lg text-white/70 leading-relaxed">
-                Jefferson founded Dream Creations with the vision of helping businesses communicate more effectively through thoughtful and impactful visual design.
-              </p>
-              <p className="text-base md:text-lg text-white/70 leading-relaxed">
-                With more than ten years of professional experience, he has worked across multiple industries including healthcare, finance, insurance, technology, apparel, education, e-commerce, printing, media, and real estate.
-              </p>
-              <p className="text-base md:text-lg text-white/70 leading-relaxed">
-                Inspired by his former team manager, he started building his own team of graphic designers with a vision to empower more dreamers (clients) and creators (designers).
-              </p>
-              <p className="text-base md:text-lg text-white/70 leading-relaxed">
-                Today, he continues leading Dream Creations while expanding its capabilities through data analytics, automation, and software development.
-              </p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">Jefferson founded Dream Creations with the vision of helping businesses communicate more effectively through thoughtful and impactful visual design.</p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">With more than ten years of professional experience, he has worked across multiple industries including healthcare, finance, insurance, technology, apparel, education, e-commerce, printing, media, and real estate.</p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">Inspired by his former team manager, he started building his own team of graphic designers with a vision to empower more dreamers (clients) and creators (designers).</p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">Today, he continues leading Dream Creations while expanding its capabilities through data analytics, automation, and software development.</p>
             </div>
-            
             <div className="grid grid-cols-2 gap-4 pt-4">
               <div className="p-4 rounded-xl border border-white/10 bg-black/20 hover:border-[#1095d2]/30 transition-colors">
-                <div className="text-2xl font-bold text-[#1095d2] mb-1">
-                  <AnimatedNumber value={founderExp} suffix="+" />
-                </div>
+                <div className="text-2xl font-bold text-[#1095d2] mb-1"><AnimatedNumber value={founderExp} suffix="+" /></div>
                 <div className="text-xs text-white/60 uppercase tracking-wider">Years Experience</div>
               </div>
               <div className="p-4 rounded-xl border border-white/10 bg-black/20 hover:border-[#1095d2]/30 transition-colors">
-                <div className="text-2xl font-bold text-[#1095d2] mb-1">
-                  <AnimatedNumber value={founderProjects} suffix="+" />
-                </div>
+                <div className="text-2xl font-bold text-[#1095d2] mb-1"><AnimatedNumber value={founderProjects} suffix="+" /></div>
                 <div className="text-xs text-white/60 uppercase tracking-wider">Projects Delivered</div>
               </div>
             </div>
@@ -748,35 +565,16 @@ export default function DreamCreations() {
         <div className="mb-16 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Creators</h3>
           <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-          <p className="text-base text-white/70 mt-4 max-w-2xl">
-            The creative minds driving the studio's vision.
-          </p>
+          <p className="text-base text-white/70 mt-4 max-w-2xl">The creative minds driving the studio's vision.</p>
         </div>
-
-        <div 
-          ref={teamScrollRef} 
-          {...teamDragHandlers}
-          className="flex overflow-x-auto gap-8 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth cursor-grab active:cursor-grabbing"
-        >
+        <div ref={teamScrollRef} {...teamDragHandlers} className="flex overflow-x-auto gap-8 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth cursor-grab active:cursor-grabbing">
           {teamList.map((member) => (
-            <motion.div
-              key={member.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className={`shrink-0 w-[85vw] md:w-[400px] lg:w-[380px] snap-center rounded-3xl bg-black/30 border border-white/10 backdrop-blur-md overflow-hidden hover:border-[#1095d2]/40 transition-all group flex flex-col h-full ${member.status === 'Hiring' ? 'border-dashed opacity-60 hover:opacity-100' : ''}`}
-            >
+            <motion.div key={member.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className={`shrink-0 w-[85vw] md:w-[400px] lg:w-[380px] snap-center rounded-3xl bg-black/30 border border-white/10 backdrop-blur-md overflow-hidden hover:border-[#1095d2]/40 transition-all group flex flex-col h-full ${member.status === 'Hiring' ? 'border-dashed opacity-60 hover:opacity-100' : ''}`}>
               <div className="p-6 pb-4 border-b border-white/5 relative overflow-hidden pointer-events-none">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#1095d2]/20 to-transparent opacity-50" />
                 <div className="flex gap-5 relative z-10">
                   <div className="w-24 h-24 rounded-2xl bg-black/50 border border-white/10 overflow-hidden shrink-0 flex items-center justify-center">
-                    {member.photo ? (
-                       <img src={member.photo} alt={member.name} className="w-full h-full object-cover" 
-                            onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }} />
-                    ) : (
-                       <UserCheck size={32} className="text-white/20" />
-                    )}
+                    {member.photo ? ( <img src={member.photo} alt={member.name} className="w-full h-full object-cover" onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }} /> ) : ( <UserCheck size={32} className="text-white/20" /> )}
                   </div>
                   <div className="flex flex-col justify-center">
                     <div className="flex items-center gap-2 mb-1">
@@ -788,45 +586,26 @@ export default function DreamCreations() {
                   </div>
                 </div>
               </div>
-
                <div className="px-6 py-4 flex flex-wrap gap-2 pointer-events-none">
-                {member.positions.map((pos, idx) => (
-                  <span key={idx} className="px-2.5 py-1 rounded-md bg-white/5 border border-white/5 text-[10px] text-white/80">
-                    {pos}
-                  </span>
-                ))}
+                {member.positions.map((pos, idx) => ( <span key={idx} className="px-2.5 py-1 rounded-md bg-white/5 border border-white/5 text-[10px] text-white/80">{pos}</span> ))}
               </div>
-
               <div className="px-6 py-2 pointer-events-none">
-                <p className={`text-sm leading-relaxed ${member.status === 'Hiring' ? 'text-white/30 italic' : 'text-white/70'}`}>
-                  {member.bio}
-                </p>
+                <p className={`text-sm leading-relaxed ${member.status === 'Hiring' ? 'text-white/30 italic' : 'text-white/70'}`}>{member.bio}</p>
               </div>
-
               <div className="px-6 py-4 space-y-4 flex-grow border-b border-white/5 pointer-events-none">
                 <div>
                   <h5 className="text-[10px] text-white/40 uppercase tracking-widest mb-2 font-semibold">Core Skills</h5>
-                  <div className="text-xs text-white/80 leading-relaxed">
-                    {member.skills.join(" • ")}
-                  </div>
+                  <div className="text-xs text-white/80 leading-relaxed">{member.skills.join(" • ")}</div>
                 </div>
                 <div>
                   <h5 className="text-[10px] text-white/40 uppercase tracking-widest mb-2 font-semibold">Software Expertise</h5>
-                  <div className="text-xs text-white/80 leading-relaxed">
-                    {member.software.join(" • ")}
-                  </div>
+                  <div className="text-xs text-white/80 leading-relaxed">{member.software.join(" • ")}</div>
                 </div>
               </div>
-
               <div className="p-6 bg-black/20 mt-auto flex items-center justify-between">
-                <div className="flex items-center gap-2 text-white/60">
-                  <Award size={16} />
-                  <span className="text-xs font-semibold">{member.experience}</span>
-                </div>
+                <div className="flex items-center gap-2 text-white/60"><Award size={16} /><span className="text-xs font-semibold">{member.experience}</span></div>
                 <div className="flex gap-2">
-                  <a href={member.portfolioUrl} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#1095d2] flex items-center justify-center transition-colors cursor-pointer relative z-20">
-                    <LinkIcon size={14} className="text-white" />
-                  </a>
+                  <a href={member.portfolioUrl} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#1095d2] flex items-center justify-center transition-colors cursor-pointer relative z-20"><LinkIcon size={14} className="text-white" /></a>
                 </div>
               </div>
             </motion.div>
@@ -839,31 +618,15 @@ export default function DreamCreations() {
         <div className="mb-12 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Software Expertise</h3>
           <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-          <p className="text-base text-white/70 mt-4 max-w-2xl">
-            Proficient across the industry's leading creative and management tools.
-          </p>
+          <p className="text-base text-white/70 mt-4 max-w-2xl">Proficient across the industry's leading creative and management tools.</p>
         </div>
-
         <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6">
           {softwareList.map((tool, index) => (
-            <motion.div
-              key={tool.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.05 }}
-              className="flex flex-col items-center gap-3 w-24 sm:w-28 group"
-            >
+            <motion.div key={tool.id} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: index * 0.05 }} className="flex flex-col items-center gap-3 w-24 sm:w-28 group">
               <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-white/5 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 overflow-hidden bg-black/40 hover:border-[#1095d2]/40">
-                <img 
-                  src={tool.imageSrc} 
-                  alt={tool.name} 
-                  className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity" 
-                />
+                <img src={tool.imageSrc} alt={tool.name} className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
               </div>
-              <span className="text-[10px] md:text-xs text-center font-semibold text-white/60 group-hover:text-white transition-colors">
-                {tool.name}
-              </span>
+              <span className="text-[10px] md:text-xs text-center font-semibold text-white/60 group-hover:text-white transition-colors">{tool.name}</span>
             </motion.div>
           ))}
         </div>
@@ -874,42 +637,18 @@ export default function DreamCreations() {
         <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
           <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-          <p className="text-base text-white/70 mt-4 max-w-2xl">
-            Journey through our structured, transparent workflow.
-          </p>
+          <p className="text-base text-white/70 mt-4 max-w-2xl">Journey through our structured, transparent workflow.</p>
         </div>
-
-        <div 
-          ref={processScrollRef} 
-          {...processDragHandlers}
-          className="flex overflow-x-auto gap-4 px-6 md:px-12 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth cursor-grab active:cursor-grabbing"
-        >
+        <div ref={processScrollRef} {...processDragHandlers} className="flex overflow-x-auto gap-4 px-6 md:px-12 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth cursor-grab active:cursor-grabbing">
           {creativeProcess.map((item, index) => (
             <React.Fragment key={item.step}>
-              <motion.div 
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="shrink-0 w-64 snap-center p-6 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group shadow-lg select-none"
-              >
-                <div className="w-10 h-10 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-sm font-black mb-4 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all shadow-[0_0_15px_rgba(16,149,210,0.3)] pointer-events-none">
-                  {item.step}
-                </div>
-                <h4 className="text-base font-bold text-white mb-2 leading-tight group-hover:text-[#1095d2] transition-colors pointer-events-none">
-                  {item.title}
-                </h4>
-                <p className="text-xs text-white/50 leading-snug pointer-events-none">
-                  {item.desc}
-                </p>
+              <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: index * 0.05 }} className="shrink-0 w-64 snap-center p-6 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group shadow-lg select-none">
+                <div className="w-10 h-10 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-sm font-black mb-4 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all shadow-[0_0_15px_rgba(16,149,210,0.3)] pointer-events-none">{item.step}</div>
+                <h4 className="text-base font-bold text-white mb-2 leading-tight group-hover:text-[#1095d2] transition-colors pointer-events-none">{item.title}</h4>
+                <p className="text-xs text-white/50 leading-snug pointer-events-none">{item.desc}</p>
               </motion.div>
-
               {index < creativeProcess.length - 1 && (
-                <div className="shrink-0 text-[#1095d2]/30 flex items-center justify-center px-2 pointer-events-none">
-                  <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}>
-                    <ArrowRight size={24} />
-                  </motion.div>
-                </div>
+                <div className="shrink-0 text-[#1095d2]/30 flex items-center justify-center px-2 pointer-events-none"><motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}><ArrowRight size={24} /></motion.div></div>
               )}
             </React.Fragment>
           ))}
@@ -921,32 +660,14 @@ export default function DreamCreations() {
         <div className="mb-12 text-center px-6">
           <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Our Valued Dreamers</h3>
           <div className="w-16 h-1 bg-[#1095d2] rounded-full mx-auto" />
-          <p className="text-sm text-white/60 mt-4 max-w-2xl mx-auto">
-            Delivered and delivering premium visual solutions across diverse industries.
-          </p>
+          <p className="text-sm text-white/60 mt-4 max-w-2xl mx-auto">Delivered and delivering premium visual solutions across diverse industries.</p>
         </div>
-
         <div className="relative w-full">
-          <div 
-            ref={clientsScrollRef}
-            {...clientsDragHandlers}
-            className="flex overflow-x-auto gap-4 py-4 hide-scrollbar w-full relative z-20 cursor-grab active:cursor-grabbing px-6"
-          >
+          <div ref={clientsScrollRef} {...clientsDragHandlers} className="flex overflow-x-auto gap-4 py-4 hide-scrollbar w-full relative z-20 cursor-grab active:cursor-grabbing px-6">
             {[...clientsList, ...clientsList, ...clientsList, ...clientsList].map((client, index) => (
-              <div
-                key={`${client.id}-${index}`}
-                className="shrink-0 w-44 md:w-48 group flex flex-col items-center justify-center p-6 rounded-2xl border border-white/5 bg-black/20 hover:bg-black/40 hover:border-[#1095d2]/30 active:bg-black/40 active:border-[#1095d2]/30 transition-all duration-300 text-center"
-              >
+              <div key={`${client.id}-${index}`} className="shrink-0 w-44 md:w-48 group flex flex-col items-center justify-center p-6 rounded-2xl border border-white/5 bg-black/20 hover:bg-black/40 hover:border-[#1095d2]/30 active:bg-black/40 active:border-[#1095d2]/30 transition-all duration-300 text-center">
                 <div className="text-[#1095d2] md:text-white/40 group-hover:text-[#1095d2] group-active:text-[#1095d2] transition-colors duration-300 mb-4 h-16 flex items-center justify-center w-full">
-                  {client.customImage ? (
-                    <img 
-                      src={client.customImage} 
-                      alt={client.name} 
-                      className="max-h-full max-w-full object-contain grayscale-0 opacity-100 md:grayscale md:opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-active:grayscale-0 group-active:opacity-100 transition-all duration-300 pointer-events-none" 
-                    />
-                  ) : (
-                    client.icon
-                  )}
+                  {client.customImage ? ( <img src={client.customImage} alt={client.name} className="max-h-full max-w-full object-contain grayscale-0 opacity-100 md:grayscale md:opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-active:grayscale-0 group-active:opacity-100 transition-all duration-300 pointer-events-none" /> ) : ( client.icon )}
                 </div>
                 <h4 className="text-sm font-bold text-white mb-1 leading-tight select-none">{client.name}</h4>
                 <p className="text-[10px] text-white/50 uppercase tracking-wider select-none">{client.industry}</p>
@@ -961,40 +682,20 @@ export default function DreamCreations() {
         <div className="mb-12 text-center md:text-left px-6">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Client Feedback</h3>
           <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-          <p className="text-base text-white/70 mt-4 max-w-2xl">
-            What our partners and clients have to say about the Dream Creations experience.
-          </p>
+          <p className="text-base text-white/70 mt-4 max-w-2xl">What our partners and clients have to say about the Dream Creations experience.</p>
         </div>
-
         <div className="relative w-full">
-          <div 
-            ref={feedbackScrollRef}
-            {...feedbackDragHandlers}
-            className="flex overflow-x-auto gap-6 py-4 hide-scrollbar w-full relative z-20 cursor-grab active:cursor-grabbing px-6"
-          >
+          <div ref={feedbackScrollRef} {...feedbackDragHandlers} className="flex overflow-x-auto gap-6 py-4 hide-scrollbar w-full relative z-20 cursor-grab active:cursor-grabbing px-6">
             {reviews.length > 0 ? (
               [...reviews, ...reviews, ...reviews, ...reviews].map((testimonial, index) => (
-                <div
-                  key={`${testimonial.id}-${index}`}
-                  className="shrink-0 w-[85vw] md:w-[400px] p-8 rounded-3xl bg-black/20 border border-white/10 backdrop-blur-md flex flex-col relative group hover:border-[#1095d2]/40 transition-colors"
-                >
+                <div key={`${testimonial.id}-${index}`} className="shrink-0 w-[85vw] md:w-[400px] p-8 rounded-3xl bg-black/20 border border-white/10 backdrop-blur-md flex flex-col relative group hover:border-[#1095d2]/40 transition-colors">
                   <Quote size={40} className="text-[#1095d2]/10 absolute top-6 right-6 group-hover:text-[#1095d2]/20 transition-colors pointer-events-none" />
                   <div className="flex gap-1 mb-6 text-[#1095d2] pointer-events-none">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} size={14} fill="currentColor" />
-                    ))}
+                    {[...Array(testimonial.rating)].map((_, i) => ( <Star key={i} size={14} fill="currentColor" /> ))}
                   </div>
-                  <p className="text-sm text-white/80 leading-relaxed mb-8 flex-grow italic select-none">
-                    "{testimonial.feedback}"
-                  </p>
+                  <p className="text-sm text-white/80 leading-relaxed mb-8 flex-grow italic select-none">"{testimonial.feedback}"</p>
                   <div className="flex items-center gap-4 mt-auto pointer-events-none">
-                    {testimonial.face_image_url ? (
-                      <img src={testimonial.face_image_url} alt={testimonial.client_name} className="w-10 h-10 rounded-full object-cover border border-white/10" />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 border border-white/5">
-                        {testimonial.client_name.charAt(0)}
-                      </div>
-                    )}
+                    {testimonial.face_image_url ? ( <img src={testimonial.face_image_url} alt={testimonial.client_name} className="w-10 h-10 rounded-full object-cover border border-white/10" /> ) : ( <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 border border-white/5">{testimonial.client_name.charAt(0)}</div> )}
                     <div>
                       <h4 className="text-sm font-bold text-white leading-tight">{testimonial.client_name}</h4>
                       <p className="text-[10px] text-white/50">{testimonial.project_type} • {testimonial.company}</p>
@@ -1002,11 +703,7 @@ export default function DreamCreations() {
                   </div>
                 </div>
               ))
-            ) : (
-               <div className="w-full py-16 text-center text-slate-500 font-mono text-sm border border-dashed border-white/10 rounded-2xl mx-6">
-                 No client testimonials have been published yet.
-               </div>
-            )}
+            ) : ( <div className="w-full py-16 text-center text-slate-500 font-mono text-sm border border-dashed border-white/10 rounded-2xl mx-6">No client testimonials have been published yet.</div> )}
           </div>
         </div>
       </section>
@@ -1019,51 +716,21 @@ export default function DreamCreations() {
           <div className="text-center md:text-left">
             <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Archive</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-            <p className="text-sm text-white/60 mt-4">
-              Explore our specific visual solutions. These works are pulled directly from our live CMS.
-            </p>
+            <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are pulled directly from our live CMS.</p>
           </div>
-          <button 
-            onClick={() => setActivePortfolioSubtitle(null)}
-            className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20"
-          >
-            View Full Archive
-          </button>
+          <button onClick={() => setActivePortfolioSubtitle(null)} className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20">View Full Archive</button>
         </div>
 
         <AnimatePresence mode="wait">
           {!activePortfolioSubtitle ? (
-            <motion.div 
-              key="subtitle-list"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-16 relative z-20"
-            >
+            <motion.div key="subtitle-list" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="space-y-16 relative z-20">
               {creationsCategories.map((cat) => (
                 <div key={cat.id} className="pt-4">
-                  <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block">
-                    {cat.category}
-                  </h4>
-                  
+                  <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block">{cat.category}</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {cat.items.map((subtitle, idx) => (
-                      <button
-                        key={idx}
-                        id={subtitle.toLowerCase().replace(/\s+/g, '-')}
-                        onClick={() => openPortfolioGallery(subtitle)}
-                        className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500"
-                      >
-                        <img 
-                          src={`/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`} 
-                          alt={subtitle} 
-                          className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'block';
-                          }}
-                        />
+                      <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
+                        <img src={`/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                         <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
                         <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
                         <div className="absolute inset-0 p-6 flex flex-col justify-end">
@@ -1077,29 +744,12 @@ export default function DreamCreations() {
               ))}
             </motion.div>
           ) : (
-            <motion.div
-              key="works-grid"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="relative z-20 pt-4"
-            >
-              <button 
-                onClick={() => {
-                   setActivePortfolioSubtitle(null);
-                   setTimeout(() => {
-                      scrollToSection('portfolio-directory');
-                   }, 150);
-                }}
-                className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer"
-              >
+            <motion.div key="works-grid" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="relative z-20 pt-4">
+              <button onClick={() => { setActivePortfolioSubtitle(null); setTimeout(() => { scrollToSection('portfolio-directory'); }, 150); }} className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer">
                 <ArrowLeft size={16} /> Back to Directory
               </button>
 
-              <h4 className="text-2xl font-bold text-white mb-6">
-                Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span>
-              </h4>
+              <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProjects.length > 0 ? (
@@ -1109,28 +759,18 @@ export default function DreamCreations() {
                       onClick={() => {
                         if (project.title.toLowerCase().includes('profile') || project.category.toLowerCase().includes('profile') || project.description.toLowerCase().includes('company profile')) {
                           setIsFlipbookOpen(true);
-                          setFlipbookCurrentPage(1);
+                          setFlipbookCurrentPage(0); // I-reset ang internal counter pababalik sa cover
                         }
                       }}
                       className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer"
                     >
                        <div className="aspect-video relative overflow-hidden bg-black/60">
-                         {project.featured_image_url ? (
-                           <img src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                         ) : (
-                           <div className="absolute inset-0 flex items-center justify-center text-white/20">
-                             <ImagePlaceholder size={48} />
-                           </div>
-                         )}
-                         
+                         {project.featured_image_url ? ( <img src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
                          {project.video_url && !project.title.toLowerCase().includes('profile') && (
                            <a href={project.video_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
-                             <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform">
-                               <MonitorPlay size={24} className="ml-1" />
-                             </div>
+                             <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform"><MonitorPlay size={24} className="ml-1" /></div>
                            </a>
                          )}
-                         
                        </div>
                        <div className="p-6">
                           <h4 className="text-lg font-bold text-white mb-1 group-hover:text-[#1095d2] transition-colors">{project.title}</h4>
@@ -1140,13 +780,9 @@ export default function DreamCreations() {
                     </div>
                   ))
                 ) : (
-                  <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm border border-dashed border-white/10 rounded-2xl">
-                    <ImageIcon size={32} className="mb-4 opacity-30" />
-                    No projects have been published to this archive category yet.
-                  </div>
+                  <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm border border-dashed border-white/10 rounded-2xl"><ImageIcon size={32} className="mb-4 opacity-30" />No projects have been published to this archive category yet.</div>
                 )}
               </div>
-
             </motion.div>
           )}
         </AnimatePresence>
@@ -1154,60 +790,24 @@ export default function DreamCreations() {
 
       {/* ================= PRICING / PROJECT INVESTMENT ================= */}
       <section className="max-w-4xl mx-auto w-full px-6 py-24 z-10 relative text-center mt-10">
-        <div className="mb-12">
-          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Investment</h3>
-          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
-        </div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="p-10 md:p-14 rounded-3xl border border-[#1095d2]/20 bg-gradient-to-b from-[#1095d2]/10 to-black/40 backdrop-blur-md relative overflow-hidden"
-        >
+        <div className="mb-12"><h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Investment</h3><div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" /></div>
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="p-10 md:p-14 rounded-3xl border border-[#1095d2]/20 bg-gradient-to-b from-[#1095d2]/10 to-black/40 backdrop-blur-md relative overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-[#1095d2]/20 blur-[80px] -z-10 pointer-events-none" />
-          
-          <div className="w-16 h-16 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center mx-auto mb-6">
-            <Calculator size={32} />
-          </div>
-
-          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">
-            Custom Tailored <span className="text-[#1095d2]">Quotations</span>
-          </h2>
-          <p className="text-base text-white/70 mb-8 max-w-xl mx-auto">
-            Every dream is unique. Rather than offering rigid pricing tiers, we provide tailored quotations based exactly on your specific project requirements, timeline, and requested deliverables. Let's discuss your vision.
-          </p>
-          <button 
-            onClick={() => window.location.href = '/contact'}
-            className="px-8 py-4 rounded-xl bg-[#1095d2] text-white font-bold text-sm hover:bg-[#0c7ab0] transition-colors shadow-[0_0_20px_rgba(16,149,210,0.4)] hover:shadow-[0_0_30px_rgba(16,149,210,0.6)] group cursor-pointer relative z-20"
-          >
-            Request a Quote
-          </button>
+          <div className="w-16 h-16 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center mx-auto mb-6"><Calculator size={32} /></div>
+          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">Custom Tailored <span className="text-[#1095d2]">Quotations</span></h2>
+          <p className="text-base text-white/70 mb-8 max-w-xl mx-auto">Every dream is unique. Rather than offering rigid pricing tiers, we provide tailored quotations based exactly on your specific project requirements, timeline, and requested deliverables. Let's discuss your vision.</p>
+          <button onClick={() => window.location.href = '/contact'} className="px-8 py-4 rounded-xl bg-[#1095d2] text-white font-bold text-sm hover:bg-[#0c7ab0] transition-colors shadow-[0_0_20px_rgba(16,149,210,0.4)] hover:shadow-[0_0_30px_rgba(16,149,210,0.6)] group cursor-pointer relative z-20">Request a Quote</button>
         </motion.div>
       </section>
 
       {/* ================= PAGE RESUME DOWNLOAD ================= */}
       {pageResume && (
         <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center">
-          <motion.a
-            href={pageResume.file_url || pageResume.pdf_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ scale: 1.02 }}
-            className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-[#1095d2]/20 to-black/40 border border-[#1095d2]/30 hover:border-[#1095d2] transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(16,149,210,0.15)] hover:shadow-[0_0_30px_rgba(16,149,210,0.3)]"
-          >
-            <div className="w-12 h-12 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
-              <Download size={20} />
-            </div>
+          <motion.a href={pageResume.file_url || pageResume.pdf_url} target="_blank" rel="noopener noreferrer" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} whileHover={{ scale: 1.02 }} className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-[#1095d2]/20 to-black/40 border border-[#1095d2]/30 hover:border-[#1095d2] transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(16,149,210,0.15)] hover:shadow-[0_0_30px_rgba(16,149,210,0.3)]">
+            <div className="w-12 h-12 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0"><Download size={20} /></div>
             <div className="text-left">
               <span className="text-[10px] text-white/50 uppercase tracking-widest block font-semibold mb-0.5">Download Professional Resume</span>
-              <span className="text-sm md:text-base font-bold text-white group-hover:text-[#1095d2] transition-colors block">
-                {pageResume.title || 'Dream Creations Resume'}
-              </span>
+              <span className="text-sm md:text-base font-bold text-white group-hover:text-[#1095d2] transition-colors block">{pageResume.title || 'Dream Creations Resume'}</span>
             </div>
           </motion.a>
         </section>
@@ -1216,46 +816,17 @@ export default function DreamCreations() {
       {/* ================= TRANSITION TO THE NEXT JOURNEY ================= */}
       <section className="w-full relative border-t border-white/10 mt-16 pt-32 pb-32 px-6 overflow-hidden z-10 flex flex-col items-center text-center">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#021f1a] to-[#011410] -z-10" />
-
         <div className="max-w-3xl mx-auto relative z-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="flex flex-col items-center"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-8">
-              <Database size={14} /> The Next Chapter
-            </div>
-
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight mb-8">
-              Evolution of <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Design & Data.</span>
-            </h2>
-
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="flex flex-col items-center">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-8"><Database size={14} /> The Next Chapter</div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight mb-8">Evolution of <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Design & Data.</span></h2>
             <div className="space-y-6 text-base md:text-lg text-slate-300 mb-12 leading-relaxed">
-              <p>
-                Every stage of my career builds upon the previous one. The transition from a creative professional to a data-driven analyst reflects my evolution from crafting visual stories to uncovering the insights that drive them.
-              </p>
-              <p>
-                The next chapter introduces my journey into Data Analytics, where structured logic, reporting, and dashboarding converge with creative problem-solving.
-              </p>
+              <p>Every stage of my career builds upon the previous one. The transition from a creative professional to a data-driven analyst reflects my evolution from crafting visual stories to uncovering the insights that drive them.</p>
+              <p>The next chapter introduces my journey into Data Analytics, where structured logic, reporting, and dashboarding converge with creative problem-solving.</p>
             </div>
-            
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-              <button 
-                onClick={() => window.location.href = '/data-analyst'}
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-emerald-500 text-black font-bold text-sm hover:bg-emerald-400 transition-colors shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 cursor-pointer relative z-20"
-              >
-                Continue as Data Analyst <ArrowRight size={16} />
-              </button>
-              
-              <button 
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-sm transition-colors flex items-center justify-center gap-2 backdrop-blur-md cursor-pointer relative z-20"
-              >
-                <ArrowUp size={16} /> Back to Top 
-              </button>
+              <button onClick={() => window.location.href = '/data-analyst'} className="w-full sm:w-auto px-8 py-4 rounded-xl bg-emerald-500 text-black font-bold text-sm hover:bg-emerald-400 transition-colors shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 cursor-pointer relative z-20">Continue as Data Analyst <ArrowRight size={16} /></button>
+              <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-sm transition-colors flex items-center justify-center gap-2 backdrop-blur-md cursor-pointer relative z-20"><ArrowUp size={16} /> Back to Top</button>
             </div>
           </motion.div>
         </div>
@@ -1265,39 +836,16 @@ export default function DreamCreations() {
       <AnimatePresence>
         {activeCreationPopup && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setActiveCreationPopup(null)}
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"
-            />
-            
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-lg bg-[#0b1026] border border-[#1095d2]/30 rounded-3xl p-8 shadow-[0_0_50px_rgba(16,149,210,0.4)] overflow-hidden"
-            >
-              <button 
-                onClick={() => setActiveCreationPopup(null)}
-                className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors cursor-pointer"
-              >
-                <X size={24} />
-              </button>
-
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setActiveCreationPopup(null)} className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer" />
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-lg bg-[#0b1026] border border-[#1095d2]/30 rounded-3xl p-8 shadow-[0_0_50px_rgba(16,149,210,0.4)] overflow-hidden">
+              <button onClick={() => setActiveCreationPopup(null)} className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors cursor-pointer"><X size={24} /></button>
               <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-xl bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center shrink-0">
-                  {activeCreationPopup.icon}
-                </div>
+                <div className="w-12 h-12 rounded-xl bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center shrink-0">{activeCreationPopup.icon}</div>
                 <div>
-                  <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">
-                    {activeCreationPopup.category}
-                  </h3>
+                  <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">{activeCreationPopup.category}</h3>
                   <p className="text-xs md:text-sm text-white/60">Select a specific area to view works</p>
                 </div>
               </div>
-
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
@@ -1306,7 +854,7 @@ export default function DreamCreations() {
                         if (item.toLowerCase().includes('profile')) {
                           setActiveCreationPopup(null);
                           setIsFlipbookOpen(true);
-                          setFlipbookCurrentPage(1);
+                          setFlipbookCurrentPage(0);
                         } else {
                           handleSubtitleModalClick(item);
                         }
@@ -1324,125 +872,59 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= 3D BOOK BROWSING FLIPBOOK INTERACTIVE LAYOUT MODAL ================= */}
+      {/* ================= PAGE CURL PHYSICS FLIPBOOK MODAL ================= */}
       <AnimatePresence>
         {isFlipbookOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md">
             
             <div className="absolute top-6 right-6 z-50 flex items-center gap-4">
-              <span className="text-xs font-mono text-white/40 hidden sm:block">Use Buttons below to Flip Pages</span>
-              <button 
-                onClick={() => setIsFlipbookOpen(false)}
-                className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"
-              >
-                <X size={20} />
-              </button>
+              <span className="text-xs font-mono text-white/40 hidden sm:block">Click page edges or drag to turn</span>
+              <button onClick={() => setIsFlipbookOpen(false)} className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"><X size={20} /></button>
             </div>
 
-            <div className="w-full max-w-6xl flex flex-col items-center gap-8">
+            <div className="w-full h-full flex flex-col items-center justify-center">
               
-              <div className="w-full flex items-center justify-center min-h-[50vh] md:min-h-[65vh] select-none">
-                
-                {/* DUAL-PAGE INTERACTIVE OPEN BOOK SPREAD */}
-                <div className="hidden md:flex w-full items-stretch justify-center relative max-w-5xl shadow-[0_30px_70px_rgba(0,0,0,0.8)] rounded-2xl border border-white/5 bg-[#0e111a]" style={{ perspective: 1500 }}>
-                  
-                  <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[30px] bg-gradient-to-r from-black/40 via-black/10 to-black/40 z-30 pointer-events-none" />
-
-                  {/* LEFT PAGE SLOT (3D HINGE: RIGHT CENTER) */}
-                  <div className="w-1/2 bg-black/40 relative aspect-[3/4] flex items-center justify-center border-r border-white/5 overflow-hidden">
-                    <AnimatePresence mode="wait" custom={flipDirection}>
-                      {flipbookPage === 1 ? (
-                        <motion.div 
-                          key="left-cover"
-                          custom={flipDirection} variants={pageFlipVariants} initial="enter" animate="center" exit="exit"
-                          className="absolute inset-0 bg-black/60 font-mono text-white/10 flex items-center justify-center text-xs uppercase tracking-widest select-none origin-right"
-                        >
-                          Inside Cover
-                        </motion.div>
-                      ) : (
-                        <motion.img 
-                          key={`left-${flipbookPage}`}
-                          src={getFlipbookUrl(flipbookPage, 'jpg')} 
-                          onError={(e) => { if (e.target.src.endsWith('.jpg')) e.target.src = getFlipbookUrl(flipbookPage, 'png'); }}
-                          alt={`Page ${flipbookPage}`}
-                          custom={flipDirection} variants={pageFlipVariants} initial="enter" animate="center" exit="exit"
-                          className="absolute inset-0 w-full h-full object-contain origin-right"
-                        />
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* RIGHT PAGE SLOT (3D HINGE: LEFT CENTER) */}
-                  <div className="w-1/2 bg-black/40 relative aspect-[3/4] flex items-center justify-center overflow-hidden">
-                    <AnimatePresence mode="wait" custom={flipDirection}>
-                      {flipbookPage + 1 > totalFlipbookPages ? (
-                        <motion.div 
-                          key="right-cover"
-                          custom={flipDirection} variants={pageFlipVariants} initial="enter" animate="center" exit="exit"
-                          className="absolute inset-0 bg-black/60 font-mono text-white/10 flex items-center justify-center text-xs uppercase tracking-widest select-none origin-left"
-                        >
-                          Back Inside Cover
-                        </motion.div>
-                      ) : (
-                        <motion.img 
-                          key={`right-${flipbookPage + 1}`}
-                          src={getFlipbookUrl(flipbookPage === 1 ? 1 : flipbookPage + 1, 'jpg')} 
-                          onError={(e) => { if (e.target.src.endsWith('.jpg')) e.target.src = getFlipbookUrl(flipbookPage === 1 ? 1 : flipbookPage + 1, 'png'); }}
-                          alt={`Page ${flipbookPage + 1}`}
-                          custom={flipDirection} variants={pageFlipVariants} initial="enter" animate="center" exit="exit"
-                          className="absolute inset-0 w-full h-full object-contain origin-left"
-                        />
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-
-                {/* MOBILE VIEWPORT LAYOUT (TINDER-LIKE SWIPE ACTIVATED & AUTO-SCALE HEIGHT) */}
-                <div 
-                  className="block md:hidden h-[75vh] w-auto max-w-full aspect-[3/4] rounded-xl overflow-hidden border border-white/10 bg-[#0e111a] shadow-[0_0_30px_rgba(0,0,0,1)] relative cursor-grab active:cursor-grabbing"
-                  style={{ perspective: 1200 }}
+              <div className="flex-grow w-full flex items-center justify-center px-4 max-h-[80vh] cursor-grab active:cursor-grabbing">
+                {/* HTMLFlipBook is configured to act as a realistic book with page-curl properties */}
+                <HTMLFlipBook
+                  width={500}
+                  height={700}
+                  size="stretch"
+                  minWidth={300}
+                  maxWidth={800}
+                  minHeight={400}
+                  maxHeight={1000}
+                  maxShadowOpacity={0.6}
+                  showCover={true}
+                  mobileScrollSupport={true}
+                  className="mx-auto shadow-[0_0_50px_rgba(0,0,0,0.8)]"
+                  ref={flipBookRef}
+                  usePortrait={true} // Automatically switches to single-page on mobile
+                  onFlip={onPageFlip} // Update bottom dock tracking
                 >
-                  <AnimatePresence mode="wait" custom={flipDirection}>
-                    <motion.img 
-                      key={`mobile-${flipbookPage}`}
-                      src={getFlipbookUrl(flipbookPage, 'jpg')} 
-                      onError={(e) => { if (e.target.src.endsWith('.jpg')) e.target.src = getFlipbookUrl(flipbookPage, 'png'); }}
-                      alt={`Page ${flipbookPage}`}
-                      custom={flipDirection} variants={pageFlipVariants} initial="enter" animate="center" exit="exit"
-                      drag="x"
-                      dragConstraints={{ left: 0, right: 0 }}
-                      onDragEnd={(e, { offset }) => {
-                        if (offset.x < -60) turnNext(); // Swiped left -> Next Page
-                        else if (offset.x > 60) turnPrev(); // Swiped right -> Prev Page
-                      }}
-                      className="absolute inset-0 w-full h-full object-contain origin-center"
-                    />
-                  </AnimatePresence>
-                </div>
-
+                  {/* Nag-ge-generate ng 91 pages nang dynamic */}
+                  {Array.from({ length: totalFlipbookPages }, (_, i) => (
+                    <BookPage key={i} number={i + 1} imageUrl={getFlipbookUrl(i + 1, 'jpg')} />
+                  ))}
+                </HTMLFlipBook>
               </div>
 
-              <div className="flex items-center gap-6 bg-black/40 border border-white/10 backdrop-blur-md px-6 py-3 rounded-full relative z-20">
+              {/* Bottom Dock Control Panel */}
+              <div className="flex items-center gap-6 bg-black/40 border border-white/10 backdrop-blur-md px-6 py-3 rounded-full relative z-20 mt-8 mb-4 shadow-xl">
                 <button 
-                  disabled={flipbookPage === 1}
-                  onClick={turnPrev}
-                  className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+                  onClick={goPrevPage}
+                  className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer"
                 >
                   <ChevronLeft size={24} />
                 </button>
 
                 <span className="text-xs font-mono font-bold tracking-widest text-zinc-400 uppercase select-none min-w-[100px] text-center">
-                  {window.innerWidth >= 768 ? (
-                    flipbookPage === 1 ? 'Cover (1)' : `Pages ${flipbookPage}-${Math.min(totalFlipbookPages, flipbookPage + 1)} / ${totalFlipbookPages}`
-                  ) : (
-                    `Page ${flipbookPage} / ${totalFlipbookPages}`
-                  )}
+                  Page {flipbookPage + 1} / {totalFlipbookPages}
                 </span>
 
                 <button 
-                  disabled={window.innerWidth >= 768 ? flipbookPage >= totalFlipbookPages - 1 : flipbookPage === totalFlipbookPages}
-                  onClick={turnNext}
-                  className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+                  onClick={goNextPage}
+                  className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer"
                 >
                   <ChevronRight size={24} />
                 </button>
@@ -1453,34 +935,11 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* 🚀 Custom 3D Spaceship Cursor with Fire & Smoke */}
-      <motion.div 
-        className="fixed top-0 left-0 w-16 h-16 z-[9999] pointer-events-none drop-shadow-[0_20px_20px_rgba(16,149,210,0.6)]"
-        style={{ 
-          x: smoothX, 
-          y: smoothY,
-          rotateX: rotateX,
-          rotateY: rotateY,
-          rotateZ: rotateZ,
-          perspective: 800 
-        }}
-      >
-        <motion.div 
-          className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-4 h-6 bg-gradient-to-t from-transparent via-orange-500 to-yellow-300 rounded-full blur-[2px] z-0"
-          animate={{ y: [0, 10], scale: [1, 1.5], opacity: [0.8, 0] }}
-          transition={{ duration: 0.3, repeat: Infinity, ease: "easeOut" }}
-        />
-        <motion.div 
-          className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/40 rounded-full blur-md z-0"
-          animate={{ y: [0, 20], scale: [1, 3], opacity: [0.4, 0] }}
-          transition={{ duration: 0.6, repeat: Infinity, ease: "easeOut", delay: 0.1 }}
-        />
-        
-        <img 
-          src="/images/spaceship.png" 
-          alt="Spaceship Cursor" 
-          className="w-full h-full object-contain relative z-10" 
-        />
+      {/* 🚀 Custom 3D Spaceship Cursor */}
+      <motion.div className="fixed top-0 left-0 w-16 h-16 z-[9999] pointer-events-none drop-shadow-[0_20px_20px_rgba(16,149,210,0.6)]" style={{ x: smoothX, y: smoothY, rotateX: rotateX, rotateY: rotateY, rotateZ: rotateZ, perspective: 800 }}>
+        <motion.div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-4 h-6 bg-gradient-to-t from-transparent via-orange-500 to-yellow-300 rounded-full blur-[2px] z-0" animate={{ y: [0, 10], scale: [1, 1.5], opacity: [0.8, 0] }} transition={{ duration: 0.3, repeat: Infinity, ease: "easeOut" }} />
+        <motion.div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/40 rounded-full blur-md z-0" animate={{ y: [0, 20], scale: [1, 3], opacity: [0.4, 0] }} transition={{ duration: 0.6, repeat: Infinity, ease: "easeOut", delay: 0.1 }} />
+        <img src="/images/spaceship.png" alt="Spaceship Cursor" className="w-full h-full object-contain relative z-10" />
       </motion.div>
 
     </div>
