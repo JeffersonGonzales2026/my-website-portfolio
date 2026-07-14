@@ -107,7 +107,7 @@ export default function AdminDashboard() {
   // =========================================================================
   // 5. CONTACT, MEDIA, & INBOX DATA STATES
   // =========================================================================
-  const [dynamicResumes, setDynamicResumes] = useState([]); // <--- NEW STATE FOR DROPDOWN RESUMES
+  const [dynamicResumes, setDynamicResumes] = useState([]); 
   const [contactPortfolioUrl, setContactPortfolioUrl] = useState("");
   const [contactPlatforms, setContactPlatforms] = useState([]);
   const [messagesLog, setMessagesLog] = useState([]);
@@ -124,7 +124,6 @@ export default function AdminDashboard() {
       const { data: home } = await supabase.from('home_engine').select('*').single();
       if (home) {
         setHomeHeroPhoto(home.hero_photo || "");
-        setHomeStats(home.quick_stats || []);
         setHomeStats(home.quick_stats || []);
         setHomeSkills(home.core_skills || []);
         setHomeTimeline(home.career_timeline || []);
@@ -322,7 +321,7 @@ export default function AdminDashboard() {
     const files = Array.from(e.target.files);
     if(files.length === 0) return;
     
-    alert(`🚀 Initializing bulk deployment pipeline for ${files.length} asset(s). Processing stack sequentionally—please preserve session connectivity...`);
+    alert(`🚀 Initializing bulk deployment pipeline for ${files.length} asset(s). Processing stack sequentially—please preserve session connectivity...`);
     
     const uploadedRecords = [];
     let successCounter = 0;
@@ -486,7 +485,6 @@ export default function AdminDashboard() {
                   <p className="text-[10px] text-zinc-500 mt-1 font-mono">Upload images/documents to copy URLs into your dynamic fields.</p>
                 </div>
                 <div className="relative">
-                  {/* INJECTED DYNAMIC MULTIPLE VALUE SELECTOR ATTRIBUTE HERE */}
                   <input type="file" multiple onChange={handleFileUploadLive} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf,video/mp4,.xlsx,.xls,.csv" />
                   <button className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md">
                     <UploadCloud size={14} /> RAW UPLOAD
@@ -513,7 +511,7 @@ export default function AdminDashboard() {
           {/* ================= WORKSPACE PANEL: HOME ENGINE ================= */}
           {activeModule === 'Home Engine' && (
             <div className="space-y-8 text-left">
-              {/* Tier 1: Static Attributes Card */}
+              {/* Static Attributes Card */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><Image size={14}/> Hero Assets Layer</h4>
                 <div className="space-y-1.5">
@@ -522,7 +520,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Quick Stats) */}
+              {/* Dynamic Items Matrix (Quick Stats) */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Quick Stats Counters Matrix</h4>
@@ -542,7 +540,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Skills Array) */}
+              {/* Dynamic Items Matrix (Skills Array) */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Core Competencies Data Streams</h4>
@@ -557,7 +555,7 @@ export default function AdminDashboard() {
                 ))}
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Career Timeline) */}
+              {/* Dynamic Items Matrix (Career Timeline) */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Chronological Progression Tracks</h4>
@@ -583,7 +581,7 @@ export default function AdminDashboard() {
           {/* ================= WORKSPACE PANEL: DREAM CREATIONS ================= */}
           {activeModule === 'Dream Creations' && (
             <div className="space-y-8 text-left">
-              {/* Tier 1: Static Attributes Card */}
+              {/* Static Attributes Card */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><Palette size={14}/> Studio Headers & Founder Parameters</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -608,7 +606,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Core Team Roster Allocations) */}
+              {/* Dynamic Items Matrix (Core Team Roster Allocations) */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Core Team Roster Allocations Matrix</h4>
@@ -647,7 +645,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Software & Trusted Clients Arrays) */}
+              {/* Software & Trusted Clients Arrays */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                   <div className="flex justify-between items-center border-b border-zinc-900 pb-1.5">
@@ -682,7 +680,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Client Feedback Testimonials) */}
+              {/* Client Feedback Testimonials */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Client Feedback Testimonial Submissions</h4>
@@ -709,11 +707,12 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Project Archive Matrix) */}
+              {/* Project Archive Matrix */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Project Archive Matrix Registries</h4>
-                  <button onClick={() => setDreamArchive([...dreamArchive, { category: "Branding & Identity", subtitle: "", title: "", client_name: "", description: "", featured_image_url: "", video_url: "/videos/project.mp4" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD PROJECT</button>
+                  {/* INJECTED IS_PUBLISHED: TRUE DEFAULT INSERTER PROPERTY RIGHT HERE */}
+                  <button onClick={() => setDreamArchive([...dreamArchive, { category: "Marketing Materials", subtitle: "Company Profiles", title: "J.P. Geonzon Company Profile", client_name: "J.P. Geonzon Construction Corp.", description: "", featured_image_url: "", video_url: "", is_published: true }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD PROJECT</button>
                 </div>
                 <div className="space-y-4">
                   {dreamArchive.map((project, idx) => (
@@ -722,7 +721,7 @@ export default function AdminDashboard() {
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         <input type="text" value={project.category} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'category', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 font-bold" placeholder="Category Map" />
                         <input type="text" value={project.subtitle} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Subtitle Filter" />
-                        <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white" placeholder="Project Title" />
+                        <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
                         <input type="text" value={project.client_name} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500" placeholder="Client Name" />
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -740,7 +739,7 @@ export default function AdminDashboard() {
           {/* ================= WORKSPACE PANEL: DATA ANALYST ================= */}
           {activeModule === 'Data Analyst' && (
             <div className="space-y-8 text-left">
-              {/* Tier 2: Dynamic Items Matrix (Quick Stats counters array) */}
+              {/* Quick Stats counters array */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><Database size={14}/> Analytics Matrix Performance Counters</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -754,7 +753,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Extensible Role Track Container) */}
+              {/* Extensible Role Track Container */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Extensible Experience Roles Stack</h4>
@@ -781,7 +780,7 @@ export default function AdminDashboard() {
                 ))}
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Technical Competencies Arrays) */}
+              {/* Technical Competencies Arrays */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Technical Analytical Competencies</h4>
@@ -798,7 +797,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (5-Tabbed Showcase Content Fields COMPLETE) */}
+              {/* 5-Tabbed Showcase Content Fields COMPLETE */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2">// Analytics Portfolio Showcase Core (5 Completed Tabs)</h4>
                 
@@ -926,7 +925,7 @@ export default function AdminDashboard() {
                           <input type="text" value={item.insights} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'insights', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Insights" />
                           <input type="text" value={item.recommendations} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'recommendations', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400" placeholder="Recommendations" />
                           <input type="text" value={item.impact} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'impact', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400" placeholder="Business Impact" />
-                          <input type="text" value={item.lessons} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'lessons', text.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500" placeholder="Lessons Learned" />
+                          <input type="text" value={item.lessons} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'lessons', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500" placeholder="Lessons Learned" />
                         </div>
                       </div>
                     ))}
@@ -964,7 +963,7 @@ export default function AdminDashboard() {
                 )}
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Software Ecosystem Matrix with Logos) */}
+              {/* Software Ecosystem Matrix with Logos */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Software Ecosystem Registry</h4>
@@ -1001,7 +1000,7 @@ export default function AdminDashboard() {
                 ))}
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Future Roadmap badges) */}
+              {/* Future Roadmap badges */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Future Strategic Analytics Roadmap Array</h4>
@@ -1030,7 +1029,7 @@ export default function AdminDashboard() {
           {/* ================= WORKSPACE PANEL: AI DEVELOPER ================= */}
           {activeModule === 'AI Developer' && (
             <div className="space-y-8 text-left">
-              {/* Tier 2: Dynamic Items Matrix (Developer Stats) */}
+              {/* Developer Stats */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><BrainCircuit size={14}/> Engineering Metrics Counters</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -1043,7 +1042,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Journey Timeline) */}
+              {/* Journey Timeline */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Development Chronology Flow</h4>
@@ -1060,7 +1059,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Current AI Ecosystem) */}
+              {/* Current AI Ecosystem */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Current AI Ecosystem Partners</h4>
@@ -1078,7 +1077,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Development Architecture with Logos) */}
+              {/* Development Architecture with Logos */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Development Architecture Stack Matrix</h4>
@@ -1115,7 +1114,7 @@ export default function AdminDashboard() {
                 ))}
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Engineering Showcase - Portfolio with Tech list) */}
+              {/* Engineering Showcase - Portfolio with Tech list */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Flagship Engineering Showcase Projects Matrix</h4>
@@ -1138,7 +1137,7 @@ export default function AdminDashboard() {
                             <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
                             <input type="text" value={project.role} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'role', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Role Assigned" />
                           </div>
-                          <textarea value={project.desc} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-300 h-16 resize-none" placeholder="Project Description Narrative..." />
+                          <textarea value={project.desc} onChange={{ key: idx }} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-300 h-16 resize-none" placeholder="Project Description Narrative..." />
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                             <input type="text" value={project.tech} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'tech', e.target.value)} className="sm:col-span-2 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-400" placeholder="Technologies Managed (Comma separated)" />
                             <input type="text" value={project.actionText} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'actionText', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Button Text (e.g. Inspect Source)" />
@@ -1156,7 +1155,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Tier 1: Static Attributes Card (GitHub Profile Meta Card) */}
+              {/* Static Attributes Card (GitHub Profile Meta Card) */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><ExternalLink size={14}/> Attached GitHub Sync Panel Context</h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1216,7 +1215,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Tier 2: Dynamic Items Matrix (Social Accounts Grid table) */}
+              {/* Social Accounts Grid table */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Social Networking Directory Registry</h4>

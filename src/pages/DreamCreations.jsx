@@ -144,7 +144,7 @@ export default function DreamCreations() {
   // ================= EXCLUSIVE MULTI-PAGE FLIPBOOK STATE =================
   const [isFlipbookOpen, setIsFlipbookOpen] = useState(false);
   const [flipbookPage, setFlipbookCurrentPage] = useState(1);
-  const totalFlipbookPages = 91; // UPDATED to 91 fully structured compliance pages
+  const totalFlipbookPages = 91; 
 
   // ================= DYNAMIC RESUME STATE =================
   const [pageResume, setPageResume] = useState(null);
@@ -153,7 +153,6 @@ export default function DreamCreations() {
   const [randomGlowIndex, setRandomGlowIndex] = useState(null);
 
   useEffect(() => {
-    // Pick a random box to glow every 3 seconds (as requested)
     const interval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * creationsCategories.length);
       setRandomGlowIndex(randomIndex);
@@ -162,7 +161,7 @@ export default function DreamCreations() {
     return () => clearInterval(interval);
   }, []);
 
-  // ================= SCROLL & SWIPE LOGIC FOR TEAM =================
+  // SCROLL & SWIPE LOGIC FOR TEAM
   const isTeamDragging = useRef(false);
   const teamStartX = useRef(0);
   const teamScrollLeftPos = useRef(0);
@@ -184,7 +183,7 @@ export default function DreamCreations() {
     }
   };
 
-  // ================= SCROLL & SWIPE LOGIC FOR CREATIVE PROCESS =================
+  // SCROLL & SWIPE LOGIC FOR CREATIVE PROCESS
   const isProcessDragging = useRef(false);
   const processStartX = useRef(0);
   const processScrollLeftPos = useRef(0);
@@ -206,7 +205,7 @@ export default function DreamCreations() {
     }
   };
 
-  // ================= SCROLL & SWIPE LOGIC FOR CLIENTS (LEFT TO RIGHT) =================
+  // SCROLL & SWIPE LOGIC FOR CLIENTS
   const clientsScrollRef = useRef(null);
   const [isClientsPaused, setIsClientsPaused] = useState(false);
   const isClientsDragging = useRef(false);
@@ -220,7 +219,7 @@ export default function DreamCreations() {
     
     const scroll = () => {
       if (!isClientsPaused && !isClientsDragging.current) {
-        container.scrollLeft += 1; // Moves Left to Right
+        container.scrollLeft += 1; 
         if (container.scrollLeft <= 0) {
           container.scrollLeft += container.scrollWidth / 2;
         }
@@ -251,7 +250,7 @@ export default function DreamCreations() {
     onTouchEnd: () => setIsClientsPaused(false)
   };
 
-  // ================= SCROLL & SWIPE LOGIC FOR FEEDBACK (RIGHT TO LEFT) =================
+  // SCROLL & SWIPE LOGIC FOR FEEDBACK
   const feedbackScrollRef = useRef(null);
   const [isFeedbackPaused, setIsFeedbackPaused] = useState(false);
   const isFeedbackDragging = useRef(false);
@@ -265,7 +264,7 @@ export default function DreamCreations() {
     
     const scroll = () => {
       if (!isFeedbackPaused && !isFeedbackDragging.current) {
-        container.scrollLeft -= 1; // Moves Right to Left
+        container.scrollLeft -= 1; 
         if (container.scrollLeft >= container.scrollWidth / 2) {
           container.scrollLeft -= container.scrollWidth / 2;
         }
@@ -296,7 +295,7 @@ export default function DreamCreations() {
     onTouchEnd: () => setIsFeedbackPaused(false)
   };
 
-  // ================= CUSTOM 3D CURSOR LOGIC =================
+  // CUSTOM 3D CURSOR LOGIC
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 
@@ -339,9 +338,9 @@ export default function DreamCreations() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // ================= HELPER FOR SECURE MIGRATED IMAGES BUCKET PATHS =================
+  // ================= FIXED CORX ENDPOINT FOR DYNAMIC RAW FILE ENDPOINTS =================
   const getFlipbookUrl = (pageIndex) => {
-    return `https://jeffersonguzmangonzales03.supabase.co/storage/v1/object/public/portfolio_media/page-${pageIndex}.jpg`;
+    return `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/page-${pageIndex}.jpg`;
   };
 
   useEffect(() => {
@@ -419,19 +418,16 @@ export default function DreamCreations() {
         if (reviewError) throw reviewError;
         setReviews(reviewData || []);
 
-        // ================= FETCH PAGE-SPECIFIC RESUME =================
         const { data: allResumes, error: resumeError } = await supabase
           .from('portfolio_resumes')
           .select('*');
         
         if (allResumes && !resumeError && allResumes.length > 0) {
-          // Look for the Graphic Artist resume based on the title you typed in the CMS
           const graphicResume = allResumes.find(res => 
             res.title.toLowerCase().includes('graphic') || 
             res.title.toLowerCase().includes('artist') ||
             res.title.toLowerCase().includes('dream')
-          ) || allResumes[0]; // Fallback to the first resume if name doesn't match perfectly
-          
+          ) || allResumes[0]; 
           setPageResume(graphicResume);
         }
 
@@ -462,22 +458,20 @@ export default function DreamCreations() {
 
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(null);
+    setActivePortfolioSubtitle(subtitleName); // <--- FIXED: Dynamic allocation binder instead of null routing
     
-    const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
     setTimeout(() => {
-      const targetElement = document.getElementById(targetId);
+      const targetElement = document.getElementById('portfolio-directory');
       if (targetElement) {
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        targetElement.classList.add('ring-4', 'ring-[#1095d2]', 'scale-[1.02]');
-        setTimeout(() => {
-           targetElement.classList.remove('ring-4', 'ring-[#1095d2]', 'scale-[1.02]');
-        }, 1500); 
-      } else {
-        scrollToSection('portfolio-directory');
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }, 300);
   };
+
+  // ================= DYNAMIC COMPONENT LEVEL FILTER ARCHITECTURE =================
+  const filteredProjects = activePortfolioSubtitle 
+    ? projects.filter(p => p.subtitle?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || p.category?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
+    : projects;
 
   return (
     <div 
@@ -595,7 +589,7 @@ export default function DreamCreations() {
 
       <div id="creations-grid" className="scroll-mt-24" />
 
-      {/* ================= 29. CREATIONS SECTION ================= */}
+      {/* ================= CREATIONS SECTION ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative">
         <div className="mb-12 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
@@ -635,7 +629,7 @@ export default function DreamCreations() {
 
       <div id="founder-bio" className="scroll-mt-24" />
 
-      {/* ================= 27. MEET THE FOUNDER SECTION ================= */}
+      {/* ================= MEET THE FOUNDER SECTION ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         
         <motion.div
@@ -700,7 +694,7 @@ export default function DreamCreations() {
               <p className="text-base md:text-lg text-white/70 leading-relaxed">
                 Jefferson founded Dream Creations with the vision of helping businesses communicate more effectively through thoughtful and impactful visual design.
               </p>
-              <p className="text-base md:text-lg text-white/70 hobbies leading-relaxed">
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">
                 With more than ten years of professional experience, he has worked across multiple industries including healthcare, finance, insurance, technology, apparel, education, e-commerce, printing, media, and real estate.
               </p>
               <p className="text-base md:text-lg text-white/70 leading-relaxed">
@@ -729,7 +723,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 28. OUR TEAM (MANUAL MOUSE SWIPE ENABLED) ================= */}
+      {/* ================= OUR TEAM ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-16 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Creators</h3>
@@ -820,7 +814,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 34. SOFTWARE EXPERTISE ================= */}
+      {/* ================= SOFTWARE EXPERTISE ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <div className="mb-12 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Software Expertise</h3>
@@ -855,7 +849,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 35. CREATIVE PROCESS (MANUAL MOUSE SWIPE ENABLED) ================= */}
+      {/* ================= CREATIVE PROCESS ================= */}
       <section className="w-full py-20 z-10 relative border-t border-white/10">
         <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
@@ -902,7 +896,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= FEATURED CLIENTS (AUTO-SCROLL + MANUAL SWIPE - LEFT TO RIGHT) ================= */}
+      {/* ================= FEATURED CLIENTS ================= */}
       <section className="max-w-7xl mx-auto w-full px-0 py-20 z-10 relative border-t border-white/10">
         <div className="mb-12 text-center px-6">
           <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Our Valued Dreamers</h3>
@@ -942,7 +936,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= 36. TESTIMONIALS (AUTO-SCROLL + MANUAL SWIPE - RIGHT TO LEFT) ================= */}
+      {/* ================= TESTIMONIALS ================= */}
       <section className="max-w-7xl mx-auto w-full px-0 py-20 z-10 relative border-t border-white/10">
         <div className="mb-12 text-center md:text-left px-6">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Client Feedback</h3>
@@ -999,7 +993,7 @@ export default function DreamCreations() {
 
       <div id="portfolio-directory" className="scroll-mt-24" />
 
-      {/* ================= 30 & 31. UNIFIED PORTFOLIO DIRECTORY (LIVE DATABASE FETCH) ================= */}
+      {/* ================= UNIFIED PORTFOLIO DIRECTORY ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-[120vh]">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
           <div className="text-center md:text-left">
@@ -1091,12 +1085,11 @@ export default function DreamCreations() {
               </h4>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projects.length > 0 ? (
-                  projects.map((project) => (
+                {filteredProjects.length > 0 ? (
+                  filteredProjects.map((project) => (
                     <div 
                       key={project.id} 
                       onClick={() => {
-                        // DETECT IF THIS IS YOUR MIGRATED COMPANY PROFILE DOC
                         if (project.title.toLowerCase().includes('profile') || project.category.toLowerCase().includes('profile') || project.description.toLowerCase().includes('company profile')) {
                           setIsFlipbookOpen(true);
                           setFlipbookCurrentPage(1);
@@ -1113,7 +1106,6 @@ export default function DreamCreations() {
                            </div>
                          )}
                          
-                         {/* VIDEO PLAY BUTTON OVERLAY */}
                          {project.video_url && !project.title.toLowerCase().includes('profile') && (
                            <a href={project.video_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
                              <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform">
@@ -1133,7 +1125,7 @@ export default function DreamCreations() {
                 ) : (
                   <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm border border-dashed border-white/10 rounded-2xl">
                     <ImageIcon size={32} className="mb-4 opacity-30" />
-                    No projects have been published to the archive yet.
+                    No projects have been published to this archive category yet.
                   </div>
                 )}
               </div>
@@ -1143,7 +1135,7 @@ export default function DreamCreations() {
         </AnimatePresence>
       </section>
 
-      {/* ================= 38. PRICING / PROJECT INVESTMENT ================= */}
+      {/* ================= PRICING / PROJECT INVESTMENT ================= */}
       <section className="max-w-4xl mx-auto w-full px-6 py-24 z-10 relative text-center mt-10">
         <div className="mb-12">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Investment</h3>
@@ -1178,7 +1170,7 @@ export default function DreamCreations() {
         </motion.div>
       </section>
 
-      {/* ================= 39. PAGE RESUME DOWNLOAD ================= */}
+      {/* ================= PAGE RESUME DOWNLOAD ================= */}
       {pageResume && (
         <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center">
           <motion.a
@@ -1204,7 +1196,7 @@ export default function DreamCreations() {
         </section>
       )}
 
-      {/* ================= 40. TRANSITION TO THE NEXT JOURNEY ================= */}
+      {/* ================= TRANSITION TO THE NEXT JOURNEY ================= */}
       <section className="w-full relative border-t border-white/10 mt-16 pt-32 pb-32 px-6 overflow-hidden z-10 flex flex-col items-center text-center">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#021f1a] to-[#011410] -z-10" />
 
@@ -1216,7 +1208,6 @@ export default function DreamCreations() {
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center"
           >
-            {/* Pill Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-8">
               <Database size={14} /> The Next Chapter
             </div>
@@ -1321,7 +1312,6 @@ export default function DreamCreations() {
         {isFlipbookOpen && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
             
-            {/* Modal Exit Click Area */}
             <div className="absolute top-6 right-6 z-50 flex items-center gap-4">
               <span className="text-xs font-mono text-white/40 hidden sm:block">Use Buttons below to Flip Pages</span>
               <button 
@@ -1332,16 +1322,13 @@ export default function DreamCreations() {
               </button>
             </div>
 
-            {/* Core Flipbook Container */}
             <div className="w-full max-w-6xl flex flex-col items-center gap-8">
               
-              {/* Dynamic Spread Viewer Frame */}
               <div className="w-full flex items-center justify-center min-h-[50vh] md:min-h-[65vh] select-none">
                 
-                {/* 1. DESKTOP VIEWPORT LAYOUT: DUAL-PAGE INTERACTIVE OPEN BOOK SPREAD */}
+                {/* DUAL-PAGE INTERACTIVE OPEN BOOK SPREAD */}
                 <div className="hidden md:flex w-full items-stretch justify-center relative max-w-5xl shadow-[0_30px_70px_rgba(0,0,0,0.8)] rounded-2xl overflow-hidden border border-white/5 bg-[#0e111a]">
                   
-                  {/* Spine Realism Overlay Mask */}
                   <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[30px] bg-gradient-to-r from-black/40 via-black/10 to-black/40 z-30 pointer-events-none" />
 
                   {/* LEFT PAGE SLOT */}
@@ -1377,7 +1364,7 @@ export default function DreamCreations() {
                   </div>
                 </div>
 
-                {/* 2. MOBILE VIEWPORT LAYOUT: SINGLE-PAGE HIGHSPEED CARD VIEW */}
+                {/* MOBILE VIEWPORT LAYOUT */}
                 <div className="block md:hidden w-full max-w-sm aspect-[3/4] rounded-xl overflow-hidden border border-white/10 bg-[#0e111a] shadow-2xl relative">
                   <motion.img 
                     key={`mobile-${flipbookPage}`}
@@ -1391,7 +1378,6 @@ export default function DreamCreations() {
 
               </div>
 
-              {/* Bottom Dock Control Panel */}
               <div className="flex items-center gap-6 bg-black/40 border border-white/10 backdrop-blur-md px-6 py-3 rounded-full relative z-20">
                 <button 
                   disabled={flipbookPage === 1}
@@ -1423,7 +1409,7 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* 🚀 Custom 3D Spaceship Cursor with Fire & Smoke (Follows Mouse & Touch) */}
+      {/* 🚀 Custom 3D Spaceship Cursor with Fire & Smoke */}
       <motion.div 
         className="fixed top-0 left-0 w-16 h-16 z-[9999] pointer-events-none drop-shadow-[0_20px_20px_rgba(16,149,210,0.6)]"
         style={{ 
@@ -1435,13 +1421,11 @@ export default function DreamCreations() {
           perspective: 800 
         }}
       >
-        {/* Animated Fire Thruster */}
         <motion.div 
           className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-4 h-6 bg-gradient-to-t from-transparent via-orange-500 to-yellow-300 rounded-full blur-[2px] z-0"
           animate={{ y: [0, 10], scale: [1, 1.5], opacity: [0.8, 0] }}
           transition={{ duration: 0.3, repeat: Infinity, ease: "easeOut" }}
         />
-        {/* Animated Smoke Trail */}
         <motion.div 
           className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/40 rounded-full blur-md z-0"
           animate={{ y: [0, 20], scale: [1, 3], opacity: [0.4, 0] }}
