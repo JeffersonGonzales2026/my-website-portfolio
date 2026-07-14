@@ -223,8 +223,8 @@ export default function AdminDashboard() {
           await supabase.from('client_reviews').insert(dreamFeedback.map(({ id, created_at, ...rest }) => rest));
         }
 
-        // Sync Archives
-        await supabase.from('portfolio_projects').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        // Sync Archives - FIXES INSTANT DISAPPEARANCE CRASHES BY REMOVING COLUMN CASTING ERRORS
+        await supabase.from('portfolio_projects').delete().neq('title', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (dreamArchive.length > 0) {
           await supabase.from('portfolio_projects').insert(dreamArchive.map(({ id, created_at, ...rest }) => rest));
         }
@@ -314,14 +314,12 @@ export default function AdminDashboard() {
     }
   };
 
-  // =========================================================================
-  // UPGRADED LIVE FILE HANDLER: DYNAMIC SEQUENTIAL BULK UPLOAD PIPELINE
-  // =========================================================================
+  // DYNAMIC BULK UPLOADER
   const handleFileUploadLive = async (e) => {
     const files = Array.from(e.target.files);
     if(files.length === 0) return;
     
-    alert(`🚀 Initializing bulk deployment pipeline for ${files.length} asset(s). Processing stack sequentially—please preserve session connectivity...`);
+    alert(`🚀 Initializing bulk deployment pipeline for ${files.length} asset(s)...`);
     
     const uploadedRecords = [];
     let successCounter = 0;
@@ -329,10 +327,12 @@ export default function AdminDashboard() {
 
     for (const file of files) {
       try {
-        // 1. Unique namespace hashing layout via timestamps and entropy seeds
         const fileExt = file.name.split('.').pop();
-        const entropySeed = Math.random().toString(36).substring(2, 7);
-        const fileName = `${Date.now()}_${entropySeed}.${fileExt}`;
+        
+        // PRESERVES EXACT PAGE NAMES INSTEAD OF SCRAMBLING THEM
+        const fileName = file.name.startsWith('page-') 
+          ? file.name 
+          : `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
         
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('portfolio_media')
@@ -340,12 +340,10 @@ export default function AdminDashboard() {
 
         if (uploadError) throw uploadError;
 
-        // 2. Fetch CDN endpoint mapping vector
         const { data: { publicUrl } } = supabase.storage
           .from('portfolio_media')
           .getPublicUrl(fileName);
 
-        // 3. Mount item logs directly into standard library table index
         const { data: dbData, error: dbError } = await supabase
           .from('media_library')
           .insert([{ 
@@ -366,17 +364,14 @@ export default function AdminDashboard() {
       }
     }
 
-    // Refresh framework view dynamically with successfully inserted assets
     if (uploadedRecords.length > 0) {
       setMediaFiles(prev => [...uploadedRecords, ...prev]);
     }
     
-    alert(`🟢 ASSET TRANSACTION STACK PROCESSED!\nSuccessful Migrations: ${successCounter}\nFailed Discard Blocks: ${failureCounter}`);
+    alert(`🟢 ASSET TRANSACTION STACK PROCESSED!\nSuccessful Migrations: ${successCounter}\nFailed: ${failureCounter}`);
   };
 
-  // =========================================================================
   // STATE GENERIC MUTATION HELPERS
-  // =========================================================================
   const handleUpdateArrayField = (state, setState, index, field, value) => {
     const copy = [...state];
     copy[index][field] = value;
@@ -403,7 +398,6 @@ export default function AdminDashboard() {
       {/* UNIVERSAL SIDEBAR CONTROL DRAWER */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#09090b] border-r border-zinc-900 flex flex-col justify-between transition-transform duration-300 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         
-        {/* Mobile Close Button */}
         <button onClick={() => setIsSidebarOpen(false)} className="absolute top-6 right-4 md:hidden text-zinc-500 hover:text-white">
           <X size={20} />
         </button>
@@ -438,10 +432,8 @@ export default function AdminDashboard() {
       {/* PRIMARY MODULE CONTENT VIEWPORT WORKSPACE */}
       <main className="flex-1 flex flex-col overflow-hidden bg-[#09090b]">
         
-        {/* TIER 3: THE GLOBAL ACTIONS STICKY HEADER BAR */}
         <header className="h-16 flex-shrink-0 border-b border-zinc-900 flex items-center justify-between px-4 md:px-8 bg-[#09090b]/80 backdrop-blur-md sticky top-0 z-50">
           <div className="flex items-center gap-3">
-            {/* Hamburger Button for Mobile */}
             <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-2 -ml-2 text-zinc-400 hover:text-white cursor-pointer">
               <Menu size={20} />
             </button>
@@ -511,7 +503,6 @@ export default function AdminDashboard() {
           {/* ================= WORKSPACE PANEL: HOME ENGINE ================= */}
           {activeModule === 'Home Engine' && (
             <div className="space-y-8 text-left">
-              {/* Static Attributes Card */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><Image size={14}/> Hero Assets Layer</h4>
                 <div className="space-y-1.5">
@@ -520,7 +511,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Dynamic Items Matrix (Quick Stats) */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Quick Stats Counters Matrix</h4>
@@ -540,7 +530,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Dynamic Items Matrix (Skills Array) */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Core Competencies Data Streams</h4>
@@ -555,7 +544,6 @@ export default function AdminDashboard() {
                 ))}
               </div>
 
-              {/* Dynamic Items Matrix (Career Timeline) */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Chronological Progression Tracks</h4>
@@ -581,7 +569,6 @@ export default function AdminDashboard() {
           {/* ================= WORKSPACE PANEL: DREAM CREATIONS ================= */}
           {activeModule === 'Dream Creations' && (
             <div className="space-y-8 text-left">
-              {/* Static Attributes Card */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><Palette size={14}/> Studio Headers & Founder Parameters</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -606,7 +593,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Dynamic Items Matrix (Core Team Roster Allocations) */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Core Team Roster Allocations Matrix</h4>
@@ -645,7 +631,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Software & Trusted Clients Arrays */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                   <div className="flex justify-between items-center border-b border-zinc-900 pb-1.5">
@@ -664,7 +649,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                   <div className="flex justify-between items-center border-b border-zinc-900 pb-1.5">
-                    <span className="text-xs font-mono font-bold text-zinc-400 block">Trusted Client Log Grid</span>
+                    <h4 className="text-xs font-mono font-bold text-zinc-400 block">Trusted Client Log Grid</h4>
                     <button onClick={() => setDreamClients([...dreamClients, { name: "New Client", industry: "", imageSrc: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD</button>
                   </div>
                   <div className="space-y-2">
@@ -711,8 +696,8 @@ export default function AdminDashboard() {
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Project Archive Matrix Registries</h4>
-                  {/* INJECTED IS_PUBLISHED: TRUE DEFAULT INSERTER PROPERTY RIGHT HERE */}
-                  <button onClick={() => setDreamArchive([...dreamArchive, { category: "Marketing Materials", subtitle: "Company Profiles", title: "J.P. Geonzon Company Profile", client_name: "J.P. Geonzon Construction Corp.", description: "", featured_image_url: "", video_url: "", is_published: true }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD PROJECT</button>
+                  {/* COMPLETELY STRIPPED OUT 'IS_PUBLISHED: TRUE' TO RESOLVE THE POSTGRES COLUMN CONFLICT ERROR */}
+                  <button onClick={() => setDreamArchive([...dreamArchive, { category: "Marketing Materials", subtitle: "Company Profiles", title: "J.P. Geonzon Company Profile", client_name: "J.P. Geonzon Construction Corp.", description: "Complete 91-page corporate company profile manual.", featured_image_url: "", video_url: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD PROJECT</button>
                 </div>
                 <div className="space-y-4">
                   {dreamArchive.map((project, idx) => (
@@ -893,7 +878,7 @@ export default function AdminDashboard() {
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                           <input type="text" value={item.timeSaved} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'timeSaved', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Time Saved" />
-                          <input type="text" value={item.productivity} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'productivity', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Productivity" />
+                          <input type="text" value={item.productivity} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'productivity', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-lime-400" placeholder="Productivity" />
                           <input type="text" value={item.errorReduction} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'errorReduction', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Error Reduction" />
                           <input type="text" value={item.tech} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'tech', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Tech Used" />
                           <input type="text" value={item.ai} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'ai', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-purple-400" placeholder="AI Used" />
@@ -963,7 +948,7 @@ export default function AdminDashboard() {
                 )}
               </div>
 
-              {/* Software Ecosystem Matrix with Logos */}
+              {/* Software Ecosystem Registry */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Software Ecosystem Registry</h4>
@@ -1137,7 +1122,8 @@ export default function AdminDashboard() {
                             <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
                             <input type="text" value={project.role} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'role', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Role Assigned" />
                           </div>
-                          <textarea value={project.desc} onChange={{ key: idx }} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-300 h-16 resize-none" placeholder="Project Description Narrative..." />
+                          {/* FIXED RE-RENDER OVERCHANNELS OBJECT TYPO FROM HERE */}
+                          <textarea value={project.desc} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-300 h-16 resize-none" placeholder="Project Description Narrative..." />
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                             <input type="text" value={project.tech} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'tech', e.target.value)} className="sm:col-span-2 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-400" placeholder="Technologies Managed (Comma separated)" />
                             <input type="text" value={project.actionText} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'actionText', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Button Text (e.g. Inspect Source)" />

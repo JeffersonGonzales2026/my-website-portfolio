@@ -149,7 +149,7 @@ export default function DreamCreations() {
   // ================= DYNAMIC RESUME STATE =================
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= RANDOM GLOW & PRESSED EFFECT LOGIC =================
+  // ================= RANDOM GLOW LOGIC =================
   const [randomGlowIndex, setRandomGlowIndex] = useState(null);
 
   useEffect(() => {
@@ -338,7 +338,7 @@ export default function DreamCreations() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // ================= FIXED CORX ENDPOINT FOR DYNAMIC RAW FILE ENDPOINTS =================
+  // FIXED STORAGE PATH ENDPOINT LINK LOGIC (MAPPED DIRECT TO THE DDIFF... LIVE CLOUD DOMAIN)
   const getFlipbookUrl = (pageIndex) => {
     return `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/page-${pageIndex}.jpg`;
   };
@@ -402,10 +402,10 @@ export default function DreamCreations() {
           }
         }
 
+        // REMOVED STRICT IS_PUBLISHED FILTER UNTIL IT INTEGRATES INTO CORE BACKING TABLE SCHEMAS
         const { data: projectData, error: projectError } = await supabase
           .from('portfolio_projects')
           .select('*')
-          .eq('is_published', true)
           .order('created_at', { ascending: false });
         if (projectError) throw projectError;
         setProjects(projectData || []);
@@ -458,7 +458,7 @@ export default function DreamCreations() {
 
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(subtitleName); // <--- FIXED: Dynamic allocation binder instead of null routing
+    setActivePortfolioSubtitle(subtitleName); // <--- ASSIGNS CORX STATE FILTER BINDER ON MODAL INTERCEPTIONS
     
     setTimeout(() => {
       const targetElement = document.getElementById('portfolio-directory');
@@ -468,7 +468,7 @@ export default function DreamCreations() {
     }, 300);
   };
 
-  // ================= DYNAMIC COMPONENT LEVEL FILTER ARCHITECTURE =================
+  // ROBUST NORMALIZED COMPARISON CHECK FOR SUB-BOARD FILTER MATRICES
   const filteredProjects = activePortfolioSubtitle 
     ? projects.filter(p => p.subtitle?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || p.category?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
     : projects;
@@ -1284,16 +1284,9 @@ export default function DreamCreations() {
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
+                    {/* FIXED CLICKEVENT TARGET TO ENERGIZE FILTER ENGINE OVER INLINE MODAL DEPLOYMENTS */}
                     <button 
-                      onClick={() => {
-                        if (item.toLowerCase().includes('profile')) {
-                          setActiveCreationPopup(null);
-                          setIsFlipbookOpen(true);
-                          setFlipbookCurrentPage(1);
-                        } else {
-                          handleSubtitleModalClick(item);
-                        }
-                      }}
+                      onClick={() => handleSubtitleModalClick(item)}
                       className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group cursor-pointer"
                     >
                       <span className="text-[#1095d2] group-hover:translate-x-1 transition-transform">▹</span>
