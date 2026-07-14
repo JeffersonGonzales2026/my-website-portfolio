@@ -516,18 +516,18 @@ export default function DreamCreations() {
                <div className="absolute inset-0 bg-gradient-to-tr from-[#1095d2]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                {founderPhoto ? ( <img src={founderPhoto} alt="Jefferson Gonzales" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" /> ) : ( <div className="w-32 h-32 rounded-full border border-[#1095d2]/50 bg-black/50 flex items-center justify-center text-4xl font-bold text-white shadow-[0_0_30px_rgba(16,149,210,0.3)] z-10 group-hover:scale-105 transition-transform duration-500">JG</div> )}
                <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 z-10">
-                 <p className="text-[#1095d2] text-xs font-bold uppercase tracking-wider mb-1">Founder & Creative Director</p>
+                 <p className="text-[#1095d2] text-xs font-bold uppercase tracking-wider mb-1">Owner& Team Manager</p>
                  <h4 className="text-white font-bold text-lg">Jefferson Gonzales</h4>
                </div>
             </div>
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }} className="lg:col-span-7 space-y-6">
-            <div className="mb-6"><h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Meet the Founder</h3><div className="w-20 h-1 bg-[#1095d2] rounded-full" /></div>
+            <div className="mb-6"><h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">The Person Behind Dream Creations</h3><div className="w-20 h-1 bg-[#1095d2] rounded-full" /></div>
             <div className="flex flex-wrap gap-2 mb-4">
-               {["Founder", "Owner", "Creative Director", "Team Manager", "Graphic Designer"].map((role, idx) => ( <span key={idx} className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-medium text-white/80">{role}</span> ))}
+               {["Owner", "Creative Director", "Team Manager", "Graphic Designer"].map((role, idx) => ( <span key={idx} className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-medium text-white/80">{role}</span> ))}
             </div>
             <div className="space-y-4">
-              <p className="text-base md:text-lg text-white/70 leading-relaxed">Jefferson founded Dream Creations with the vision of helping businesses communicate more effectively through thoughtful and impactful visual design.</p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">Jeff created Dream Creations with the vision of helping businesses communicate more effectively through thoughtful and impactful visual design.</p>
               <p className="text-base md:text-lg text-white/70 leading-relaxed">With more than ten years of professional experience, he has worked across multiple industries including healthcare, finance, insurance, technology, apparel, education, e-commerce, printing, media, and real estate.</p>
               <p className="text-base md:text-lg text-white/70 leading-relaxed">Inspired by his former team manager, he started building his own team of graphic designers with a vision to empower more dreamers (clients) and creators (designers).</p>
               <p className="text-base md:text-lg text-white/70 leading-relaxed">Today, he continues leading Dream Creations while expanding its capabilities through data analytics, automation, and software development.</p>
