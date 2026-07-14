@@ -28,7 +28,7 @@ const iconMap = {
 const staticPlatforms = [
   { id: 'linkedin', name: 'LinkedIn', username: 'jeffersongonzales', link: 'https://linkedin.com', status: 'active' },
   { id: 'github', name: 'GitHub', username: 'jeffersongonzales', link: 'https://github.com', status: 'active' },
-  { id: 'email', name: 'Email', username: 'hello@example.com', link: 'mailto:hello@example.com', status: 'active' },
+  { id: 'email', name: 'Email', username: 'jeffersonguzmangonzales03@gmail.com', link: 'mailto:jeffersonguzmangonzales03@gmail.com', status: 'active' },
   { id: 'facebook', name: 'Facebook', username: 'Jefferson Gonzales', link: 'https://www.facebook.com/jefferson.gonzales.1276', status: 'active' },
   { id: 'instagram', name: 'Instagram', username: '@jeff.creates', link: 'https://instagram.com', status: 'future' },
   { id: 'discord', name: 'Discord', username: 'jeffgonzales#0000', link: 'https://discord.com/channels/users/1129777754162864170.1', status: 'active' }
