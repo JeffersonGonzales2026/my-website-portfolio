@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
 import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import HTMLFlipBook from 'react-pageflip'; // <-- BAGONG LIBRARY PARA SA PAGE CURL!
+import HTMLFlipBook from 'react-pageflip';
 
 // Helper component for counting numbers
 const AnimatedNumber = ({ value, suffix }) => {
@@ -26,12 +26,11 @@ const AnimatedNumber = ({ value, suffix }) => {
 };
 
 // =========================================================================
-// ANG ATING BAGONG 3D PAGE COMPONENT (Kailangan ng forwardRef para sa page curl)
+// ANG ATING BAGONG 3D PAGE COMPONENT
 // =========================================================================
 const BookPage = React.forwardRef((props, ref) => {
   return (
     <div className="bg-[#0e111a] border border-white/5 flex items-center justify-center overflow-hidden shadow-2xl relative" ref={ref} data-density="soft">
-      {/* Spine gradient effect for realism */}
       <div className={`absolute inset-y-0 ${props.number % 2 === 0 ? 'right-0' : 'left-0'} w-8 bg-gradient-to-${props.number % 2 === 0 ? 'l' : 'r'} from-black/40 to-transparent z-10 pointer-events-none`} />
       
       <img 
@@ -149,7 +148,7 @@ export default function DreamCreations() {
   const containerRef = useRef(null);
   const processScrollRef = useRef(null); 
   const teamScrollRef = useRef(null);
-  const flipBookRef = useRef(null); // Reference for controlling the Book Turn Buttons
+  const flipBookRef = useRef(null); 
 
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
@@ -166,7 +165,7 @@ export default function DreamCreations() {
 
   // ================= FLIPBOOK STATES =================
   const [isFlipbookOpen, setIsFlipbookOpen] = useState(false);
-  const [flipbookPage, setFlipbookCurrentPage] = useState(0); // HTMLFlipBook uses 0-index internally
+  const [flipbookPage, setFlipbookCurrentPage] = useState(0); 
   const totalFlipbookPages = 91; 
 
   const goNextPage = () => {
@@ -178,7 +177,7 @@ export default function DreamCreations() {
   };
 
   const onPageFlip = (e) => {
-    setFlipbookCurrentPage(e.data); // Update the dock indicator whenever page turns
+    setFlipbookCurrentPage(e.data); 
   };
 
   const getFlipbookUrl = (pageIndex, ext = 'jpg') => {
@@ -199,7 +198,7 @@ export default function DreamCreations() {
     return () => clearInterval(interval);
   }, []);
 
-  // SCROLL & SWIPE HANDLERS (Team, Process, Clients, Feedback)
+  // SCROLL & SWIPE HANDLERS 
   const isTeamDragging = useRef(false);
   const teamStartX = useRef(0);
   const teamScrollLeftPos = useRef(0);
@@ -438,6 +437,7 @@ export default function DreamCreations() {
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
     setActivePortfolioSubtitle(subtitleName); 
+    // Scroll directly to the boards section instead of popping the flipbook
     setTimeout(() => { scrollToSection('portfolio-directory'); }, 150);
   };
 
@@ -849,16 +849,9 @@ export default function DreamCreations() {
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
+                    {/* TINANGGAL NA YUNG FLIPBOOK SHORTCUT, FILTER & SCROLL NA LANG */}
                     <button 
-                      onClick={() => {
-                        if (item.toLowerCase().includes('profile')) {
-                          setActiveCreationPopup(null);
-                          setIsFlipbookOpen(true);
-                          setFlipbookCurrentPage(0);
-                        } else {
-                          handleSubtitleModalClick(item);
-                        }
-                      }}
+                      onClick={() => handleSubtitleModalClick(item)}
                       className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group cursor-pointer"
                     >
                       <span className="text-[#1095d2] group-hover:translate-x-1 transition-transform">▹</span>
@@ -885,7 +878,6 @@ export default function DreamCreations() {
             <div className="w-full h-full flex flex-col items-center justify-center">
               
               <div className="flex-grow w-full flex items-center justify-center px-4 max-h-[80vh] cursor-grab active:cursor-grabbing">
-                {/* HTMLFlipBook is configured to act as a realistic book with page-curl properties */}
                 <HTMLFlipBook
                   width={500}
                   height={700}
@@ -899,10 +891,9 @@ export default function DreamCreations() {
                   mobileScrollSupport={true}
                   className="mx-auto shadow-[0_0_50px_rgba(0,0,0,0.8)]"
                   ref={flipBookRef}
-                  usePortrait={true} // Automatically switches to single-page on mobile
-                  onFlip={onPageFlip} // Update bottom dock tracking
+                  usePortrait={true} 
+                  onFlip={onPageFlip} 
                 >
-                  {/* Nag-ge-generate ng 91 pages nang dynamic */}
                   {Array.from({ length: totalFlipbookPages }, (_, i) => (
                     <BookPage key={i} number={i + 1} imageUrl={getFlipbookUrl(i + 1, 'jpg')} />
                   ))}
