@@ -169,11 +169,30 @@ export default function AdminDashboard() {
 
   const handleSaveModule = async () => {
     setIsSaving(true);
-    try {
-      if (activeModule === 'Home Engine') {
-        await supabase.from('home_engine').update({ hero_photo: homeHeroPhoto, quick_stats: homeStats, core_skills: homeSkills, career_timeline: homeTimeline }).eq('id', 1);
+    console.log("Saving state for:", activeModule);
+// 2. Clear and Re-insert
+    console.log("Preparing to insert projects:", dreamArchive);
+    await supabase.from('portfolio_projects').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    
+    if (dreamArchive.length > 0) {
+      const { error: insertError } = await supabase.from('portfolio_projects').insert(dreamArchive);
+      if (insertError) {
+        console.error("Database Insert Error:", insertError);
+        alert("DB Error: " + insertError.message);
+      }
+    }
+}
       } else if (activeModule === 'Dream Creations') {
-        await supabase.from('dream_creations').update({ banner_url: dreamBanner, founder_photo: dreamFounderPhoto, founder_experience: dreamFounderExp, founder_projects: dreamFounderProjects, team_roster: dreamTeam, software_stack: dreamSoftware, trusted_clients: dreamClients }).eq('id', 1);
+          // 1. Update the metadata first
+          await supabase.from('dream_creations').update({
+            banner_url: dreamBanner,
+            founder_photo: dreamFounderPhoto,
+            founder_experience: dreamFounderExp,
+            founder_projects: dreamFounderProjects,
+            team_roster: dreamTeam,
+            software_stack: dreamSoftware,
+            trusted_clients: dreamClients
+          }).eq('id', 1);
 
         await supabase.from('client_reviews').delete().neq('id', '00000000-0000-0000-0000-000000000000');
         if (dreamFeedback.length > 0) {
