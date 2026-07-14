@@ -5,7 +5,6 @@ import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Build
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
 
-// Helper component for counting numbers
 const AnimatedNumber = ({ value, suffix }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -163,10 +162,12 @@ export default function DreamCreations() {
   const [softwareList, setSoftwareList] = useState(softwareExpertise);
   const [clientsList, setClientsList] = useState(featuredClients);
 
-  // ================= FLIPBOOK STATES =================
+  // ================= DYNAMIC FLIPBOOK STATES =================
   const [isFlipbookOpen, setIsFlipbookOpen] = useState(false);
   const [flipbookPage, setFlipbookCurrentPage] = useState(0); 
-  const totalFlipbookPages = 91; 
+  
+  // DITO NA IPAPASOK ANG MGA SETTINGS KUNG PANGALAWANG LIBRO NA
+  const [activeFlipbookConfig, setActiveFlipbookConfig] = useState({ prefix: 'page-', totalPages: 91 });
 
   const goNextPage = () => {
     if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext();
@@ -180,8 +181,8 @@ export default function DreamCreations() {
     setFlipbookCurrentPage(e.data); 
   };
 
-  const getFlipbookUrl = (pageIndex, ext = 'jpg') => {
-    return `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/page-${pageIndex}.${ext}`;
+  const getFlipbookUrl = (pageIndex, prefix = 'page-', ext = 'jpg') => {
+    return `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/${prefix}${pageIndex}.${ext}`;
   };
 
   // ================= DYNAMIC RESUME STATE =================
@@ -437,7 +438,7 @@ export default function DreamCreations() {
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
     setActivePortfolioSubtitle(subtitleName); 
-    // Scroll directly to the boards section instead of popping the flipbook
+    // FIXED: Ngayon mag-i-scroll na lang ito pababa, hindi na magbubukas agad ang flipbook.
     setTimeout(() => { scrollToSection('portfolio-directory'); }, 150);
   };
 
@@ -757,16 +758,25 @@ export default function DreamCreations() {
                     <div 
                       key={project.id} 
                       onClick={() => {
+                        // DETECT AND SET FLIPBOOK SETTINGS BASED ON DATABASE DATA
                         if (project.title.toLowerCase().includes('profile') || project.category.toLowerCase().includes('profile') || project.description.toLowerCase().includes('company profile')) {
+                          let prefix = 'page-';
+                          let pages = 91;
+                          if (project.video_url && project.video_url.includes(',')) {
+                             const parts = project.video_url.split(',');
+                             prefix = parts[0].trim();
+                             pages = parseInt(parts[1].trim()) || 91;
+                          }
+                          setActiveFlipbookConfig({ prefix, totalPages: pages });
                           setIsFlipbookOpen(true);
-                          setFlipbookCurrentPage(0); // I-reset ang internal counter pababalik sa cover
+                          setFlipbookCurrentPage(0);
                         }
                       }}
                       className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer"
                     >
                        <div className="aspect-video relative overflow-hidden bg-black/60">
                          {project.featured_image_url ? ( <img src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
-                         {project.video_url && !project.title.toLowerCase().includes('profile') && (
+                         {project.video_url && !project.video_url.includes(',') && !project.title.toLowerCase().includes('profile') && (
                            <a href={project.video_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
                              <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform"><MonitorPlay size={24} className="ml-1" /></div>
                            </a>
@@ -849,7 +859,6 @@ export default function DreamCreations() {
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
-                    {/* TINANGGAL NA YUNG FLIPBOOK SHORTCUT, FILTER & SCROLL NA LANG */}
                     <button 
                       onClick={() => handleSubtitleModalClick(item)}
                       className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group cursor-pointer"
@@ -877,7 +886,7 @@ export default function DreamCreations() {
 
             <div className="w-full h-full flex flex-col items-center justify-center">
               
-              <div className="flex-grow w-full flex items-center justify-center px-4 max-h-[80vh] cursor-grab active:cursor-grabbing">
+              <div className="flex-grow w-full flex items-center justify-center px-4 max-h-[80vh] cursor-grab active:cursor-grabbing mt-8">
                 <HTMLFlipBook
                   width={500}
                   height={700}
@@ -894,8 +903,8 @@ export default function DreamCreations() {
                   usePortrait={true} 
                   onFlip={onPageFlip} 
                 >
-                  {Array.from({ length: totalFlipbookPages }, (_, i) => (
-                    <BookPage key={i} number={i + 1} imageUrl={getFlipbookUrl(i + 1, 'jpg')} />
+                  {Array.from({ length: activeFlipbookConfig.totalPages }, (_, i) => (
+                    <BookPage key={i} number={i + 1} imageUrl={getFlipbookUrl(i + 1, activeFlipbookConfig.prefix, 'jpg')} />
                   ))}
                 </HTMLFlipBook>
               </div>
@@ -910,7 +919,7 @@ export default function DreamCreations() {
                 </button>
 
                 <span className="text-xs font-mono font-bold tracking-widest text-zinc-400 uppercase select-none min-w-[100px] text-center">
-                  Page {flipbookPage + 1} / {totalFlipbookPages}
+                  Page {flipbookPage + 1} / {activeFlipbookConfig.totalPages}
                 </span>
 
                 <button 

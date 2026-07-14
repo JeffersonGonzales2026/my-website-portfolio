@@ -168,9 +168,6 @@ export default function AdminDashboard() {
       } else if (activeModule === 'Dream Creations') {
         await supabase.from('dream_creations').update({ banner_url: dreamBanner, founder_photo: dreamFounderPhoto, founder_experience: dreamFounderExp, founder_projects: dreamFounderProjects, team_roster: dreamTeam, software_stack: dreamSoftware, trusted_clients: dreamClients }).eq('id', 1);
 
-        // =========================================================================
-        // STRICT SCHEMA MAPPING FIX: STOPS SUPABASE REJECTIONS 
-        // =========================================================================
         await supabase.from('client_reviews').delete().neq('client_name', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (dreamFeedback.length > 0) {
           const cleanReviews = dreamFeedback.map(r => ({
@@ -269,7 +266,10 @@ export default function AdminDashboard() {
     for (const file of files) {
       try {
         const fileExt = file.name.split('.').pop();
-        const fileName = file.name.startsWith('page-') 
+        
+        // PRESERVE ANY FILENAME WITH A HYPHEN (e.g. book2-1.jpg, page-1.jpg)
+        const isBookPage = /^[a-zA-Z0-9_]+-\d+\.\w+$/.test(file.name);
+        const fileName = isBookPage 
           ? file.name 
           : `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
         
@@ -309,7 +309,6 @@ export default function AdminDashboard() {
     setState(state.filter((_, i) => i !== index));
   };
 
-
   if (isLoading) {
     return <div className="h-screen flex items-center justify-center bg-[#09090b] text-cyan-400 font-mono text-sm gap-2"><Loader2 className="animate-spin" size={16}/> ESTABLISHING SECURE CONNECTION...</div>;
   }
@@ -317,12 +316,10 @@ export default function AdminDashboard() {
   return (
     <div className="flex h-screen bg-[#09090b] text-zinc-200 overflow-hidden font-sans antialiased">
       
-      {/* Mobile Overlay Background */}
       {isSidebarOpen && (
         <div className="fixed inset-0 bg-black/80 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />
       )}
 
-      {/* UNIVERSAL SIDEBAR CONTROL DRAWER */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#09090b] border-r border-zinc-900 flex flex-col justify-between transition-transform duration-300 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <button onClick={() => setIsSidebarOpen(false)} className="absolute top-6 right-4 md:hidden text-zinc-500 hover:text-white"><X size={20} /></button>
         <div>
@@ -602,12 +599,12 @@ export default function AdminDashboard() {
               </div>
 
               {/* =========================================================================
-                  STRICT PAYLOAD FIX: ONLY SENDING COLUMNS THAT EXIST IN THE DB
+                  DYNAMIC FLIPBOOK CONFIGURATION VIA VIDEO URL FIELD
                   ========================================================================= */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Project Archive Matrix Registries</h4>
-                  <button onClick={() => setDreamArchive([...dreamArchive, { category: "Marketing Materials", subtitle: "Company Profiles", title: "J.P. Geonzon Company Profile", client_name: "J.P. Geonzon Construction Corp.", description: "Complete 91-page corporate company profile manual.", featured_image_url: "", video_url: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD PROJECT</button>
+                  <button onClick={() => setDreamArchive([...dreamArchive, { category: "Marketing Materials", subtitle: "Company Profiles", title: "New Company Profile", client_name: "", description: "", featured_image_url: "", video_url: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD PROJECT</button>
                 </div>
                 <div className="space-y-4">
                   {dreamArchive.map((project, idx) => (
@@ -621,7 +618,8 @@ export default function AdminDashboard() {
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                         <input type="text" value={project.featured_image_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'featured_image_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Featured Image URL" />
-                        <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Video Link (.mp4)" />
+                        {/* UPDATE INSTRUCTION PLACEHOLDER FOR VIDEO URL */}
+                        <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Flipbook Settings (e.g. book2-,45) OR Video URL" />
                         <input type="text" value={project.description} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'description', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Description Meta..." />
                       </div>
                     </div>
