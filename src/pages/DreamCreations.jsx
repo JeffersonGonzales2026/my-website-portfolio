@@ -338,9 +338,9 @@ export default function DreamCreations() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // FIXED STORAGE PATH ENDPOINT LINK LOGIC (MAPPED DIRECT TO THE DDIFF... LIVE CLOUD DOMAIN)
-  const getFlipbookUrl = (pageIndex) => {
-    return `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/page-${pageIndex}.jpg`;
+  // FIXED STORAGE PATH ENDPOINT LINK LOGIC - AUTO FALLBACK FOR EXTENSIONS
+  const getFlipbookUrl = (pageIndex, ext = 'jpg') => {
+    return `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/page-${pageIndex}.${ext}`;
   };
 
   useEffect(() => {
@@ -402,7 +402,7 @@ export default function DreamCreations() {
           }
         }
 
-        // REMOVED STRICT IS_PUBLISHED FILTER UNTIL IT INTEGRATES INTO CORE BACKING TABLE SCHEMAS
+        // FETCH ALL PROJECTS (NO RESTRICTION ON IS_PUBLISHED HERE TO ENSURE WE SEE EVERYTHING)
         const { data: projectData, error: projectError } = await supabase
           .from('portfolio_projects')
           .select('*')
@@ -453,19 +453,19 @@ export default function DreamCreations() {
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 350); 
+    }, 500); // Increased timeout to ensure render before scroll
   };
 
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(subtitleName); // <--- ASSIGNS CORX STATE FILTER BINDER ON MODAL INTERCEPTIONS
+    setActivePortfolioSubtitle(subtitleName); 
     
     setTimeout(() => {
       const targetElement = document.getElementById('portfolio-directory');
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 300);
+    }, 500); // Increased timeout for smooth scroll jumping
   };
 
   // ROBUST NORMALIZED COMPARISON CHECK FOR SUB-BOARD FILTER MATRICES
@@ -1284,7 +1284,6 @@ export default function DreamCreations() {
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
-                    {/* FIXED CLICKEVENT TARGET TO ENERGIZE FILTER ENGINE OVER INLINE MODAL DEPLOYMENTS */}
                     <button 
                       onClick={() => handleSubtitleModalClick(item)}
                       className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group cursor-pointer"
@@ -1331,7 +1330,8 @@ export default function DreamCreations() {
                     ) : (
                       <motion.img 
                         key={`left-${flipbookPage}`}
-                        src={getFlipbookUrl(flipbookPage)} 
+                        src={getFlipbookUrl(flipbookPage, 'jpg')} 
+                        onError={(e) => { if (e.target.src.endsWith('.jpg')) e.target.src = getFlipbookUrl(flipbookPage, 'png'); }}
                         alt={`Page ${flipbookPage}`}
                         initial={{ opacity: 0, filter: 'blur(5px)' }}
                         animate={{ opacity: 1, filter: 'blur(0px)' }}
@@ -1347,7 +1347,8 @@ export default function DreamCreations() {
                     ) : (
                       <motion.img 
                         key={`right-${flipbookPage + 1}`}
-                        src={getFlipbookUrl(flipbookPage === 1 ? 1 : flipbookPage + 1)} 
+                        src={getFlipbookUrl(flipbookPage === 1 ? 1 : flipbookPage + 1, 'jpg')} 
+                        onError={(e) => { if (e.target.src.endsWith('.jpg')) e.target.src = getFlipbookUrl(flipbookPage === 1 ? 1 : flipbookPage + 1, 'png'); }}
                         alt={`Page ${flipbookPage + 1}`}
                         initial={{ opacity: 0, filter: 'blur(5px)' }}
                         animate={{ opacity: 1, filter: 'blur(0px)' }}
@@ -1361,7 +1362,8 @@ export default function DreamCreations() {
                 <div className="block md:hidden w-full max-w-sm aspect-[3/4] rounded-xl overflow-hidden border border-white/10 bg-[#0e111a] shadow-2xl relative">
                   <motion.img 
                     key={`mobile-${flipbookPage}`}
-                    src={getFlipbookUrl(flipbookPage)} 
+                    src={getFlipbookUrl(flipbookPage, 'jpg')} 
+                    onError={(e) => { if (e.target.src.endsWith('.jpg')) e.target.src = getFlipbookUrl(flipbookPage, 'png'); }}
                     alt={`Page ${flipbookPage}`}
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}

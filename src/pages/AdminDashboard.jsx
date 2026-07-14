@@ -20,56 +20,46 @@ const sidebarModules = [
   { name: 'Messages Inbox', icon: <Mail size={16} /> }
 ];
 
+// UNIVERSAL UUID GENERATOR TO PREVENT DATABASE REJECTIONS
+const generateUUID = () => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+};
+
 export default function AdminDashboard() {
   const [activeModule, setActiveModule] = useState('Dashboard Hub');
   const [activePortfolioTab, setActivePortfolioTab] = useState('dashboards');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
-  // Cloud Processing States
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
 
-  // =========================================================================
-  // ROUTE SECURITY: STRICT ADMIN EMAIL VERIFICATION & DATA FETCH
-  // =========================================================================
   useEffect(() => {
     const initializeAdmin = async () => {
-      // 1. Verify Authorization
       const { data: { session } } = await supabase.auth.getSession();
-      
-      // REPLACE WITH YOUR EXACT SUPABASE ADMIN EMAIL
       const ADMIN_EMAIL = "jeffersonguzmangonzales03@gmail.com"; 
 
-      if (!session) {
-        navigate('/admin/login');
-        return;
-      } else if (session.user.email !== ADMIN_EMAIL) {
+      if (!session || session.user.email !== ADMIN_EMAIL) {
         await supabase.auth.signOut();
         navigate('/admin/login');
         return;
       }
 
-      // 2. Fetch Live Cloud Data
       await loadCloudData();
       setIsLoading(false);
     };
-
     initializeAdmin();
   }, [navigate]);
 
-  // =========================================================================
-  // 1. HOME ENGINE BACKING DATA STATES
-  // =========================================================================
   const [homeHeroPhoto, setHomeHeroPhoto] = useState("/images/profile.jpg");
   const [homeStats, setHomeStats] = useState([]);
   const [homeSkills, setHomeSkills] = useState([]);
   const [homeTimeline, setHomeTimeline] = useState([]);
 
-  // =========================================================================
-  // 2. DREAM CREATIONS BACKING DATA STATES
-  // =========================================================================
   const [dreamBanner, setDreamBanner] = useState("/Logo Banner.png");
   const [dreamFounderPhoto, setDreamFounderPhoto] = useState("/images/jefferson.jpg");
   const [dreamFounderExp, setDreamFounderExp] = useState(10);
@@ -80,9 +70,6 @@ export default function AdminDashboard() {
   const [dreamFeedback, setDreamFeedback] = useState([]);
   const [dreamArchive, setDreamArchive] = useState([]);
 
-  // =========================================================================
-  // 3. DATA ANALYST BACKING DATA STATES
-  // =========================================================================
   const [analystStats, setAnalystStats] = useState([]);
   const [analystRoles, setRoles] = useState([]);
   const [analystSkills, setAnalystSkills] = useState([]);
@@ -94,9 +81,6 @@ export default function AdminDashboard() {
   const [portfolioCaseStudies, setPortfolioCaseStudies] = useState([]);
   const [portfolioProjects, setPortfolioProjects] = useState([]);
 
-  // =========================================================================
-  // 4. AI DEVELOPER BACKING DATA STATES
-  // =========================================================================
   const [aiStats, setAiStats] = useState([]);
   const [aiTimeline, setAiTimeline] = useState([]);
   const [aiEcosystemState, setAiEcosystemState] = useState([]);
@@ -104,21 +88,12 @@ export default function AdminDashboard() {
   const [aiShowcase, setAiShowcase] = useState([]);
   const [aiGithub, setAiGithub] = useState({});
 
-  // =========================================================================
-  // 5. CONTACT, MEDIA, & INBOX DATA STATES
-  // =========================================================================
   const [dynamicResumes, setDynamicResumes] = useState([]); 
   const [contactPortfolioUrl, setContactPortfolioUrl] = useState("");
   const [contactPlatforms, setContactPlatforms] = useState([]);
   const [messagesLog, setMessagesLog] = useState([]);
   const [mediaFiles, setMediaFiles] = useState([]);
 
-
-  // =========================================================================
-  // CLOUD DATABASE INTEGRATION LOGIC
-  // =========================================================================
-
-  // Fetch everything from Supabase into local React states
   const loadCloudData = async () => {
     try {
       const { data: home } = await supabase.from('home_engine').select('*').single();
@@ -169,11 +144,9 @@ export default function AdminDashboard() {
         setContactPortfolioUrl(contact.portfolio_url || "");
       }
 
-      // Fetch Standalone Feed Tables
       const { data: platforms } = await supabase.from('contact_platforms').select('*').order('display_order');
       if (platforms) setContactPlatforms(platforms);
 
-      // FETCH DYNAMIC RESUMES
       const { data: resumes } = await supabase.from('portfolio_resumes').select('*').order('id', {ascending: true});
       if (resumes) setDynamicResumes(resumes);
 
@@ -194,102 +167,64 @@ export default function AdminDashboard() {
     }
   };
 
-  // Master router to save active module modifications back to Supabase
   const handleSaveModule = async () => {
     setIsSaving(true);
     try {
       if (activeModule === 'Home Engine') {
-        await supabase.from('home_engine').update({
-          hero_photo: homeHeroPhoto,
-          quick_stats: homeStats,
-          core_skills: homeSkills,
-          career_timeline: homeTimeline
-        }).eq('id', 1);
-        
+        await supabase.from('home_engine').update({ hero_photo: homeHeroPhoto, quick_stats: homeStats, core_skills: homeSkills, career_timeline: homeTimeline }).eq('id', 1);
       } else if (activeModule === 'Dream Creations') {
-        await supabase.from('dream_creations').update({
-          banner_url: dreamBanner,
-          founder_photo: dreamFounderPhoto,
-          founder_experience: dreamFounderExp,
-          founder_projects: dreamFounderProjects,
-          team_roster: dreamTeam,
-          software_stack: dreamSoftware,
-          trusted_clients: dreamClients
-        }).eq('id', 1);
+        await supabase.from('dream_creations').update({ banner_url: dreamBanner, founder_photo: dreamFounderPhoto, founder_experience: dreamFounderExp, founder_projects: dreamFounderProjects, team_roster: dreamTeam, software_stack: dreamSoftware, trusted_clients: dreamClients }).eq('id', 1);
 
-        // Sync Reviews 
         await supabase.from('client_reviews').delete().neq('id', '00000000-0000-0000-0000-000000000000');
         if (dreamFeedback.length > 0) {
           await supabase.from('client_reviews').insert(dreamFeedback.map(({ id, created_at, ...rest }) => rest));
         }
 
-        // Sync Archives - FIXES INSTANT DISAPPEARANCE CRASHES BY REMOVING COLUMN CASTING ERRORS
-        await supabase.from('portfolio_projects').delete().neq('title', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
+        // ====== FIXED ROBUST SAVE LOGIC FOR ARCHIVES ======
+        await supabase.from('portfolio_projects').delete().neq('id', '00000000-0000-0000-0000-000000000000');
         if (dreamArchive.length > 0) {
-          await supabase.from('portfolio_projects').insert(dreamArchive.map(({ id, created_at, ...rest }) => rest));
+          const formattedArchives = dreamArchive.map(item => ({
+            id: (item.id && typeof item.id === 'string' && item.id.includes('-')) ? item.id : generateUUID(),
+            category: item.category || "",
+            subtitle: item.subtitle || "",
+            title: item.title || "",
+            client_name: item.client_name || "",
+            description: item.description || "",
+            featured_image_url: item.featured_image_url || "",
+            video_url: item.video_url || "",
+            is_published: true
+          }));
+          const { error: archiveError } = await supabase.from('portfolio_projects').insert(formattedArchives);
+          if (archiveError) throw archiveError;
         }
 
       } else if (activeModule === 'Data Analyst') {
-        await supabase.from('data_analyst').update({
-          performance_counters: analystStats,
-          experience_roles: analystRoles,
-          technical_competencies: analystSkills,
-          software_ecosystem: analystEcosystem,
-          future_roadmap: analystRoadmap,
-          portfolio_dashboards: portfolioDashboards,
-          portfolio_reports: portfolioReports,
-          portfolio_automations: portfolioAutomations,
-          portfolio_case_studies: portfolioCaseStudies,
-          portfolio_projects: portfolioProjects
-        }).eq('id', 1);
-
+        await supabase.from('data_analyst').update({ performance_counters: analystStats, experience_roles: analystRoles, technical_competencies: analystSkills, software_ecosystem: analystEcosystem, future_roadmap: analystRoadmap, portfolio_dashboards: portfolioDashboards, portfolio_reports: portfolioReports, portfolio_automations: portfolioAutomations, portfolio_case_studies: portfolioCaseStudies, portfolio_projects: portfolioProjects }).eq('id', 1);
       } else if (activeModule === 'AI Developer') {
-        await supabase.from('ai_developer').update({
-          metrics_counters: aiStats,
-          development_timeline: aiTimeline,
-          ai_partners: aiEcosystemState,
-          architecture_stack: aiArchitecture,
-          engineering_showcase: aiShowcase,
-          github_sync: aiGithub
-        }).eq('id', 1);
-
+        await supabase.from('ai_developer').update({ metrics_counters: aiStats, development_timeline: aiTimeline, ai_partners: aiEcosystemState, architecture_stack: aiArchitecture, engineering_showcase: aiShowcase, github_sync: aiGithub }).eq('id', 1);
       } else if (activeModule === 'Contact Links') {
-        await supabase.from('contact_settings').update({
-          portfolio_url: contactPortfolioUrl
-        }).eq('id', 1);
+        await supabase.from('contact_settings').update({ portfolio_url: contactPortfolioUrl }).eq('id', 1);
 
-        // SAVE DYNAMIC RESUMES
         await supabase.from('portfolio_resumes').delete().neq('id', -1);
         if (dynamicResumes.length > 0) {
-          await supabase.from('portfolio_resumes').insert(dynamicResumes.map((r) => ({
-            title: r.title,
-            file_url: r.file_url
-          })));
+          await supabase.from('portfolio_resumes').insert(dynamicResumes.map((r) => ({ title: r.title, file_url: r.file_url })));
         }
 
         await supabase.from('contact_platforms').delete().neq('id', 'dummy');
         if (contactPlatforms.length > 0) {
-          await supabase.from('contact_platforms').insert(contactPlatforms.map((p, i) => ({
-            id: p.id === 'new' ? `custom_${Date.now()}_${i}` : p.id,
-            name: p.name,
-            username: p.username,
-            link: p.link,
-            status: p.status,
-            display_order: i
-          })));
+          await supabase.from('contact_platforms').insert(contactPlatforms.map((p, i) => ({ id: p.id === 'new' ? `custom_${Date.now()}_${i}` : p.id, name: p.name, username: p.username, link: p.link, status: p.status, display_order: i })));
         }
       }
       
       alert(`SUCCESS: Transmitted "${activeModule}" updates to Supabase Database.`);
     } catch (error) {
       console.error("Save Execution Error:", error);
-      alert(`ERROR: Could not complete save sequence. ${error.message}`);
+      alert(`ERROR: Supabase rejected the save. Contact system admin.\nDetails: ${error.message}`);
     } finally {
       setIsSaving(false);
     }
   };
 
-  // Live Server Handlers for Standalone items
   const handleArchiveMessage = async (id, idx) => {
     if(!id) return;
     try {
@@ -297,9 +232,7 @@ export default function AdminDashboard() {
       const copy = [...messagesLog];
       copy.splice(idx, 1);
       setMessagesLog(copy);
-    } catch(err) {
-      console.error("Message Archive Error", err);
-    }
+    } catch(err) { console.error("Message Archive Error", err); }
   };
 
   const handleDeleteMedia = async (id, idx) => {
@@ -309,12 +242,9 @@ export default function AdminDashboard() {
       const copy = [...mediaFiles];
       copy.splice(idx, 1);
       setMediaFiles(copy);
-    } catch(err) {
-      console.error("Media Deletion Error", err);
-    }
+    } catch(err) { console.error("Media Deletion Error", err); }
   };
 
-  // DYNAMIC BULK UPLOADER
   const handleFileUploadLive = async (e) => {
     const files = Array.from(e.target.files);
     if(files.length === 0) return;
@@ -328,31 +258,18 @@ export default function AdminDashboard() {
     for (const file of files) {
       try {
         const fileExt = file.name.split('.').pop();
-        
-        // PRESERVES EXACT PAGE NAMES INSTEAD OF SCRAMBLING THEM
         const fileName = file.name.startsWith('page-') 
           ? file.name 
           : `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
         
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('portfolio_media')
-          .upload(fileName, file);
-
+        const { data: uploadData, error: uploadError } = await supabase.storage.from('portfolio_media').upload(fileName, file);
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('portfolio_media')
-          .getPublicUrl(fileName);
+        const { data: { publicUrl } } = supabase.storage.from('portfolio_media').getPublicUrl(fileName);
 
-        const { data: dbData, error: dbError } = await supabase
-          .from('media_library')
-          .insert([{ 
-            file_name: file.name, 
-            file_url: publicUrl, 
-            type: file.type.includes('image') ? 'image' : 'document' 
-          }])
-          .select()
-          .single();
+        const { data: dbData, error: dbError } = await supabase.from('media_library')
+          .insert([{ file_name: file.name, file_url: publicUrl, type: file.type.includes('image') ? 'image' : 'document' }])
+          .select().single();
 
         if (dbError) throw dbError;
 
@@ -371,7 +288,6 @@ export default function AdminDashboard() {
     alert(`🟢 ASSET TRANSACTION STACK PROCESSED!\nSuccessful Migrations: ${successCounter}\nFailed: ${failureCounter}`);
   };
 
-  // STATE GENERIC MUTATION HELPERS
   const handleUpdateArrayField = (state, setState, index, field, value) => {
     const copy = [...state];
     copy[index][field] = value;
@@ -389,18 +305,10 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex h-screen bg-[#09090b] text-zinc-200 overflow-hidden font-sans antialiased">
-      
-      {/* Mobile Overlay Background */}
-      {isSidebarOpen && (
-        <div className="fixed inset-0 bg-black/80 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />
-      )}
+      {isSidebarOpen && <div className="fixed inset-0 bg-black/80 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />}
 
-      {/* UNIVERSAL SIDEBAR CONTROL DRAWER */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#09090b] border-r border-zinc-900 flex flex-col justify-between transition-transform duration-300 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        
-        <button onClick={() => setIsSidebarOpen(false)} className="absolute top-6 right-4 md:hidden text-zinc-500 hover:text-white">
-          <X size={20} />
-        </button>
+        <button onClick={() => setIsSidebarOpen(false)} className="absolute top-6 right-4 md:hidden text-zinc-500 hover:text-white"><X size={20} /></button>
         <div>
           <div className="p-6 border-b border-zinc-900">
             <h2 className="text-sm font-black text-white tracking-widest uppercase font-mono">JG PANEL // 2026</h2>
@@ -411,11 +319,7 @@ export default function AdminDashboard() {
               <button
                 key={module.name}
                 onClick={() => { setActiveModule(module.name); setIsSidebarOpen(false); }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs uppercase tracking-wider font-mono font-bold transition-all border text-left cursor-pointer ${
-                  activeModule === module.name 
-                    ? 'bg-zinc-900 text-white border-zinc-800 shadow-md' 
-                    : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/30 border-transparent'
-                }`}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs uppercase tracking-wider font-mono font-bold transition-all border text-left cursor-pointer ${activeModule === module.name ? 'bg-zinc-900 text-white border-zinc-800 shadow-md' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/30 border-transparent'}`}
               >
                 {module.icon} {module.name}
               </button>
@@ -429,15 +333,10 @@ export default function AdminDashboard() {
         </div>
       </aside>
 
-      {/* PRIMARY MODULE CONTENT VIEWPORT WORKSPACE */}
       <main className="flex-1 flex flex-col overflow-hidden bg-[#09090b]">
-        
         <header className="h-16 flex-shrink-0 border-b border-zinc-900 flex items-center justify-between px-4 md:px-8 bg-[#09090b]/80 backdrop-blur-md sticky top-0 z-50">
           <div className="flex items-center gap-3">
-            <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-2 -ml-2 text-zinc-400 hover:text-white cursor-pointer">
-              <Menu size={20} />
-            </button>
-            
+            <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-2 -ml-2 text-zinc-400 hover:text-white cursor-pointer"><Menu size={20} /></button>
             <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-zinc-400">
               <Sliders size={14} className="text-zinc-500 hidden sm:block" />
               <span className="hidden sm:block">Active Frame:</span>
@@ -445,17 +344,12 @@ export default function AdminDashboard() {
             </div>
           </div>
           
-          <button 
-            onClick={handleSaveModule}
-            disabled={isSaving || activeModule === 'Dashboard Hub' || activeModule === 'Messages Inbox' || activeModule === 'Media Library'}
-            className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white text-black text-[10px] sm:text-xs font-mono font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2 shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          <button onClick={handleSaveModule} disabled={isSaving || activeModule === 'Dashboard Hub' || activeModule === 'Messages Inbox' || activeModule === 'Media Library'} className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white text-black text-[10px] sm:text-xs font-mono font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2 shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
             {isSaving ? <Loader2 size={14} className="animate-spin hidden sm:block" /> : <Save size={14} className="hidden sm:block" />}
             {isSaving ? 'SYNCING CLOUD...' : 'SAVE MODULE'}
           </button>
         </header>
 
-        {/* INNER SCROLLABLE CANVAS CONTAINER */}
         <div className="flex-1 overflow-y-auto p-8 max-w-5xl w-full mx-auto space-y-8 pb-32">
           
           {/* ================= WORKSPACE PANEL: DASHBOARD HUB ================= */}
@@ -555,7 +449,7 @@ export default function AdminDashboard() {
                       <button onClick={() => handleRemoveArrayItem(homeTimeline, setHomeTimeline, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                       <div className="grid grid-cols-12 gap-2">
                         <input type="text" value={item.year} onChange={(e) => handleUpdateArrayField(homeTimeline, setHomeTimeline, idx, 'year', e.target.value)} className="col-span-2 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-center text-white font-mono" placeholder="Year" />
-                        <input type="text" value={item.title} onChange={(e) => handleUpdateArrayField(homeTimeline, setHomeTimeline, idx, 'title', e.target.value)} className="col-span-5 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-mono" placeholder="Title" />
+                        <input type="text" value={item.title} onChange={(e) => handleUpdateArrayField(homeTimeline, setHomeTimeline, idx, 'title', e.target.value)} className="col-span-5 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Title" />
                         <input type="text" value={item.company} onChange={(e) => handleUpdateArrayField(homeTimeline, setHomeTimeline, idx, 'company', e.target.value)} className="col-span-5 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 font-mono" placeholder="Company" />
                       </div>
                       <textarea value={item.desc} onChange={(e) => handleUpdateArrayField(homeTimeline, setHomeTimeline, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-500 font-mono h-16 resize-none focus:outline-none" placeholder="Description..." />
@@ -665,7 +559,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Client Feedback Testimonials */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Client Feedback Testimonial Submissions</h4>
@@ -692,12 +585,11 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Project Archive Matrix */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Project Archive Matrix Registries</h4>
-                  {/* COMPLETELY STRIPPED OUT 'IS_PUBLISHED: TRUE' TO RESOLVE THE POSTGRES COLUMN CONFLICT ERROR */}
-                  <button onClick={() => setDreamArchive([...dreamArchive, { category: "Marketing Materials", subtitle: "Company Profiles", title: "J.P. Geonzon Company Profile", client_name: "J.P. Geonzon Construction Corp.", description: "Complete 91-page corporate company profile manual.", featured_image_url: "", video_url: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD PROJECT</button>
+                  {/* GENERATES NEW ITEM WITH UUID FALLBACK ON SAVE */}
+                  <button onClick={() => setDreamArchive([...dreamArchive, { category: "Marketing Materials", subtitle: "Company Profiles", title: "J.P. Geonzon Company Profile", client_name: "J.P. Geonzon Construction Corp.", description: "Complete 91-page corporate company profile manual.", featured_image_url: "", video_url: "", is_published: true }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD PROJECT</button>
                 </div>
                 <div className="space-y-4">
                   {dreamArchive.map((project, idx) => (
@@ -724,7 +616,6 @@ export default function AdminDashboard() {
           {/* ================= WORKSPACE PANEL: DATA ANALYST ================= */}
           {activeModule === 'Data Analyst' && (
             <div className="space-y-8 text-left">
-              {/* Quick Stats counters array */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><Database size={14}/> Analytics Matrix Performance Counters</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -738,7 +629,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Extensible Role Track Container */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Extensible Experience Roles Stack</h4>
@@ -765,7 +655,6 @@ export default function AdminDashboard() {
                 ))}
               </div>
 
-              {/* Technical Competencies Arrays */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Technical Analytical Competencies</h4>
@@ -782,11 +671,9 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* 5-Tabbed Showcase Content Fields COMPLETE */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2">// Analytics Portfolio Showcase Core (5 Completed Tabs)</h4>
                 
-                {/* Horizontal internal structural tabs controller view */}
                 <div className="flex flex-wrap gap-1 bg-zinc-950 p-1 rounded-xl border border-zinc-900">
                   {['dashboards', 'reports', 'automations', 'caseStudies', 'projects'].map((tab) => (
                     <button key={tab} type="button" onClick={() => setActivePortfolioTab(tab)} className={`px-3 py-1.5 text-[11px] font-mono rounded-lg transition-colors cursor-pointer capitalize ${activePortfolioTab === tab ? 'bg-zinc-900 text-white font-bold border border-zinc-800' : 'text-zinc-500 hover:bg-zinc-900/50'}`}>
@@ -1122,7 +1009,6 @@ export default function AdminDashboard() {
                             <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
                             <input type="text" value={project.role} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'role', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Role Assigned" />
                           </div>
-                          {/* FIXED RE-RENDER OVERCHANNELS OBJECT TYPO FROM HERE */}
                           <textarea value={project.desc} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-300 h-16 resize-none" placeholder="Project Description Narrative..." />
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                             <input type="text" value={project.tech} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'tech', e.target.value)} className="sm:col-span-2 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-400" placeholder="Technologies Managed (Comma separated)" />
