@@ -5,6 +5,7 @@ import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Build
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
 
+// Helper component for counting numbers
 const AnimatedNumber = ({ value, suffix }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -162,12 +163,10 @@ export default function DreamCreations() {
   const [softwareList, setSoftwareList] = useState(softwareExpertise);
   const [clientsList, setClientsList] = useState(featuredClients);
 
-  // ================= DYNAMIC FLIPBOOK STATES =================
+  // ================= DYNAMIC FLIPBOOK STATES (UPGRADED WITH EXTENSION) =================
   const [isFlipbookOpen, setIsFlipbookOpen] = useState(false);
   const [flipbookPage, setFlipbookCurrentPage] = useState(0); 
-  
-  // DITO NA IPAPASOK ANG MGA SETTINGS KUNG PANGALAWANG LIBRO NA
-  const [activeFlipbookConfig, setActiveFlipbookConfig] = useState({ prefix: 'page-', totalPages: 91 });
+  const [activeFlipbookConfig, setActiveFlipbookConfig] = useState({ prefix: 'page-', totalPages: 91, extension: 'jpg' });
 
   const goNextPage = () => {
     if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext();
@@ -438,7 +437,6 @@ export default function DreamCreations() {
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
     setActivePortfolioSubtitle(subtitleName); 
-    // FIXED: Ngayon mag-i-scroll na lang ito pababa, hindi na magbubukas agad ang flipbook.
     setTimeout(() => { scrollToSection('portfolio-directory'); }, 150);
   };
 
@@ -758,16 +756,19 @@ export default function DreamCreations() {
                     <div 
                       key={project.id} 
                       onClick={() => {
-                        // DETECT AND SET FLIPBOOK SETTINGS BASED ON DATABASE DATA
+                        // DETECT AND SET FLIPBOOK SETTINGS BASED ON DATABASE DATA (NOW SUPPORTS EXTENSIONS)
                         if (project.title.toLowerCase().includes('profile') || project.category.toLowerCase().includes('profile') || project.description.toLowerCase().includes('company profile')) {
                           let prefix = 'page-';
                           let pages = 91;
+                          let extension = 'jpg'; // DEFAULT TO JPG KUNG WALANG NILAGAY
+                          
                           if (project.video_url && project.video_url.includes(',')) {
                              const parts = project.video_url.split(',');
                              prefix = parts[0].trim();
                              pages = parseInt(parts[1].trim()) || 91;
+                             if (parts[2]) extension = parts[2].trim().replace('.', ''); // Removes dot if they typed '.png'
                           }
-                          setActiveFlipbookConfig({ prefix, totalPages: pages });
+                          setActiveFlipbookConfig({ prefix, totalPages: pages, extension });
                           setIsFlipbookOpen(true);
                           setFlipbookCurrentPage(0);
                         }
@@ -903,8 +904,9 @@ export default function DreamCreations() {
                   usePortrait={true} 
                   onFlip={onPageFlip} 
                 >
+                  {/* GENERATING PAGES DYNAMICALLY USING THE CONFIG STATE */}
                   {Array.from({ length: activeFlipbookConfig.totalPages }, (_, i) => (
-                    <BookPage key={i} number={i + 1} imageUrl={getFlipbookUrl(i + 1, activeFlipbookConfig.prefix, 'jpg')} />
+                    <BookPage key={i} number={i + 1} imageUrl={getFlipbookUrl(i + 1, activeFlipbookConfig.prefix, activeFlipbookConfig.extension)} />
                   ))}
                 </HTMLFlipBook>
               </div>
