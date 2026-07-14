@@ -26,7 +26,7 @@ const AnimatedNumber = ({ value, suffix }) => {
 };
 
 // =========================================================================
-// ANG ATING BAGONG 3D PAGE COMPONENT
+// ANG ATING BAGONG 3D PAGE COMPONENT (MAY ERROR DETECTOR NA)
 // =========================================================================
 const BookPage = React.forwardRef((props, ref) => {
   return (
@@ -35,10 +35,22 @@ const BookPage = React.forwardRef((props, ref) => {
       
       <img 
         src={props.imageUrl} 
-        onError={(e) => { if (e.target.src.endsWith('.jpg')) e.target.src = props.imageUrl.replace('.jpg', '.png'); }}
+        onError={(e) => { 
+          // Kapag nag 404 Not Found, itatago niya yung sirang image at ipapakita ang error text
+          e.target.style.display = 'none'; 
+          e.target.nextSibling.style.display = 'flex';
+        }}
         alt={`Page ${props.number}`} 
         className="w-full h-full object-contain pointer-events-none relative z-0" 
       />
+      
+      {/* ITO ANG LILITAW KAPAG WALA YUNG PICTURE */}
+      <div className="hidden absolute inset-0 flex-col items-center justify-center text-xs text-red-400 font-mono text-center p-6 z-20">
+        <span className="text-2xl mb-2">⚠️</span>
+        <span className="font-bold mb-2">IMAGE NOT FOUND</span>
+        <span className="text-white/60 text-[10px] mb-1">Hinahanap ng system ang:</span>
+        <span className="text-cyan-400 text-[9px] break-all border border-white/10 bg-black/50 p-2 rounded">{props.imageUrl}</span>
+      </div>
     </div>
   );
 });
