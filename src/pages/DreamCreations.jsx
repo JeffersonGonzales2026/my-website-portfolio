@@ -4,7 +4,6 @@ import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring,
 import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-// Helper component for counting numbers
 const AnimatedNumber = ({ value, suffix }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -141,10 +140,62 @@ export default function DreamCreations() {
   const [softwareList, setSoftwareList] = useState(softwareExpertise);
   const [clientsList, setClientsList] = useState(featuredClients);
 
-  // ================= EXCLUSIVE MULTI-PAGE FLIPBOOK STATE =================
+  // ================= 3D FLIPBOOK STATES & LOGIC =================
   const [isFlipbookOpen, setIsFlipbookOpen] = useState(false);
   const [flipbookPage, setFlipbookCurrentPage] = useState(1);
+  const [flipDirection, setFlipDirection] = useState(1); // 1 = Next, -1 = Prev
   const totalFlipbookPages = 91; 
+
+  const turnNext = () => {
+    if (window.innerWidth >= 768) {
+      if (flipbookPage >= totalFlipbookPages - 1) return;
+      setFlipDirection(1);
+      setFlipbookCurrentPage(p => p + 2);
+    } else {
+      if (flipbookPage >= totalFlipbookPages) return;
+      setFlipDirection(1);
+      setFlipbookCurrentPage(p => p + 1);
+    }
+  };
+
+  const turnPrev = () => {
+    if (window.innerWidth >= 768) {
+      if (flipbookPage === 1) return;
+      setFlipDirection(-1);
+      setFlipbookCurrentPage(p => p - 2);
+    } else {
+      if (flipbookPage === 1) return;
+      setFlipDirection(-1);
+      setFlipbookCurrentPage(p => p - 1);
+    }
+  };
+
+  // The 3D Flip Variants
+  const pageFlipVariants = {
+    enter: (direction) => ({
+      rotateY: direction > 0 ? 90 : -90,
+      opacity: 0,
+      scale: 0.95,
+      filter: 'blur(5px)',
+    }),
+    center: {
+      rotateY: 0,
+      opacity: 1,
+      scale: 1,
+      filter: 'blur(0px)',
+      transition: {
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1] // Snappy book-flip ease
+      }
+    },
+    exit: (direction) => ({
+      rotateY: direction > 0 ? -90 : 90,
+      opacity: 0,
+      scale: 0.95,
+      filter: 'blur(5px)',
+      transition: { duration: 0.4 }
+    })
+  };
 
   // ================= DYNAMIC RESUME STATE =================
   const [pageResume, setPageResume] = useState(null);
@@ -338,7 +389,6 @@ export default function DreamCreations() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // FIXED STORAGE PATH ENDPOINT LINK LOGIC - AUTO FALLBACK FOR EXTENSIONS
   const getFlipbookUrl = (pageIndex, ext = 'jpg') => {
     return `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/page-${pageIndex}.${ext}`;
   };
@@ -346,14 +396,8 @@ export default function DreamCreations() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: dreamData, error: dreamError } = await supabase
-          .from('dream_creations')
-          .select('*')
-          .eq('id', 1)
-          .single();
+        const { data: dreamData } = await supabase.from('dream_creations').select('*').eq('id', 1).single();
           
-        if (dreamError && dreamError.code !== 'PGRST116') throw dreamError;
-
         if (dreamData) {
           if (dreamData.banner_url) setBannerUrl(dreamData.banner_url);
           if (dreamData.founder_photo) setFounderPhoto(dreamData.founder_photo);
@@ -402,32 +446,15 @@ export default function DreamCreations() {
           }
         }
 
-        // FETCH ALL PROJECTS (NO RESTRICTION ON IS_PUBLISHED HERE TO ENSURE WE SEE EVERYTHING)
-        const { data: projectData, error: projectError } = await supabase
-          .from('portfolio_projects')
-          .select('*')
-          .order('created_at', { ascending: false });
-        if (projectError) throw projectError;
+        const { data: projectData } = await supabase.from('portfolio_projects').select('*').order('created_at', { ascending: false });
         setProjects(projectData || []);
 
-        const { data: reviewData, error: reviewError } = await supabase
-          .from('client_reviews')
-          .select('*')
-          .eq('is_published', true)
-          .order('created_at', { ascending: false });
-        if (reviewError) throw reviewError;
+        const { data: reviewData } = await supabase.from('client_reviews').select('*').order('created_at', { ascending: false });
         setReviews(reviewData || []);
 
-        const { data: allResumes, error: resumeError } = await supabase
-          .from('portfolio_resumes')
-          .select('*');
-        
-        if (allResumes && !resumeError && allResumes.length > 0) {
-          const graphicResume = allResumes.find(res => 
-            res.title.toLowerCase().includes('graphic') || 
-            res.title.toLowerCase().includes('artist') ||
-            res.title.toLowerCase().includes('dream')
-          ) || allResumes[0]; 
+        const { data: allResumes } = await supabase.from('portfolio_resumes').select('*');
+        if (allResumes && allResumes.length > 0) {
+          const graphicResume = allResumes.find(res => res.title.toLowerCase().includes('graphic') || res.title.toLowerCase().includes('artist') || res.title.toLowerCase().includes('dream')) || allResumes[0]; 
           setPageResume(graphicResume);
         }
 
@@ -449,11 +476,8 @@ export default function DreamCreations() {
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
     setTimeout(() => {
-      const targetElement = document.getElementById('portfolio-directory');
-      if (targetElement) {
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 500); // Increased timeout to ensure render before scroll
+      scrollToSection('portfolio-directory');
+    }, 150); 
   };
 
   const handleSubtitleModalClick = (subtitleName) => {
@@ -461,14 +485,10 @@ export default function DreamCreations() {
     setActivePortfolioSubtitle(subtitleName); 
     
     setTimeout(() => {
-      const targetElement = document.getElementById('portfolio-directory');
-      if (targetElement) {
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 500); // Increased timeout for smooth scroll jumping
+      scrollToSection('portfolio-directory');
+    }, 150);
   };
 
-  // ROBUST NORMALIZED COMPARISON CHECK FOR SUB-BOARD FILTER MATRICES
   const filteredProjects = activePortfolioSubtitle 
     ? projects.filter(p => p.subtitle?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || p.category?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
     : projects;
@@ -1069,11 +1089,8 @@ export default function DreamCreations() {
                 onClick={() => {
                    setActivePortfolioSubtitle(null);
                    setTimeout(() => {
-                      const targetElement = document.getElementById('portfolio-directory');
-                      if (targetElement) {
-                          targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      }
-                   }, 350);
+                      scrollToSection('portfolio-directory');
+                   }, 150);
                 }}
                 className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer"
               >
@@ -1285,7 +1302,15 @@ export default function DreamCreations() {
                 {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
                     <button 
-                      onClick={() => handleSubtitleModalClick(item)}
+                      onClick={() => {
+                        if (item.toLowerCase().includes('profile')) {
+                          setActiveCreationPopup(null);
+                          setIsFlipbookOpen(true);
+                          setFlipbookCurrentPage(1);
+                        } else {
+                          handleSubtitleModalClick(item);
+                        }
+                      }}
                       className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group cursor-pointer"
                     >
                       <span className="text-[#1095d2] group-hover:translate-x-1 transition-transform">▹</span>
@@ -1319,56 +1344,80 @@ export default function DreamCreations() {
               <div className="w-full flex items-center justify-center min-h-[50vh] md:min-h-[65vh] select-none">
                 
                 {/* DUAL-PAGE INTERACTIVE OPEN BOOK SPREAD */}
-                <div className="hidden md:flex w-full items-stretch justify-center relative max-w-5xl shadow-[0_30px_70px_rgba(0,0,0,0.8)] rounded-2xl overflow-hidden border border-white/5 bg-[#0e111a]">
+                <div className="hidden md:flex w-full items-stretch justify-center relative max-w-5xl shadow-[0_30px_70px_rgba(0,0,0,0.8)] rounded-2xl border border-white/5 bg-[#0e111a]" style={{ perspective: 1500 }}>
                   
                   <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[30px] bg-gradient-to-r from-black/40 via-black/10 to-black/40 z-30 pointer-events-none" />
 
-                  {/* LEFT PAGE SLOT */}
-                  <div className="w-1/2 bg-black/40 relative aspect-[3/4] flex items-center justify-center border-r border-white/5">
-                    {flipbookPage === 1 ? (
-                      <div className="absolute inset-0 bg-black/60 font-mono text-white/10 flex items-center justify-center text-xs uppercase tracking-widest select-none">Inside Cover</div>
-                    ) : (
-                      <motion.img 
-                        key={`left-${flipbookPage}`}
-                        src={getFlipbookUrl(flipbookPage, 'jpg')} 
-                        onError={(e) => { if (e.target.src.endsWith('.jpg')) e.target.src = getFlipbookUrl(flipbookPage, 'png'); }}
-                        alt={`Page ${flipbookPage}`}
-                        initial={{ opacity: 0, filter: 'blur(5px)' }}
-                        animate={{ opacity: 1, filter: 'blur(0px)' }}
-                        className="w-full h-full object-contain"
-                      />
-                    )}
+                  {/* LEFT PAGE SLOT (3D HINGE: RIGHT CENTER) */}
+                  <div className="w-1/2 bg-black/40 relative aspect-[3/4] flex items-center justify-center border-r border-white/5 overflow-hidden">
+                    <AnimatePresence mode="wait" custom={flipDirection}>
+                      {flipbookPage === 1 ? (
+                        <motion.div 
+                          key="left-cover"
+                          custom={flipDirection} variants={pageFlipVariants} initial="enter" animate="center" exit="exit"
+                          className="absolute inset-0 bg-black/60 font-mono text-white/10 flex items-center justify-center text-xs uppercase tracking-widest select-none origin-right"
+                        >
+                          Inside Cover
+                        </motion.div>
+                      ) : (
+                        <motion.img 
+                          key={`left-${flipbookPage}`}
+                          src={getFlipbookUrl(flipbookPage, 'jpg')} 
+                          onError={(e) => { if (e.target.src.endsWith('.jpg')) e.target.src = getFlipbookUrl(flipbookPage, 'png'); }}
+                          alt={`Page ${flipbookPage}`}
+                          custom={flipDirection} variants={pageFlipVariants} initial="enter" animate="center" exit="exit"
+                          className="absolute inset-0 w-full h-full object-contain origin-right"
+                        />
+                      )}
+                    </AnimatePresence>
                   </div>
 
-                  {/* RIGHT PAGE SLOT */}
-                  <div className="w-1/2 bg-black/40 relative aspect-[3/4] flex items-center justify-center">
-                    {flipbookPage + 1 > totalFlipbookPages ? (
-                      <div className="absolute inset-0 bg-black/60 font-mono text-white/10 flex items-center justify-center text-xs uppercase tracking-widest select-none">Back Inside Cover</div>
-                    ) : (
-                      <motion.img 
-                        key={`right-${flipbookPage + 1}`}
-                        src={getFlipbookUrl(flipbookPage === 1 ? 1 : flipbookPage + 1, 'jpg')} 
-                        onError={(e) => { if (e.target.src.endsWith('.jpg')) e.target.src = getFlipbookUrl(flipbookPage === 1 ? 1 : flipbookPage + 1, 'png'); }}
-                        alt={`Page ${flipbookPage + 1}`}
-                        initial={{ opacity: 0, filter: 'blur(5px)' }}
-                        animate={{ opacity: 1, filter: 'blur(0px)' }}
-                        className="w-full h-full object-contain"
-                      />
-                    )}
+                  {/* RIGHT PAGE SLOT (3D HINGE: LEFT CENTER) */}
+                  <div className="w-1/2 bg-black/40 relative aspect-[3/4] flex items-center justify-center overflow-hidden">
+                    <AnimatePresence mode="wait" custom={flipDirection}>
+                      {flipbookPage + 1 > totalFlipbookPages ? (
+                        <motion.div 
+                          key="right-cover"
+                          custom={flipDirection} variants={pageFlipVariants} initial="enter" animate="center" exit="exit"
+                          className="absolute inset-0 bg-black/60 font-mono text-white/10 flex items-center justify-center text-xs uppercase tracking-widest select-none origin-left"
+                        >
+                          Back Inside Cover
+                        </motion.div>
+                      ) : (
+                        <motion.img 
+                          key={`right-${flipbookPage + 1}`}
+                          src={getFlipbookUrl(flipbookPage === 1 ? 1 : flipbookPage + 1, 'jpg')} 
+                          onError={(e) => { if (e.target.src.endsWith('.jpg')) e.target.src = getFlipbookUrl(flipbookPage === 1 ? 1 : flipbookPage + 1, 'png'); }}
+                          alt={`Page ${flipbookPage + 1}`}
+                          custom={flipDirection} variants={pageFlipVariants} initial="enter" animate="center" exit="exit"
+                          className="absolute inset-0 w-full h-full object-contain origin-left"
+                        />
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
 
-                {/* MOBILE VIEWPORT LAYOUT */}
-                <div className="block md:hidden w-full max-w-sm aspect-[3/4] rounded-xl overflow-hidden border border-white/10 bg-[#0e111a] shadow-2xl relative">
-                  <motion.img 
-                    key={`mobile-${flipbookPage}`}
-                    src={getFlipbookUrl(flipbookPage, 'jpg')} 
-                    onError={(e) => { if (e.target.src.endsWith('.jpg')) e.target.src = getFlipbookUrl(flipbookPage, 'png'); }}
-                    alt={`Page ${flipbookPage}`}
-                    initial={{ scale: 0.95, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="w-full h-full object-contain"
-                  />
+                {/* MOBILE VIEWPORT LAYOUT (TINDER-LIKE SWIPE ACTIVATED & AUTO-SCALE HEIGHT) */}
+                <div 
+                  className="block md:hidden h-[75vh] w-auto max-w-full aspect-[3/4] rounded-xl overflow-hidden border border-white/10 bg-[#0e111a] shadow-[0_0_30px_rgba(0,0,0,1)] relative cursor-grab active:cursor-grabbing"
+                  style={{ perspective: 1200 }}
+                >
+                  <AnimatePresence mode="wait" custom={flipDirection}>
+                    <motion.img 
+                      key={`mobile-${flipbookPage}`}
+                      src={getFlipbookUrl(flipbookPage, 'jpg')} 
+                      onError={(e) => { if (e.target.src.endsWith('.jpg')) e.target.src = getFlipbookUrl(flipbookPage, 'png'); }}
+                      alt={`Page ${flipbookPage}`}
+                      custom={flipDirection} variants={pageFlipVariants} initial="enter" animate="center" exit="exit"
+                      drag="x"
+                      dragConstraints={{ left: 0, right: 0 }}
+                      onDragEnd={(e, { offset }) => {
+                        if (offset.x < -60) turnNext(); // Swiped left -> Next Page
+                        else if (offset.x > 60) turnPrev(); // Swiped right -> Prev Page
+                      }}
+                      className="absolute inset-0 w-full h-full object-contain origin-center"
+                    />
+                  </AnimatePresence>
                 </div>
 
               </div>
@@ -1376,10 +1425,10 @@ export default function DreamCreations() {
               <div className="flex items-center gap-6 bg-black/40 border border-white/10 backdrop-blur-md px-6 py-3 rounded-full relative z-20">
                 <button 
                   disabled={flipbookPage === 1}
-                  onClick={() => setFlipbookCurrentPage(prev => Math.max(1, prev - (window.innerWidth >= 768 ? 2 : 1)))}
-                  className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+                  onClick={turnPrev}
+                  className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
                 >
-                  <ChevronLeft size={20} />
+                  <ChevronLeft size={24} />
                 </button>
 
                 <span className="text-xs font-mono font-bold tracking-widest text-zinc-400 uppercase select-none min-w-[100px] text-center">
@@ -1392,10 +1441,10 @@ export default function DreamCreations() {
 
                 <button 
                   disabled={window.innerWidth >= 768 ? flipbookPage >= totalFlipbookPages - 1 : flipbookPage === totalFlipbookPages}
-                  onClick={() => setFlipbookCurrentPage(prev => Math.min(totalFlipbookPages, prev + (window.innerWidth >= 768 ? 2 : 1)))}
-                  className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+                  onClick={turnNext}
+                  className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
                 >
-                  <ChevronRight size={20} />
+                  <ChevronRight size={24} />
                 </button>
               </div>
 

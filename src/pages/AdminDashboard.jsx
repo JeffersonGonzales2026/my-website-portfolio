@@ -20,14 +20,6 @@ const sidebarModules = [
   { name: 'Messages Inbox', icon: <Mail size={16} /> }
 ];
 
-// UNIVERSAL UUID GENERATOR TO PREVENT DATABASE REJECTIONS
-const generateUUID = () => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-};
-
 export default function AdminDashboard() {
   const [activeModule, setActiveModule] = useState('Dashboard Hub');
   const [activePortfolioTab, setActivePortfolioTab] = useState('dashboards');
@@ -169,76 +161,76 @@ export default function AdminDashboard() {
 
   const handleSaveModule = async () => {
     setIsSaving(true);
-    console.log("Saving state for:", activeModule);
-// 2. Clear and Re-insert
-    console.log("Preparing to insert projects:", dreamArchive);
-    await supabase.from('portfolio_projects').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    
-    if (dreamArchive.length > 0) {
-      const { error: insertError } = await supabase.from('portfolio_projects').insert(dreamArchive);
-      if (insertError) {
-        console.error("Database Insert Error:", insertError);
-        alert("DB Error: " + insertError.message);
-      }
-    }
-}
+    try {
+      if (activeModule === 'Home Engine') {
+        await supabase.from('home_engine').update({ hero_photo: homeHeroPhoto, quick_stats: homeStats, core_skills: homeSkills, career_timeline: homeTimeline }).eq('id', 1);
+      
       } else if (activeModule === 'Dream Creations') {
-          // 1. Update the metadata first
-          await supabase.from('dream_creations').update({
-            banner_url: dreamBanner,
-            founder_photo: dreamFounderPhoto,
-            founder_experience: dreamFounderExp,
-            founder_projects: dreamFounderProjects,
-            team_roster: dreamTeam,
-            software_stack: dreamSoftware,
-            trusted_clients: dreamClients
-          }).eq('id', 1);
+        await supabase.from('dream_creations').update({ banner_url: dreamBanner, founder_photo: dreamFounderPhoto, founder_experience: dreamFounderExp, founder_projects: dreamFounderProjects, team_roster: dreamTeam, software_stack: dreamSoftware, trusted_clients: dreamClients }).eq('id', 1);
 
-        await supabase.from('client_reviews').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        // =========================================================================
+        // STRICT SCHEMA MAPPING FIX: STOPS SUPABASE REJECTIONS 
+        // =========================================================================
+        await supabase.from('client_reviews').delete().neq('client_name', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (dreamFeedback.length > 0) {
-          await supabase.from('client_reviews').insert(dreamFeedback.map(({ id, created_at, ...rest }) => rest));
+          const cleanReviews = dreamFeedback.map(r => ({
+            client_name: r.client_name || "",
+            company: r.company || "",
+            project_type: r.project_type || "",
+            rating: r.rating || 5,
+            feedback: r.feedback || "",
+            face_image_url: r.face_image_url || ""
+          }));
+          await supabase.from('client_reviews').insert(cleanReviews);
         }
 
-        // ====== FIXED ROBUST SAVE LOGIC FOR ARCHIVES ======
-        await supabase.from('portfolio_projects').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        await supabase.from('portfolio_projects').delete().neq('title', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (dreamArchive.length > 0) {
-          const formattedArchives = dreamArchive.map(item => ({
-            id: (item.id && typeof item.id === 'string' && item.id.includes('-')) ? item.id : generateUUID(),
-            category: item.category || "",
-            subtitle: item.subtitle || "",
-            title: item.title || "",
-            client_name: item.client_name || "",
-            description: item.description || "",
-            featured_image_url: item.featured_image_url || "",
-            video_url: item.video_url || "",
-            is_published: true
+          const cleanArchives = dreamArchive.map(p => ({
+            category: p.category || "",
+            subtitle: p.subtitle || "",
+            title: p.title || "",
+            client_name: p.client_name || "",
+            description: p.description || "",
+            featured_image_url: p.featured_image_url || "",
+            video_url: p.video_url || ""
           }));
-          const { error: archiveError } = await supabase.from('portfolio_projects').insert(formattedArchives);
+          const { error: archiveError } = await supabase.from('portfolio_projects').insert(cleanArchives);
           if (archiveError) throw archiveError;
         }
 
       } else if (activeModule === 'Data Analyst') {
         await supabase.from('data_analyst').update({ performance_counters: analystStats, experience_roles: analystRoles, technical_competencies: analystSkills, software_ecosystem: analystEcosystem, future_roadmap: analystRoadmap, portfolio_dashboards: portfolioDashboards, portfolio_reports: portfolioReports, portfolio_automations: portfolioAutomations, portfolio_case_studies: portfolioCaseStudies, portfolio_projects: portfolioProjects }).eq('id', 1);
+      
       } else if (activeModule === 'AI Developer') {
         await supabase.from('ai_developer').update({ metrics_counters: aiStats, development_timeline: aiTimeline, ai_partners: aiEcosystemState, architecture_stack: aiArchitecture, engineering_showcase: aiShowcase, github_sync: aiGithub }).eq('id', 1);
+      
       } else if (activeModule === 'Contact Links') {
         await supabase.from('contact_settings').update({ portfolio_url: contactPortfolioUrl }).eq('id', 1);
 
-        await supabase.from('portfolio_resumes').delete().neq('id', -1);
+        await supabase.from('portfolio_resumes').delete().neq('title', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (dynamicResumes.length > 0) {
-          await supabase.from('portfolio_resumes').insert(dynamicResumes.map((r) => ({ title: r.title, file_url: r.file_url })));
+          const cleanResumes = dynamicResumes.map(r => ({ title: r.title || "", file_url: r.file_url || "" }));
+          await supabase.from('portfolio_resumes').insert(cleanResumes);
         }
 
-        await supabase.from('contact_platforms').delete().neq('id', 'dummy');
+        await supabase.from('contact_platforms').delete().neq('name', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (contactPlatforms.length > 0) {
-          await supabase.from('contact_platforms').insert(contactPlatforms.map((p, i) => ({ id: p.id === 'new' ? `custom_${Date.now()}_${i}` : p.id, name: p.name, username: p.username, link: p.link, status: p.status, display_order: i })));
+          const cleanPlatforms = contactPlatforms.map((p, i) => ({
+            name: p.name || "",
+            username: p.username || "",
+            link: p.link || "",
+            status: p.status || "active",
+            display_order: i
+          }));
+          await supabase.from('contact_platforms').insert(cleanPlatforms);
         }
       }
       
       alert(`SUCCESS: Transmitted "${activeModule}" updates to Supabase Database.`);
     } catch (error) {
       console.error("Save Execution Error:", error);
-      alert(`ERROR: Supabase rejected the save. Contact system admin.\nDetails: ${error.message}`);
+      alert(`ERROR: Supabase rejected the save. Details: ${error.message}`);
     } finally {
       setIsSaving(false);
     }
@@ -324,8 +316,13 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex h-screen bg-[#09090b] text-zinc-200 overflow-hidden font-sans antialiased">
-      {isSidebarOpen && <div className="fixed inset-0 bg-black/80 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />}
+      
+      {/* Mobile Overlay Background */}
+      {isSidebarOpen && (
+        <div className="fixed inset-0 bg-black/80 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />
+      )}
 
+      {/* UNIVERSAL SIDEBAR CONTROL DRAWER */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#09090b] border-r border-zinc-900 flex flex-col justify-between transition-transform duration-300 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <button onClick={() => setIsSidebarOpen(false)} className="absolute top-6 right-4 md:hidden text-zinc-500 hover:text-white"><X size={20} /></button>
         <div>
@@ -604,11 +601,13 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
+              {/* =========================================================================
+                  STRICT PAYLOAD FIX: ONLY SENDING COLUMNS THAT EXIST IN THE DB
+                  ========================================================================= */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Project Archive Matrix Registries</h4>
-                  {/* GENERATES NEW ITEM WITH UUID FALLBACK ON SAVE */}
-                  <button onClick={() => setDreamArchive([...dreamArchive, { category: "Marketing Materials", subtitle: "Company Profiles", title: "J.P. Geonzon Company Profile", client_name: "J.P. Geonzon Construction Corp.", description: "Complete 91-page corporate company profile manual.", featured_image_url: "", video_url: "", is_published: true }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD PROJECT</button>
+                  <button onClick={() => setDreamArchive([...dreamArchive, { category: "Marketing Materials", subtitle: "Company Profiles", title: "J.P. Geonzon Company Profile", client_name: "J.P. Geonzon Construction Corp.", description: "Complete 91-page corporate company profile manual.", featured_image_url: "", video_url: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD PROJECT</button>
                 </div>
                 <div className="space-y-4">
                   {dreamArchive.map((project, idx) => (
@@ -854,7 +853,6 @@ export default function AdminDashboard() {
                 )}
               </div>
 
-              {/* Software Ecosystem Registry */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Software Ecosystem Registry</h4>
@@ -891,7 +889,6 @@ export default function AdminDashboard() {
                 ))}
               </div>
 
-              {/* Future Roadmap badges */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Future Strategic Analytics Roadmap Array</h4>
@@ -920,7 +917,6 @@ export default function AdminDashboard() {
           {/* ================= WORKSPACE PANEL: AI DEVELOPER ================= */}
           {activeModule === 'AI Developer' && (
             <div className="space-y-8 text-left">
-              {/* Developer Stats */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><BrainCircuit size={14}/> Engineering Metrics Counters</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -933,7 +929,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Journey Timeline */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Development Chronology Flow</h4>
@@ -950,7 +945,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Current AI Ecosystem */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Current AI Ecosystem Partners</h4>
@@ -968,7 +962,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Development Architecture with Logos */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Development Architecture Stack Matrix</h4>
@@ -1005,7 +998,6 @@ export default function AdminDashboard() {
                 ))}
               </div>
 
-              {/* Engineering Showcase - Portfolio with Tech list */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Flagship Engineering Showcase Projects Matrix</h4>
@@ -1046,7 +1038,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Static Attributes Card (GitHub Profile Meta Card) */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><ExternalLink size={14}/> Attached GitHub Sync Panel Context</h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1070,8 +1061,6 @@ export default function AdminDashboard() {
           {/* ================= WORKSPACE PANEL: CONTACT LINKS ================= */}
           {activeModule === 'Contact Links' && (
             <div className="space-y-8 text-left">
-              
-              {/* TIER 1: DYNAMIC RESUMES DROPDOWN MATRIX */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><FileText size={14}/> Dynamic Resumes Dropdown List</h4>
@@ -1099,14 +1088,12 @@ export default function AdminDashboard() {
                   )}
                 </div>
 
-                {/* Retained Portfolio URL Backup Link */}
                 <div className="pt-4 border-t border-zinc-900/60 space-y-1.5 mt-4">
                   <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase">Dynamic Portfolio Archive PDF Download URL Link</label>
                   <input type="text" value={contactPortfolioUrl} onChange={(e) => setContactPortfolioUrl(e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:outline-none" />
                 </div>
               </div>
 
-              {/* Social Accounts Grid table */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Social Networking Directory Registry</h4>
