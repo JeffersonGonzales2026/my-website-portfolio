@@ -171,7 +171,6 @@ export default function DreamCreations() {
   const [flipbookPage, setFlipbookCurrentPage] = useState(0); 
   const [activeFlipbookConfig, setActiveFlipbookConfig] = useState({ prefix: 'page-', totalPages: 91, extension: 'jpg' });
 
-  // ================= NEW: IMAGE PREVIEW MODAL STATE =================
   const [previewImage, setPreviewImage] = useState(null);
 
   const goNextPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext(); };
@@ -424,10 +423,21 @@ export default function DreamCreations() {
     setTimeout(() => { scrollToSection('portfolio-directory'); }, 150); 
   };
 
+  // ================= REDIRECT FIX: DIRECT TO COVER FIRST =================
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(subtitleName); 
-    setTimeout(() => { scrollToSection('portfolio-directory'); }, 150);
+    setActivePortfolioSubtitle(null); // Keep it null para makita muna ang mga Cover Cards!
+    
+    setTimeout(() => { 
+      const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        // I-i-scroll niya sa mismong card
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        scrollToSection('portfolio-directory');
+      }
+    }, 350); // Bigyan ng oras na mag-close ang popup at mag-render ang covers
   };
 
   const filteredProjects = activePortfolioSubtitle 
@@ -719,8 +729,11 @@ export default function DreamCreations() {
                   <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block">{cat.category}</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {cat.items.map((subtitle, idx) => {
-                      const latestProject = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim());
-                      const coverImage = latestProject?.featured_image_url || `/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`;
+                      
+                      // ================= FIX 1: LATEST UPLOAD BILANG COVER =================
+                      // Hinahanap ang pinaka-latest project na MAY image para sa subtitle na ito.
+                      const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
+                      const coverImage = latestProjectWithImage?.featured_image_url || `/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`;
 
                       return (
                         <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
@@ -746,14 +759,19 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= CONDITIONAL LAYOUT: SEAMLESS PHOTO GRID PARA SA LOGO DESIGN ================= */}
+              {/* ================= SEAMLESS PHOTO GRID PARA SA LOGO DESIGN ================= */}
               {activePortfolioSubtitle === 'Logo Design' ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-0 rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => (
                       <div 
                         key={project.id} 
-                        onClick={() => setPreviewImage(project.featured_image_url)}
+                        // ================= FIX 2: PREVENT SCROLL JUMP SA LOGO CLICK =================
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setPreviewImage(project.featured_image_url);
+                        }}
                         className="relative aspect-square cursor-pointer group bg-black/60 border border-white/5"
                       >
                         {project.featured_image_url ? ( 
@@ -883,6 +901,7 @@ export default function DreamCreations() {
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
+                    {/* ================= FIX 3: POPUP BUTTON ================= */}
                     <button 
                       onClick={() => handleSubtitleModalClick(item)}
                       className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group cursor-pointer"
@@ -959,7 +978,7 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= NEW: IMAGE PREVIEW MODAL ================= */}
+      {/* ================= IMAGE PREVIEW MODAL ================= */}
       <AnimatePresence>
         {previewImage && (
           <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md">
