@@ -171,6 +171,9 @@ export default function DreamCreations() {
   const [flipbookPage, setFlipbookCurrentPage] = useState(0); 
   const [activeFlipbookConfig, setActiveFlipbookConfig] = useState({ prefix: 'page-', totalPages: 91, extension: 'jpg' });
 
+  // ================= NEW: IMAGE PREVIEW MODAL STATE =================
+  const [previewImage, setPreviewImage] = useState(null);
+
   const goNextPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext(); };
   const goPrevPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipPrev(); };
   const onPageFlip = (e) => { setFlipbookCurrentPage(e.data); };
@@ -711,14 +714,11 @@ export default function DreamCreations() {
           {!activePortfolioSubtitle ? (
             <motion.div key="subtitle-list" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="space-y-16 relative z-20">
               
-              {/* LILITAW LAHAT NG CATEGORIES, MAY LAMAN MAN O WALA (REVERTED SMART HIDE) */}
               {creationsCategories.map((cat) => (
                 <div key={cat.id} className="pt-4">
                   <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block">{cat.category}</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {cat.items.map((subtitle, idx) => {
-                      
-                      // DYNAMIC COVER LOGIC: Kukunin ang pinakalatest na project kapag may laman
                       const latestProject = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim());
                       const coverImage = latestProject?.featured_image_url || `/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`;
 
@@ -746,49 +746,77 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProjects.length > 0 ? (
-                  filteredProjects.map((project) => (
-                    <div 
-                      key={project.id} 
-                      onClick={() => {
-                        if (project.title.toLowerCase().includes('profile') || project.category.toLowerCase().includes('profile') || project.description.toLowerCase().includes('company profile')) {
-                          let prefix = 'page-';
-                          let pages = 91;
-                          let extension = 'jpg'; 
-                          
-                          if (project.video_url && project.video_url.includes(',')) {
-                             const parts = project.video_url.split(',');
-                             prefix = parts[0].trim();
-                             pages = parseInt(parts[1].trim()) || 91;
-                             if (parts[2]) extension = parts[2].trim().replace('.', ''); 
+              {/* ================= CONDITIONAL LAYOUT: SEAMLESS PHOTO GRID PARA SA LOGO DESIGN ================= */}
+              {activePortfolioSubtitle === 'Logo Design' ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-0 rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
+                  {filteredProjects.length > 0 ? (
+                    filteredProjects.map((project) => (
+                      <div 
+                        key={project.id} 
+                        onClick={() => setPreviewImage(project.featured_image_url)}
+                        className="relative aspect-square cursor-pointer group bg-black/60 border border-white/5"
+                      >
+                        {project.featured_image_url ? ( 
+                          <img src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" /> 
+                        ) : ( 
+                          <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                          <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
+                          <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40"><ImageIcon size={32} className="mb-4 opacity-30" />No logo designs uploaded yet.</div>
+                  )}
+                </div>
+              ) : (
+                /* ================= STANDARD LAYOUT: PROJECT CARDS PARA SA IBA PANG SUBTITLES ================= */
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredProjects.length > 0 ? (
+                    filteredProjects.map((project) => (
+                      <div 
+                        key={project.id} 
+                        onClick={() => {
+                          if (project.title.toLowerCase().includes('profile') || project.category.toLowerCase().includes('profile') || project.description.toLowerCase().includes('company profile')) {
+                            let prefix = 'page-';
+                            let pages = 91;
+                            let extension = 'jpg'; 
+                            
+                            if (project.video_url && project.video_url.includes(',')) {
+                               const parts = project.video_url.split(',');
+                               prefix = parts[0].trim();
+                               pages = parseInt(parts[1].trim()) || 91;
+                               if (parts[2]) extension = parts[2].trim().replace('.', ''); 
+                            }
+                            setActiveFlipbookConfig({ prefix, totalPages: pages, extension });
+                            setIsFlipbookOpen(true);
+                            setFlipbookCurrentPage(0);
                           }
-                          setActiveFlipbookConfig({ prefix, totalPages: pages, extension });
-                          setIsFlipbookOpen(true);
-                          setFlipbookCurrentPage(0);
-                        }
-                      }}
-                      className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer"
-                    >
-                       <div className="aspect-video relative overflow-hidden bg-black/60">
-                         {project.featured_image_url ? ( <img src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
-                         {project.video_url && !project.video_url.includes(',') && !project.title.toLowerCase().includes('profile') && (
-                           <a href={project.video_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
-                             <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform"><MonitorPlay size={24} className="ml-1" /></div>
-                           </a>
-                         )}
-                       </div>
-                       <div className="p-6">
-                          <h4 className="text-lg font-bold text-white mb-1 group-hover:text-[#1095d2] transition-colors">{project.title}</h4>
-                          <p className="text-xs text-[#1095d2] font-mono mb-4">{project.client_name || 'Independent Project'}</p>
-                          <p className="text-sm text-white/60 line-clamp-3 leading-relaxed">{project.description}</p>
-                       </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm border border-dashed border-white/10 rounded-2xl"><ImageIcon size={32} className="mb-4 opacity-30" />No projects have been published to this archive category yet.</div>
-                )}
-              </div>
+                        }}
+                        className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer"
+                      >
+                         <div className="aspect-video relative overflow-hidden bg-black/60">
+                           {project.featured_image_url ? ( <img src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
+                           {project.video_url && !project.video_url.includes(',') && !project.title.toLowerCase().includes('profile') && (
+                             <a href={project.video_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                               <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform"><MonitorPlay size={24} className="ml-1" /></div>
+                             </a>
+                           )}
+                         </div>
+                         <div className="p-6">
+                            <h4 className="text-lg font-bold text-white mb-1 group-hover:text-[#1095d2] transition-colors">{project.title}</h4>
+                            <p className="text-xs text-[#1095d2] font-mono mb-4">{project.client_name || 'Independent Project'}</p>
+                            <p className="text-sm text-white/60 line-clamp-3 leading-relaxed">{project.description}</p>
+                         </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm border border-dashed border-white/10 rounded-2xl"><ImageIcon size={32} className="mb-4 opacity-30" />No projects have been published to this archive category yet.</div>
+                  )}
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -927,6 +955,32 @@ export default function DreamCreations() {
               </div>
 
             </div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= NEW: IMAGE PREVIEW MODAL ================= */}
+      <AnimatePresence>
+        {previewImage && (
+          <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md">
+            <div className="absolute top-6 right-6 z-50 flex items-center gap-4">
+              <span className="text-xs font-mono text-white/40 hidden sm:block">Preview Mode</span>
+              <button 
+                onClick={() => setPreviewImage(null)} 
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <motion.img 
+              initial={{ opacity: 0, scale: 0.9 }} 
+              animate={{ opacity: 1, scale: 1 }} 
+              exit={{ opacity: 0, scale: 0.9 }} 
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              src={previewImage} 
+              className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)]" 
+              alt="Preview" 
+            />
           </div>
         )}
       </AnimatePresence>
