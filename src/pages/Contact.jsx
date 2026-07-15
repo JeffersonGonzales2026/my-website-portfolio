@@ -14,6 +14,7 @@ const iconMap = {
   github: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>,
   facebook: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>,
   instagram: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>,
+  tiktok: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>,
   discord: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M19 5.5a16 16 0 0 0-4-1.5.8.8 0 0 0-.5.9 14 14 0 0 0-6 0 .8.8 0 0 0-.5-.9 16 16 0 0 0-4 1.5C.5 13 .5 20.5 4 21.5a16 16 0 0 0 5-1.5 1 1 0 0 0 0-1.5 12 12 0 0 1-2-1 1 1 0 0 1 .5-1.5 9 9 0 0 0 9 0 1 1 0 0 1 .5 1.5 12 12 0 0 1-2 1 1 1 0 0 0 0 1.5 16 16 0 0 0 5 1.5C23.5 20.5 23.5 13 19 5.5z"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/></svg>,
   telegram: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>,
   whatsapp: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>,
@@ -21,17 +22,29 @@ const iconMap = {
   lark: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12l20-8-5 18-4-6-6-4z"/></svg>,
   youtube: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>,
   x: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5 0.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>,
-  medium: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="6" cy="12" rx="6" ry="6"/><ellipse cx="16" cy="12" rx="3" ry="6"/><ellipse cx="21" cy="12" rx="1" ry="6"/></svg>
+  medium: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="6" cy="12" rx="6" ry="6"/><ellipse cx="16" cy="12" rx="3" ry="6"/><ellipse cx="21" cy="12" rx="1" ry="6"/></svg>,
+  behance: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M7 5h5a3 3 0 0 1 0 6H7V5z"/><path d="M7 11h5.5a3.5 3.5 0 0 1 0 7H7v-7z"/><path d="M16 9h4"/></svg>,
+  dribbble: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M19.13 5.09C15.22 9.14 10 10.44 2.25 10.94"/><path d="M21.75 12.84c-6.62-1.41-12.14 1-16.38 6.32"/><path d="M8.56 2.75c4.37 6 6 9.42 8 17.72"/></svg>
 };
 
 // STATIC PLATFORMS ARRAY - Edit these manually to change your social links
 const staticPlatforms = [
-  { id: 'linkedin', name: 'LinkedIn', username: 'jeffersongonzales', link: 'https://linkedin.com', status: 'active' },
-  { id: 'github', name: 'GitHub', username: 'jeffersongonzales', link: 'https://github.com', status: 'active' },
   { id: 'email', name: 'Email', username: 'jeffersonguzmangonzales03@gmail.com', link: 'mailto:jeffersonguzmangonzales03@gmail.com', status: 'active' },
+  { id: 'github', name: 'GitHub', username: 'jeffersongonzales', link: 'https://github.com/jeffersongonzales', status: 'active' },
+  { id: 'linkedin', name: 'LinkedIn', username: 'jeffersongonzales', link: 'https://linkedin.com/in/jeffersongonzales', status: 'active' },
   { id: 'facebook', name: 'Facebook', username: 'Jefferson Gonzales', link: 'https://www.facebook.com/jefferson.gonzales.1276', status: 'active' },
-  { id: 'instagram', name: 'Instagram', username: '@jeff.creates', link: 'https://instagram.com', status: 'future' },
-  { id: 'discord', name: 'Discord', username: 'jeffgonzales#0000', link: 'https://discord.com/channels/users/1129777754162864170.1', status: 'active' }
+  { id: 'instagram', name: 'Instagram', username: '@jeff.creates', link: 'https://instagram.com/jeff.creates', status: 'active' },
+  { id: 'tiktok', name: 'TikTok', username: '@jeff.tiktok', link: 'https://tiktok.com/@jeff.tiktok', status: 'active' },
+  { id: 'discord', name: 'Discord', username: 'jeffgonzales#0000', link: 'https://discord.com/users/1129777754162864170', status: 'active' },
+  { id: 'telegram', name: 'Telegram', username: '@jeff_telegram', link: 'https://t.me/jeff_telegram', status: 'active' },
+  { id: 'whatsapp', name: 'WhatsApp', username: '+63 000 000 0000', link: 'https://wa.me/630000000000', status: 'active' },
+  { id: 'viber', name: 'Viber', username: '+63 000 000 0000', link: 'viber://chat?number=+630000000000', status: 'active' },
+  { id: 'lark', name: 'Lark', username: 'Jefferson', link: 'https://larksuite.com', status: 'active' },
+  { id: 'youtube', name: 'YouTube', username: 'Channel Name', link: '#', status: 'future' },
+  { id: 'x', name: 'X', username: '@jeff_x', link: '#', status: 'future' },
+  { id: 'medium', name: 'Medium', username: '@jeff_writes', link: '#', status: 'future' },
+  { id: 'behance', name: 'Behance', username: 'jeff_designs', link: '#', status: 'future' },
+  { id: 'dribbble', name: 'Dribbble', username: 'jeff_dribbble', link: '#', status: 'future' }
 ];
 
 const fadeUp = {
@@ -71,9 +84,9 @@ export default function Contact() {
           .select('*')
           .eq('id', 1)
           .single();
-       
+        
         if (error && error.code !== 'PGRST116') throw error;
-       
+        
         if (data) {
           if (data.resume_url) setResumeUrl(data.resume_url);
           if (data.portfolio_url) setPortfolioUrl(data.portfolio_url);
@@ -164,7 +177,7 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-slate-200 overflow-x-hidden relative selection:bg-blue-500/30 selection:text-blue-200 pt-32 pb-24 px-6">
-     
+      
       {/* Background Glow Atmospheric Nodes */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.15, 0.1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
@@ -176,7 +189,7 @@ export default function Contact() {
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-       
+        
         {/* Contact Hero */}
         <motion.div variants={fadeUp} initial="hidden" animate="visible" className="text-center max-w-3xl mx-auto mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-semibold mb-6">
@@ -196,14 +209,14 @@ export default function Contact() {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-         
+          
           {/* Contact Form Container */}
           <motion.div variants={fadeUp} initial="hidden" animate="visible" className="lg:col-span-7">
             <div className="p-6 md:p-10 rounded-3xl bg-white/[0.02] border border-white/10 shadow-2xl backdrop-blur-md relative overflow-hidden">
               <h3 className="text-2xl font-bold text-white mb-8">Send a Message</h3>
 
               <form onSubmit={handleSubmit} className="space-y-6">
-               
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-xs font-semibold text-slate-400 mb-2">Full Name <span className="text-red-400">*</span></label>
@@ -326,7 +339,7 @@ export default function Contact() {
 
           {/* Connect With Me Panel */}
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="lg:col-span-5 space-y-6">
-           
+            
             <motion.div variants={fadeUp}>
               <h3 className="text-2xl font-bold text-white mb-2">Connect With Me</h3>
               <p className="text-sm text-slate-400 mb-8">Reach out across platforms or download my professional resources.</p>
@@ -403,7 +416,7 @@ export default function Contact() {
             {/* Social Grid Channels Fed via STATIC ARRAY */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 h-[500px] overflow-y-auto pr-2 hide-scrollbar">
               <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
-             
+              
               {platforms.map((platform) => (
                 <motion.a
                   variants={fadeUp}
