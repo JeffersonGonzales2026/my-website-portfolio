@@ -27,7 +27,7 @@ const iconMap = {
   dribbble: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M19.13 5.09C15.22 9.14 10 10.44 2.25 10.94"/><path d="M21.75 12.84c-6.62-1.41-12.14 1-16.38 6.32"/><path d="M8.56 2.75c4.37 6 6 9.42 8 17.72"/></svg>
 };
 
-// STATIC PLATFORMS ARRAY - Edit these manually to change your social links
+// STATIC PLATFORMS ARRAY - Edited with the requested accounts and links
 const staticPlatforms = [
   { id: 'email', name: 'Email', username: 'jeffersonguzmangonzales03@gmail.com', link: 'mailto:jeffersonguzmangonzales03@gmail.com', status: 'active' },
   { id: 'github', name: 'GitHub', username: 'Jefferson Gonzales', link: 'https://github.com/jeffersongonzales', status: 'active' },
@@ -39,7 +39,7 @@ const staticPlatforms = [
   { id: 'telegram', name: 'Telegram', username: '@JGonzales1998', link: 'http://t.me/JGonzales1998', status: 'active' },
   { id: 'whatsapp', name: 'WhatsApp', username: '+63 995 108 9702', link: 'https://wa.me/639951089702', status: 'active' },
   { id: 'viber', name: 'Viber', username: '+63 995 108 9702', link: 'viber://chat?number=+639951089702', status: 'active' },
-  { id: 'lark', name: 'Lark', username: 'Jefferson Gonzales', link: 'https://www.larksuite.com/invitation/page/add_contact/?token=dabs9c43-5411-4952-bda0-4d3663psg59r&amp;unique_id=TFJ-j-J30Djwdid6umvFrA==', status: 'active' },
+  { id: 'lark', name: 'Lark', username: 'Jefferson Gonzales', link: 'https://www.larksuite.com/invitation/page/add_contact/?token=dabs9c43-5411-4952-bda0-4d3663psg59r&unique_id=TFJ-j-J30Djwdid6umvFrA==', status: 'active' },
   { id: 'youtube', name: 'YouTube', username: 'Channel Name', link: '#', status: 'future' },
   { id: 'x', name: 'X', username: '@jeff_x', link: '#', status: 'future' },
   { id: 'medium', name: 'Medium', username: '@jeff_writes', link: '#', status: 'future' },
@@ -65,7 +65,7 @@ export default function Contact() {
  
   const [status, setStatus] = useState('idle');
   const [errors, setErrors] = useState({});
-  const [platforms, setPlatforms] = useState(staticPlatforms); // Initialized with static array
+  const [platforms, setPlatforms] = useState(staticPlatforms);
 
   // ================= DECOUPLED MEDIA ASSET LINKS STATE =================
   const [resumeUrl, setResumeUrl] = useState("/Jefferson_Gonzales_Resume.pdf");
@@ -414,8 +414,13 @@ export default function Contact() {
             </motion.div>
 
             {/* Social Grid Channels Fed via STATIC ARRAY */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 h-[500px] overflow-y-auto pr-2 hide-scrollbar">
-              <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+              <style>{`
+                .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.5); }
+              `}</style>
               
               {platforms.map((platform) => (
                 <motion.a
