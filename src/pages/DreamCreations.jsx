@@ -29,7 +29,9 @@ const BookPage = React.forwardRef((props, ref) => {
     <div className="bg-[#0e111a] border border-white/5 flex items-center justify-center overflow-hidden shadow-2xl relative" ref={ref} data-density="soft">
       <div className={`absolute inset-y-0 ${props.number % 2 === 0 ? 'right-0' : 'left-0'} w-8 bg-gradient-to-${props.number % 2 === 0 ? 'l' : 'r'} from-black/40 to-transparent z-10 pointer-events-none`} />
       
+      {/* UNIVERSAL FIX 1: Added key={props.imageUrl} to prevent stuck hidden images in Flipbook */}
       <img 
+        key={props.imageUrl}
         src={props.imageUrl} 
         onError={(e) => { 
           e.target.style.display = 'none'; 
@@ -394,7 +396,8 @@ export default function DreamCreations() {
           }
         }
 
-        const { data: projectData } = await supabase.from('portfolio_projects').select('*').order('created_at', { ascending: false });
+        // UNIVERSAL FIX 3: Ensures "Latest Added" is always selected first
+        const { data: projectData } = await supabase.from('portfolio_projects').select('*').order('id', { ascending: false });
         setProjects(projectData || []);
 
         const { data: reviewData } = await supabase.from('client_reviews').select('*').order('created_at', { ascending: false });
@@ -418,26 +421,25 @@ export default function DreamCreations() {
     if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  // UNIVERSAL FIX 2: Added 350ms delay to standard gallery open
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
-    setTimeout(() => { scrollToSection('portfolio-directory'); }, 150); 
+    setTimeout(() => { scrollToSection('portfolio-directory'); }, 350); 
   };
 
-  // ================= REDIRECT FIX: DIRECT TO COVER FIRST =================
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(null); // Keep it null para makita muna ang mga Cover Cards!
+    setActivePortfolioSubtitle(null); 
     
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
-        // I-i-scroll niya sa mismong card
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         scrollToSection('portfolio-directory');
       }
-    }, 350); // Bigyan ng oras na mag-close ang popup at mag-render ang covers
+    }, 350); 
   };
 
   const filteredProjects = activePortfolioSubtitle 
@@ -717,7 +719,16 @@ export default function DreamCreations() {
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
             <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are pulled directly from our live CMS.</p>
           </div>
-          <button onClick={() => setActivePortfolioSubtitle(null)} className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20">View Full Archive</button>
+          {/* UNIVERSAL FIX 2: Added 350ms to "View Full Archive" button */}
+          <button 
+            onClick={() => {
+              setActivePortfolioSubtitle(null);
+              setTimeout(() => { scrollToSection('portfolio-directory'); }, 350);
+            }} 
+            className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20"
+          >
+            View Full Archive
+          </button>
         </div>
 
         <AnimatePresence mode="wait">
@@ -730,14 +741,13 @@ export default function DreamCreations() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {cat.items.map((subtitle, idx) => {
                       
-                      // ================= FIX 1: LATEST UPLOAD BILANG COVER =================
-                      // Hinahanap ang pinaka-latest project na MAY image para sa subtitle na ito.
                       const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
                       const coverImage = latestProjectWithImage?.featured_image_url || `/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`;
 
                       return (
                         <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
-                          <img src={coverImage} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                          {/* UNIVERSAL FIX 1: Added key to force cover image refresh and avoid stuck display:none */}
+                          <img key={coverImage} src={coverImage} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                           <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
                           <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
                           <div className="absolute inset-0 p-6 flex flex-col justify-end">
@@ -753,20 +763,20 @@ export default function DreamCreations() {
             </motion.div>
           ) : (
             <motion.div key="works-grid" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="relative z-20 pt-4">
-              <button onClick={() => { setActivePortfolioSubtitle(null); setTimeout(() => { scrollToSection('portfolio-directory'); }, 150); }} className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer">
+              
+              {/* UNIVERSAL FIX 2: 350ms delay for smoother Back to Directory */}
+              <button onClick={() => { setActivePortfolioSubtitle(null); setTimeout(() => { scrollToSection('portfolio-directory'); }, 350); }} className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer">
                 <ArrowLeft size={16} /> Back to Directory
               </button>
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= SEAMLESS PHOTO GRID PARA SA LOGO DESIGN ================= */}
-              {activePortfolioSubtitle === 'Logo Design' ? (
+              {activePortfolioSubtitle !== 'Company Profiles' ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-0 rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => (
                       <div 
                         key={project.id} 
-                        // ================= FIX 2: PREVENT SCROLL JUMP SA LOGO CLICK =================
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -774,8 +784,9 @@ export default function DreamCreations() {
                         }}
                         className="relative aspect-square cursor-pointer group bg-black/60 border border-white/5"
                       >
+                        {/* UNIVERSAL FIX 1: Added key to seamless grid image */}
                         {project.featured_image_url ? ( 
-                          <img src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" /> 
+                          <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" /> 
                         ) : ( 
                           <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
                         )}
@@ -786,11 +797,10 @@ export default function DreamCreations() {
                       </div>
                     ))
                   ) : (
-                    <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40"><ImageIcon size={32} className="mb-4 opacity-30" />No logo designs uploaded yet.</div>
+                    <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
                   )}
                 </div>
               ) : (
-                /* ================= STANDARD LAYOUT: PROJECT CARDS PARA SA IBA PANG SUBTITLES ================= */
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => (
@@ -816,7 +826,8 @@ export default function DreamCreations() {
                         className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer"
                       >
                          <div className="aspect-video relative overflow-hidden bg-black/60">
-                           {project.featured_image_url ? ( <img src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
+                           {/* UNIVERSAL FIX 1: Added key to standard card image */}
+                           {project.featured_image_url ? ( <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
                            {project.video_url && !project.video_url.includes(',') && !project.title.toLowerCase().includes('profile') && (
                              <a href={project.video_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
                                <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform"><MonitorPlay size={24} className="ml-1" /></div>
@@ -901,7 +912,6 @@ export default function DreamCreations() {
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
-                    {/* ================= FIX 3: POPUP BUTTON ================= */}
                     <button 
                       onClick={() => handleSubtitleModalClick(item)}
                       className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group cursor-pointer"
