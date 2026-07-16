@@ -780,41 +780,45 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= FIX 3: FLEX WRAP JUSTIFIED FLOW PARA SA 100% KAIN SPACE (NO CROP) ================= */}
+              {/* ================= FIX 3: TETRIS FLEX LAYOUT (NO BLUR, PERFECT FIT) ================= */}
+              {/* Ginawang "flex-wrap", may "flex-auto" para humatak at punuin ang screen,
+                  at may "GHOST DIVS" sa dulo para HINDI uunat nang todo at ma-crop yung naiiwan sa last row! */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
                 <div className="flex flex-wrap gap-1 items-start">
-                  {filteredProjects.length > 0 ? (
-                    filteredProjects.map((project) => (
-                      <div 
-                        key={project.id} 
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setPreviewImage(project); 
-                        }}
-                        // Ang "flex-auto" ang sekreto para uunat siya at kainin ang extra spaces sa kanan
-                        className="relative flex-auto w-[45%] md:w-[30%] lg:w-[22%] cursor-pointer group overflow-hidden border border-white/5 bg-black"
-                      >
-                        {project.featured_image_url ? ( 
-                          <motion.img 
-                            layoutId={`portfolio-img-${project.id}`}
-                            src={project.featured_image_url} 
-                            alt={project.title} 
-                            // Ang h-auto ang sekreto para hindi siya ma-crop at hindi ma-stretch ng pangit!
-                            className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500" 
-                          /> 
-                        ) : ( 
-                          <div className="w-full aspect-square flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20">
-                          <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
-                          <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
-                        </div>
+                  {/* Pinaliwanag na Reverse Array = Tetris Flow (Luma sa taas, Bago sa baba) */}
+                  {[...filteredProjects].reverse().map((project) => (
+                    <div 
+                      key={project.id} 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setPreviewImage(project); 
+                      }}
+                      className="relative flex-auto w-[48%] sm:w-[32%] md:w-[24%] max-w-full h-[200px] sm:h-[280px] lg:h-[320px] cursor-pointer group bg-[#050508] border border-white/5 overflow-hidden"
+                    >
+                      {project.featured_image_url ? ( 
+                        <motion.img 
+                          layoutId={`portfolio-img-${project.id}`}
+                          src={project.featured_image_url} 
+                          alt={project.title} 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 block" 
+                        /> 
+                      ) : ( 
+                        <div className="w-full h-full flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> 
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20">
+                        <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
+                        <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
                       </div>
-                    ))
-                  ) : (
-                    <div className="w-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
-                  )}
+                    </div>
+                  ))}
+                  
+                  {/* --- GHOST ELEMENTS --- (Sikreto para hindi bumanat at ma-crop ang nasa pinakadulo) */}
+                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
+                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
+                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
+                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
+                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
                 </div>
               ) : (
                 /* ================= STANDARD LAYOUT: PROJECT CARDS PARA SA COMPANY PROFILES ================= */
