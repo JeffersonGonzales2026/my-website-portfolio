@@ -765,8 +765,9 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= FIX 2: JUSTIFIED FLEX MASONRY GALLERY PARA SA LAHAT (EXCEPT COMPANY PROFILES) ================= */}
-              {/* Added gap-1 for tight spacing, flex-auto for full stretching, removed rounded corners for sharp edges */}
+              {/* ================= FIX: BLURRED BACKDROP TECHNIQUE ================= */}
+              {/* Ginawang "flex-auto" para kainin ang space, at "object-contain" para WALANG MACROP, 
+                  tapos binalot natin ng blurred copy nung picture yung gilid para cinematic! */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
                 <div className="flex flex-wrap gap-1">
                   {filteredProjects.length > 0 ? (
@@ -778,14 +779,19 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project.featured_image_url);
                         }}
-                        className="relative flex-auto w-[48%] sm:w-[32%] md:w-[24%] max-w-full h-[200px] sm:h-[260px] cursor-pointer group bg-black/60 border border-white/5 overflow-hidden"
+                        className="relative flex-auto w-[48%] sm:w-[32%] md:w-[24%] max-w-full h-[220px] sm:h-[320px] cursor-pointer group bg-[#050508] border border-white/5 overflow-hidden flex items-center justify-center"
                       >
                         {project.featured_image_url ? ( 
-                          <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> 
+                          <>
+                            {/* Seamless Blurred Background extension para mapuno yung kinain na space */}
+                            <img src={project.featured_image_url} className="absolute inset-0 w-full h-full object-cover opacity-20 blur-xl scale-110 pointer-events-none" alt="" />
+                            {/* Actual 100% Uncropped Image in the center */}
+                            <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 block" /> 
+                          </>
                         ) : ( 
-                          <div className="w-full h-full flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
+                          <div className="w-full h-full flex items-center justify-center text-white/20 relative z-10"><ImagePlaceholder size={32} /></div> 
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20">
                           <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
                           <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
                         </div>
