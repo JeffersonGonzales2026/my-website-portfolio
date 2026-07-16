@@ -172,7 +172,6 @@ export default function DreamCreations() {
   const [flipbookPage, setFlipbookCurrentPage] = useState(0); 
   const [activeFlipbookConfig, setActiveFlipbookConfig] = useState({ prefix: 'page-', totalPages: 91, extension: 'jpg' });
 
-  // Pinalitan ko into object instead of URL lang para magamit sa Smooth Zoom Animation (LayoutID)
   const [previewImage, setPreviewImage] = useState(null);
 
   const goNextPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext(); };
@@ -781,9 +780,9 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= TRUE MASONRY GALLERY PARA SA LAHAT (EXCEPT COMPANY PROFILES) ================= */}
+              {/* ================= FIX: JUSTIFIED FLEX GALLERY PARA SA LAHAT (EXCEPT COMPANY PROFILES) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+                <div className="flex flex-wrap gap-1">
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => (
                       <div 
@@ -793,18 +792,17 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project); // Pass full object para sa layoutId
                         }}
-                        className="relative break-inside-avoid cursor-pointer group rounded-xl sm:rounded-2xl overflow-hidden border border-white/5 bg-transparent"
+                        className="relative flex-auto w-[48%] sm:w-[32%] md:w-[24%] max-w-full h-[220px] sm:h-[300px] cursor-pointer group bg-black/60 border border-white/5 overflow-hidden"
                       >
                         {project.featured_image_url ? ( 
-                          /* ================= FIX 1: ZERO BLACK BARS, 100% AS IS SIZE ================= */
                           <motion.img 
                             layoutId={`portfolio-img-${project.id}`}
                             src={project.featured_image_url} 
                             alt={project.title} 
-                            className="w-full h-auto block object-cover" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 block" 
                           /> 
                         ) : ( 
-                          <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> 
+                          <div className="w-full h-full flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> 
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20">
                           <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
@@ -1004,7 +1002,7 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= FIX 2: SMOOTH ZOOM-OUT ANIMATION WITH LAYOUT ID ================= */}
+      {/* ================= FIX: SMOOTH ZOOM-OUT ANIMATION WITH LAYOUT ID ================= */}
       <AnimatePresence>
         {previewImage && (
           <motion.div 
