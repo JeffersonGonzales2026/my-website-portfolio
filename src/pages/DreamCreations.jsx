@@ -759,7 +759,6 @@ export default function DreamCreations() {
           ) : (
             <motion.div key="works-grid" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="relative z-20 pt-4">
               
-              {/* ================= FIX 1: STAY STILL SCROLL ON BACK ================= */}
               <button 
                 onClick={() => { 
                   const prevSub = activePortfolioSubtitle;
@@ -769,7 +768,6 @@ export default function DreamCreations() {
                       const targetId = prevSub.toLowerCase().replace(/\s+/g, '-');
                       const targetElement = document.getElementById(targetId);
                       if (targetElement) {
-                        // Isesentro ang screen doon mismo sa card na binuksan mo para "stay still"
                         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                       }
                     }
@@ -796,10 +794,8 @@ export default function DreamCreations() {
                         className="relative flex-auto w-[48%] sm:w-[32%] md:w-[24%] max-w-full h-[220px] sm:h-[320px] cursor-pointer group bg-[#050508] border border-white/5 overflow-hidden flex items-center justify-center"
                       >
                         {project.featured_image_url ? ( 
-                          <>
-                            <img src={project.featured_image_url} className="absolute inset-0 w-full h-full object-cover opacity-20 blur-xl scale-110 pointer-events-none" alt="" />
-                            <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 block" /> 
-                          </>
+                          /* ================= FIX: CLEAN UN-CROPPED IMAGE (NO BLUR) ================= */
+                          <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 block" /> 
                         ) : ( 
                           <div className="w-full h-full flex items-center justify-center text-white/20 relative z-10"><ImagePlaceholder size={32} /></div> 
                         )}
@@ -814,7 +810,6 @@ export default function DreamCreations() {
                   )}
                 </div>
               ) : (
-                /* ================= STANDARD LAYOUT: PROJECT CARDS PARA SA COMPANY PROFILES ================= */
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => (
@@ -1001,12 +996,11 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= FIX 2: CLICK TO CLOSE IMAGE PREVIEW MODAL ================= */}
       <AnimatePresence>
         {previewImage && (
           <div 
             className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer"
-            onClick={() => setPreviewImage(null)} // Click anywhere sa dark background magsasara
+            onClick={() => setPreviewImage(null)} 
           >
             <div className="absolute top-6 right-6 z-50 flex items-center gap-4">
               <span className="text-xs font-mono text-white/40 hidden sm:block">Click anywhere to close</span>
@@ -1025,13 +1019,12 @@ export default function DreamCreations() {
               src={previewImage} 
               className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-zoom-out" 
               alt="Preview" 
-              onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }} // Click sa image mismo magsasara
+              onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }} 
             />
           </div>
         )}
       </AnimatePresence>
 
-      {/* 🚀 Custom 3D Spaceship Cursor */}
       <motion.div className="fixed top-0 left-0 w-16 h-16 z-[9999] pointer-events-none drop-shadow-[0_20px_20px_rgba(16,149,210,0.6)]" style={{ x: smoothX, y: smoothY, rotateX: rotateX, rotateY: rotateY, rotateZ: rotateZ, perspective: 800 }}>
         <motion.div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-4 h-6 bg-gradient-to-t from-transparent via-orange-500 to-yellow-300 rounded-full blur-[2px] z-0" animate={{ y: [0, 10], scale: [1, 1.5], opacity: [0.8, 0] }} transition={{ duration: 0.3, repeat: Infinity, ease: "easeOut" }} />
         <motion.div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/40 rounded-full blur-md z-0" animate={{ y: [0, 20], scale: [1, 3], opacity: [0.4, 0] }} transition={{ duration: 0.6, repeat: Infinity, ease: "easeOut", delay: 0.1 }} />
