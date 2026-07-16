@@ -780,10 +780,9 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= TRUE FLEX MASONRY GALLERY PARA SA LAHAT (EXCEPT COMPANY PROFILES) ================= */}
-              {/* Ginawang masonry columns para 100% NO CROP at NO BLACK SPACE */}
+              {/* ================= FIX 3: FLEX WRAP JUSTIFIED FLOW PARA SA 100% KAIN SPACE (NO CROP) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="columns-2 sm:columns-3 md:columns-4 gap-1">
+                <div className="flex flex-wrap gap-1 items-start">
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => (
                       <div 
@@ -793,14 +792,16 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project); 
                         }}
-                        className="relative break-inside-avoid mb-1 w-full cursor-pointer group bg-black border border-white/5 overflow-hidden inline-block"
+                        // Ang "flex-auto" ang sekreto para uunat siya at kainin ang extra spaces sa kanan
+                        className="relative flex-auto w-[45%] md:w-[30%] lg:w-[22%] cursor-pointer group overflow-hidden border border-white/5 bg-black"
                       >
                         {project.featured_image_url ? ( 
                           <motion.img 
                             layoutId={`portfolio-img-${project.id}`}
                             src={project.featured_image_url} 
                             alt={project.title} 
-                            className="w-full h-auto block group-hover:scale-105 transition-transform duration-500" 
+                            // Ang h-auto ang sekreto para hindi siya ma-crop at hindi ma-stretch ng pangit!
+                            className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500" 
                           /> 
                         ) : ( 
                           <div className="w-full aspect-square flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
@@ -812,7 +813,7 @@ export default function DreamCreations() {
                       </div>
                     ))
                   ) : (
-                    <div className="w-full break-inside-avoid py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
+                    <div className="w-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
                   )}
                 </div>
               ) : (
