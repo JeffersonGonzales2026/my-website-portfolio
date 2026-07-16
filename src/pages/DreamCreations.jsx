@@ -780,7 +780,8 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= FIX: JUSTIFIED FLEX GALLERY PARA SA LAHAT (EXCEPT COMPANY PROFILES) ================= */}
+              {/* ================= FIX 2: JUSTIFIED FLEX MASONRY GALLERY PARA SA LAHAT (EXCEPT COMPANY PROFILES) ================= */}
+              {/* Added gap-1 for tight spacing, flex-auto for full stretching, removed rounded corners for sharp edges */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
                 <div className="flex flex-wrap gap-1">
                   {filteredProjects.length > 0 ? (
@@ -792,7 +793,7 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project); // Pass full object para sa layoutId
                         }}
-                        className="relative flex-auto w-[48%] sm:w-[32%] md:w-[24%] max-w-full h-[220px] sm:h-[300px] cursor-pointer group bg-black/60 border border-white/5 overflow-hidden"
+                        className="relative flex-auto w-[48%] sm:w-[32%] md:w-[24%] max-w-full h-[220px] sm:h-[300px] cursor-pointer group bg-[#050508] border border-white/5 overflow-hidden flex items-center justify-center"
                       >
                         {project.featured_image_url ? ( 
                           <motion.img 
@@ -1002,7 +1003,7 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= FIX: SMOOTH ZOOM-OUT ANIMATION WITH LAYOUT ID ================= */}
+      {/* ================= FIX 2: SMOOTH ZOOM-OUT ANIMATION WITH LAYOUT ID ================= */}
       <AnimatePresence>
         {previewImage && (
           <motion.div 
