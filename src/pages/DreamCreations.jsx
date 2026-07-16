@@ -172,6 +172,7 @@ export default function DreamCreations() {
   const [flipbookPage, setFlipbookCurrentPage] = useState(0); 
   const [activeFlipbookConfig, setActiveFlipbookConfig] = useState({ prefix: 'page-', totalPages: 91, extension: 'jpg' });
 
+  // Pinalitan ko into object instead of URL lang para magamit sa Smooth Zoom Animation (LayoutID)
   const [previewImage, setPreviewImage] = useState(null);
 
   const goNextPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext(); };
@@ -780,8 +781,9 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
+              {/* ================= TRUE MASONRY GALLERY PARA SA LAHAT (EXCEPT COMPANY PROFILES) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="flex flex-wrap gap-1">
+                <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => (
                       <div 
@@ -789,15 +791,20 @@ export default function DreamCreations() {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          setPreviewImage(project.featured_image_url);
+                          setPreviewImage(project); // Pass full object para sa layoutId
                         }}
-                        className="relative flex-auto w-[48%] sm:w-[32%] md:w-[24%] max-w-full h-[220px] sm:h-[320px] cursor-pointer group bg-[#050508] border border-white/5 overflow-hidden flex items-center justify-center"
+                        className="relative break-inside-avoid cursor-pointer group rounded-xl sm:rounded-2xl overflow-hidden border border-white/5 bg-transparent"
                       >
                         {project.featured_image_url ? ( 
-                          /* ================= FIX: CLEAN UN-CROPPED IMAGE (NO BLUR) ================= */
-                          <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 block" /> 
+                          /* ================= FIX 1: ZERO BLACK BARS, 100% AS IS SIZE ================= */
+                          <motion.img 
+                            layoutId={`portfolio-img-${project.id}`}
+                            src={project.featured_image_url} 
+                            alt={project.title} 
+                            className="w-full h-auto block object-cover" 
+                          /> 
                         ) : ( 
-                          <div className="w-full h-full flex items-center justify-center text-white/20 relative z-10"><ImagePlaceholder size={32} /></div> 
+                          <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> 
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20">
                           <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
@@ -810,6 +817,7 @@ export default function DreamCreations() {
                   )}
                 </div>
               ) : (
+                /* ================= STANDARD LAYOUT: PROJECT CARDS PARA SA COMPANY PROFILES ================= */
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => (
@@ -996,9 +1004,13 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
+      {/* ================= FIX 2: SMOOTH ZOOM-OUT ANIMATION WITH LAYOUT ID ================= */}
       <AnimatePresence>
         {previewImage && (
-          <div 
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer"
             onClick={() => setPreviewImage(null)} 
           >
@@ -1011,20 +1023,20 @@ export default function DreamCreations() {
                 <X size={20} />
               </button>
             </div>
+            {/* Gamit ang layoutId para lumipad siya pabalik sa eksaktong pwesto niya sa grid */}
             <motion.img 
-              initial={{ opacity: 0, scale: 0.9 }} 
-              animate={{ opacity: 1, scale: 1 }} 
-              exit={{ opacity: 0, scale: 0.9 }} 
+              layoutId={`portfolio-img-${previewImage.id}`}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              src={previewImage} 
+              src={previewImage.featured_image_url} 
               className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-zoom-out" 
               alt="Preview" 
               onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }} 
             />
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
+      {/* 🚀 Custom 3D Spaceship Cursor */}
       <motion.div className="fixed top-0 left-0 w-16 h-16 z-[9999] pointer-events-none drop-shadow-[0_20px_20px_rgba(16,149,210,0.6)]" style={{ x: smoothX, y: smoothY, rotateX: rotateX, rotateY: rotateY, rotateZ: rotateZ, perspective: 800 }}>
         <motion.div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-4 h-6 bg-gradient-to-t from-transparent via-orange-500 to-yellow-300 rounded-full blur-[2px] z-0" animate={{ y: [0, 10], scale: [1, 1.5], opacity: [0.8, 0] }} transition={{ duration: 0.3, repeat: Infinity, ease: "easeOut" }} />
         <motion.div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/40 rounded-full blur-md z-0" animate={{ y: [0, 20], scale: [1, 3], opacity: [0.4, 0] }} transition={{ duration: 0.6, repeat: Infinity, ease: "easeOut", delay: 0.1 }} />
