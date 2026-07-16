@@ -29,7 +29,6 @@ const BookPage = React.forwardRef((props, ref) => {
     <div className="bg-[#0e111a] border border-white/5 flex items-center justify-center overflow-hidden shadow-2xl relative" ref={ref} data-density="soft">
       <div className={`absolute inset-y-0 ${props.number % 2 === 0 ? 'right-0' : 'left-0'} w-8 bg-gradient-to-${props.number % 2 === 0 ? 'l' : 'r'} from-black/40 to-transparent z-10 pointer-events-none`} />
       
-      {/* UNIVERSAL FIX 1: Added key={props.imageUrl} to prevent stuck hidden images in Flipbook */}
       <img 
         key={props.imageUrl}
         src={props.imageUrl} 
@@ -396,8 +395,9 @@ export default function DreamCreations() {
           }
         }
 
-        // UNIVERSAL FIX 3: Ensures "Latest Added" is always selected first
-        const { data: projectData } = await supabase.from('portfolio_projects').select('*').order('id', { ascending: false });
+        // ================= FIX 1: REVERTED TO created_at PARA HINDI RANDOM ANG ORDER =================
+        // Sa AdminDashboard, sine-save natin ito ng may staggered time kaya 100% accurate ito kapag kinuha.
+        const { data: projectData } = await supabase.from('portfolio_projects').select('*').order('created_at', { ascending: false });
         setProjects(projectData || []);
 
         const { data: reviewData } = await supabase.from('client_reviews').select('*').order('created_at', { ascending: false });
@@ -421,7 +421,6 @@ export default function DreamCreations() {
     if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // UNIVERSAL FIX 2: Added 350ms delay to standard gallery open
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
     setTimeout(() => { scrollToSection('portfolio-directory'); }, 350); 
@@ -719,7 +718,6 @@ export default function DreamCreations() {
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
             <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are pulled directly from our live CMS.</p>
           </div>
-          {/* UNIVERSAL FIX 2: Added 350ms to "View Full Archive" button */}
           <button 
             onClick={() => {
               setActivePortfolioSubtitle(null);
@@ -746,7 +744,6 @@ export default function DreamCreations() {
 
                       return (
                         <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
-                          {/* UNIVERSAL FIX 1: Added key to force cover image refresh and avoid stuck display:none */}
                           <img key={coverImage} src={coverImage} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                           <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
                           <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
@@ -764,15 +761,15 @@ export default function DreamCreations() {
           ) : (
             <motion.div key="works-grid" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="relative z-20 pt-4">
               
-              {/* UNIVERSAL FIX 2: 350ms delay for smoother Back to Directory */}
               <button onClick={() => { setActivePortfolioSubtitle(null); setTimeout(() => { scrollToSection('portfolio-directory'); }, 350); }} className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer">
                 <ArrowLeft size={16} /> Back to Directory
               </button>
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
+              {/* ================= FIX 2: CSS MASONRY LAYOUT PARA SA LAHAT (EXCEPT COMPANY PROFILES) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-0 rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
+                <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => (
                       <div 
@@ -782,13 +779,12 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project.featured_image_url);
                         }}
-                        className="relative aspect-square cursor-pointer group bg-black/60 border border-white/5"
+                        className="relative break-inside-avoid cursor-pointer group bg-black/60 border border-white/5 rounded-2xl overflow-hidden"
                       >
-                        {/* UNIVERSAL FIX 1: Added key to seamless grid image */}
                         {project.featured_image_url ? ( 
-                          <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" /> 
+                          <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500" /> 
                         ) : ( 
-                          <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
+                          <div className="w-full h-48 flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                           <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
@@ -797,10 +793,11 @@ export default function DreamCreations() {
                       </div>
                     ))
                   ) : (
-                    <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
+                    <div className="w-full break-inside-avoid py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 rounded-3xl border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
                   )}
                 </div>
               ) : (
+                /* ================= STANDARD LAYOUT: PROJECT CARDS PARA SA COMPANY PROFILES ================= */
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => (
@@ -826,7 +823,6 @@ export default function DreamCreations() {
                         className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer"
                       >
                          <div className="aspect-video relative overflow-hidden bg-black/60">
-                           {/* UNIVERSAL FIX 1: Added key to standard card image */}
                            {project.featured_image_url ? ( <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
                            {project.video_url && !project.video_url.includes(',') && !project.title.toLowerCase().includes('profile') && (
                              <a href={project.video_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
