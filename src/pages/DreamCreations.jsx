@@ -765,9 +765,9 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= FIX 2: JUSTIFIED FLEX MASONRY GALLERY PARA SA LAHAT (EXCEPT COMPANY PROFILES) ================= */}
+              {/* ================= FIX 2: CSS MASONRY LAYOUT PARA SA LAHAT (EXCEPT COMPANY PROFILES) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="flex flex-wrap gap-1">
+                <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-1 space-y-1">
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => (
                       <div 
@@ -777,12 +777,12 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project.featured_image_url);
                         }}
-                        className="relative flex-grow basis-[200px] sm:basis-[250px] h-48 sm:h-64 lg:h-72 cursor-pointer group overflow-hidden bg-black/60"
+                        className="relative break-inside-avoid mb-1 cursor-pointer group bg-black/60 border border-white/5 overflow-hidden"
                       >
                         {project.featured_image_url ? ( 
-                          <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> 
+                          <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500 block" /> 
                         ) : ( 
-                          <div className="w-full h-full flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
+                          <div className="w-full aspect-square flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                           <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
@@ -791,7 +791,7 @@ export default function DreamCreations() {
                       </div>
                     ))
                   ) : (
-                    <div className="w-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
+                    <div className="w-full break-inside-avoid py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
                   )}
                 </div>
               ) : (
