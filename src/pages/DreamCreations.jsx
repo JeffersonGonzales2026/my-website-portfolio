@@ -759,15 +759,29 @@ export default function DreamCreations() {
           ) : (
             <motion.div key="works-grid" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="relative z-20 pt-4">
               
-              <button onClick={() => { setActivePortfolioSubtitle(null); setTimeout(() => { scrollToSection('portfolio-directory'); }, 350); }} className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer">
+              {/* ================= FIX 1: STAY STILL SCROLL ON BACK ================= */}
+              <button 
+                onClick={() => { 
+                  const prevSub = activePortfolioSubtitle;
+                  setActivePortfolioSubtitle(null); 
+                  setTimeout(() => { 
+                    if (prevSub) {
+                      const targetId = prevSub.toLowerCase().replace(/\s+/g, '-');
+                      const targetElement = document.getElementById(targetId);
+                      if (targetElement) {
+                        // Isesentro ang screen doon mismo sa card na binuksan mo para "stay still"
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }
+                    }
+                  }, 350); 
+                }} 
+                className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer"
+              >
                 <ArrowLeft size={16} /> Back to Directory
               </button>
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= FIX: BLURRED BACKDROP TECHNIQUE ================= */}
-              {/* Ginawang "flex-auto" para kainin ang space, at "object-contain" para WALANG MACROP, 
-                  tapos binalot natin ng blurred copy nung picture yung gilid para cinematic! */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
                 <div className="flex flex-wrap gap-1">
                   {filteredProjects.length > 0 ? (
@@ -783,9 +797,7 @@ export default function DreamCreations() {
                       >
                         {project.featured_image_url ? ( 
                           <>
-                            {/* Seamless Blurred Background extension para mapuno yung kinain na space */}
                             <img src={project.featured_image_url} className="absolute inset-0 w-full h-full object-cover opacity-20 blur-xl scale-110 pointer-events-none" alt="" />
-                            {/* Actual 100% Uncropped Image in the center */}
                             <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 block" /> 
                           </>
                         ) : ( 
@@ -989,14 +1001,17 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= IMAGE PREVIEW MODAL ================= */}
+      {/* ================= FIX 2: CLICK TO CLOSE IMAGE PREVIEW MODAL ================= */}
       <AnimatePresence>
         {previewImage && (
-          <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md">
+          <div 
+            className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer"
+            onClick={() => setPreviewImage(null)} // Click anywhere sa dark background magsasara
+          >
             <div className="absolute top-6 right-6 z-50 flex items-center gap-4">
-              <span className="text-xs font-mono text-white/40 hidden sm:block">Preview Mode</span>
+              <span className="text-xs font-mono text-white/40 hidden sm:block">Click anywhere to close</span>
               <button 
-                onClick={() => setPreviewImage(null)} 
+                onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }} 
                 className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"
               >
                 <X size={20} />
@@ -1008,8 +1023,9 @@ export default function DreamCreations() {
               exit={{ opacity: 0, scale: 0.9 }} 
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               src={previewImage} 
-              className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)]" 
+              className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-zoom-out" 
               alt="Preview" 
+              onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }} // Click sa image mismo magsasara
             />
           </div>
         )}
