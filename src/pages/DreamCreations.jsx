@@ -432,6 +432,7 @@ export default function DreamCreations() {
     ? projects.filter(p => p.subtitle?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || p.category?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
     : projects;
 
+  // ================= 🚀 ADDED: NAVIGATION & VISUAL LIST SETUP =================
   const visualProjects = activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== null
     ? [...filteredProjects].reverse() 
     : filteredProjects;
@@ -450,6 +451,7 @@ export default function DreamCreations() {
     if (hasPrev) setPreviewImage(visualProjects[currentPreviewIndex - 1]);
   };
 
+  // Keyboard controls for Arrow Keys and Esc
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!previewImage) return;
@@ -738,7 +740,10 @@ export default function DreamCreations() {
             <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are pulled directly from our live CMS.</p>
           </div>
           <button 
-            onClick={() => setActivePortfolioSubtitle(null)} 
+            onClick={() => {
+              setActivePortfolioSubtitle(null);
+              setTimeout(() => { scrollToSection('portfolio-directory'); }, 350);
+            }} 
             className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20"
           >
             View Full Archive
@@ -798,7 +803,7 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= STRICT UNIFORM GRID (NO BLACK SPACES) ================= */}
+              {/* ================= FIX 3: STRICT UNIFORM GRID (NO BLACK SPACES) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1">
                   {visualProjects.length > 0 ? (
@@ -1020,13 +1025,14 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= FIX: SWIPE & ARROWS WITH SMOOTH ZOOM-OUT ================= */}
+      {/* ================= FIX 1 & 2: SMOOTH ZOOM-OUT & SWIPE NAVIGATION ================= */}
       <AnimatePresence>
         {previewImage && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.3 } }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer"
             onClick={() => setPreviewImage(null)} 
           >
@@ -1061,14 +1067,12 @@ export default function DreamCreations() {
               </button>
             )}
 
-            {/* Fading Image container (tinanggal ang layoutId para swabe lang ang transition) */}
+            {/* The Image (Supports Drag to Swipe and Crossfades on changes) */}
             <AnimatePresence mode="wait">
               <motion.img 
                 key={previewImage.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.2 }}
+                layoutId={`portfolio-img-${previewImage.id}`}
+                transition={{ type: "spring", damping: 30, stiffness: 250, mass: 0.8 }}
                 src={previewImage.featured_image_url} 
                 className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-zoom-out select-none relative z-10" 
                 alt="Preview" 
