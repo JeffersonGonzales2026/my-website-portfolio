@@ -421,22 +421,11 @@ export default function DreamCreations() {
 
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
-    setTimeout(() => { scrollToSection('portfolio-directory'); }, 350); 
   };
 
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(null); 
-    
-    setTimeout(() => { 
-      const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
-      const targetElement = document.getElementById(targetId);
-      if (targetElement) {
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else {
-        scrollToSection('portfolio-directory');
-      }
-    }, 350); 
+    setActivePortfolioSubtitle(subtitleName); 
   };
 
   const filteredProjects = activePortfolioSubtitle 
@@ -756,6 +745,7 @@ export default function DreamCreations() {
           ) : (
             <motion.div key="works-grid" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="relative z-20 pt-4">
               
+              {/* ================= FIX 1: INSTANT NO-SCROLL BACK TO DIRECTORY ================= */}
               <button 
                 onClick={() => setActivePortfolioSubtitle(null)} 
                 className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer"
@@ -765,42 +755,40 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= FIX 3: TETRIS FLEX LAYOUT (NO BLUR, PERFECT FIT) ================= */}
+              {/* ================= FIX 2: MASONRY GRID PARA SA LAHAT (EXCEPT COMPANY PROFILES) ================= */}
+              {/* Ginamit natin ang columns para hindi na magkaroon ng empty black space sa gilid (gaya ng sample mo na may bakante sa kanan) */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="flex flex-wrap gap-1 items-start">
-                  {[...filteredProjects].reverse().map((project) => (
-                    <div 
-                      key={project.id} 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setPreviewImage(project); 
-                      }}
-                      className="relative flex-auto w-[48%] sm:w-[32%] md:w-[24%] max-w-full h-[200px] sm:h-[280px] lg:h-[320px] cursor-pointer group bg-[#050508] border border-white/5 overflow-hidden"
-                    >
-                      {project.featured_image_url ? ( 
-                        <motion.img 
-                          layoutId={`portfolio-img-${project.id}`}
-                          src={project.featured_image_url} 
-                          alt={project.title} 
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 block" 
-                        /> 
-                      ) : ( 
-                        <div className="w-full h-full flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> 
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20">
-                        <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
-                        <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
+                <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-1 space-y-1">
+                  {filteredProjects.length > 0 ? (
+                    filteredProjects.map((project) => (
+                      <div 
+                        key={project.id} 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setPreviewImage(project); 
+                        }}
+                        className="relative break-inside-avoid w-full cursor-pointer group bg-black border border-white/5 overflow-hidden block"
+                      >
+                        {project.featured_image_url ? ( 
+                          <motion.img 
+                            layoutId={`portfolio-img-${project.id}`}
+                            src={project.featured_image_url} 
+                            alt={project.title} 
+                            className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500" 
+                          /> 
+                        ) : ( 
+                          <div className="w-full aspect-square flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20">
+                          <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
+                          <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                  
-                  {/* GHOST ELEMENTS to prevent over-stretching the last row */}
-                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
-                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
-                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
-                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
-                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
+                    ))
+                  ) : (
+                    <div className="w-full break-inside-avoid py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
+                  )}
                 </div>
               ) : (
                 /* ================= STANDARD LAYOUT: PROJECT CARDS PARA SA COMPANY PROFILES ================= */
