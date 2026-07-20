@@ -4,6 +4,7 @@ import { motion, useInView, animate } from 'framer-motion';
 import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
+// ================= CUSTOM ANIMATED COUNTER =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
@@ -26,6 +27,7 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
   return <span ref={ref} className="text-3xl md:text-4xl font-black text-white tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">0{suffix}</span>;
 };
 
+// ================= VARIED ANIMATION VARIANTS =================
 const fadeSlideUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -56,6 +58,7 @@ const futuristicReveal = {
   }
 };
 
+// ================= DATA BASELINE GENERATORS =================
 const defaultDeveloperStats = [
   { label: "Git Repositories", value: 4, suffix: "" },
   { label: "Dashboards Built", value: 12, suffix: "" },
@@ -277,11 +280,8 @@ export default function AiDeveloper() {
   return (
     <div ref={containerRef} className="flex flex-col min-h-screen text-slate-100 relative selection:bg-cyan-500/30 selection:text-cyan-200">
       
+      {/* ================= HIGH-PERFORMANCE CSS BACKGROUND ================= */}
       <style>{`
-        @keyframes digital-rain {
-          0% { background-position: 0 0, 0 0; }
-          100% { background-position: 0 1000px, 0 0; }
-        }
         @keyframes pan-neural {
           0% { background-position: 0 0, 30px 30px; }
           100% { background-position: 120px 120px, 150px 150px; }
@@ -290,6 +290,17 @@ export default function AiDeveloper() {
           0%, 100% { opacity: 0.15; transform: scale(1); }
           50% { opacity: 0.3; transform: scale(1.05); }
         }
+        @keyframes data-stream-y {
+          0% { transform: translateY(-200px); }
+          100% { transform: translateY(120vh); }
+        }
+        @keyframes data-stream-x {
+          0% { transform: translateX(-200px); }
+          100% { transform: translateX(120vw); }
+        }
+
+        .stream-y { animation: data-stream-y linear infinite; will-change: transform; }
+        .stream-x { animation: data-stream-x linear infinite; will-change: transform; }
         .ambient-glow { animation: ambient-pulse ease-in-out infinite; will-change: opacity, transform; }
       `}</style>
 
@@ -297,13 +308,6 @@ export default function AiDeveloper() {
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#02040a]">
           
-          {/* Digital Rain Layer */}
-          <div className="absolute inset-0 opacity-40" style={{
-            backgroundImage: `repeating-linear-gradient(180deg, transparent 0%, rgba(6, 182, 212, 0.2) 50%, transparent 100%), repeating-linear-gradient(90deg, rgba(6, 182, 212, 0.05) 0px, transparent 1px, transparent 60px)`,
-            backgroundSize: '100% 250px, 100% 100%',
-            animation: 'digital-rain 6s linear infinite'
-          }} />
-
           {/* Neural Network Layer */}
           <div className="absolute inset-0 opacity-30" style={{
             backgroundImage: `radial-gradient(rgba(168, 85, 247, 0.4) 2px, transparent 2px), radial-gradient(rgba(6, 182, 212, 0.3) 2px, transparent 2px)`,
@@ -312,7 +316,13 @@ export default function AiDeveloper() {
             animation: 'pan-neural 25s linear infinite'
           }} />
 
-          {/* TANGGAL ANG TRANSPARENT STRIPES DITO */}
+          {/* Hardware-Accelerated High-Speed Data Streams (Ito yung horizontal & vertical lines) */}
+          <div className="absolute top-0 w-[2px] h-[150px] bg-gradient-to-b from-transparent via-cyan-400 to-transparent opacity-60 stream-y" style={{ left: '15%', animationDuration: '2.5s', animationDelay: '0s' }} />
+          <div className="absolute top-0 w-[2px] h-[200px] bg-gradient-to-b from-transparent via-purple-500 to-transparent opacity-60 stream-y" style={{ left: '45%', animationDuration: '3s', animationDelay: '1.2s' }} />
+          <div className="absolute top-0 w-[2px] h-[100px] bg-gradient-to-b from-transparent via-blue-400 to-transparent opacity-60 stream-y" style={{ left: '85%', animationDuration: '2s', animationDelay: '0.5s' }} />
+          
+          <div className="absolute left-0 h-[2px] w-[200px] bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-60 stream-x" style={{ top: '20%', animationDuration: '4.5s', animationDelay: '1.5s' }} />
+          <div className="absolute left-0 h-[2px] w-[150px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-60 stream-x" style={{ top: '75%', animationDuration: '3.5s', animationDelay: '0.8s' }} />
 
           {/* Deep Ambient Glows */}
           <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] bg-cyan-600/30 rounded-full blur-[120px] ambient-glow" style={{ animationDuration: '8s' }} />
@@ -322,8 +332,10 @@ export default function AiDeveloper() {
         </div>
       </div>
 
+      {/* ================= PAGE CONTENT WRAPPER ================= */}
       <div className="relative z-10 overflow-x-hidden">
 
+        {/* ================= 59. HERO SECTION ================= */}
         <section className="relative pt-44 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center">
           <div className="max-w-5xl mx-auto text-center relative">
             
@@ -377,6 +389,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
+        {/* ================= 61. LEARNING PHILOSOPHY ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -415,6 +428,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
+        {/* ================= 62. DEVELOPMENT JOURNEY TIMELINE ================= */}
         <section id="learning-timeline" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-4xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -442,6 +456,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
+        {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
@@ -475,6 +490,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
+        {/* ================= 65. AI ECOSYSTEM (WITH LOGOS) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -502,6 +518,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
+        {/* ================= 67. TECH STACK (WITH LOGOS) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-md">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -533,6 +550,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
+        {/* ================= 68. CURRENT PROJECTS ================= */}
         <section id="current-projects" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -583,6 +601,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
+        {/* ================= 69. GITHUB SYSTEM (STATE ATTACHED) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
           <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
              <div className="flex flex-col sm:flex-row items-center gap-5 justify-between mb-6">
@@ -605,6 +624,7 @@ export default function AiDeveloper() {
           </motion.div>
         </section>
 
+        {/* ================= 71. VISION STATEMENT ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 text-center bg-black/20">
           <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto">
              <Quote size={40} className="text-purple-500/30 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
@@ -617,6 +637,7 @@ export default function AiDeveloper() {
           </motion.div>
         </section>
 
+        {/* ================= PAGE RESUME DOWNLOAD ================= */}
         {pageResume && (
           <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center border-t border-slate-900/80 bg-black/20">
             <motion.a
@@ -642,6 +663,7 @@ export default function AiDeveloper() {
           </section>
         )}
 
+        {/* ================= 72. TRANSITION TO CONTACT ================= */}
         <section className="w-full relative border-t border-slate-900 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
           
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/90 to-[#0c0c0e] z-[-1]" />
