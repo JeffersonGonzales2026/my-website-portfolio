@@ -27,7 +27,6 @@ const iconMap = {
   dribbble: <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M19.13 5.09C15.22 9.14 10 10.44 2.25 10.94"/><path d="M21.75 12.84c-6.62-1.41-12.14 1-16.38 6.32"/><path d="M8.56 2.75c4.37 6 6 9.42 8 17.72"/></svg>
 };
 
-// STATIC PLATFORMS ARRAY - Edited with the requested accounts and links
 const staticPlatforms = [
   { id: 'email', name: 'Email', username: 'jeffersonguzmangonzales03@gmail.com', link: 'mailto:jeffersonguzmangonzales03@gmail.com', status: 'active' },
   { id: 'github', name: 'GitHub', username: 'Jefferson Gonzales', link: 'https://github.com/jeffersongonzales', status: 'active' },
@@ -67,26 +66,17 @@ export default function Contact() {
   const [errors, setErrors] = useState({});
   const [platforms, setPlatforms] = useState(staticPlatforms);
 
-  // ================= DECOUPLED MEDIA ASSET LINKS STATE =================
   const [resumeUrl, setResumeUrl] = useState("/Jefferson_Gonzales_Resume.pdf");
   const [portfolioUrl, setPortfolioUrl] = useState("/Jefferson_Gonzales_Portfolio.pdf");
 
-  // ================= NEW: CMS RESUMES & DROPDOWN STATE =================
   const [cmsResumes, setCmsResumes] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Fetch only Document Links (Resume & Portfolio) from live cloud database instance
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const { data, error } = await supabase
-          .from('contact_settings')
-          .select('*')
-          .eq('id', 1)
-          .single();
-        
+        const { data, error } = await supabase.from('contact_settings').select('*').eq('id', 1).single();
         if (error && error.code !== 'PGRST116') throw error;
-        
         if (data) {
           if (data.resume_url) setResumeUrl(data.resume_url);
           if (data.portfolio_url) setPortfolioUrl(data.portfolio_url);
@@ -98,20 +88,12 @@ export default function Contact() {
     fetchSettings();
   }, []);
 
-  // Fetch Unlimited Resumes from CMS
   useEffect(() => {
     const fetchResumes = async () => {
       try {
-        const { data, error } = await supabase
-          .from('portfolio_resumes')
-          .select('*')
-          .order('id', { ascending: true });
-          
+        const { data, error } = await supabase.from('portfolio_resumes').select('*').order('id', { ascending: true });
         if (error && error.code !== '42P01') throw error; 
-        
-        if (data && data.length > 0) {
-          setCmsResumes(data);
-        }
+        if (data && data.length > 0) setCmsResumes(data);
       } catch (err) {
         console.error("CMS Resumes fetch failure:", err.message);
       }
@@ -125,9 +107,7 @@ export default function Contact() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: null }));
-    }
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
   };
 
   const handleSubmit = async (e) => {
@@ -149,19 +129,10 @@ export default function Contact() {
     }
 
     try {
-      const { error } = await supabase
-        .from('contact_messages')
-        .insert([
-          {
-            sender_name: formData.name,
-            sender_email: formData.email,
-            company: formData.company || null,
-            subject: formData.subject,
-            service_interested: formData.service || null,
-            message: formData.message,
-            status: 'unread'
-          }
-        ]);
+      const { error } = await supabase.from('contact_messages').insert([{
+        sender_name: formData.name, sender_email: formData.email, company: formData.company || null,
+        subject: formData.subject, service_interested: formData.service || null, message: formData.message, status: 'unread'
+      }]);
 
       if (error) throw error;
 
@@ -176,28 +147,18 @@ export default function Contact() {
   };
 
   return (
-    // ================= MINIMALIST PROFESSIONAL BACKGROUND APPLIED HERE =================
-    <div className="min-h-screen flex flex-col relative bg-[#050508] text-slate-200 overflow-x-hidden selection:bg-[#1095d2] selection:text-white pt-32 pb-24 px-6">
+    // ONLY TINTED COLORS REMOVED HERE, REPLACED WITH MATTED ZINC/SLATE
+    <div className="min-h-screen bg-[#09090b] text-slate-200 overflow-x-hidden relative selection:bg-slate-500/30 selection:text-slate-200 pt-32 pb-24 px-6">
       
-      {/* Soft Premium Radial Glow for depth */}
-      <div className="absolute top-0 inset-x-0 h-[80vh] bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(16,149,210,0.08),transparent)] pointer-events-none z-0" />
-
-      {/* Optional: You can keep these atmospheric nodes but I've toned them down for the minimalist look */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-50">
-        <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.05, 0.1, 0.05] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[150px]" />
-      </div>
-
-      <div className="max-w-7xl mx-auto relative z-10 w-full flex-grow">
+      <div className="max-w-7xl mx-auto relative z-10">
         
-        {/* Contact Hero */}
         <motion.div variants={fadeUp} initial="hidden" animate="visible" className="text-center max-w-3xl mx-auto mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-semibold mb-6">
             <Globe size={14} /> Open for Opportunities
           </div>
           <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-6">
             Let's Build Something <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-emerald-400 to-purple-400 drop-shadow-sm">
+            <span className="text-slate-300 drop-shadow-sm">
               Meaningful Together.
             </span>
           </h1>
@@ -210,9 +171,8 @@ export default function Contact() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
-          {/* Contact Form Container */}
           <motion.div variants={fadeUp} initial="hidden" animate="visible" className="lg:col-span-7">
-            <div className="p-6 md:p-10 rounded-3xl bg-white/[0.02] border border-white/10 shadow-2xl backdrop-blur-md relative overflow-hidden">
+            <div className="p-6 md:p-10 rounded-3xl bg-zinc-900/40 border border-zinc-800 shadow-2xl backdrop-blur-md relative overflow-hidden">
               <h3 className="text-2xl font-bold text-white mb-8">Send a Message</h3>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -221,31 +181,31 @@ export default function Contact() {
                   <div>
                     <label className="block text-xs font-semibold text-slate-400 mb-2">Full Name <span className="text-red-400">*</span></label>
                     <input type="text" name="name" value={formData.name} onChange={handleChange} disabled={status === 'loading'}
-                      className={`w-full bg-black/40 border ${errors.name ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-colors`}
+                      className={`w-full bg-black/40 border ${errors.name ? 'border-red-500/50' : 'border-zinc-800'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-slate-500/50 focus:bg-black/60 transition-colors`}
                       placeholder="John Doe" />
                     {errors.name && <span className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle size={12}/> {errors.name}</span>}
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-400 mb-2">Email Address <span className="text-red-400">*</span></label>
                     <input type="email" name="email" value={formData.email} onChange={handleChange} disabled={status === 'loading'}
-                      className={`w-full bg-black/40 border ${errors.email ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-colors`}
+                      className={`w-full bg-black/40 border ${errors.email ? 'border-red-500/50' : 'border-zinc-800'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-slate-500/50 focus:bg-black/60 transition-colors`}
                       placeholder="john@company.com" />
                     {errors.email && <span className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle size={12}/> {errors.email}</span>}
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-400 mb-2">Company <span className="text-slate-600 font-normal">(Optional)</span></label>
                     <input type="text" name="company" value={formData.company} onChange={handleChange} disabled={status === 'loading'}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black/60 transition-colors"
+                      className="w-full bg-black/40 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-slate-500/50 focus:bg-black/60 transition-colors"
                       placeholder="Organization Name" />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-400 mb-2">Phone / Country <span className="text-slate-600 font-normal">(Optional)</span></label>
                     <div className="flex gap-2">
                       <input type="text" name="country" value={formData.country} onChange={handleChange} disabled={status === 'loading'}
-                        className="w-1/3 bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black/60 transition-colors text-center"
+                        className="w-1/3 bg-black/40 border border-zinc-800 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-slate-500/50 focus:bg-black/60 transition-colors text-center"
                         placeholder="US" />
                       <input type="tel" name="phone" value={formData.phone} onChange={handleChange} disabled={status === 'loading'}
-                        className="w-2/3 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:bg-black/60 transition-colors"
+                        className="w-2/3 bg-black/40 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-slate-500/50 focus:bg-black/60 transition-colors"
                         placeholder="+1 (555) 000-0000" />
                     </div>
                   </div>
@@ -254,7 +214,7 @@ export default function Contact() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-400 mb-2">Subject <span className="text-red-400">*</span></label>
                   <input type="text" name="subject" value={formData.subject} onChange={handleChange} disabled={status === 'loading'}
-                    className={`w-full bg-black/40 border ${errors.subject ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500/50 focus:bg-black/60 transition-colors`}
+                    className={`w-full bg-black/40 border ${errors.subject ? 'border-red-500/50' : 'border-zinc-800'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-slate-500/50 focus:bg-black/60 transition-colors`}
                     placeholder="Project Inquiry" />
                   {errors.subject && <span className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle size={12}/> {errors.subject}</span>}
                 </div>
@@ -263,7 +223,7 @@ export default function Contact() {
                   <div>
                     <label className="block text-xs font-semibold text-slate-400 mb-2">Service Interested In</label>
                     <select name="service" value={formData.service} onChange={handleChange} disabled={status === 'loading'}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:border-purple-500/50 focus:bg-black/60 transition-colors appearance-none cursor-pointer">
+                      className="w-full bg-black/40 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:border-slate-500/50 focus:bg-black/60 transition-colors appearance-none cursor-pointer">
                       <option value="">Select a Service...</option>
                       <option value="Dream Creations">Dream Creations (Design)</option>
                       <option value="Data Analytics">Data Analytics & Dashboards</option>
@@ -275,7 +235,7 @@ export default function Contact() {
                   <div>
                     <label className="block text-xs font-semibold text-slate-400 mb-2">Budget Range <span className="text-slate-600 font-normal">(Optional)</span></label>
                     <select name="budget" value={formData.budget} onChange={handleChange} disabled={status === 'loading'}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:border-purple-500/50 focus:bg-black/60 transition-colors appearance-none cursor-pointer">
+                      className="w-full bg-black/40 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:border-slate-500/50 focus:bg-black/60 transition-colors appearance-none cursor-pointer">
                       <option value="">Select Range...</option>
                       <option value="< $1,000">Less than $1,000</option>
                       <option value="$1,000 - $5,000">$1,000 - $5,000</option>
@@ -288,7 +248,7 @@ export default function Contact() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-400 mb-2">Message <span className="text-red-400">*</span></label>
                   <textarea name="message" value={formData.message} onChange={handleChange} disabled={status === 'loading'} rows={5}
-                    className={`w-full bg-black/40 border ${errors.message ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-colors resize-none`}
+                    className={`w-full bg-black/40 border ${errors.message ? 'border-red-500/50' : 'border-zinc-800'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-slate-500/50 focus:bg-black/60 transition-colors resize-none`}
                     placeholder="Tell me about your project, timeline, and goals..." />
                   {errors.message && <span className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle size={12}/> {errors.message}</span>}
                 </div>
@@ -297,7 +257,7 @@ export default function Contact() {
                   <label className="flex items-start gap-3 cursor-pointer group">
                     <div className="relative flex items-center justify-center mt-0.5">
                       <input type="checkbox" name="privacy" checked={formData.privacy} onChange={handleChange} disabled={status === 'loading'}
-                        className="peer appearance-none w-5 h-5 rounded border border-white/20 bg-black/40 checked:bg-blue-500 checked:border-blue-500 transition-colors cursor-pointer" />
+                        className="peer appearance-none w-5 h-5 rounded border border-zinc-700 bg-black/40 checked:bg-slate-600 checked:border-slate-500 transition-colors cursor-pointer" />
                       <CheckCircle2 size={14} className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
                     </div>
                     <span className="text-xs text-slate-400 group-hover:text-slate-300 transition-colors leading-relaxed">
@@ -309,14 +269,14 @@ export default function Contact() {
 
                 <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <button type="submit" disabled={status === 'loading'}
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white text-black font-bold text-sm hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-slate-200 text-black font-bold text-sm hover:bg-white transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                     {status === 'loading' ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                     {status === 'loading' ? 'Sending Message...' : 'Send Message'}
                   </button>
 
                   <AnimatePresence mode="wait">
                     {status === 'success' && (
-                      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 text-emerald-400 text-sm font-semibold">
+                      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 text-slate-300 text-sm font-semibold">
                         <CheckCircle2 size={18} /> Message Sent Successfully!
                       </motion.div>
                     )}
@@ -337,7 +297,6 @@ export default function Contact() {
             </div>
           </motion.div>
 
-          {/* Connect With Me Panel */}
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="lg:col-span-5 space-y-6">
             
             <motion.div variants={fadeUp}>
@@ -345,23 +304,21 @@ export default function Contact() {
               <p className="text-sm text-slate-400 mb-8">Reach out across platforms or download my professional resources.</p>
             </motion.div>
 
-            {/* Resume & Portfolio PDF Blocks */}
             <motion.div variants={fadeUp} className="grid grid-cols-2 gap-4 mb-8">
               
-              {/* ================= NEW RESUME DROPDOWN WRAPPER ================= */}
               <div className="relative w-full h-full z-20">
                 <button 
                   type="button"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)}
-                  className="w-full h-full p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer"
+                  className="w-full h-full p-4 rounded-2xl bg-zinc-900/40 border border-zinc-800 hover:border-slate-600 hover:bg-zinc-800/60 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer"
                 >
-                  <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div className="w-10 h-10 rounded-full bg-zinc-800 text-slate-300 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Download size={18} />
                   </div>
                   <div>
-                    <span className="text-sm font-bold text-white block mb-0.5 group-hover:text-blue-300">Resume</span>
-                    <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
+                    <span className="text-sm font-bold text-slate-200 block mb-0.5 group-hover:text-white">Resume</span>
+                    <span className="text-[10px] text-slate-500 uppercase tracking-widest">PDF format</span>
                   </div>
                 </button>
 
@@ -372,7 +329,7 @@ export default function Contact() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute left-0 right-0 top-[105%] mt-2 bg-[#09090b] border border-blue-500/30 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col"
+                      className="absolute left-0 right-0 top-[105%] mt-2 bg-[#09090b] border border-zinc-800 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col"
                     >
                       {cmsResumes.length > 0 ? (
                         cmsResumes.map((res, i) => (
@@ -381,7 +338,7 @@ export default function Contact() {
                             href={res.file_url || res.pdf_url || '#'}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-4 py-3 text-sm font-bold text-slate-200 hover:text-blue-400 hover:bg-blue-500/10 border-b border-white/5 last:border-0 transition-colors flex items-center gap-2"
+                            className="px-4 py-3 text-sm font-bold text-slate-300 hover:text-white hover:bg-zinc-800/50 border-b border-zinc-800/50 last:border-0 transition-colors flex items-center gap-2"
                           >
                             <FileText size={14} /> {res.title || res.profession_title || `Resume ${i+1}`}
                           </a>
@@ -391,7 +348,7 @@ export default function Contact() {
                           href={resumeUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="px-4 py-3 text-sm font-bold text-slate-200 hover:text-blue-400 hover:bg-blue-500/10 transition-colors flex items-center gap-2"
+                          className="px-4 py-3 text-sm font-bold text-slate-300 hover:text-white hover:bg-zinc-800/50 transition-colors flex items-center gap-2"
                         >
                           <FileText size={14} /> Primary Resume
                         </a>
@@ -400,26 +357,24 @@ export default function Contact() {
                   )}
                 </AnimatePresence>
               </div>
-              {/* ================= END DROPDOWN WRAPPER ================= */}
 
-              <a href={portfolioUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
-                <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <a href={portfolioUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-zinc-900/40 border border-zinc-800 hover:border-slate-600 hover:bg-zinc-800/60 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
+                <div className="w-10 h-10 rounded-full bg-zinc-800 text-slate-300 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <FileText size={18} />
                 </div>
                 <div>
-                  <span className="text-sm font-bold text-white block mb-0.5 group-hover:text-purple-300">Portfolio</span>
-                  <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
+                  <span className="text-sm font-bold text-slate-200 block mb-0.5 group-hover:text-white">Portfolio</span>
+                  <span className="text-[10px] text-slate-500 uppercase tracking-widest">PDF format</span>
                 </div>
               </a>
             </motion.div>
 
-            {/* Social Grid Channels Fed via STATIC ARRAY */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 h-[500px] overflow-y-auto pr-2 custom-scrollbar">
               <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 10px; }
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.5); }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
               `}</style>
               
               {platforms.map((platform) => (
@@ -431,23 +386,23 @@ export default function Contact() {
                   rel="noopener noreferrer"
                   className={`p-4 rounded-xl border flex flex-col gap-3 transition-all group ${
                     platform.status === 'future'
-                    ? 'bg-black/20 border-white/5 opacity-40 cursor-default select-none'
-                    : 'bg-white/5 border-white/10 hover:border-blue-500/30 hover:bg-blue-500/5 cursor-pointer'
+                    ? 'bg-zinc-900/20 border-zinc-800/50 opacity-40 cursor-default select-none'
+                    : 'bg-zinc-900/40 border-zinc-800 hover:border-slate-600 hover:bg-zinc-800/60 cursor-pointer'
                   }`}
                   onClick={(e) => {
                     if (platform.status === 'future') e.preventDefault();
                   }}
                 >
                   <div className="flex items-center justify-between">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${platform.status === 'future' ? 'bg-white/5 text-slate-600' : 'bg-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform'}`}>
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${platform.status === 'future' ? 'bg-zinc-800/50 text-slate-500' : 'bg-zinc-800 text-slate-300 group-hover:scale-110 group-hover:text-white transition-all'}`}>
                       {iconMap[platform.id] || <Globe size={20} />}
                     </div>
                     {platform.status === 'future' && (
-                      <span className="text-[9px] px-2 py-0.5 rounded border border-white/10 text-slate-500 font-semibold uppercase tracking-wider">Future</span>
+                      <span className="text-[9px] px-2 py-0.5 rounded border border-zinc-700 text-slate-500 font-semibold uppercase tracking-wider">Future</span>
                     )}
                   </div>
                   <div>
-                    <h4 className={`text-sm font-bold mb-0.5 ${platform.status === 'future' ? 'text-slate-500' : 'text-white'}`}>{platform.name}</h4>
+                    <h4 className={`text-sm font-bold mb-0.5 ${platform.status === 'future' ? 'text-slate-500' : 'text-slate-200 group-hover:text-white transition-colors'}`}>{platform.name}</h4>
                     <p className="text-xs text-slate-500 truncate font-mono">{platform.username}</p>
                   </div>
                 </motion.a>

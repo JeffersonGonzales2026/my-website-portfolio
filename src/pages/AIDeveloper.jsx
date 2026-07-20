@@ -2,9 +2,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate } from 'framer-motion';
 import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail, Download } from 'lucide-react';
-import { supabase } from '../lib/supabase'; // Added Supabase Import
+import { supabase } from '../lib/supabase';
 
-// ================= CUSTOM ANIMATED COUNTER =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
@@ -27,7 +26,6 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
   return <span ref={ref} className="text-3xl md:text-4xl font-black text-white tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">0{suffix}</span>;
 };
 
-// ================= VARIED ANIMATION VARIANTS =================
 const fadeSlideUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -58,7 +56,6 @@ const futuristicReveal = {
   }
 };
 
-// ================= DATA BASELINE GENERATORS =================
 const defaultDeveloperStats = [
   { label: "Git Repositories", value: 4, suffix: "" },
   { label: "Dashboards Built", value: 12, suffix: "" },
@@ -153,7 +150,6 @@ const aiWorkflowSteps = [
   "Debugging", "Testing", "Optimization", "Documentation", "Version Control", "Deployment", "Maintenance", "Continuous Improvement"
 ];
 
-// ================= AGGRESSIVE URL SCANNER =================
 const extractImageDeep = (item) => {
   if (!item || typeof item !== 'object') return null;
   if (item.logo_url) return item.logo_url;
@@ -185,26 +181,18 @@ const extractImageDeep = (item) => {
 export default function AiDeveloper() {
   const containerRef = useRef(null);
 
-  // ================= STATE CONTEXT IMPLEMENTATION FOR ENTIRE PAGE =================
   const [stats, setStats] = useState(defaultDeveloperStats);
   const [timeline, setTimeline] = useState(defaultLearningTimeline);
   const [aiPartners, setAiPartners] = useState(defaultAiEcosystem);
   const [architecture, setArchitecture] = useState(defaultTechStackData);
   const [showcase, setShowcase] = useState(defaultShowcaseProjects);
   const [github, setGithub] = useState(defaultGithubProfile);
-
-  // ================= DYNAMIC RESUME STATE =================
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= FETCH CMS DATA =================
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data, error } = await supabase
-          .from('ai_developer')
-          .select('*')
-          .eq('id', 1)
-          .single();
+        const { data, error } = await supabase.from('ai_developer').select('*').eq('id', 1).single();
 
         if (error && error.code !== 'PGRST116') throw error;
 
@@ -212,24 +200,19 @@ export default function AiDeveloper() {
           if (data.metrics_counters?.length > 0) setStats(data.metrics_counters);
           if (data.development_timeline?.length > 0) setTimeline(data.development_timeline);
           
-          // ================= ADVANCED BRUTE FORCE: AI ECOSYSTEM =================
           if (Array.isArray(data.ai_partners) && data.ai_partners.length > 0) {
             const formattedPartners = data.ai_partners.map(ai => {
               let imgUrl = extractImageDeep(ai);
-              
-              // Fallback to local default if CMS erased it but didn't provide a new image
               if (!imgUrl) {
                 const localMatch = defaultAiEcosystem.find(d => d.name?.toLowerCase() === ai.name?.toLowerCase());
                 if (localMatch) imgUrl = localMatch.imageSrc;
               }
               if (!imgUrl && ai.imageSrc) imgUrl = ai.imageSrc;
-              
               return { ...ai, customImage: imgUrl };
             });
             setAiPartners(formattedPartners);
           }
           
-          // ================= ADVANCED BRUTE FORCE: ARCHITECTURE STACK =================
           if (Array.isArray(data.architecture_stack) && data.architecture_stack.length > 0) {
             const formattedArchitecture = data.architecture_stack.map(stack => {
               let parsedTools = [];
@@ -246,8 +229,6 @@ export default function AiDeveloper() {
                 items: parsedTools.map(tool => {
                   let toolObj = typeof tool === 'object' && tool !== null ? tool : { name: tool };
                   let imgUrl = extractImageDeep(toolObj);
-                  
-                  // Cross-reference all local defaults across categories if CMS image is missing
                   if (!imgUrl) {
                     defaultTechStackData.forEach(defStack => {
                       const match = defStack.items.find(d => d.name?.toLowerCase() === toolObj.name?.toLowerCase());
@@ -255,7 +236,6 @@ export default function AiDeveloper() {
                     });
                   }
                   if (!imgUrl && toolObj.imageSrc) imgUrl = toolObj.imageSrc;
-
                   return { ...toolObj, customImage: imgUrl };
                 })
               };
@@ -274,19 +254,9 @@ export default function AiDeveloper() {
           if (data.github_sync && Object.keys(data.github_sync).length > 0) setGithub(data.github_sync);
         }
 
-        // ================= FETCH PAGE-SPECIFIC RESUME =================
-        const { data: allResumes, error: resumeError } = await supabase
-          .from('portfolio_resumes')
-          .select('*');
-        
+        const { data: allResumes, error: resumeError } = await supabase.from('portfolio_resumes').select('*');
         if (allResumes && !resumeError && allResumes.length > 0) {
-          // Look for the AI Developer resume based on the title you typed in the CMS
-          const aiResume = allResumes.find(res => 
-            res.title.toLowerCase().includes('ai') || 
-            res.title.toLowerCase().includes('developer') ||
-            res.title.toLowerCase().includes('engineer')
-          ) || allResumes[0]; // Fallback to the first resume if name doesn't match perfectly
-          
+          const aiResume = allResumes.find(res => res.title.toLowerCase().includes('ai') || res.title.toLowerCase().includes('developer') || res.title.toLowerCase().includes('engineer')) || allResumes[0]; 
           setPageResume(aiResume);
         }
 
@@ -294,7 +264,6 @@ export default function AiDeveloper() {
         console.error('Error fetching AI Developer CMS data:', err.message);
       }
     };
-
     fetchData();
   }, []);
 
@@ -308,7 +277,6 @@ export default function AiDeveloper() {
   return (
     <div ref={containerRef} className="flex flex-col min-h-screen text-slate-100 relative selection:bg-cyan-500/30 selection:text-cyan-200">
       
-      {/* ================= HIGH-PERFORMANCE CSS BACKGROUND ================= */}
       <style>{`
         @keyframes digital-rain {
           0% { background-position: 0 0, 0 0; }
@@ -322,17 +290,6 @@ export default function AiDeveloper() {
           0%, 100% { opacity: 0.15; transform: scale(1); }
           50% { opacity: 0.3; transform: scale(1.05); }
         }
-        @keyframes data-stream-y {
-          0% { transform: translateY(-200px); }
-          100% { transform: translateY(120vh); }
-        }
-        @keyframes data-stream-x {
-          0% { transform: translateX(-200px); }
-          100% { transform: translateX(120vw); }
-        }
-
-        .stream-y { animation: data-stream-y linear infinite; will-change: transform; }
-        .stream-x { animation: data-stream-x linear infinite; will-change: transform; }
         .ambient-glow { animation: ambient-pulse ease-in-out infinite; will-change: opacity, transform; }
       `}</style>
 
@@ -355,13 +312,7 @@ export default function AiDeveloper() {
             animation: 'pan-neural 25s linear infinite'
           }} />
 
-          {/* Hardware-Accelerated High-Speed Data Streams */}
-          <div className="absolute top-0 w-[2px] h-[150px] bg-gradient-to-b from-transparent via-cyan-400 to-transparent opacity-60 stream-y" style={{ left: '15%', animationDuration: '2.5s', animationDelay: '0s' }} />
-          <div className="absolute top-0 w-[2px] h-[200px] bg-gradient-to-b from-transparent via-purple-500 to-transparent opacity-60 stream-y" style={{ left: '45%', animationDuration: '3s', animationDelay: '1.2s' }} />
-          <div className="absolute top-0 w-[2px] h-[100px] bg-gradient-to-b from-transparent via-blue-400 to-transparent opacity-60 stream-y" style={{ left: '85%', animationDuration: '2s', animationDelay: '0.5s' }} />
-          
-          <div className="absolute left-0 h-[2px] w-[200px] bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-60 stream-x" style={{ top: '20%', animationDuration: '4.5s', animationDelay: '1.5s' }} />
-          <div className="absolute left-0 h-[2px] w-[150px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-60 stream-x" style={{ top: '75%', animationDuration: '3.5s', animationDelay: '0.8s' }} />
+          {/* TANGGAL ANG TRANSPARENT STRIPES DITO */}
 
           {/* Deep Ambient Glows */}
           <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] bg-cyan-600/30 rounded-full blur-[120px] ambient-glow" style={{ animationDuration: '8s' }} />
@@ -371,10 +322,8 @@ export default function AiDeveloper() {
         </div>
       </div>
 
-      {/* ================= PAGE CONTENT WRAPPER ================= */}
       <div className="relative z-10 overflow-x-hidden">
 
-        {/* ================= 59. HERO SECTION ================= */}
         <section className="relative pt-44 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center">
           <div className="max-w-5xl mx-auto text-center relative">
             
@@ -398,7 +347,6 @@ export default function AiDeveloper() {
               <p className="text-cyan-400/90 font-medium">This portfolio is my first flagship software engineering project—and the beginning of a much larger journey.</p>
             </motion.div>
 
-            {/* Call-to-Action Controls REORDERED: Transpositioned ABOVE Quick Stats */}
             <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.4 }} className="flex flex-wrap justify-center gap-4 relative z-20 mb-16">
               <button onClick={() => scrollToSection('current-projects')} className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-black text-sm hover:opacity-90 transition-opacity shadow-[0_0_25px_rgba(6,182,212,0.4)] cursor-pointer">
                 View Projects
@@ -412,7 +360,6 @@ export default function AiDeveloper() {
               </a>
             </motion.div>
 
-            {/* Quick Statistics Counter System */}
             <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-16">
               {stats.map((stat, idx) => (
                 <motion.div 
@@ -430,7 +377,6 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 61. LEARNING PHILOSOPHY ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -469,7 +415,6 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 62. DEVELOPMENT JOURNEY TIMELINE ================= */}
         <section id="learning-timeline" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-4xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -497,7 +442,6 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
@@ -531,7 +475,6 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 65. AI ECOSYSTEM (WITH LOGOS) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -559,7 +502,6 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. TECH STACK (WITH LOGOS) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-md">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -591,7 +533,6 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 68. CURRENT PROJECTS ================= */}
         <section id="current-projects" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -642,7 +583,6 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 69. GITHUB SYSTEM (STATE ATTACHED) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
           <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
              <div className="flex flex-col sm:flex-row items-center gap-5 justify-between mb-6">
@@ -665,7 +605,6 @@ export default function AiDeveloper() {
           </motion.div>
         </section>
 
-        {/* ================= 71. VISION STATEMENT ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 text-center bg-black/20">
           <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto">
              <Quote size={40} className="text-purple-500/30 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
@@ -678,7 +617,6 @@ export default function AiDeveloper() {
           </motion.div>
         </section>
 
-        {/* ================= PAGE RESUME DOWNLOAD ================= */}
         {pageResume && (
           <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center border-t border-slate-900/80 bg-black/20">
             <motion.a
@@ -704,10 +642,8 @@ export default function AiDeveloper() {
           </section>
         )}
 
-        {/* ================= 72. TRANSITION TO CONTACT ================= */}
         <section className="w-full relative border-t border-slate-900 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
           
-          {/* Aesthetic Shift Gradient */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/90 to-[#0c0c0e] z-[-1]" />
 
           <div className="max-w-4xl mx-auto text-center relative z-20">
