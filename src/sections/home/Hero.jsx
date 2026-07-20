@@ -10,6 +10,7 @@ export default function Hero({ homeData }) {
     "Graphic Designer",
     "Owner & Team Manager",
     "Data Analyst",
+    "Automation Specialist",
     "AI Full-Stack Dev",
   ];
 

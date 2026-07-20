@@ -717,10 +717,7 @@ export default function DreamCreations() {
             <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are pulled directly from our live CMS.</p>
           </div>
           <button 
-            onClick={() => {
-              setActivePortfolioSubtitle(null);
-              setTimeout(() => { scrollToSection('portfolio-directory'); }, 350);
-            }} 
+            onClick={() => setActivePortfolioSubtitle(null)} 
             className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20"
           >
             View Full Archive
@@ -760,19 +757,7 @@ export default function DreamCreations() {
             <motion.div key="works-grid" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="relative z-20 pt-4">
               
               <button 
-                onClick={() => { 
-                  const prevSub = activePortfolioSubtitle;
-                  setActivePortfolioSubtitle(null); 
-                  setTimeout(() => { 
-                    if (prevSub) {
-                      const targetId = prevSub.toLowerCase().replace(/\s+/g, '-');
-                      const targetElement = document.getElementById(targetId);
-                      if (targetElement) {
-                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                      }
-                    }
-                  }, 350); 
-                }} 
+                onClick={() => setActivePortfolioSubtitle(null)} 
                 className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer"
               >
                 <ArrowLeft size={16} /> Back to Directory
@@ -780,41 +765,42 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= FIX 3: FLEX WRAP JUSTIFIED FLOW PARA SA 100% KAIN SPACE (NO CROP) ================= */}
+              {/* ================= FIX 3: TETRIS FLEX LAYOUT (NO BLUR, PERFECT FIT) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
                 <div className="flex flex-wrap gap-1 items-start">
-                  {filteredProjects.length > 0 ? (
-                    filteredProjects.map((project) => (
-                      <div 
-                        key={project.id} 
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setPreviewImage(project); 
-                        }}
-                        // Ang "flex-auto" ang sekreto para uunat siya at kainin ang extra spaces sa kanan
-                        className="relative flex-auto w-[45%] md:w-[30%] lg:w-[22%] cursor-pointer group overflow-hidden border border-white/5 bg-black"
-                      >
-                        {project.featured_image_url ? ( 
-                          <motion.img 
-                            layoutId={`portfolio-img-${project.id}`}
-                            src={project.featured_image_url} 
-                            alt={project.title} 
-                            // Ang h-auto ang sekreto para hindi siya ma-crop at hindi ma-stretch ng pangit!
-                            className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500" 
-                          /> 
-                        ) : ( 
-                          <div className="w-full aspect-square flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20">
-                          <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
-                          <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
-                        </div>
+                  {[...filteredProjects].reverse().map((project) => (
+                    <div 
+                      key={project.id} 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setPreviewImage(project); 
+                      }}
+                      className="relative flex-auto w-[48%] sm:w-[32%] md:w-[24%] max-w-full h-[200px] sm:h-[280px] lg:h-[320px] cursor-pointer group bg-[#050508] border border-white/5 overflow-hidden"
+                    >
+                      {project.featured_image_url ? ( 
+                        <motion.img 
+                          layoutId={`portfolio-img-${project.id}`}
+                          src={project.featured_image_url} 
+                          alt={project.title} 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 block" 
+                        /> 
+                      ) : ( 
+                        <div className="w-full h-full flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> 
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20">
+                        <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
+                        <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
                       </div>
-                    ))
-                  ) : (
-                    <div className="w-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
-                  )}
+                    </div>
+                  ))}
+                  
+                  {/* GHOST ELEMENTS to prevent over-stretching the last row */}
+                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
+                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
+                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
+                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
+                  <div className="flex-auto w-[48%] sm:w-[32%] md:w-[24%] h-0 border-none m-0 p-0 overflow-hidden"></div>
                 </div>
               ) : (
                 /* ================= STANDARD LAYOUT: PROJECT CARDS PARA SA COMPANY PROFILES ================= */
@@ -1004,7 +990,6 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= FIX: SMOOTH ZOOM-OUT ANIMATION WITH LAYOUT ID ================= */}
       <AnimatePresence>
         {previewImage && (
           <motion.div 
@@ -1023,7 +1008,6 @@ export default function DreamCreations() {
                 <X size={20} />
               </button>
             </div>
-            {/* Gamit ang layoutId para lumipad siya pabalik sa eksaktong pwesto niya sa grid */}
             <motion.img 
               layoutId={`portfolio-img-${previewImage.id}`}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
@@ -1036,7 +1020,6 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* 🚀 Custom 3D Spaceship Cursor */}
       <motion.div className="fixed top-0 left-0 w-16 h-16 z-[9999] pointer-events-none drop-shadow-[0_20px_20px_rgba(16,149,210,0.6)]" style={{ x: smoothX, y: smoothY, rotateX: rotateX, rotateY: rotateY, rotateZ: rotateZ, perspective: 800 }}>
         <motion.div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-4 h-6 bg-gradient-to-t from-transparent via-orange-500 to-yellow-300 rounded-full blur-[2px] z-0" animate={{ y: [0, 10], scale: [1, 1.5], opacity: [0.8, 0] }} transition={{ duration: 0.3, repeat: Infinity, ease: "easeOut" }} />
         <motion.div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/40 rounded-full blur-md z-0" animate={{ y: [0, 20], scale: [1, 3], opacity: [0.4, 0] }} transition={{ duration: 0.6, repeat: Infinity, ease: "easeOut", delay: 0.1 }} />
