@@ -398,12 +398,13 @@ export default function Contact() {
               </div>
               {/* ================= END DROPDOWN WRAPPER ================= */}
 
-              <a href={portfolioUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
-                <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              {/* TANGGAL ANG PURPLE, GINAWANG BLUE NA RIN ITO */}
+              <a href={portfolioUrl} target="_blank" rel="noopener noreferrer" className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/10 transition-all flex flex-col items-center justify-center gap-3 group text-center cursor-pointer">
+                <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <FileText size={18} />
                 </div>
                 <div>
-                  <span className="text-sm font-bold text-white block mb-0.5 group-hover:text-purple-300">Portfolio</span>
+                  <span className="text-sm font-bold text-white block mb-0.5 group-hover:text-blue-300">Portfolio</span>
                   <span className="text-[10px] text-slate-400 uppercase tracking-widest">PDF format</span>
                 </div>
               </a>
