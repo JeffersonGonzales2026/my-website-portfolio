@@ -47,11 +47,13 @@ export default function Home() {
   }, []);
 
   return (
- <div className="min-h-screen flex flex-col relative bg-[#050508] text-slate-200 font-sans overflow-x-hidden selection:bg-[#1095d2] selection:text-white">
-    
-    {/* ================= PREMIUM MINIMALIST BACKGROUND GLOW ================= */}
-    <div className="absolute top-0 inset-x-0 h-[80vh] bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(16,149,210,0.08),transparent)] pointer-events-none z-0" />
-      <div className="relative z-10 pt-16 pb-24 space-y-32">
+    // ================= MINIMALIST PROFESSIONAL BACKGROUND APPLIED HERE =================
+    <div className="min-h-screen flex flex-col relative bg-[#050508] text-slate-200 font-sans overflow-x-hidden selection:bg-[#1095d2] selection:text-white">
+      
+      {/* Soft Premium Radial Glow for depth */}
+      <div className="absolute top-0 inset-x-0 h-[80vh] bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(16,149,210,0.08),transparent)] pointer-events-none z-0" />
+      
+      <div className="relative z-10 w-full flex-grow pt-16 pb-24 space-y-32">
         {/* Pass the fetched data into your components as props */}
         <Hero homeData={homeData} />
         <AboutMe homeData={homeData} />

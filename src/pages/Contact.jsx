@@ -176,22 +176,19 @@ export default function Contact() {
   };
 
   return (
- <div className="min-h-screen flex flex-col relative bg-[#050508] text-slate-200 font-sans overflow-x-hidden selection:bg-[#1095d2] selection:text-white">
-    
-    {/* ================= PREMIUM MINIMALIST BACKGROUND GLOW ================= */}
-    <div className="absolute top-0 inset-x-0 h-[80vh] bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(16,149,210,0.08),transparent)] pointer-events-none z-0" />
+    // ================= MINIMALIST PROFESSIONAL BACKGROUND APPLIED HERE =================
+    <div className="min-h-screen flex flex-col relative bg-[#050508] text-slate-200 overflow-x-hidden selection:bg-[#1095d2] selection:text-white pt-32 pb-24 px-6">
       
-      {/* Background Glow Atmospheric Nodes */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.15, 0.1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-blue-600/30 rounded-full blur-[150px]" />
-        <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.05, 0.1, 0.05] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute top-[30%] right-[-10%] w-[700px] h-[700px] bg-emerald-600/20 rounded-full blur-[160px]" />
-        <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.15, 0.1] }} transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-          className="absolute bottom-[-10%] left-[20%] w-[800px] h-[800px] bg-purple-600/20 rounded-full blur-[180px]" />
+      {/* Soft Premium Radial Glow for depth */}
+      <div className="absolute top-0 inset-x-0 h-[80vh] bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(16,149,210,0.08),transparent)] pointer-events-none z-0" />
+
+      {/* Optional: You can keep these atmospheric nodes but I've toned them down for the minimalist look */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-50">
+        <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.05, 0.1, 0.05] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[150px]" />
       </div>
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-10 w-full flex-grow">
         
         {/* Contact Hero */}
         <motion.div variants={fadeUp} initial="hidden" animate="visible" className="text-center max-w-3xl mx-auto mb-20">
