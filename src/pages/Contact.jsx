@@ -176,7 +176,10 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-slate-200 overflow-x-hidden relative selection:bg-blue-500/30 selection:text-blue-200 pt-32 pb-24 px-6">
+ <div className="min-h-screen flex flex-col relative bg-[#050508] text-slate-200 font-sans overflow-x-hidden selection:bg-[#1095d2] selection:text-white">
+    
+    {/* ================= PREMIUM MINIMALIST BACKGROUND GLOW ================= */}
+    <div className="absolute top-0 inset-x-0 h-[80vh] bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(16,149,210,0.08),transparent)] pointer-events-none z-0" />
       
       {/* Background Glow Atmospheric Nodes */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
