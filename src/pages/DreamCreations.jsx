@@ -426,7 +426,7 @@ export default function DreamCreations() {
 
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(null); 
+    setActivePortfolioSubtitle(subtitleName); 
     
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
@@ -442,6 +442,40 @@ export default function DreamCreations() {
   const filteredProjects = activePortfolioSubtitle 
     ? projects.filter(p => p.subtitle?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || p.category?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
     : projects;
+
+  // ================= 🚀 ADDED: NAVIGATION & VISUAL LIST SETUP =================
+  const visualProjects = activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== null
+    ? [...filteredProjects].reverse() 
+    : filteredProjects;
+
+  const currentPreviewIndex = previewImage ? visualProjects.findIndex(p => p.id === previewImage.id) : -1;
+  const hasNext = currentPreviewIndex !== -1 && currentPreviewIndex < visualProjects.length - 1;
+  const hasPrev = currentPreviewIndex > 0;
+
+  const handleNextImage = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (hasNext) setPreviewImage(visualProjects[currentPreviewIndex + 1]);
+  };
+
+  const handlePrevImage = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (hasPrev) setPreviewImage(visualProjects[currentPreviewIndex - 1]);
+  };
+
+  // Keyboard controls for Arrow Keys and Esc
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!previewImage) return;
+      if (e.key === 'Escape') {
+        setPreviewImage(null);
+        return;
+      }
+      if (e.key === 'ArrowRight') handleNextImage();
+      if (e.key === 'ArrowLeft') handlePrevImage();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [previewImage, currentPreviewIndex, hasNext, hasPrev, visualProjects]);
 
   return (
     <div ref={containerRef} className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-nightSkyCycle cursor-none">
@@ -763,6 +797,7 @@ export default function DreamCreations() {
                 onClick={() => { 
                   const prevSub = activePortfolioSubtitle;
                   setActivePortfolioSubtitle(null); 
+                  // Mismong code logic mo para hindi tumalon:
                   setTimeout(() => { 
                     if (prevSub) {
                       const targetId = prevSub.toLowerCase().replace(/\s+/g, '-');
@@ -796,11 +831,10 @@ export default function DreamCreations() {
                         className="relative flex-auto w-[45%] md:w-[30%] lg:w-[22%] cursor-pointer group overflow-hidden border border-white/5 bg-black"
                       >
                         {project.featured_image_url ? ( 
-                          <motion.img 
-                            layoutId={`portfolio-img-${project.id}`}
+                          // Tinanggal ang layoutId dito para hindi mag-trigger ng flying effect pag nagsa-swipe
+                          <img 
                             src={project.featured_image_url} 
                             alt={project.title} 
-                            // Ang h-auto ang sekreto para hindi siya ma-crop at hindi ma-stretch ng pangit!
                             className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500" 
                           /> 
                         ) : ( 
@@ -1004,16 +1038,18 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= FIX: SMOOTH ZOOM-OUT ANIMATION WITH LAYOUT ID ================= */}
+      {/* ================= FIX 1 & 2: SMOOTH ZOOM-OUT & SWIPE NAVIGATION ================= */}
       <AnimatePresence>
         {previewImage && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer"
             onClick={() => setPreviewImage(null)} 
           >
+            {/* Top Right UI Controls */}
             <div className="absolute top-6 right-6 z-50 flex items-center gap-4">
               <span className="text-xs font-mono text-white/40 hidden sm:block">Click anywhere to close</span>
               <button 
@@ -1023,15 +1059,58 @@ export default function DreamCreations() {
                 <X size={20} />
               </button>
             </div>
-            {/* Gamit ang layoutId para lumipad siya pabalik sa eksaktong pwesto niya sa grid */}
-            <motion.img 
-              layoutId={`portfolio-img-${previewImage.id}`}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              src={previewImage.featured_image_url} 
-              className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-zoom-out" 
-              alt="Preview" 
-              onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }} 
-            />
+
+            {/* Previous Navigation Arrow (Desktop) */}
+            {hasPrev && (
+              <button 
+                onClick={handlePrevImage}
+                className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400] cursor-pointer"
+              >
+                <ChevronLeft size={24} />
+              </button>
+            )}
+
+            {/* Next Navigation Arrow (Desktop) */}
+            {hasNext && (
+              <button 
+                onClick={handleNextImage}
+                className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400] cursor-pointer"
+              >
+                <ChevronRight size={24} />
+              </button>
+            )}
+
+            {/* Smooth Zoom Wrapper for Close/Open (Prevents 'putol' cutoff) */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="relative w-full h-full flex items-center justify-center pointer-events-none"
+            >
+              {/* Swipe Fade Transition */}
+              <AnimatePresence mode="wait">
+                <motion.img 
+                  key={previewImage.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  src={previewImage.featured_image_url} 
+                  className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing select-none pointer-events-auto" 
+                  alt="Preview" 
+                  onClick={(e) => { e.stopPropagation(); }} 
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.7}
+                  onDragEnd={(e, { offset }) => {
+                    if (offset.x < -70) handleNextImage(e);
+                    else if (offset.x > 70) handlePrevImage(e);
+                  }}
+                />
+              </AnimatePresence>
+            </motion.div>
+            
           </motion.div>
         )}
       </AnimatePresence>
