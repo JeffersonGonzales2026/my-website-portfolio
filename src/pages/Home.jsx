@@ -47,13 +47,9 @@ export default function Home() {
   }, []);
 
   return (
-    // ================= CLASSY MATTED BLACK BACKGROUND =================
-    <div className="min-h-screen flex flex-col relative bg-[#121212] text-zinc-300 font-sans overflow-x-hidden selection:bg-zinc-700 selection:text-white">
-      
-      {/* Subtle Matte Inner Glow (White glow with very low opacity for premium depth) */}
-      <div className="absolute top-0 inset-x-0 h-[80vh] bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(255,255,255,0.04),transparent)] pointer-events-none z-0" />
-      
-      <div className="relative z-10 w-full flex-grow pt-16 pb-24 space-y-32">
+    <div className="min-h-screen bg-[#09090b] bg-none text-slate-200 overflow-x-hidden selection:bg-blue-500/30 selection:text-blue-200">
+      {/* Clean, professional dark background with no grids or glows */}
+      <div className="relative z-10 pt-16 pb-24 space-y-32">
         {/* Pass the fetched data into your components as props */}
         <Hero homeData={homeData} />
         <AboutMe homeData={homeData} />
