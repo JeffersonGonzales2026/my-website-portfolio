@@ -421,50 +421,27 @@ export default function DreamCreations() {
 
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
+    setTimeout(() => { scrollToSection('portfolio-directory'); }, 350); 
   };
 
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(subtitleName); 
+    setActivePortfolioSubtitle(null); 
+    
+    setTimeout(() => { 
+      const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        scrollToSection('portfolio-directory');
+      }
+    }, 350); 
   };
 
   const filteredProjects = activePortfolioSubtitle 
     ? projects.filter(p => p.subtitle?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || p.category?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
     : projects;
-
-  // ================= 🚀 ADDED: NAVIGATION & VISUAL LIST SETUP =================
-  const visualProjects = activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== null
-    ? [...filteredProjects].reverse() 
-    : filteredProjects;
-
-  const currentPreviewIndex = previewImage ? visualProjects.findIndex(p => p.id === previewImage.id) : -1;
-  const hasNext = currentPreviewIndex !== -1 && currentPreviewIndex < visualProjects.length - 1;
-  const hasPrev = currentPreviewIndex > 0;
-
-  const handleNextImage = (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-    if (hasNext) setPreviewImage(visualProjects[currentPreviewIndex + 1]);
-  };
-
-  const handlePrevImage = (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-    if (hasPrev) setPreviewImage(visualProjects[currentPreviewIndex - 1]);
-  };
-
-  // Keyboard controls for Arrow Keys and Esc
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (!previewImage) return;
-      if (e.key === 'Escape') {
-        setPreviewImage(null);
-        return;
-      }
-      if (e.key === 'ArrowRight') handleNextImage();
-      if (e.key === 'ArrowLeft') handlePrevImage();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [previewImage, currentPreviewIndex, hasNext, hasPrev, visualProjects]);
 
   return (
     <div ref={containerRef} className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-nightSkyCycle cursor-none">
@@ -803,11 +780,11 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= FIX 3: STRICT UNIFORM GRID (NO BLACK SPACES) ================= */}
+              {/* ================= FIX 3: FLEX WRAP JUSTIFIED FLOW PARA SA 100% KAIN SPACE (NO CROP) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1">
-                  {visualProjects.length > 0 ? (
-                    visualProjects.map((project) => (
+                <div className="flex flex-wrap gap-1 items-start">
+                  {filteredProjects.length > 0 ? (
+                    filteredProjects.map((project) => (
                       <div 
                         key={project.id} 
                         onClick={(e) => {
@@ -815,17 +792,19 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project); 
                         }}
-                        className="relative w-full h-[200px] sm:h-[280px] lg:h-[320px] cursor-pointer group bg-[#050508] border border-white/5 overflow-hidden"
+                        // Ang "flex-auto" ang sekreto para uunat siya at kainin ang extra spaces sa kanan
+                        className="relative flex-auto w-[45%] md:w-[30%] lg:w-[22%] cursor-pointer group overflow-hidden border border-white/5 bg-black"
                       >
                         {project.featured_image_url ? ( 
                           <motion.img 
                             layoutId={`portfolio-img-${project.id}`}
                             src={project.featured_image_url} 
                             alt={project.title} 
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 block" 
+                            // Ang h-auto ang sekreto para hindi siya ma-crop at hindi ma-stretch ng pangit!
+                            className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500" 
                           /> 
                         ) : ( 
-                          <div className="w-full h-full flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> 
+                          <div className="w-full aspect-square flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20">
                           <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
@@ -834,7 +813,7 @@ export default function DreamCreations() {
                       </div>
                     ))
                   ) : (
-                    <div className="col-span-full w-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
+                    <div className="w-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
                   )}
                 </div>
               ) : (
@@ -1025,18 +1004,16 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= FIX 1 & 2: SMOOTH ZOOM-OUT & SWIPE NAVIGATION ================= */}
+      {/* ================= FIX: SMOOTH ZOOM-OUT ANIMATION WITH LAYOUT ID ================= */}
       <AnimatePresence>
         {previewImage && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
             className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer"
             onClick={() => setPreviewImage(null)} 
           >
-            {/* Top Right UI Controls */}
             <div className="absolute top-6 right-6 z-50 flex items-center gap-4">
               <span className="text-xs font-mono text-white/40 hidden sm:block">Click anywhere to close</span>
               <button 
@@ -1046,47 +1023,15 @@ export default function DreamCreations() {
                 <X size={20} />
               </button>
             </div>
-
-            {/* Previous Navigation Arrow (Desktop) */}
-            {hasPrev && (
-              <button 
-                onClick={handlePrevImage}
-                className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400]"
-              >
-                <ChevronLeft size={24} />
-              </button>
-            )}
-
-            {/* Next Navigation Arrow (Desktop) */}
-            {hasNext && (
-              <button 
-                onClick={handleNextImage}
-                className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400]"
-              >
-                <ChevronRight size={24} />
-              </button>
-            )}
-
-            {/* The Image (Supports Drag to Swipe and Crossfades on changes) */}
-            <AnimatePresence mode="wait">
-              <motion.img 
-                key={previewImage.id}
-                layoutId={`portfolio-img-${previewImage.id}`}
-                transition={{ type: "spring", damping: 30, stiffness: 250, mass: 0.8 }}
-                src={previewImage.featured_image_url} 
-                className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-zoom-out select-none relative z-10" 
-                alt="Preview" 
-                onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }} 
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.5}
-                onDragEnd={(e, { offset }) => {
-                  if (offset.x < -100) handleNextImage(e);
-                  else if (offset.x > 100) handlePrevImage(e);
-                }}
-              />
-            </AnimatePresence>
-            
+            {/* Gamit ang layoutId para lumipad siya pabalik sa eksaktong pwesto niya sa grid */}
+            <motion.img 
+              layoutId={`portfolio-img-${previewImage.id}`}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              src={previewImage.featured_image_url} 
+              className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-zoom-out" 
+              alt="Preview" 
+              onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }} 
+            />
           </motion.div>
         )}
       </AnimatePresence>
