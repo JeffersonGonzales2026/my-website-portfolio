@@ -421,11 +421,22 @@ export default function DreamCreations() {
 
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
+    setTimeout(() => { scrollToSection('portfolio-directory'); }, 350); 
   };
 
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(subtitleName); 
+    setActivePortfolioSubtitle(null); 
+    
+    setTimeout(() => { 
+      const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        scrollToSection('portfolio-directory');
+      }
+    }, 350); 
   };
 
   const filteredProjects = activePortfolioSubtitle 
@@ -706,7 +717,10 @@ export default function DreamCreations() {
             <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are pulled directly from our live CMS.</p>
           </div>
           <button 
-            onClick={() => setActivePortfolioSubtitle(null)} 
+            onClick={() => {
+              setActivePortfolioSubtitle(null);
+              setTimeout(() => { scrollToSection('portfolio-directory'); }, 350);
+            }} 
             className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20"
           >
             View Full Archive
@@ -745,9 +759,20 @@ export default function DreamCreations() {
           ) : (
             <motion.div key="works-grid" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="relative z-20 pt-4">
               
-              {/* ================= FIX 1: INSTANT NO-SCROLL BACK TO DIRECTORY ================= */}
               <button 
-                onClick={() => setActivePortfolioSubtitle(null)} 
+                onClick={() => { 
+                  const prevSub = activePortfolioSubtitle;
+                  setActivePortfolioSubtitle(null); 
+                  setTimeout(() => { 
+                    if (prevSub) {
+                      const targetId = prevSub.toLowerCase().replace(/\s+/g, '-');
+                      const targetElement = document.getElementById(targetId);
+                      if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }
+                    }
+                  }, 350); 
+                }} 
                 className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer"
               >
                 <ArrowLeft size={16} /> Back to Directory
@@ -755,10 +780,9 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= FIX 2: MASONRY GRID PARA SA LAHAT (EXCEPT COMPANY PROFILES) ================= */}
-              {/* Ginamit natin ang columns para hindi na magkaroon ng empty black space sa gilid (gaya ng sample mo na may bakante sa kanan) */}
+              {/* ================= FIX 3: FLEX WRAP JUSTIFIED FLOW PARA SA 100% KAIN SPACE (NO CROP) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-1 space-y-1">
+                <div className="flex flex-wrap gap-1 items-start">
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => (
                       <div 
@@ -768,13 +792,15 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project); 
                         }}
-                        className="relative break-inside-avoid w-full cursor-pointer group bg-black border border-white/5 overflow-hidden block"
+                        // Ang "flex-auto" ang sekreto para uunat siya at kainin ang extra spaces sa kanan
+                        className="relative flex-auto w-[45%] md:w-[30%] lg:w-[22%] cursor-pointer group overflow-hidden border border-white/5 bg-black"
                       >
                         {project.featured_image_url ? ( 
                           <motion.img 
                             layoutId={`portfolio-img-${project.id}`}
                             src={project.featured_image_url} 
                             alt={project.title} 
+                            // Ang h-auto ang sekreto para hindi siya ma-crop at hindi ma-stretch ng pangit!
                             className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500" 
                           /> 
                         ) : ( 
@@ -787,7 +813,7 @@ export default function DreamCreations() {
                       </div>
                     ))
                   ) : (
-                    <div className="w-full break-inside-avoid py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
+                    <div className="w-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
                   )}
                 </div>
               ) : (
@@ -978,6 +1004,7 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
+      {/* ================= FIX: SMOOTH ZOOM-OUT ANIMATION WITH LAYOUT ID ================= */}
       <AnimatePresence>
         {previewImage && (
           <motion.div 
@@ -996,6 +1023,7 @@ export default function DreamCreations() {
                 <X size={20} />
               </button>
             </div>
+            {/* Gamit ang layoutId para lumipad siya pabalik sa eksaktong pwesto niya sa grid */}
             <motion.img 
               layoutId={`portfolio-img-${previewImage.id}`}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
@@ -1008,6 +1036,7 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
+      {/* 🚀 Custom 3D Spaceship Cursor */}
       <motion.div className="fixed top-0 left-0 w-16 h-16 z-[9999] pointer-events-none drop-shadow-[0_20px_20px_rgba(16,149,210,0.6)]" style={{ x: smoothX, y: smoothY, rotateX: rotateX, rotateY: rotateY, rotateZ: rotateZ, perspective: 800 }}>
         <motion.div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-4 h-6 bg-gradient-to-t from-transparent via-orange-500 to-yellow-300 rounded-full blur-[2px] z-0" animate={{ y: [0, 10], scale: [1, 1.5], opacity: [0.8, 0] }} transition={{ duration: 0.3, repeat: Infinity, ease: "easeOut" }} />
         <motion.div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/40 rounded-full blur-md z-0" animate={{ y: [0, 20], scale: [1, 3], opacity: [0.4, 0] }} transition={{ duration: 0.6, repeat: Infinity, ease: "easeOut", delay: 0.1 }} />
