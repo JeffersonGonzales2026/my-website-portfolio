@@ -421,12 +421,11 @@ export default function DreamCreations() {
 
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
-    setTimeout(() => { scrollToSection('portfolio-directory'); }, 350); 
   };
 
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(null); 
+    setActivePortfolioSubtitle(subtitleName); 
     
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
@@ -768,16 +767,14 @@ export default function DreamCreations() {
               {creationsCategories.map((cat) => (
                 <div key={cat.id} className="pt-4">
                   <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block">{cat.category}</h4>
-                  
-                  {/* ================= FIX 3: MASONRY PINTEREST LAYOUT ================= */}
-                  <div className="columns-2 sm:columns-3 lg:columns-4 gap-4 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {cat.items.map((subtitle, idx) => {
                       
                       const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
                       const coverImage = latestProjectWithImage?.featured_image_url || `/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`;
 
                       return (
-                        <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="break-inside-avoid relative w-full aspect-[4/5] rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500 mb-4 block">
+                        <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
                           <img key={coverImage} src={coverImage} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                           <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
                           <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
@@ -816,9 +813,8 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= FIX 3: MASONRY PINTEREST LAYOUT FOR IMAGES ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="columns-2 sm:columns-3 lg:columns-4 gap-2 space-y-2">
+                <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
                   {visualProjects.length > 0 ? (
                     visualProjects.map((project) => (
                       <div 
@@ -828,7 +824,7 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project); 
                         }}
-                        className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#050508] rounded-xl block"
+                        className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#050508] block"
                       >
                         {project.featured_image_url ? ( 
                           <img 
