@@ -426,7 +426,7 @@ export default function DreamCreations() {
 
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(subtitleName); 
+    setActivePortfolioSubtitle(null); 
     
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
@@ -768,14 +768,16 @@ export default function DreamCreations() {
               {creationsCategories.map((cat) => (
                 <div key={cat.id} className="pt-4">
                   <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block">{cat.category}</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  
+                  {/* ================= FIX 3: MASONRY PINTEREST LAYOUT ================= */}
+                  <div className="columns-2 sm:columns-3 lg:columns-4 gap-4 space-y-4">
                     {cat.items.map((subtitle, idx) => {
                       
                       const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
                       const coverImage = latestProjectWithImage?.featured_image_url || `/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`;
 
                       return (
-                        <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
+                        <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="break-inside-avoid relative w-full aspect-[4/5] rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500 mb-4 block">
                           <img key={coverImage} src={coverImage} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                           <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
                           <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
@@ -797,7 +799,6 @@ export default function DreamCreations() {
                 onClick={() => { 
                   const prevSub = activePortfolioSubtitle;
                   setActivePortfolioSubtitle(null); 
-                  // Mismong code logic mo para hindi tumalon:
                   setTimeout(() => { 
                     if (prevSub) {
                       const targetId = prevSub.toLowerCase().replace(/\s+/g, '-');
@@ -815,11 +816,11 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= FIX 3: FLEX WRAP JUSTIFIED FLOW PARA SA 100% KAIN SPACE (NO CROP) ================= */}
+              {/* ================= FIX 3: MASONRY PINTEREST LAYOUT FOR IMAGES ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="flex flex-wrap gap-1 items-start">
-                  {filteredProjects.length > 0 ? (
-                    filteredProjects.map((project) => (
+                <div className="columns-2 sm:columns-3 lg:columns-4 gap-2 space-y-2">
+                  {visualProjects.length > 0 ? (
+                    visualProjects.map((project) => (
                       <div 
                         key={project.id} 
                         onClick={(e) => {
@@ -827,18 +828,16 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project); 
                         }}
-                        // Ang "flex-auto" ang sekreto para uunat siya at kainin ang extra spaces sa kanan
-                        className="relative flex-auto w-[45%] md:w-[30%] lg:w-[22%] cursor-pointer group overflow-hidden border border-white/5 bg-black"
+                        className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#050508] rounded-xl block"
                       >
                         {project.featured_image_url ? ( 
-                          // Tinanggal ang layoutId dito para hindi mag-trigger ng flying effect pag nagsa-swipe
                           <img 
                             src={project.featured_image_url} 
                             alt={project.title} 
                             className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500" 
                           /> 
                         ) : ( 
-                          <div className="w-full aspect-square flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
+                          <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> 
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20">
                           <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
@@ -847,11 +846,10 @@ export default function DreamCreations() {
                       </div>
                     ))
                   ) : (
-                    <div className="w-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
+                    <div className="w-full break-inside-avoid py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
                   )}
                 </div>
               ) : (
-                /* ================= STANDARD LAYOUT: PROJECT CARDS PARA SA COMPANY PROFILES ================= */
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => (
@@ -1038,14 +1036,13 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= FIX 1 & 2: SMOOTH ZOOM-OUT & SWIPE NAVIGATION ================= */}
+      {/* ================= SWIPE & ARROWS WITH SMOOTH ZOOM-OUT ================= */}
       <AnimatePresence>
         {previewImage && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, transition: { duration: 0.3 } }}
             className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer"
             onClick={() => setPreviewImage(null)} 
           >
@@ -1080,7 +1077,7 @@ export default function DreamCreations() {
               </button>
             )}
 
-            {/* Smooth Zoom Wrapper for Close/Open (Prevents 'putol' cutoff) */}
+            {/* Smooth Zoom Wrapper for Close/Open (Prevents 'putol' cutoff, walang layoutId) */}
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
