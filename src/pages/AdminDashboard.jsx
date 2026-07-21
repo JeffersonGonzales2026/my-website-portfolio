@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Activity, Palette, Database, BrainCircuit, 
   Mail, LogOut, Save, Plus, Trash2, Image, ExternalLink, 
   Sliders, Layers, Eye, CheckCircle, FileText, User, HelpCircle, 
-  Briefcase, Star, Cpu, Settings, UploadCloud, File, Image as ImageIcon, Menu, X, Loader2
+  Briefcase, Star, Cpu, Settings, UploadCloud, File, Image as ImageIcon, Menu, X, Loader2, Video
 } from 'lucide-react';
 
 const sidebarModules = [
@@ -34,6 +34,13 @@ const creationsCategories = [
   { id: 11, category: "Packaging", items: ["Packaging Graphics", "Clothing Labels", "Product Labels"] },
   { id: 12, category: "Illustration", items: ["Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"] }
 ];
+
+// Helper to identify video URLs
+const isVideoUrl = (url, type) => {
+  if (type === 'video') return true;
+  if (!url) return false;
+  return url.match(/\.(mp4|webm|mov|ogg)$/i) || url.includes('video');
+};
 
 export default function AdminDashboard() {
   const [activeModule, setActiveModule] = useState('Dashboard Hub');
@@ -205,7 +212,6 @@ export default function AdminDashboard() {
           await supabase.from('client_reviews').insert(cleanReviews);
         }
 
-        // ================= FIX 1: STAGGERED CREATED_AT TIMESTAMPS + CLIENT NAME / DESC RESTORED =================
         await supabase.from('portfolio_projects').delete().neq('title', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (dreamArchive.length > 0) {
           const cleanArchives = dreamArchive.map((p, i) => ({
@@ -292,17 +298,18 @@ export default function AdminDashboard() {
 
         const { data: { publicUrl } } = supabase.storage.from('portfolio_media').getPublicUrl(storageCleanName);
 
-        // ADDED SUPPORT PARA MAA-IDENTIFY KUNG VIDEO ITO SA MEDIA LIBRARY
-        await supabase.from('media_library').insert([{ file_name: rawFileName, file_url: publicUrl, type: file.type.includes('video') ? 'video' : 'image' }]);
+        const isVideo = file.type.includes('video') || file.name.match(/\.(mp4|webm|mov|ogg)$/i);
+
+        await supabase.from('media_library').insert([{ file_name: rawFileName, file_url: publicUrl, type: isVideo ? 'video' : 'image' }]);
 
         currentArchiveStack.unshift({
           category: bulkPipelineCat,
           subtitle: bulkPipelineSub,
           title: beautyTitle || "Untitled Asset",
-          client_name: "Independent Project", // RESTORED DEFAULT
-          description: "Visual archive showcase item.", // RESTORED DEFAULT
+          client_name: "Independent Project", 
+          description: "Visual archive showcase item.", 
           featured_image_url: publicUrl,
-          video_url: ""
+          video_url: isVideo ? publicUrl : ""
         });
 
         importedSuccess++;
@@ -313,7 +320,7 @@ export default function AdminDashboard() {
 
     setDreamArchive(currentArchiveStack);
     e.target.value = null; 
-    alert(`🟢 PIPELINE SUCCESS!\nNa-upload at nagawaan ng card ang ${importedSuccess} larawan para sa subtitle na "${bulkPipelineSub}".\n\n⚠️ HUWAG KALIMUTAN: Pindot po sa malaking "SAVE MODULE" sa pinakataas para pumasok ito sa live site website natin!`);
+    alert(`🟢 PIPELINE SUCCESS!\nNa-upload at nagawaan ng card ang ${importedSuccess} asset para sa subtitle na "${bulkPipelineSub}".\n\n⚠️ HUWAG KALIMUTAN: Pindot po sa malaking "SAVE MODULE" sa pinakataas para pumasok ito sa live site website natin!`);
   };
 
   const handleArchiveMessage = async (id, idx) => {
@@ -356,8 +363,10 @@ export default function AdminDashboard() {
 
         const { data: { publicUrl } } = supabase.storage.from('portfolio_media').getPublicUrl(fileName);
         
-        // ADDED SUPPORT PARA MAA-IDENTIFY KUNG VIDEO ITO SA MEDIA LIBRARY
-        const { data: dbData, error: dbError } = await supabase.from('media_library').insert([{ file_name: cleanName, file_url: publicUrl, type: file.type.includes('image') ? 'image' : (file.type.includes('video') ? 'video' : 'document') }]).select().single();
+        const isVid = file.type.includes('video') || cleanName.match(/\.(mp4|webm|mov|ogg)$/i);
+        const mediaType = file.type.includes('image') ? 'image' : (isVid ? 'video' : 'document');
+
+        const { data: dbData, error: dbError } = await supabase.from('media_library').insert([{ file_name: cleanName, file_url: publicUrl, type: mediaType }]).select().single();
         if (dbError) throw dbError;
 
         uploadedRecords.push(dbData);
@@ -445,7 +454,6 @@ export default function AdminDashboard() {
                   <p className="text-[10px] text-zinc-500 mt-1 font-mono">Upload files to capture public link endpoints.</p>
                 </div>
                 <div className="relative">
-                  {/* UPDATE: Added video/* */}
                   <input type="file" multiple onChange={handleFileUploadLive} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf,video/*" />
                   <button className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white text-xs font-mono font-bold flex items-center gap-2 shadow-md">
                     <UploadCloud size={14} /> RAW UPLOAD
@@ -453,19 +461,27 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {mediaFiles.map((file, idx) => (
-                  <div key={file.id || idx} className="group relative rounded-xl bg-zinc-950 border border-zinc-900 overflow-hidden aspect-square flex flex-col items-center justify-center hover:border-blue-500/50 transition-colors">
-                    {/* UPDATE: Support Video Preview in Media Library */}
-                    {file.type === 'image' ? <img src={file.file_url} alt="media" className="w-full h-full object-cover" /> : (file.type === 'video' ? <video src={file.file_url} className="w-full h-full object-cover" muted /> : <File size={32} className="text-zinc-600" />)}
-                    <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center">
-                      <p className="text-[10px] text-white truncate w-full mb-3 font-mono">{file.file_name}</p>
-                      <div className="flex gap-2">
-                        <button onClick={() => { navigator.clipboard.writeText(file.file_url); alert('URL Copied!'); }} className="px-3 py-1.5 rounded-lg bg-zinc-800 text-white text-[10px] font-bold">Copy</button>
-                        <button onClick={() => handleDeleteMedia(file.id, idx)} className="px-3 py-1.5 rounded-lg bg-red-900 text-white text-[10px] font-bold"><Trash2 size={12}/></button>
+                {mediaFiles.map((file, idx) => {
+                  const isVid = isVideoUrl(file.file_url, file.type);
+                  return (
+                    <div key={file.id || idx} className="group relative rounded-xl bg-zinc-950 border border-zinc-900 overflow-hidden aspect-square flex flex-col items-center justify-center hover:border-blue-500/50 transition-colors">
+                      {isVid ? (
+                        <video src={`${file.file_url}#t=0.1`} className="w-full h-full object-cover pointer-events-none" preload="metadata" muted playsInline />
+                      ) : file.type === 'image' || file.file_url?.match(/\.(jpg|jpeg|png|webp|gif)$/i) ? (
+                        <img src={file.file_url} alt="media" className="w-full h-full object-cover" />
+                      ) : (
+                        <File size={32} className="text-zinc-600" />
+                      )}
+                      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center">
+                        <p className="text-[10px] text-white truncate w-full mb-3 font-mono">{file.file_name}</p>
+                        <div className="flex gap-2">
+                          <button onClick={() => { navigator.clipboard.writeText(file.file_url); alert('URL Copied!'); }} className="px-3 py-1.5 rounded-lg bg-zinc-800 text-white text-[10px] font-bold">Copy</button>
+                          <button onClick={() => handleDeleteMedia(file.id, idx)} className="px-3 py-1.5 rounded-lg bg-red-900 text-white text-[10px] font-bold"><Trash2 size={12}/></button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -647,13 +663,11 @@ export default function AdminDashboard() {
                   
                   <div className="flex items-center gap-2">
                     <div className="relative">
-                      {/* UPDATE: Ensure video files show up here too (already exists in original but keeping for safety) */}
                       <input type="file" multiple onChange={handleDropdownPipelineUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*, video/*" disabled={!bulkPipelineCat || !bulkPipelineSub} />
                       <button type="button" disabled={!bulkPipelineCat || !bulkPipelineSub} className="px-3 py-1.5 text-[10px] font-mono rounded-lg bg-blue-600 hover:bg-blue-500 border border-blue-500 text-white font-bold flex items-center gap-1 shadow-md disabled:opacity-30">
                         <UploadCloud size={12} /> 🚀 BULK AUTO-IMPORT
                       </button>
                     </div>
-                    {/* RESTORED: Default text para sa Manual Add */}
                     <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Card Title", client_name: "Independent Project", description: "Visual archive showcase item.", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> MANUAL ADD</button>
                   </div>
                 </div>
@@ -680,30 +694,51 @@ export default function AdminDashboard() {
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                   {dreamArchive.map((project, idx) => {
                     const selectedCatObj = creationsCategories.find(c => c.category === project.category);
+                    const isVid = isVideoUrl(project.featured_image_url) || isVideoUrl(project.video_url);
+
                     return (
-                      <div key={project.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative">
-                        <button onClick={() => handleRemoveArrayItem(dreamArchive, setDreamArchive, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                        
-                        {/* RESTORED: Client Name at Description fields sa grid */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                          <select value={project.category} onChange={(e) => {
-                              handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'category', e.target.value);
-                              handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', ''); 
-                            }} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 font-bold outline-none cursor-pointer">
-                            <option value="" disabled>Select Category...</option>
-                            {creationsCategories.map(c => <option key={c.id} value={c.category}>{c.category}</option>)}
-                          </select>
-                          <select value={project.subtitle} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 outline-none cursor-pointer" disabled={!project.category}>
-                            <option value="" disabled>Select Subtitle...</option>
-                            {selectedCatObj && selectedCatObj.items.map(sub => <option key={sub} value={sub}>{sub}</option>)}
-                          </select>
-                          <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
-                          <input type="text" value={project.client_name} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500" placeholder="Client Name" />
+                      <div key={project.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative flex gap-3 items-center">
+                        {/* VISUAL THUMBNAIL PREVIEW BOX */}
+                        <div className="w-16 h-16 shrink-0 rounded-lg bg-black border border-zinc-800 overflow-hidden flex items-center justify-center relative">
+                          {project.featured_image_url ? (
+                            isVid ? (
+                              <video src={`${project.featured_image_url}#t=0.1`} className="w-full h-full object-cover pointer-events-none" preload="metadata" muted playsInline />
+                            ) : (
+                              <img src={project.featured_image_url} alt="preview" className="w-full h-full object-cover" />
+                            )
+                          ) : (
+                            <ImageIcon size={20} className="text-zinc-700" />
+                          )}
+                          {isVid && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
+                              <Video size={14} className="text-cyan-400" />
+                            </div>
+                          )}
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                          <input type="text" value={project.featured_image_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'featured_image_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Featured Image URL" />
-                          <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Flipbook Settings (prefix,pages,ext) OR Video URL" />
-                          <input type="text" value={project.description} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'description', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Description Meta..." />
+
+                        <div className="flex-1 space-y-2">
+                          <button onClick={() => handleRemoveArrayItem(dreamArchive, setDreamArchive, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
+                          
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pr-6">
+                            <select value={project.category} onChange={(e) => {
+                                handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'category', e.target.value);
+                                handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', ''); 
+                              }} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 font-bold outline-none cursor-pointer">
+                              <option value="" disabled>Select Category...</option>
+                              {creationsCategories.map(c => <option key={c.id} value={c.category}>{c.category}</option>)}
+                            </select>
+                            <select value={project.subtitle} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 outline-none cursor-pointer" disabled={!project.category}>
+                              <option value="" disabled>Select Subtitle...</option>
+                              {selectedCatObj && selectedCatObj.items.map(sub => <option key={sub} value={sub}>{sub}</option>)}
+                            </select>
+                            <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
+                            <input type="text" value={project.client_name} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500" placeholder="Client Name" />
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <input type="text" value={project.featured_image_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'featured_image_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Featured Image/Video URL" />
+                            <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Flipbook Settings OR Video URL" />
+                            <input type="text" value={project.description} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'description', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Description Meta..." />
+                          </div>
                         </div>
 
                       </div>
