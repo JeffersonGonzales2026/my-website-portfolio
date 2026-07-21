@@ -642,7 +642,7 @@ export default function AdminDashboard() {
                   
                   <div className="flex items-center gap-2">
                     <div className="relative">
-                      <input type="file" multiple onChange={handleDropdownPipelineUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" disabled={!bulkPipelineCat || !bulkPipelineSub} />
+                      <input type="file" multiple onChange={handleDropdownPipelineUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*, video/*" disabled={!bulkPipelineCat || !bulkPipelineSub} />
                       <button type="button" disabled={!bulkPipelineCat || !bulkPipelineSub} className="px-3 py-1.5 text-[10px] font-mono rounded-lg bg-blue-600 hover:bg-blue-500 border border-blue-500 text-white font-bold flex items-center gap-1 shadow-md disabled:opacity-30">
                         <UploadCloud size={12} /> 🚀 BULK AUTO-IMPORT
                       </button>
