@@ -426,12 +426,14 @@ export default function DreamCreations() {
 
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(subtitleName); 
+    // Gawin nating null para hindi bumukas ang loob ng board
+    setActivePortfolioSubtitle(null); 
     
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
+        // Mag-i-scroll lang siya sa tapat ng board cover
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         scrollToSection('portfolio-directory');
@@ -536,7 +538,7 @@ export default function DreamCreations() {
           <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
           <p className="text-base text-white/70 mt-4 max-w-2xl">Explore our specialized creative categories. Click any box to view our specific offerings and jump directly to our past works.</p>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-0.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-0.0">
           {creationsCategories.map((category, index) => {
             const isGlowing = randomGlowIndex === index;
             return (
@@ -556,7 +558,7 @@ export default function DreamCreations() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="flex justify-center mb-16">
           <img src={bannerUrl} alt="Dream Creations Brand Banner" className="w-full max-w-5xl h-auto drop-shadow-[0_0_30px_rgba(16,149,210,0.3)] rounded-3xl border border-white/5 bg-black/40 p-2 md:p-4" />
         </motion.div>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0.5 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="lg:col-span-5 flex justify-center">
             <div className="relative w-full max-w-md aspect-square rounded-3xl border border-white/10 bg-black/40 overflow-hidden flex items-center justify-center group">
                <div className="absolute inset-0 bg-gradient-to-tr from-[#1095d2]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -578,7 +580,7 @@ export default function DreamCreations() {
               <p className="text-base md:text-lg text-white/70 leading-relaxed">Inspired by his former team manager, he started building his own team of graphic designers with a vision to empower more dreamers (clients) and creators (designers).</p>
               <p className="text-base md:text-lg text-white/70 leading-relaxed">Today, he continues leading Dream Creations while expanding its capabilities through data analytics, automation, and software development.</p>
             </div>
-            <div className="grid grid-cols-2 gap-0.5 pt-4">
+            <div className="grid grid-cols-2 gap-4 pt-4">
               <div className="p-4 rounded-xl border border-white/10 bg-black/20 hover:border-[#1095d2]/30 transition-colors">
                 <div className="text-2xl font-bold text-[#1095d2] mb-1"><AnimatedNumber value={founderExp} suffix="+" /></div>
                 <div className="text-xs text-white/60 uppercase tracking-wider">Years Experience</div>
@@ -765,7 +767,7 @@ export default function DreamCreations() {
               {creationsCategories.map((cat) => (
                 <div key={cat.id} className="pt-4">
                   <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block">{cat.category}</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {cat.items.map((subtitle, idx) => {
                       
                       const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
@@ -846,7 +848,7 @@ export default function DreamCreations() {
                   )}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0.5">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => (
                       <div 
