@@ -424,16 +424,15 @@ export default function DreamCreations() {
     setTimeout(() => { scrollToSection('portfolio-directory'); }, 350); 
   };
 
-  // ================= FIX 1: CLICK BEHAVIOR SA UPPER BOARDS =================
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(null); // Hindi bubuksan sa loob
+    setActivePortfolioSubtitle(subtitleName); 
     
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Magso-scroll lang
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         scrollToSection('portfolio-directory');
       }
@@ -752,10 +751,7 @@ export default function DreamCreations() {
             <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are pulled directly from our live CMS.</p>
           </div>
           <button 
-            onClick={() => {
-              setActivePortfolioSubtitle(null);
-              setTimeout(() => { scrollToSection('portfolio-directory'); }, 350);
-            }} 
+            onClick={() => setActivePortfolioSubtitle(null)} 
             className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20"
           >
             View Full Archive
@@ -798,6 +794,7 @@ export default function DreamCreations() {
                 onClick={() => { 
                   const prevSub = activePortfolioSubtitle;
                   setActivePortfolioSubtitle(null); 
+                  // Binalik sa original na scroll logic
                   setTimeout(() => { 
                     if (prevSub) {
                       const targetId = prevSub.toLowerCase().replace(/\s+/g, '-');
@@ -815,10 +812,11 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
+              {/* ================= MASONRY STYLE SA LOOB LANG (GAP-2, NO BORDER RADIUS) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="flex flex-wrap gap-1 items-start">
-                  {filteredProjects.length > 0 ? (
-                    filteredProjects.map((project) => (
+                <div className="columns-2 sm:columns-3 lg:columns-4 gap-2 space-y-2">
+                  {visualProjects.length > 0 ? (
+                    visualProjects.map((project) => (
                       <div 
                         key={project.id} 
                         onClick={(e) => {
@@ -826,7 +824,7 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project); 
                         }}
-                        className="relative flex-auto w-[45%] md:w-[30%] lg:w-[22%] cursor-pointer group overflow-hidden border border-white/5 bg-black"
+                        className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#050508] block rounded-none"
                       >
                         {project.featured_image_url ? ( 
                           <img 
@@ -835,7 +833,7 @@ export default function DreamCreations() {
                             className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500" 
                           /> 
                         ) : ( 
-                          <div className="w-full aspect-square flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
+                          <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> 
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20">
                           <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
@@ -844,7 +842,7 @@ export default function DreamCreations() {
                       </div>
                     ))
                   ) : (
-                    <div className="w-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
+                    <div className="w-full break-inside-avoid py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
                   )}
                 </div>
               ) : (
