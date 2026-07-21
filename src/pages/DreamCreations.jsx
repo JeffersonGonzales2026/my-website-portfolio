@@ -426,7 +426,7 @@ export default function DreamCreations() {
 
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(null); 
+    setActivePortfolioSubtitle(subtitleName); 
     
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
@@ -768,6 +768,8 @@ export default function DreamCreations() {
               {creationsCategories.map((cat) => (
                 <div key={cat.id} className="pt-4">
                   <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block">{cat.category}</h4>
+                  
+                  {/* BINALIK SA EXACT ORIGINAL CODE NG DIRECTORY GRID */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {cat.items.map((subtitle, idx) => {
                       
@@ -814,10 +816,11 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
+              {/* ================= EXACT ORIGINAL CODE PARA SA LOOB NG BOARDS (WITH SHARP CORNERS AND GAP-1) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="flex flex-wrap gap-0.5 items-start">
-                  {filteredProjects.length > 0 ? (
-                    filteredProjects.map((project) => (
+                <div className="flex flex-wrap gap-1 items-start">
+                  {visualProjects.length > 0 ? (
+                    visualProjects.map((project) => (
                       <div 
                         key={project.id} 
                         onClick={(e) => {
@@ -825,7 +828,7 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project); 
                         }}
-                        className="relative flex-auto w-[45%] md:w-[30%] lg:w-[22%] cursor-pointer group overflow-hidden border border-white/5 bg-black"
+                        className="relative flex-auto w-[45%] md:w-[30%] lg:w-[22%] cursor-pointer group overflow-hidden border border-white/5 bg-black rounded-none"
                       >
                         {project.featured_image_url ? ( 
                           <img 
@@ -1033,7 +1036,7 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= FIX: SWIPE & ARROWS WITH SMOOTH ZOOM-OUT ================= */}
+      {/* ================= SWIPE & ARROWS WITH SMOOTH ZOOM-OUT ================= */}
       <AnimatePresence>
         {previewImage && (
           <motion.div 
