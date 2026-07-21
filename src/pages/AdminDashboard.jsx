@@ -22,7 +22,7 @@ const sidebarModules = [
 
 const creationsCategories = [
   { id: 1, category: "Branding & Identity", items: ["Logo Design", "Brand Guidelines", "Visual Identity", "Brand Refresh", "Brand Assets", "Business Identity Systems"] },
-  { id: 2, category: "Graphic Design", items: ["Instructional Posters", "Corporate Graphics", "Advertising Materials", "Print Design", "Creative Campaigns", "Promotional Graphics"] },
+  { id: 2, category: "Graphic Design", items: ["Instructional Posters", "Corporate Graphics", "Advertising Materials", "Infographics", "Creative Campaigns", "Promotional Graphics"] },
   { id: 3, category: "Social Media Design", items: ["Facebook Graphics", "Instagram Posts", "Carousel Posts", "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"] },
   { id: 4, category: "Marketing Materials", items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Product Sheets", "Sales Kits", "Business Presentations"] },
   { id: 5, category: "Motion Graphics", items: ["Animated Ads", "Product Promotions", "Marketing Videos", "Social Media Motion Graphics", "Explainer Videos", "Logo Animation", "Video Thumbnails"] },
