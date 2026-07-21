@@ -536,7 +536,7 @@ export default function DreamCreations() {
           <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
           <p className="text-base text-white/70 mt-4 max-w-2xl">Explore our specialized creative categories. Click any box to view our specific offerings and jump directly to our past works.</p>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-0.5">
           {creationsCategories.map((category, index) => {
             const isGlowing = randomGlowIndex === index;
             return (
