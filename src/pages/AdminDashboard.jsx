@@ -292,7 +292,8 @@ export default function AdminDashboard() {
 
         const { data: { publicUrl } } = supabase.storage.from('portfolio_media').getPublicUrl(storageCleanName);
 
-        await supabase.from('media_library').insert([{ file_name: rawFileName, file_url: publicUrl, type: 'image' }]);
+        // ADDED SUPPORT PARA MAA-IDENTIFY KUNG VIDEO ITO SA MEDIA LIBRARY
+        await supabase.from('media_library').insert([{ file_name: rawFileName, file_url: publicUrl, type: file.type.includes('video') ? 'video' : 'image' }]);
 
         currentArchiveStack.unshift({
           category: bulkPipelineCat,
@@ -354,7 +355,9 @@ export default function AdminDashboard() {
         if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabase.storage.from('portfolio_media').getPublicUrl(fileName);
-        const { data: dbData, error: dbError } = await supabase.from('media_library').insert([{ file_name: cleanName, file_url: publicUrl, type: file.type.includes('image') ? 'image' : 'document' }]).select().single();
+        
+        // ADDED SUPPORT PARA MAA-IDENTIFY KUNG VIDEO ITO SA MEDIA LIBRARY
+        const { data: dbData, error: dbError } = await supabase.from('media_library').insert([{ file_name: cleanName, file_url: publicUrl, type: file.type.includes('image') ? 'image' : (file.type.includes('video') ? 'video' : 'document') }]).select().single();
         if (dbError) throw dbError;
 
         uploadedRecords.push(dbData);
@@ -442,7 +445,8 @@ export default function AdminDashboard() {
                   <p className="text-[10px] text-zinc-500 mt-1 font-mono">Upload files to capture public link endpoints.</p>
                 </div>
                 <div className="relative">
-                  <input type="file" multiple onChange={handleFileUploadLive} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf" />
+                  {/* UPDATE: Added video/* */}
+                  <input type="file" multiple onChange={handleFileUploadLive} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf,video/*" />
                   <button className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white text-xs font-mono font-bold flex items-center gap-2 shadow-md">
                     <UploadCloud size={14} /> RAW UPLOAD
                   </button>
@@ -451,7 +455,8 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {mediaFiles.map((file, idx) => (
                   <div key={file.id || idx} className="group relative rounded-xl bg-zinc-950 border border-zinc-900 overflow-hidden aspect-square flex flex-col items-center justify-center hover:border-blue-500/50 transition-colors">
-                    {file.type === 'image' ? <img src={file.file_url} alt="media" className="w-full h-full object-cover" /> : <File size={32} className="text-zinc-600" />}
+                    {/* UPDATE: Support Video Preview in Media Library */}
+                    {file.type === 'image' ? <img src={file.file_url} alt="media" className="w-full h-full object-cover" /> : (file.type === 'video' ? <video src={file.file_url} className="w-full h-full object-cover" muted /> : <File size={32} className="text-zinc-600" />)}
                     <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center">
                       <p className="text-[10px] text-white truncate w-full mb-3 font-mono">{file.file_name}</p>
                       <div className="flex gap-2">
@@ -642,6 +647,7 @@ export default function AdminDashboard() {
                   
                   <div className="flex items-center gap-2">
                     <div className="relative">
+                      {/* UPDATE: Ensure video files show up here too (already exists in original but keeping for safety) */}
                       <input type="file" multiple onChange={handleDropdownPipelineUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*, video/*" disabled={!bulkPipelineCat || !bulkPipelineSub} />
                       <button type="button" disabled={!bulkPipelineCat || !bulkPipelineSub} className="px-3 py-1.5 text-[10px] font-mono rounded-lg bg-blue-600 hover:bg-blue-500 border border-blue-500 text-white font-bold flex items-center gap-1 shadow-md disabled:opacity-30">
                         <UploadCloud size={12} /> 🚀 BULK AUTO-IMPORT
