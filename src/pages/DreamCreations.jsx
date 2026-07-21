@@ -421,17 +421,18 @@ export default function DreamCreations() {
 
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
+    setTimeout(() => { scrollToSection('portfolio-directory'); }, 350); 
   };
 
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(subtitleName); 
+    setActivePortfolioSubtitle(null); // Hindi na ioopen yung board
     
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Magso-scroll lang sa labas na board
       } else {
         scrollToSection('portfolio-directory');
       }
@@ -814,9 +815,9 @@ export default function DreamCreations() {
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-                  {visualProjects.length > 0 ? (
-                    visualProjects.map((project) => (
+                <div className="flex flex-wrap gap-2 items-start">
+                  {filteredProjects.length > 0 ? (
+                    filteredProjects.map((project) => (
                       <div 
                         key={project.id} 
                         onClick={(e) => {
@@ -824,7 +825,7 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project); 
                         }}
-                        className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#050508] block"
+                        className="relative flex-auto w-[45%] md:w-[30%] lg:w-[22%] cursor-pointer group overflow-hidden border border-white/5 bg-black rounded-none"
                       >
                         {project.featured_image_url ? ( 
                           <img 
@@ -833,7 +834,7 @@ export default function DreamCreations() {
                             className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500" 
                           /> 
                         ) : ( 
-                          <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> 
+                          <div className="w-full aspect-square flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20">
                           <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
@@ -842,7 +843,7 @@ export default function DreamCreations() {
                       </div>
                     ))
                   ) : (
-                    <div className="w-full break-inside-avoid py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
+                    <div className="w-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
                   )}
                 </div>
               ) : (
@@ -1032,7 +1033,7 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= SWIPE & ARROWS WITH SMOOTH ZOOM-OUT ================= */}
+      {/* ================= FIX 1 & 2: SMOOTH ZOOM-OUT & SWIPE NAVIGATION ================= */}
       <AnimatePresence>
         {previewImage && (
           <motion.div 
