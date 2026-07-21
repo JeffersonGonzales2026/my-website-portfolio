@@ -421,17 +421,18 @@ export default function DreamCreations() {
 
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
-    setTimeout(() => { scrollToSection('portfolio-directory'); }, 350); 
   };
 
+  // ================= FIX: SCROLL TO BOARD INSTEAD OF OPENING INSIDE =================
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(subtitleName); 
+    setActivePortfolioSubtitle(null); // Sinasarado ang gallery view para lumitaw ang mga boards
     
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
+        // Mag-i-scroll na siya diretso doon sa board na pinindot mo
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         scrollToSection('portfolio-directory');
@@ -751,10 +752,7 @@ export default function DreamCreations() {
             <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are pulled directly from our live CMS.</p>
           </div>
           <button 
-            onClick={() => {
-              setActivePortfolioSubtitle(null);
-              setTimeout(() => { scrollToSection('portfolio-directory'); }, 350);
-            }} 
+            onClick={() => setActivePortfolioSubtitle(null)} 
             className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20"
           >
             View Full Archive
@@ -797,7 +795,6 @@ export default function DreamCreations() {
                 onClick={() => { 
                   const prevSub = activePortfolioSubtitle;
                   setActivePortfolioSubtitle(null); 
-                  // Mismong code logic mo para hindi tumalon:
                   setTimeout(() => { 
                     if (prevSub) {
                       const targetId = prevSub.toLowerCase().replace(/\s+/g, '-');
@@ -815,11 +812,11 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= FIX 3: FLEX WRAP JUSTIFIED FLOW PARA SA 100% KAIN SPACE (NO CROP) ================= */}
+              {/* ================= FIX 3: STRICT UNIFORM GRID (NO BLACK SPACES) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="flex flex-wrap gap-1 items-start">
-                  {filteredProjects.length > 0 ? (
-                    filteredProjects.map((project) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1">
+                  {visualProjects.length > 0 ? (
+                    visualProjects.map((project) => (
                       <div 
                         key={project.id} 
                         onClick={(e) => {
@@ -827,18 +824,16 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project); 
                         }}
-                        // Ang "flex-auto" ang sekreto para uunat siya at kainin ang extra spaces sa kanan
-                        className="relative flex-auto w-[45%] md:w-[30%] lg:w-[22%] cursor-pointer group overflow-hidden border border-white/5 bg-black"
+                        className="relative w-full h-[200px] sm:h-[280px] lg:h-[320px] cursor-pointer group bg-[#050508] border border-white/5 overflow-hidden"
                       >
                         {project.featured_image_url ? ( 
-                          // Tinanggal ang layoutId dito para hindi mag-trigger ng flying effect pag nagsa-swipe
                           <img 
                             src={project.featured_image_url} 
                             alt={project.title} 
-                            className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 block" 
                           /> 
                         ) : ( 
-                          <div className="w-full aspect-square flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
+                          <div className="w-full h-full flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> 
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20">
                           <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
@@ -847,7 +842,7 @@ export default function DreamCreations() {
                       </div>
                     ))
                   ) : (
-                    <div className="w-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
+                    <div className="col-span-full w-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
                   )}
                 </div>
               ) : (
@@ -1038,14 +1033,13 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= FIX 1 & 2: SMOOTH ZOOM-OUT & SWIPE NAVIGATION ================= */}
+      {/* ================= FIX: SWIPE & ARROWS WITH SMOOTH ZOOM-OUT ================= */}
       <AnimatePresence>
         {previewImage && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, transition: { duration: 0.3 } }}
             className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer"
             onClick={() => setPreviewImage(null)} 
           >
@@ -1080,7 +1074,7 @@ export default function DreamCreations() {
               </button>
             )}
 
-            {/* Smooth Zoom Wrapper for Close/Open (Prevents 'putol' cutoff) */}
+            {/* Smooth Zoom Wrapper for Close/Open (Prevents 'putol' cutoff, walang layoutId) */}
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
