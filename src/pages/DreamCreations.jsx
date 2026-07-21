@@ -64,6 +64,7 @@ const creationsCategories = [
   { id: 2, category: "Graphic Design", icon: <PenTool size={14} />, items: ["Instructional Posters", "Corporate Graphics", "Advertising Materials", "Infographics", "Creative Campaigns", "Promotional Graphics"] },
   { id: 3, category: "Social Media Design", icon: <Share2 size={14} />, items: ["Facebook Graphics", "Instagram Posts", "Carousel Posts", "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"] },
   { id: 4, category: "Marketing Materials", icon: <FileText size={14} />, items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Product Sheets", "Sales Kits", "Business Presentations"] },
+  { id: 5, category: "Video Editing", icon: <Video size={14} />, items: ["Animated Ads", "Product Promotions", "Marketing Videos", "Social Media Motion Graphics", "Explainer Videos", "Logo Animation", "Video Thumbnails"] },
   { id: 5, category: "Motion Graphics", icon: <Video size={14} />, items: ["Animated Ads", "Product Promotions", "Marketing Videos", "Social Media Motion Graphics", "Explainer Videos", "Logo Animation", "Video Thumbnails"] },
   { id: 6, category: "Web Graphics", icon: <MousePointerClick size={14} />, items: ["eCommerce Graphics", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"] },
   { id: 7, category: "Photo Editing", icon: <ImageIcon size={14} />, items: ["Photo Retouching", "Photo Restoration", "Watercolor Portraits", "Background Removal", "Image Manipulation", "Color Correction", "Composite Editing"] },
