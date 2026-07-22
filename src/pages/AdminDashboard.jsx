@@ -78,10 +78,6 @@ export default function AdminDashboard() {
   const [dreamFeedback, setDreamFeedback] = useState([]);
   const [dreamArchive, setDreamArchive] = useState([]);
 
-  // NEW: STATE FOR EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE
-  const [bulkPipelineCat, setBulkTargetCat] = useState("");
-  const [bulkPipelineSub, setBulkTargetSub] = useState("");
-
   // DATA ANALYST STATE
   const [analystStats, setAnalystStats] = useState([]);
   const [analystRoles, setRoles] = useState([]);
@@ -257,66 +253,65 @@ export default function AdminDashboard() {
   };
 
   // =========================================================================
-  // EXCLUSIVE DROPDOWN EXPLICIT BATCH PIPELINE IMPORT HANDLER
+  // NEW: THE POWERFUL BULK AUTO-IMPORT PROJECTS ENGINE (NO COPY-PASTE)
   // =========================================================================
-  const handleDropdownPipelineUpload = async (e) => {
+  const handleBulkImportProjects = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
-
-    if (!bulkPipelineCat || !bulkPipelineSub) {
-      alert("⚠️ OPS, TEKA LANG BOSS:\nPaki-pili muna ang Category at Subtitle sa dropdown bago mag-click ng Upload button!");
-      e.target.value = null; // Reset input field container
-      return;
-    }
-
-    alert(`🚀 Initializing Destination Pipeline: Injecting ${files.length} assets to [${bulkPipelineCat} -> ${bulkPipelineSub}]...`);
-
-    let importedSuccess = 0;
-    const currentArchiveStack = [...dreamArchive];
+    
+    alert(`🚀 Initializing Bulk Auto-Import Engine for ${files.length} assets...`);
+    
+    let successCount = 0;
+    const newArchiveItems = [...dreamArchive];
 
     for (const file of files) {
       try {
-        const rawFileName = file.name;
-        const dotIndex = rawFileName.lastIndexOf('.');
-        const nameCleaned = dotIndex !== -1 ? rawFileName.substring(0, dotIndex) : rawFileName;
+        const fullName = file.name;
+        const lastDot = fullName.lastIndexOf('.');
+        const ext = fullName.substring(lastDot + 1);
+        const nameWithoutExt = fullName.substring(0, lastDot);
         
-        // AUTO COMPILER PHYSICS: Convert file names into pretty sentence headers dynamically
-        const beautyTitle = nameCleaned
-          .replace(/[-_]+/g, ' ') // Palitan ang dashes/underscores ng spaces
-          .replace(/\s+/g, ' ')   // Linisin ang double spaces
-          .trim();
-
-        const storageCleanName = `${Date.now()}_pipeline_${rawFileName.replace(/\s+/g, '').toLowerCase()}`;
+        // Mag-split base sa design pattern natin (Category_Subtitle_Project Title)
+        const parts = nameWithoutExt.split('_');
         
-        // 1. Fire upload to cloud object storage
-        const { error: storageError } = await supabase.storage.from('portfolio_media').upload(storageCleanName, file);
-        if (storageError) throw storageError;
-
-        const { data: { publicUrl } } = supabase.storage.from('portfolio_media').getPublicUrl(storageCleanName);
-
-        // 2. Mirror into general media files repository logs
-        await supabase.from('media_library').insert([{ file_name: rawFileName, file_url: publicUrl, type: 'image' }]);
-
-        // 3. Prepend into archive layout buffer queue stack
-        currentArchiveStack.unshift({
-          category: bulkPipelineCat,
-          subtitle: bulkPipelineSub,
-          title: beautyTitle || "Untitled Asset",
-          client_name: "Independent Project", 
-          description: "Visual archive showcase item.",
+        let category = "Branding & Identity"; 
+        let subtitle = "Logo Design";
+        let title = nameWithoutExt;
+        let client_name = "Independent Project"; // Defaults para hindi ka na mag-type
+        
+        if (parts.length >= 1 && parts[0].trim()) category = parts[0].trim();
+        if (parts.length >= 2 && parts[1].trim()) subtitle = parts[1].trim();
+        if (parts.length >= 3 && parts[2].trim()) title = parts[2].trim();
+        
+        // I-upload direkta sa cloud storage
+        const cleanStorageName = `${Date.now()}_import_${fullName.replace(/\s+/g, '').toLowerCase()}`;
+        const { error: uploadError } = await supabase.storage.from('portfolio_media').upload(cleanStorageName, file);
+        if (uploadError) throw uploadError;
+        
+        const { data: { publicUrl } } = supabase.storage.from('portfolio_media').getPublicUrl(cleanStorageName);
+        
+        // I-insert rin sa media library backup para hindi mawala sa logs
+        await supabase.from('media_library').insert([{ file_name: fullName, file_url: publicUrl, type: 'image' }]);
+        
+        // Awtomatikong buuin ang Card registry object at ipasok sa top stream list natin
+        newArchiveItems.unshift({
+          category,
+          subtitle,
+          title,
+          client_name,
+          description: `Visual showcase for ${title}.`,
           featured_image_url: publicUrl,
           video_url: ""
         });
-
-        importedSuccess++;
+        
+        successCount++;
       } catch (err) {
-        console.error("Pipeline broadcast exception node crash loop:", err);
+        console.error("Auto-import block exception catch row:", err);
       }
     }
-
-    setDreamArchive(currentArchiveStack);
-    e.target.value = null; // Clean file selector state cache memory
-    alert(`🟢 PIPELINE SUCCESS!\nNa-upload at nagawaan ng card ang ${importedSuccess} larawan para sa subtitle na "${bulkPipelineSub}".\n\n⚠️ HUWAG KALIMUTAN: Pindot po sa malaking "SAVE MODULE" sa pinakataas para pumasok ito sa live site website natin!`);
+    
+    setDreamArchive(newArchiveItems);
+    alert(`🟢 AUTO-IMPORT SUCCESSFUL!\nNagawa at naisalin ang ${successCount} files direkta bilang portfolio boards.\n\n⚠️ PAALALA: Paki-pindot ang malaking "SAVE MODULE" button sa pinakataas para mai-save ito nang tuluyan sa system!`);
   };
 
   const handleArchiveMessage = async (id, idx) => {
@@ -382,10 +377,6 @@ export default function AdminDashboard() {
     setState(state.filter((_, i) => i !== index));
   };
 
-  if (isLoading) {
-    return <div className="h-screen flex items-center justify-center bg-[#09090b] text-cyan-400 font-mono text-sm gap-2"><Loader2 className="animate-spin" size={16}/> ESTABLISHING SECURE CONNECTION...</div>;
-  }
-
   return (
     <div className="flex h-screen bg-[#09090b] text-zinc-200 overflow-hidden font-sans antialiased">
       
@@ -431,7 +422,6 @@ export default function AdminDashboard() {
 
         <div className="flex-1 overflow-y-auto p-8 max-w-5xl w-full mx-auto space-y-8 pb-32">
           
-          {/* Dashboard Hub panel rendering shell */}
           {activeModule === 'Dashboard Hub' && (
             <div className="p-8 rounded-2xl border border-zinc-900 bg-zinc-950/20 text-left space-y-4 max-w-xl">
               <h3 className="text-sm font-mono font-black text-white uppercase tracking-wider">// System Interface Diagnostics Ready</h3>
@@ -439,7 +429,6 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* Media Library Layer */}
           {activeModule === 'Media Library' && (
             <div className="space-y-8 text-left">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-2xl bg-zinc-950/40 border border-zinc-900">
@@ -471,7 +460,6 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* Home Engine Layer */}
           {activeModule === 'Home Engine' && (
             <div className="space-y-8 text-left">
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
@@ -514,7 +502,7 @@ export default function AdminDashboard() {
               </div>
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
-                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Chronological Progression Tracks</h4>
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Progress Tracks</h4>
                   <button onClick={() => setHomeTimeline([...homeTimeline, { year: "", title: "", company: "", desc: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold"><Plus size={12}/> ADD ROW</button>
                 </div>
                 <div className="space-y-3">
@@ -579,6 +567,16 @@ export default function AdminDashboard() {
                         <label className="block text-[10px] font-mono font-bold text-zinc-600 uppercase mb-1">Professional Summary Bio</label>
                         <textarea value={member.bio} onChange={(e) => handleUpdateArrayField(dreamTeam, setDreamTeam, idx, 'bio', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-400 h-16 resize-none" />
                       </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[10px] font-mono font-bold text-zinc-600 uppercase mb-1">Core Skills (Comma Separated)</label>
+                          <input type="text" value={member.skills} onChange={(e) => handleUpdateArrayField(dreamTeam, setDreamTeam, idx, 'skills', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-300" />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-mono font-bold text-zinc-600 uppercase mb-1">Software Field (Comma Separated)</label>
+                          <input type="text" value={member.software} onChange={(e) => handleUpdateArrayField(dreamTeam, setDreamTeam, idx, 'software', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-300" />
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -611,79 +609,55 @@ export default function AdminDashboard() {
                         <button onClick={() => handleRemoveArrayItem(dreamClients, setDreamClients, idx)} className="absolute right-0 top-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
                         <input type="text" value={client.name} onChange={(e) => handleUpdateArrayField(dreamClients, setDreamClients, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white" placeholder="Client Name" />
                         <input type="text" value={client.industry} onChange={(e) => handleUpdateArrayField(dreamClients, setDreamClients, idx, 'industry', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Industry" />
+                        <input type="text" value={client.imageSrc} onChange={(e) => handleUpdateArrayField(dreamClients, setDreamClients, idx, 'imageSrc', e.target.value)} className="col-span-2 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500 font-mono" placeholder="Logo URL Slot" />
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
 
-              {/* =========================================================================
-                  EXCLUSIVE COMPACT DESTINATION BULK PIPELINE INTERFACE
-                  ========================================================================= */}
-              <div className="p-6 rounded-3xl border border-blue-500/20 bg-gradient-to-r from-blue-950/20 to-zinc-950/50 space-y-4 shadow-lg">
-                <div>
-                  <h4 className="text-xs font-mono font-black text-blue-400 uppercase tracking-widest flex items-center gap-1.5">🚀 EXCLUSIVE ARCHIVE BULK PIPELINE</h4>
-                  <p className="text-[10px] text-zinc-400 font-mono mt-0.5">Pumili ng Category at Subtitle, tapos mag-upload ng maramihan. Ang system na ang kusang gagawa ng cards sa ibaba!</p>
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Client Feedback Testimonial</h4>
+                  <button onClick={() => setDreamFeedback([...dreamFeedback, { client_name: "", company: "", project_type: "", rating: 5, feedback: "", face_image_url: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1"><Plus size={12}/> ADD FEEDBACK</button>
                 </div>
-
-                <div className="flex flex-wrap items-center gap-4 bg-black/40 p-4 rounded-xl border border-zinc-900">
-                  {/* CATEGORY SELECTOR */}
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-wider">Destination Category</span>
-                    <select 
-                      value={bulkPipelineCat} 
-                      onChange={(e) => { setBulkTargetCat(e.target.value); setBulkTargetSub(""); }}
-                      className="bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-xs text-zinc-300 font-bold outline-none cursor-pointer focus:border-blue-500/50"
-                    >
-                      <option value="">Select Category...</option>
-                      {creationsCategories.map(c => <option key={c.id} value={c.category}>{c.category}</option>)}
-                    </select>
-                  </div>
-
-                  {/* SUBTITLE SELECTOR */}
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-wider">Target Subtitle Board</span>
-                    <select 
-                      value={bulkPipelineSub} 
-                      onChange={(e) => setBulkTargetSub(e.target.value)}
-                      className="bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-xs text-zinc-300 outline-none cursor-pointer focus:border-blue-500/50"
-                      disabled={!bulkPipelineCat}
-                    >
-                      <option value="">Select Subtitle...</option>
-                      {creationsCategories.find(c => c.category === bulkPipelineCat)?.items.map(sub => (
-                        <option key={sub} value={sub}>{sub}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* UPLOAD ACTION TRIGGER BUTTON */}
-                  <div className="flex flex-col gap-1.5 sm:mt-auto relative mt-2">
-                    <span className="text-[9px] font-mono font-bold text-transparent select-none uppercase hidden sm:block">Trigger</span>
-                    <input 
-                      type="file" 
-                      multiple 
-                      onChange={handleDropdownPipelineUpload} 
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
-                      accept="image/*"
-                      disabled={!bulkPipelineCat || !bulkPipelineSub}
-                    />
-                    <button 
-                      type="button" 
-                      disabled={!bulkPipelineCat || !bulkPipelineSub}
-                      className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 border border-blue-500 text-white font-mono text-xs font-black flex items-center gap-1.5 shadow-md disabled:opacity-20 disabled:cursor-not-allowed transition-all"
-                    >
-                      <UploadCloud size={14} /> PIPELINE BULK UPLOAD
-                    </button>
-                  </div>
+                <div className="space-y-4">
+                  {dreamFeedback.map((review, idx) => (
+                    <div key={review.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative">
+                      <button onClick={() => handleRemoveArrayItem(dreamFeedback, setDreamFeedback, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
+                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                        <input type="text" value={review.client_name} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white" placeholder="Client Name" />
+                        <input type="text" value={review.company} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'company', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Job/Company" />
+                        <input type="text" value={review.project_type} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'project_type', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Project Type" />
+                        <select value={review.rating} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'rating', parseInt(e.target.value))} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-300 outline-none">
+                          <option value="5">5 Stars</option><option value="4">4 Stars</option><option value="3">3 Stars</option>
+                        </select>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* MANUAL ENTRIES ARCHIVE LIST */}
+              {/* ================= PROJECT ARCHIVE WITH AUTO IMPORT ================= */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
-                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
-                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Manual Registry Editor Table Grid</h4>
-                  <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Card Title", client_name: "Independent Project", description: "Visual archive showcase item.", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> MANUAL ADD CARD</button>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-900 pb-3">
+                  <div>
+                    <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Project Archive Matrix Registries</h4>
+                    <p className="text-[10px] text-zinc-500 font-mono mt-0.5">Mabilisang paraan: Gamitin ang Bulk Auto-Import sa kanan para iwas copy-paste.</p>
+                  </div>
+                  
+                  {/* BULK IMPORT TRIGGER INJECTION */}
+                  <div className="flex items-center gap-2">
+                    <div className="relative">
+                      <input type="file" multiple onChange={handleBulkImportProjects} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*" />
+                      <button type="button" className="px-3 py-1.5 text-[10px] font-mono rounded-lg bg-blue-600 hover:bg-blue-500 border border-blue-500 text-white font-bold flex items-center gap-1 shadow-md">
+                        <UploadCloud size={12} /> 🚀 BULK AUTO-IMPORT
+                      </button>
+                    </div>
+                    <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Project", client_name: "Independent Project", description: "", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> MANUAL ADD</button>
+                  </div>
                 </div>
+
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                   {dreamArchive.map((project, idx) => {
                     const selectedCatObj = creationsCategories.find(c => c.category === project.category);
@@ -746,10 +720,10 @@ export default function AdminDashboard() {
                       <input type="text" value={role.statusBadge} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'statusBadge', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-emerald-400" placeholder="Badge" />
                       <input type="text" value={role.title} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Role Title" />
                       <input type="text" value={role.company} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'company', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-300" placeholder="Company" />
-                      <input type="text" value={role.logoUrl} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'logoUrl', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Company Logo URL" />
+                      <input type="text" value={role.logoUrl} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'logoUrl', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Logo URL" />
                     </div>
                     <div>
-                      <textarea value={role.responsibilities} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'responsibilities', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-400 h-16 resize-none" placeholder="Responsibilities list..." />
+                      <textarea value={role.responsibilities} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'responsibilities', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-400 h-16 resize-none" placeholder="Responsibilities..." />
                     </div>
                   </div>
                 ))}
@@ -765,7 +739,7 @@ export default function AdminDashboard() {
                     <div key={catIdx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/10 space-y-2 relative pr-8">
                       <button onClick={() => handleRemoveArrayItem(analystSkills, setAnalystSkills, catIdx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
                       <input type="text" value={section.category} onChange={(e) => handleUpdateArrayField(analystSkills, setAnalystSkills, catIdx, 'category', e.target.value)} className="bg-transparent text-xs font-mono text-white font-bold outline-none border-b border-zinc-800 pb-1 mb-2" />
-                      <textarea value={section.skills} onChange={(e) => handleUpdateArrayField(analystSkills, setAnalystSkills, catIdx, 'skills', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-300 font-mono h-16 resize-none" placeholder="Comma separated strings..." />
+                      <textarea value={section.skills} onChange={(e) => handleUpdateArrayField(analystSkills, setAnalystSkills, catIdx, 'skills', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-300 font-mono h-16 resize-none" placeholder="Comma separated..." />
                     </div>
                   ))}
                 </div>
@@ -786,8 +760,8 @@ export default function AdminDashboard() {
                     {portfolioDashboards.map((item, idx) => (
                       <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
                         <button onClick={() => handleRemoveArrayItem(portfolioDashboards, setPortfolioDashboards, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                        <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Dashboard Name" />
-                        <input type="text" value={item.purpose} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'purpose', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-300" placeholder="Purpose Statement" />
+                        <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Name" />
+                        <input type="text" value={item.purpose} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'purpose', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-300" placeholder="Purpose" />
                       </div>
                     ))}
                   </div>
@@ -800,7 +774,7 @@ export default function AdminDashboard() {
           {activeModule === 'AI Developer' && (
             <div className="space-y-8 text-left">
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
-                <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><BrainCircuit size={14}/> Engineering Metrics Counters</h4>
+                <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2 flex items-center gap-2"><BrainCircuit size={14}/> Engineering Metrics</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {aiStats.map((stat, idx) => (
                     <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 text-center">
@@ -812,14 +786,14 @@ export default function AdminDashboard() {
               </div>
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
-                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Development Chronology Flow</h4>
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Development Chronology</h4>
                   <button onClick={() => setAiTimeline([...aiTimeline, { year: "", desc: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold"><Plus size={12}/> ADD NODE</button>
                 </div>
                 {aiTimeline.map((item, idx) => (
                   <div key={idx} className="p-3 rounded-xl border border-zinc-900 bg-zinc-950/20 flex gap-4 relative pr-8">
                     <button onClick={() => handleRemoveArrayItem(aiTimeline, setAiTimeline, idx)} className="absolute right-3 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
                     <input type="text" value={item.year} onChange={(e) => handleUpdateArrayField(aiTimeline, setAiTimeline, idx, 'year', e.target.value)} className="w-24 bg-zinc-950 border border-zinc-900 p-1.5 text-xs text-center font-mono" placeholder="Year" />
-                    <input type="text" value={item.desc} onChange={(e) => handleUpdateArrayField(aiTimeline, setAiTimeline, idx, 'desc', e.target.value)} className="flex-1 bg-zinc-950 border border-zinc-900 p-1.5 text-xs font-mono text-zinc-300" placeholder="Description Node" />
+                    <input type="text" value={item.desc} onChange={(e) => handleUpdateArrayField(aiTimeline, setAiTimeline, idx, 'desc', e.target.value)} className="flex-1 bg-zinc-950 border border-zinc-900 p-1.5 text-xs font-mono text-zinc-300" placeholder="Desc" />
                   </div>
                 ))}
               </div>
@@ -831,21 +805,21 @@ export default function AdminDashboard() {
             <div className="space-y-8 text-left">
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
-                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><FileText size={14}/> Dynamic Resumes Dropdown List</h4>
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><FileText size={14}/> Dynamic Resumes Dropdown</h4>
                   <button onClick={() => setDynamicResumes([...dynamicResumes, { title: "", file_url: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold"><Plus size={12}/> ADD RESUME</button>
                 </div>
                 <div className="space-y-3">
                   {dynamicResumes.map((resume, idx) => (
                     <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 grid grid-cols-1 sm:grid-cols-2 gap-3 relative pr-8">
                       <button onClick={() => handleRemoveArrayItem(dynamicResumes, setDynamicResumes, idx)} className="absolute right-3 top-4 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                      <input type="text" value={resume.title} onChange={(e) => handleUpdateArrayField(dynamicResumes, setDynamicResumes, idx, 'title', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white font-bold" placeholder="Resume Dropdown Title" />
-                      <input type="text" value={resume.file_url} onChange={(e) => handleUpdateArrayField(dynamicResumes, setDynamicResumes, idx, 'file_url', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-400" placeholder="Document Asset URL Source" />
+                      <input type="text" value={resume.title} onChange={(e) => handleUpdateArrayField(dynamicResumes, setDynamicResumes, idx, 'title', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-bold" placeholder="Label" />
+                      <input type="text" value={resume.file_url} onChange={(e) => handleUpdateArrayField(dynamicResumes, setDynamicResumes, idx, 'file_url', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-400" placeholder="URL" />
                     </div>
                   ))}
                 </div>
                 <div className="pt-4 border-t border-zinc-900/60 mt-4">
-                  <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase">Dynamic Portfolio Archive PDF Download Link</label>
-                  <input type="text" value={contactPortfolioUrl} onChange={(e) => setContactPortfolioUrl(e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-xl px-4 py-2.5 text-xs text-white font-mono" />
+                  <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase">Main Portfolio URL Link</label>
+                  <input type="text" value={contactPortfolioUrl} onChange={(e) => setContactPortfolioUrl(e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-xl px-4 py-2.5 text-xs font-mono" />
                 </div>
               </div>
             </div>
@@ -854,7 +828,7 @@ export default function AdminDashboard() {
           {/* ================= WORKSPACE PANEL: MESSAGES INBOX ================= */}
           {activeModule === 'Messages Inbox' && (
             <div className="space-y-6 text-left">
-              <h3 className="text-sm font-mono font-black text-white uppercase tracking-wider">// Incoming Inquiries Inbox logs queue</h3>
+              <h3 className="text-sm font-mono font-black text-white uppercase tracking-wider">// Messages Queue Inbox</h3>
               <div className="rounded-2xl border border-zinc-900 overflow-hidden text-xs font-mono">
                 {messagesLog.map((msg, idx) => (
                   <div key={msg.id} className="p-4 bg-zinc-950 border-b border-zinc-900 flex justify-between items-start">
@@ -863,7 +837,7 @@ export default function AdminDashboard() {
                       <div className="text-zinc-400 font-bold mt-1">{msg.subject}</div>
                       <p className="text-zinc-500 mt-2 whitespace-pre-wrap">{msg.message}</p>
                     </div>
-                    <button onClick={() => handleArchiveMessage(msg.id, idx)} className="text-[10px] text-red-400 px-2 py-1 rounded bg-zinc-900">Archive</button>
+                    <button onClick={() => handleArchiveMessage(msg.id, idx)} className="text-[10px] text-red-400 px-2 py-1 rounded bg-zinc-900">Delete</button>
                   </div>
                 ))}
               </div>
@@ -872,14 +846,6 @@ export default function AdminDashboard() {
 
         </div>
       </main>
-      
-      {/* GLOW CUSTOM SCROLLBAR INTERFACES COMPILING */}
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.4); }
-      `}</style>
     </div>
   );
 }
