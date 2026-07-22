@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Activity, Palette, Database, BrainCircuit, 
   Mail, LogOut, Save, Plus, Trash2, Image, ExternalLink, 
   Sliders, Layers, Eye, CheckCircle, FileText, User, HelpCircle, 
-  Briefcase, Star, Cpu, Settings, UploadCloud, File, Image as ImageIcon, Menu, X, Loader2, Video
+  Briefcase, Star, Cpu, Settings, UploadCloud, File, Image as ImageIcon, Menu, X, Loader2, Video, Code, Rocket, MapPin
 } from 'lucide-react';
 
 const sidebarModules = [
@@ -229,10 +229,28 @@ export default function AdminDashboard() {
         }
 
       } else if (activeModule === 'Data Analyst') {
-        await supabase.from('data_analyst').update({ performance_counters: analystStats, experience_roles: analystRoles, technical_competencies: analystSkills, software_ecosystem: analystEcosystem, future_roadmap: analystRoadmap, portfolio_dashboards: portfolioDashboards, portfolio_reports: portfolioReports, portfolio_automations: portfolioAutomations, portfolio_case_studies: portfolioCaseStudies, portfolio_projects: portfolioProjects }).eq('id', 1);
+        await supabase.from('data_analyst').update({ 
+          performance_counters: analystStats, 
+          experience_roles: analystRoles, 
+          technical_competencies: analystSkills, 
+          software_ecosystem: analystEcosystem, 
+          future_roadmap: analystRoadmap, 
+          portfolio_dashboards: portfolioDashboards, 
+          portfolio_reports: portfolioReports, 
+          portfolio_automations: portfolioAutomations, 
+          portfolio_case_studies: portfolioCaseStudies, 
+          portfolio_projects: portfolioProjects 
+        }).eq('id', 1);
       
       } else if (activeModule === 'AI Developer') {
-        await supabase.from('ai_developer').update({ metrics_counters: aiStats, development_timeline: aiTimeline, ai_partners: aiEcosystemState, architecture_stack: aiArchitecture, engineering_showcase: aiShowcase, github_sync: aiGithub }).eq('id', 1);
+        await supabase.from('ai_developer').update({ 
+          metrics_counters: aiStats, 
+          development_timeline: aiTimeline, 
+          ai_partners: aiEcosystemState, 
+          architecture_stack: aiArchitecture, 
+          engineering_showcase: aiShowcase, 
+          github_sync: aiGithub 
+        }).eq('id', 1);
       
       } else if (activeModule === 'Contact Links') {
         await supabase.from('contact_settings').update({ portfolio_url: contactPortfolioUrl }).eq('id', 1);
@@ -698,7 +716,6 @@ export default function AdminDashboard() {
 
                     return (
                       <div key={project.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative flex gap-3 items-center">
-                        {/* VISUAL THUMBNAIL PREVIEW BOX */}
                         <div className="w-16 h-16 shrink-0 rounded-lg bg-black border border-zinc-800 overflow-hidden flex items-center justify-center relative">
                           {project.featured_image_url ? (
                             isVid ? (
@@ -802,27 +819,148 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
+              {/* RESTORED: Software Ecosystem */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
-                <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2">// Analytics Portfolio Showcase</h4>
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Software Ecosystem & Tools</h4>
+                  <button onClick={() => setAnalystEcosystem([...analystEcosystem, { name: "", category: "", imageSrc: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> ADD TOOL</button>
+                </div>
+                <div className="space-y-3">
+                  {analystEcosystem.map((item, idx) => (
+                    <div key={idx} className="p-3 rounded-xl border border-zinc-900 bg-zinc-950/20 grid grid-cols-1 sm:grid-cols-3 gap-2 relative pr-8">
+                      <button onClick={() => handleRemoveArrayItem(analystEcosystem, setAnalystEcosystem, idx)} className="absolute right-2 top-3 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
+                      <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(analystEcosystem, setAnalystEcosystem, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white" placeholder="Tool Name" />
+                      <input type="text" value={item.category} onChange={(e) => handleUpdateArrayField(analystEcosystem, setAnalystEcosystem, idx, 'category', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Category" />
+                      <input type="text" value={item.imageSrc || item.icon} onChange={(e) => handleUpdateArrayField(analystEcosystem, setAnalystEcosystem, idx, 'imageSrc', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Icon/Image URL" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* RESTORED: Future Analytics Roadmap */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Future Analytics Roadmap</h4>
+                  <button onClick={() => setAnalystRoadmap([...analystRoadmap, { phase: "", title: "", desc: "", target: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> ADD ROADMAP NODE</button>
+                </div>
+                <div className="space-y-3">
+                  {analystRoadmap.map((item, idx) => (
+                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative pr-8">
+                      <button onClick={() => handleRemoveArrayItem(analystRoadmap, setAnalystRoadmap, idx)} className="absolute right-2 top-3 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <input type="text" value={item.phase} onChange={(e) => handleUpdateArrayField(analystRoadmap, setAnalystRoadmap, idx, 'phase', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-emerald-400" placeholder="Phase/Milestone" />
+                        <input type="text" value={item.title} onChange={(e) => handleUpdateArrayField(analystRoadmap, setAnalystRoadmap, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Goal Title" />
+                        <input type="text" value={item.target} onChange={(e) => handleUpdateArrayField(analystRoadmap, setAnalystRoadmap, idx, 'target', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Target Date/Status" />
+                      </div>
+                      <textarea value={item.desc} onChange={(e) => handleUpdateArrayField(analystRoadmap, setAnalystRoadmap, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-400 h-16 resize-none" placeholder="Roadmap node details..." />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* RESTORED: Portfolio Showcase Tabs handling */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Analytics Portfolio Showcase</h4>
+                  <button 
+                    onClick={() => {
+                      if (activePortfolioTab === 'dashboards') setPortfolioDashboards([...portfolioDashboards, { name: "", purpose: "", link: "" }]);
+                      else if (activePortfolioTab === 'reports') setPortfolioReports([...portfolioReports, { name: "", purpose: "", link: "" }]);
+                      else if (activePortfolioTab === 'automations') setPortfolioAutomations([...portfolioAutomations, { name: "", tools: "", description: "" }]);
+                      else if (activePortfolioTab === 'caseStudies') setPortfolioCaseStudies([...portfolioCaseStudies, { title: "", client: "", impact: "", link: "" }]);
+                      else if (activePortfolioTab === 'projects') setPortfolioProjects([...portfolioProjects, { title: "", techStack: "", summary: "", link: "" }]);
+                    }} 
+                    className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"
+                  >
+                    <Plus size={12}/> ADD ITEM
+                  </button>
+                </div>
+
                 <div className="flex flex-wrap gap-1 bg-zinc-950 p-1 rounded-xl border border-zinc-900">
                   {['dashboards', 'reports', 'automations', 'caseStudies', 'projects'].map((tab) => (
-                    <button key={tab} type="button" onClick={() => setActivePortfolioTab(tab)} className={`px-3 py-1.5 text-[11px] font-mono rounded-lg capitalize ${activePortfolioTab === tab ? 'bg-zinc-900 text-white font-bold border border-zinc-800' : 'text-zinc-500'}`}>
+                    <button key={tab} type="button" onClick={() => setActivePortfolioTab(tab)} className={`px-3 py-1.5 text-[11px] font-mono rounded-lg capitalize cursor-pointer ${activePortfolioTab === tab ? 'bg-zinc-900 text-white font-bold border border-zinc-800' : 'text-zinc-500'}`}>
                       {tab}
                     </button>
                   ))}
                 </div>
 
                 {activePortfolioTab === 'dashboards' && (
-                  <div className="space-y-4 pt-2">
+                  <div className="space-y-3 pt-2">
                     {portfolioDashboards.map((item, idx) => (
-                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
-                        <button onClick={() => handleRemoveArrayItem(portfolioDashboards, setPortfolioDashboards, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                        <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Dashboard Name" />
+                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative pr-8">
+                        <button onClick={() => handleRemoveArrayItem(portfolioDashboards, setPortfolioDashboards, idx)} className="absolute top-3 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white font-bold" placeholder="Dashboard Name" />
+                          <input type="text" value={item.link} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'link', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500 font-mono" placeholder="Dashboard URL Link" />
+                        </div>
                         <input type="text" value={item.purpose} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'purpose', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-300" placeholder="Purpose Statement" />
                       </div>
                     ))}
                   </div>
                 )}
+
+                {activePortfolioTab === 'reports' && (
+                  <div className="space-y-3 pt-2">
+                    {portfolioReports.map((item, idx) => (
+                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative pr-8">
+                        <button onClick={() => handleRemoveArrayItem(portfolioReports, setPortfolioReports, idx)} className="absolute top-3 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white font-bold" placeholder="Report Title" />
+                          <input type="text" value={item.link} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'link', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500 font-mono" placeholder="Report URL Link" />
+                        </div>
+                        <input type="text" value={item.purpose} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'purpose', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-300" placeholder="Key Insights Summary" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {activePortfolioTab === 'automations' && (
+                  <div className="space-y-3 pt-2">
+                    {portfolioAutomations.map((item, idx) => (
+                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative pr-8">
+                        <button onClick={() => handleRemoveArrayItem(portfolioAutomations, setPortfolioAutomations, idx)} className="absolute top-3 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white font-bold" placeholder="Automation Workflow Name" />
+                          <input type="text" value={item.tools} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'tools', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400 font-mono" placeholder="Tools Used (Python, n8n, Airflow)" />
+                        </div>
+                        <textarea value={item.description} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'description', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-2 rounded text-zinc-400 font-mono h-16 resize-none" placeholder="Workflow description..." />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {activePortfolioTab === 'caseStudies' && (
+                  <div className="space-y-3 pt-2">
+                    {portfolioCaseStudies.map((item, idx) => (
+                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative pr-8">
+                        <button onClick={() => handleRemoveArrayItem(portfolioCaseStudies, setPortfolioCaseStudies, idx)} className="absolute top-3 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <input type="text" value={item.title} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white font-bold" placeholder="Case Study Title" />
+                          <input type="text" value={item.client} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'client', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-300" placeholder="Client/Domain" />
+                          <input type="text" value={item.link} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'link', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500 font-mono" placeholder="Doc/Link URL" />
+                        </div>
+                        <input type="text" value={item.impact} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'impact', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400 font-mono" placeholder="Business Impact Metrics" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {activePortfolioTab === 'projects' && (
+                  <div className="space-y-3 pt-2">
+                    {portfolioProjects.map((item, idx) => (
+                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative pr-8">
+                        <button onClick={() => handleRemoveArrayItem(portfolioProjects, setPortfolioProjects, idx)} className="absolute top-3 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <input type="text" value={item.title} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white font-bold" placeholder="Project Title" />
+                          <input type="text" value={item.techStack} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'techStack', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-cyan-400 font-mono" placeholder="Tech Stack" />
+                          <input type="text" value={item.link} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'link', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500 font-mono" placeholder="Repository/Demo Link" />
+                        </div>
+                        <textarea value={item.summary} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'summary', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-2 rounded text-zinc-400 font-mono h-16 resize-none" placeholder="Project Summary..." />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
               </div>
             </div>
           )}
@@ -841,6 +979,7 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               </div>
+
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Development Chronology Flow</h4>
@@ -854,6 +993,70 @@ export default function AdminDashboard() {
                   </div>
                 ))}
               </div>
+
+              {/* RESTORED: Current AI Ecosystem / Partners */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Current AI Ecosystem & Models</h4>
+                  <button onClick={() => setAiEcosystemState([...aiEcosystemState, { name: "", category: "", logoUrl: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> ADD PARTNER</button>
+                </div>
+                <div className="space-y-3">
+                  {aiEcosystemState.map((partner, idx) => (
+                    <div key={idx} className="p-3 rounded-xl border border-zinc-900 bg-zinc-950/20 grid grid-cols-1 sm:grid-cols-3 gap-2 relative pr-8">
+                      <button onClick={() => handleRemoveArrayItem(aiEcosystemState, setAiEcosystemState, idx)} className="absolute right-2 top-3 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
+                      <input type="text" value={partner.name} onChange={(e) => handleUpdateArrayField(aiEcosystemState, setAiEcosystemState, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Ecosystem / Model Name" />
+                      <input type="text" value={partner.category} onChange={(e) => handleUpdateArrayField(aiEcosystemState, setAiEcosystemState, idx, 'category', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Category (e.g., LLM, Vision)" />
+                      <input type="text" value={partner.logoUrl || partner.icon} onChange={(e) => handleUpdateArrayField(aiEcosystemState, setAiEcosystemState, idx, 'logoUrl', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Icon / Logo URL" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* RESTORED: Development Architecture Stack */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Development Architecture Stack</h4>
+                  <button onClick={() => setAiArchitecture([...aiArchitecture, { layer: "", title: "", tools: "", desc: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> ADD LAYER</button>
+                </div>
+                <div className="space-y-3">
+                  {aiArchitecture.map((arch, idx) => (
+                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative pr-8">
+                      <button onClick={() => handleRemoveArrayItem(aiArchitecture, setAiArchitecture, idx)} className="absolute right-2 top-3 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <input type="text" value={arch.layer} onChange={(e) => handleUpdateArrayField(aiArchitecture, setAiArchitecture, idx, 'layer', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Layer Name (Frontend, API)" />
+                        <input type="text" value={arch.title} onChange={(e) => handleUpdateArrayField(aiArchitecture, setAiArchitecture, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Layer Title" />
+                        <input type="text" value={arch.tools} onChange={(e) => handleUpdateArrayField(aiArchitecture, setAiArchitecture, idx, 'tools', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-emerald-400 font-mono" placeholder="Tools (PyTorch, LangChain)" />
+                      </div>
+                      <textarea value={arch.desc} onChange={(e) => handleUpdateArrayField(aiArchitecture, setAiArchitecture, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-400 h-16 resize-none" placeholder="Architecture layer description..." />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* RESTORED: Engineering Showcase */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Engineering Showcase</h4>
+                  <button onClick={() => setAiShowcase([...aiShowcase, { title: "", category: "", desc: "", demoUrl: "", githubUrl: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> ADD SHOWCASE ITEM</button>
+                </div>
+                <div className="space-y-4">
+                  {aiShowcase.map((item, idx) => (
+                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative pr-8">
+                      <button onClick={() => handleRemoveArrayItem(aiShowcase, setAiShowcase, idx)} className="absolute right-2 top-3 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <input type="text" value={item.title} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Showcase Title" />
+                        <input type="text" value={item.category} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'category', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Category (e.g. Agent, Computer Vision)" />
+                      </div>
+                      <textarea value={item.desc} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-400 h-16 resize-none" placeholder="Project overview..." />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <input type="text" value={item.demoUrl} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'demoUrl', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Live Demo URL" />
+                        <input type="text" value={item.githubUrl} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'githubUrl', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="GitHub Repository URL" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
             </div>
           )}
 
