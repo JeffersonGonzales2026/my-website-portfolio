@@ -78,7 +78,7 @@ export default function AdminDashboard() {
   const [dreamFeedback, setDreamFeedback] = useState([]);
   const [dreamArchive, setDreamArchive] = useState([]);
 
-  // STATE FOR EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE
+  // NEW: STATE FOR EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE
   const [bulkPipelineCat, setBulkTargetCat] = useState("");
   const [bulkPipelineSub, setBulkTargetSub] = useState("");
 
@@ -168,7 +168,7 @@ export default function AdminDashboard() {
       const { data: reviews } = await supabase.from('client_reviews').select('*').order('created_at', {ascending: false});
       if (reviews) setDreamFeedback(reviews);
 
-      const { data: archives } = await supabase.from('portfolio_projects').select('*').order('created_at', {ascending: false});
+      const { data: archives } = await supabase.from('portfolio_projects').select('*').order('id', {ascending: false});
       if (archives) setDreamArchive(archives);
 
       const { data: messages } = await supabase.from('contact_messages').select('*').order('created_at', {ascending: false});
@@ -204,18 +204,16 @@ export default function AdminDashboard() {
           await supabase.from('client_reviews').insert(cleanReviews);
         }
 
-        // ================= FIX 1: STAGGERED CREATED_AT TIMESTAMPS + CLIENT NAME / DESC RESTORED =================
         await supabase.from('portfolio_projects').delete().neq('title', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (dreamArchive.length > 0) {
-          const cleanArchives = dreamArchive.map((p, i) => ({
+          const cleanArchives = dreamArchive.map(p => ({
             category: p.category || "",
             subtitle: p.subtitle || "",
             title: p.title || "",
-            client_name: p.client_name || "", 
-            description: p.description || "", 
+            client_name: p.client_name || "",
+            description: p.description || "",
             featured_image_url: p.featured_image_url || "",
-            video_url: p.video_url || "",
-            created_at: new Date(Date.now() - i * 1000).toISOString()
+            video_url: p.video_url || ""
           }));
           const { error: archiveError } = await supabase.from('portfolio_projects').insert(cleanArchives);
           if (archiveError) throw archiveError;
@@ -258,13 +256,16 @@ export default function AdminDashboard() {
     }
   };
 
+  // =========================================================================
+  // EXCLUSIVE DROPDOWN EXPLICIT BATCH PIPELINE IMPORT HANDLER
+  // =========================================================================
   const handleDropdownPipelineUpload = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
 
     if (!bulkPipelineCat || !bulkPipelineSub) {
       alert("⚠️ OPS, TEKA LANG BOSS:\nPaki-pili muna ang Category at Subtitle sa dropdown bago mag-click ng Upload button!");
-      e.target.value = null; 
+      e.target.value = null; // Reset input field container
       return;
     }
 
@@ -279,26 +280,30 @@ export default function AdminDashboard() {
         const dotIndex = rawFileName.lastIndexOf('.');
         const nameCleaned = dotIndex !== -1 ? rawFileName.substring(0, dotIndex) : rawFileName;
         
+        // AUTO COMPILER PHYSICS: Convert file names into pretty sentence headers dynamically
         const beautyTitle = nameCleaned
-          .replace(/[-_]+/g, ' ') 
-          .replace(/\s+/g, ' ')   
+          .replace(/[-_]+/g, ' ') // Palitan ang dashes/underscores ng spaces
+          .replace(/\s+/g, ' ')   // Linisin ang double spaces
           .trim();
 
         const storageCleanName = `${Date.now()}_pipeline_${rawFileName.replace(/\s+/g, '').toLowerCase()}`;
         
+        // 1. Fire upload to cloud object storage
         const { error: storageError } = await supabase.storage.from('portfolio_media').upload(storageCleanName, file);
         if (storageError) throw storageError;
 
         const { data: { publicUrl } } = supabase.storage.from('portfolio_media').getPublicUrl(storageCleanName);
 
+        // 2. Mirror into general media files repository logs
         await supabase.from('media_library').insert([{ file_name: rawFileName, file_url: publicUrl, type: 'image' }]);
 
+        // 3. Prepend into archive layout buffer queue stack
         currentArchiveStack.unshift({
           category: bulkPipelineCat,
           subtitle: bulkPipelineSub,
           title: beautyTitle || "Untitled Asset",
-          client_name: "Independent Project", // RESTORED DEFAULT
-          description: "Visual archive showcase item.", // RESTORED DEFAULT
+          client_name: "Independent Project", 
+          description: "Visual archive showcase item.",
           featured_image_url: publicUrl,
           video_url: ""
         });
@@ -310,7 +315,7 @@ export default function AdminDashboard() {
     }
 
     setDreamArchive(currentArchiveStack);
-    e.target.value = null; 
+    e.target.value = null; // Clean file selector state cache memory
     alert(`🟢 PIPELINE SUCCESS!\nNa-upload at nagawaan ng card ang ${importedSuccess} larawan para sa subtitle na "${bulkPipelineSub}".\n\n⚠️ HUWAG KALIMUTAN: Pindot po sa malaking "SAVE MODULE" sa pinakataas para pumasok ito sa live site website natin!`);
   };
 
@@ -426,6 +431,7 @@ export default function AdminDashboard() {
 
         <div className="flex-1 overflow-y-auto p-8 max-w-5xl w-full mx-auto space-y-8 pb-32">
           
+          {/* Dashboard Hub panel rendering shell */}
           {activeModule === 'Dashboard Hub' && (
             <div className="p-8 rounded-2xl border border-zinc-900 bg-zinc-950/20 text-left space-y-4 max-w-xl">
               <h3 className="text-sm font-mono font-black text-white uppercase tracking-wider">// System Interface Diagnostics Ready</h3>
@@ -433,6 +439,7 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {/* Media Library Layer */}
           {activeModule === 'Media Library' && (
             <div className="space-y-8 text-left">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-2xl bg-zinc-950/40 border border-zinc-900">
@@ -464,6 +471,7 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {/* Home Engine Layer */}
           {activeModule === 'Home Engine' && (
             <div className="space-y-8 text-left">
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
@@ -526,6 +534,7 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {/* ================= WORKSPACE PANEL: DREAM CREATIONS ================= */}
           {activeModule === 'Dream Creations' && (
             <div className="space-y-8 text-left">
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
@@ -602,82 +611,85 @@ export default function AdminDashboard() {
                         <button onClick={() => handleRemoveArrayItem(dreamClients, setDreamClients, idx)} className="absolute right-0 top-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
                         <input type="text" value={client.name} onChange={(e) => handleUpdateArrayField(dreamClients, setDreamClients, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white" placeholder="Client Name" />
                         <input type="text" value={client.industry} onChange={(e) => handleUpdateArrayField(dreamClients, setDreamClients, idx, 'industry', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Industry" />
-                        <input type="text" value={client.imageSrc} onChange={(e) => handleUpdateArrayField(dreamClients, setDreamClients, idx, 'imageSrc', e.target.value)} className="col-span-2 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500 font-mono" placeholder="Logo URL Slot" />
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
 
-              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
-                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
-                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Client Feedback Testimonial</h4>
-                  <button onClick={() => setDreamFeedback([...dreamFeedback, { client_name: "", company: "", project_type: "", rating: 5, feedback: "", face_image_url: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1"><Plus size={12}/> ADD FEEDBACK</button>
-                </div>
-                <div className="space-y-4">
-                  {dreamFeedback.map((review, idx) => (
-                    <div key={review.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative">
-                      <button onClick={() => handleRemoveArrayItem(dreamFeedback, setDreamFeedback, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
-                        <input type="text" value={review.client_name} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white" placeholder="Client Name" />
-                        <input type="text" value={review.company} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'company', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Job/Company" />
-                        <input type="text" value={review.project_type} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'project_type', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Project Type" />
-                        <select value={review.rating} onChange={(e) => handleUpdateArrayField(dreamFeedback, setDreamFeedback, idx, 'rating', parseInt(e.target.value))} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-300 outline-none">
-                          <option value="5">5 Stars</option><option value="4">4 Stars</option><option value="3">3 Stars</option>
-                        </select>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* ================= PROJECT ARCHIVE WITH AUTO IMPORT ================= */}
-              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-900 pb-3">
-                  <div>
-                    <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Project Archive Matrix Registries</h4>
-                    <p className="text-[10px] text-zinc-500 font-mono mt-0.5">Mabilisang paraan: Gamitin ang Bulk Auto-Import sa kanan para iwas copy-paste.</p>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <div className="relative">
-                      <input type="file" multiple onChange={handleDropdownPipelineUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" disabled={!bulkPipelineCat || !bulkPipelineSub} />
-                      <button type="button" disabled={!bulkPipelineCat || !bulkPipelineSub} className="px-3 py-1.5 text-[10px] font-mono rounded-lg bg-blue-600 hover:bg-blue-500 border border-blue-500 text-white font-bold flex items-center gap-1 shadow-md disabled:opacity-30">
-                        <UploadCloud size={12} /> 🚀 BULK AUTO-IMPORT
-                      </button>
-                    </div>
-                    {/* RESTORED: Default text para sa Manual Add */}
-                    <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Card Title", client_name: "Independent Project", description: "Visual archive showcase item.", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> MANUAL ADD</button>
-                  </div>
+              {/* =========================================================================
+                  EXCLUSIVE COMPACT DESTINATION BULK PIPELINE INTERFACE
+                  ========================================================================= */}
+              <div className="p-6 rounded-3xl border border-blue-500/20 bg-gradient-to-r from-blue-950/20 to-zinc-950/50 space-y-4 shadow-lg">
+                <div>
+                  <h4 className="text-xs font-mono font-black text-blue-400 uppercase tracking-widest flex items-center gap-1.5">🚀 EXCLUSIVE ARCHIVE BULK PIPELINE</h4>
+                  <p className="text-[10px] text-zinc-400 font-mono mt-0.5">Pumili ng Category at Subtitle, tapos mag-upload ng maramihan. Ang system na ang kusang gagawa ng cards sa ibaba!</p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-4 bg-black/40 p-4 rounded-xl border border-zinc-900">
+                  {/* CATEGORY SELECTOR */}
                   <div className="flex flex-col gap-1.5">
                     <span className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-wider">Destination Category</span>
-                    <select value={bulkPipelineCat} onChange={(e) => { setBulkTargetCat(e.target.value); setBulkTargetSub(""); }} className="bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-xs text-zinc-300 font-bold outline-none cursor-pointer focus:border-blue-500/50">
+                    <select 
+                      value={bulkPipelineCat} 
+                      onChange={(e) => { setBulkTargetCat(e.target.value); setBulkTargetSub(""); }}
+                      className="bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-xs text-zinc-300 font-bold outline-none cursor-pointer focus:border-blue-500/50"
+                    >
                       <option value="">Select Category...</option>
                       {creationsCategories.map(c => <option key={c.id} value={c.category}>{c.category}</option>)}
                     </select>
                   </div>
+
+                  {/* SUBTITLE SELECTOR */}
                   <div className="flex flex-col gap-1.5">
                     <span className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-wider">Target Subtitle Board</span>
-                    <select value={bulkPipelineSub} onChange={(e) => setBulkTargetSub(e.target.value)} className="bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-xs text-zinc-300 outline-none cursor-pointer focus:border-blue-500/50" disabled={!bulkPipelineCat}>
+                    <select 
+                      value={bulkPipelineSub} 
+                      onChange={(e) => setBulkTargetSub(e.target.value)}
+                      className="bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-xs text-zinc-300 outline-none cursor-pointer focus:border-blue-500/50"
+                      disabled={!bulkPipelineCat}
+                    >
                       <option value="">Select Subtitle...</option>
                       {creationsCategories.find(c => c.category === bulkPipelineCat)?.items.map(sub => (
                         <option key={sub} value={sub}>{sub}</option>
                       ))}
                     </select>
                   </div>
-                </div>
 
+                  {/* UPLOAD ACTION TRIGGER BUTTON */}
+                  <div className="flex flex-col gap-1.5 sm:mt-auto relative mt-2">
+                    <span className="text-[9px] font-mono font-bold text-transparent select-none uppercase hidden sm:block">Trigger</span>
+                    <input 
+                      type="file" 
+                      multiple 
+                      onChange={handleDropdownPipelineUpload} 
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                      accept="image/*"
+                      disabled={!bulkPipelineCat || !bulkPipelineSub}
+                    />
+                    <button 
+                      type="button" 
+                      disabled={!bulkPipelineCat || !bulkPipelineSub}
+                      className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 border border-blue-500 text-white font-mono text-xs font-black flex items-center gap-1.5 shadow-md disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                    >
+                      <UploadCloud size={14} /> PIPELINE BULK UPLOAD
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* MANUAL ENTRIES ARCHIVE LIST */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Manual Registry Editor Table Grid</h4>
+                  <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Card Title", client_name: "Independent Project", description: "Visual archive showcase item.", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> MANUAL ADD CARD</button>
+                </div>
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                   {dreamArchive.map((project, idx) => {
                     const selectedCatObj = creationsCategories.find(c => c.category === project.category);
                     return (
                       <div key={project.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative">
                         <button onClick={() => handleRemoveArrayItem(dreamArchive, setDreamArchive, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                        
-                        {/* RESTORED: Client Name at Description fields sa grid */}
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                           <select value={project.category} onChange={(e) => {
                               handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'category', e.target.value);
@@ -698,7 +710,6 @@ export default function AdminDashboard() {
                           <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Flipbook Settings (prefix,pages,ext) OR Video URL" />
                           <input type="text" value={project.description} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'description', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Description Meta..." />
                         </div>
-
                       </div>
                     );
                   })}
@@ -833,8 +844,8 @@ export default function AdminDashboard() {
                   ))}
                 </div>
                 <div className="pt-4 border-t border-zinc-900/60 mt-4">
-                  <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase">Main Portfolio URL Link</label>
-                  <input type="text" value={contactPortfolioUrl} onChange={(e) => setContactPortfolioUrl(e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-xl px-4 py-2.5 text-xs font-mono" />
+                  <label className="block text-[10px] font-mono font-bold text-zinc-500 uppercase">Dynamic Portfolio Archive PDF Download Link</label>
+                  <input type="text" value={contactPortfolioUrl} onChange={(e) => setContactPortfolioUrl(e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-xl px-4 py-2.5 text-xs text-white font-mono" />
                 </div>
               </div>
             </div>
@@ -843,7 +854,7 @@ export default function AdminDashboard() {
           {/* ================= WORKSPACE PANEL: MESSAGES INBOX ================= */}
           {activeModule === 'Messages Inbox' && (
             <div className="space-y-6 text-left">
-              <h3 className="text-sm font-mono font-black text-white uppercase tracking-wider">// Messages Queue Inbox</h3>
+              <h3 className="text-sm font-mono font-black text-white uppercase tracking-wider">// Incoming Inquiries Inbox logs queue</h3>
               <div className="rounded-2xl border border-zinc-900 overflow-hidden text-xs font-mono">
                 {messagesLog.map((msg, idx) => (
                   <div key={msg.id} className="p-4 bg-zinc-950 border-b border-zinc-900 flex justify-between items-start">
@@ -852,7 +863,7 @@ export default function AdminDashboard() {
                       <div className="text-zinc-400 font-bold mt-1">{msg.subject}</div>
                       <p className="text-zinc-500 mt-2 whitespace-pre-wrap">{msg.message}</p>
                     </div>
-                    <button onClick={() => handleArchiveMessage(msg.id, idx)} className="text-[10px] text-red-400 px-2 py-1 rounded bg-zinc-900">Delete</button>
+                    <button onClick={() => handleArchiveMessage(msg.id, idx)} className="text-[10px] text-red-400 px-2 py-1 rounded bg-zinc-900">Archive</button>
                   </div>
                 ))}
               </div>
@@ -862,6 +873,7 @@ export default function AdminDashboard() {
         </div>
       </main>
       
+      {/* GLOW CUSTOM SCROLLBAR INTERFACES COMPILING */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 10px; }
