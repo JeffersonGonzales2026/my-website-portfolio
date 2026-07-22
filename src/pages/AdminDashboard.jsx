@@ -78,7 +78,7 @@ export default function AdminDashboard() {
   const [dreamFeedback, setDreamFeedback] = useState([]);
   const [dreamArchive, setDreamArchive] = useState([]);
 
-  // NEW: STATE FOR EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE
+  // STATE FOR EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE
   const [bulkPipelineCat, setBulkTargetCat] = useState("");
   const [bulkPipelineSub, setBulkTargetSub] = useState("");
 
@@ -168,7 +168,6 @@ export default function AdminDashboard() {
       const { data: reviews } = await supabase.from('client_reviews').select('*').order('created_at', {ascending: false});
       if (reviews) setDreamFeedback(reviews);
 
-      // FIX FOR INITIAL LOAD: Sort descending by created_at
       const { data: archives } = await supabase.from('portfolio_projects').select('*').order('created_at', {ascending: false});
       if (archives) setDreamArchive(archives);
 
@@ -205,20 +204,18 @@ export default function AdminDashboard() {
           await supabase.from('client_reviews').insert(cleanReviews);
         }
 
-        // ================= FIX 1: STAGGERED CREATED_AT TIMESTAMPS =================
-        // Para siguradong 'di mag-random ang cover, nilagyan ko ng minus 1-second ang bawat entry 
-        // para kung ano ang nasa ibabaw ng listahan sa dashboard, siya ang pinakabago!
+        // ================= FIX 1: STAGGERED CREATED_AT TIMESTAMPS + CLIENT NAME / DESC RESTORED =================
         await supabase.from('portfolio_projects').delete().neq('title', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (dreamArchive.length > 0) {
           const cleanArchives = dreamArchive.map((p, i) => ({
             category: p.category || "",
             subtitle: p.subtitle || "",
             title: p.title || "",
-            client_name: "", // Removed from DB tracking visually
-            description: "", // Removed from DB tracking visually
+            client_name: p.client_name || "", 
+            description: p.description || "", 
             featured_image_url: p.featured_image_url || "",
             video_url: p.video_url || "",
-            created_at: new Date(Date.now() - i * 1000).toISOString() // <--- Ensures proper chronological sorting
+            created_at: new Date(Date.now() - i * 1000).toISOString()
           }));
           const { error: archiveError } = await supabase.from('portfolio_projects').insert(cleanArchives);
           if (archiveError) throw archiveError;
@@ -300,8 +297,8 @@ export default function AdminDashboard() {
           category: bulkPipelineCat,
           subtitle: bulkPipelineSub,
           title: beautyTitle || "Untitled Asset",
-          client_name: "", 
-          description: "",
+          client_name: "Independent Project", // RESTORED DEFAULT
+          description: "Visual archive showcase item.", // RESTORED DEFAULT
           featured_image_url: publicUrl,
           video_url: ""
         });
@@ -649,12 +646,11 @@ export default function AdminDashboard() {
                         <UploadCloud size={12} /> 🚀 BULK AUTO-IMPORT
                       </button>
                     </div>
-                    {/* TINANGGAL NA NATIN ANG CLIENT_NAME AT DESCRIPTION DEFAULTS DITO */}
-                    <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Card Title", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> MANUAL ADD</button>
+                    {/* RESTORED: Default text para sa Manual Add */}
+                    <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Card Title", client_name: "Independent Project", description: "Visual archive showcase item.", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> MANUAL ADD</button>
                   </div>
                 </div>
 
-                {/* DROPDOWN SELECTORS FOR BULK IMPORT */}
                 <div className="flex flex-wrap items-center gap-4 bg-black/40 p-4 rounded-xl border border-zinc-900">
                   <div className="flex flex-col gap-1.5">
                     <span className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-wider">Destination Category</span>
@@ -681,8 +677,8 @@ export default function AdminDashboard() {
                       <div key={project.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative">
                         <button onClick={() => handleRemoveArrayItem(dreamArchive, setDreamArchive, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
                         
-                        {/* MANUAL ENTRY GRID (TINANGGAL ANG CLIENT_NAME AT DESCRIPTION) */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        {/* RESTORED: Client Name at Description fields sa grid */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                           <select value={project.category} onChange={(e) => {
                               handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'category', e.target.value);
                               handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', ''); 
@@ -695,10 +691,12 @@ export default function AdminDashboard() {
                             {selectedCatObj && selectedCatObj.items.map(sub => <option key={sub} value={sub}>{sub}</option>)}
                           </select>
                           <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
+                          <input type="text" value={project.client_name} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500" placeholder="Client Name" />
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                           <input type="text" value={project.featured_image_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'featured_image_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Featured Image URL" />
                           <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Flipbook Settings (prefix,pages,ext) OR Video URL" />
+                          <input type="text" value={project.description} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'description', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Description Meta..." />
                         </div>
 
                       </div>
