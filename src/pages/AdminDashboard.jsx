@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Activity, Palette, Database, BrainCircuit, 
   Mail, LogOut, Save, Plus, Trash2, Image, ExternalLink, 
   Sliders, Layers, Eye, CheckCircle, FileText, User, HelpCircle, 
-  Briefcase, Star, Cpu, Settings, UploadCloud, File, Image as ImageIcon, Menu, X, Loader2, Video, Code, Rocket, MapPin
+  Briefcase, Star, Cpu, Settings, UploadCloud, File, Image as ImageIcon, Menu, X, Loader2
 } from 'lucide-react';
 
 const sidebarModules = [
@@ -22,25 +22,17 @@ const sidebarModules = [
 
 const creationsCategories = [
   { id: 1, category: "Branding & Identity", items: ["Logo Design", "Brand Guidelines", "Visual Identity", "Brand Refresh", "Brand Assets", "Business Identity Systems"] },
-  { id: 2, category: "Graphic Design", items: ["Instructional Posters", "Corporate Graphics", "Advertising Materials", "Infographics", "Creative Campaigns", "Promotional Graphics"] },
+  { id: 2, category: "Graphic Design", items: ["Marketing Graphics", "Corporate Graphics", "Advertising Materials", "Print Design", "Creative Campaigns", "Promotional Graphics"] },
   { id: 3, category: "Social Media Design", items: ["Facebook Graphics", "Instagram Posts", "Carousel Posts", "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"] },
   { id: 4, category: "Marketing Materials", items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Product Sheets", "Sales Kits", "Business Presentations"] },
-  { id: 5, category: "Video Editing", items: ["Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", "Podcast Editing","Testimonial Videos","Tutorial Videos"] },
-  { id: 6, category: "Motion Graphics", items: ["Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", "Kinetic Typography", "Animated Infographics", "UI or App Animations","Lottie Animations","Intro & Outro Animations","Lower Thirds & Broadcast Graphics"] },
-  { id: 7, category: "Web Graphics", items: ["eCommerce Graphics", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"] },
-  { id: 8, category: "Photo Editing", items: ["Photo Retouching", "Photo Restoration", "Watercolor Portraits", "Background Removal", "Image Manipulation", "Color Correction", "Composite Editing"] },
-  { id: 9, category: "Apparel Design", items: ["Shirt Designs", "Streetwear Graphics", "Mockups", "Print-ready Artwork"] },
-  { id: 10, category: "Print Production", items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards"] },
-  { id: 11, category: "Packaging", items: ["Packaging Graphics", "Clothing Labels", "Product Labels"] },
-  { id: 12, category: "Illustration", items: ["Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"] }
+  { id: 5, category: "Motion Graphics", items: ["Animated Ads", "Product Promotions", "Marketing Videos", "Social Media Motion Graphics", "Explainer Videos", "Logo Animation", "Video Thumbnails"] },
+  { id: 6, category: "Web Graphics", items: ["Website Banners", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"] },
+  { id: 7, category: "Photo Editing", items: ["Photo Retouching", "Photo Restoration", "Watercolor Portraits", "Background Removal", "Image Manipulation", "Color Correction", "Composite Editing"] },
+  { id: 8, category: "Apparel Design", items: ["Shirt Designs", "Streetwear Graphics", "Mockups", "Print-ready Artwork"] },
+  { id: 9, category: "Print Production", items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards"] },
+  { id: 10, category: "Packaging", items: ["Packaging Graphics", "Clothing Labels", "Product Labels"] },
+  { id: 11, category: "Illustration", items: ["Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"] }
 ];
-
-// Helper to identify video URLs
-const isVideoUrl = (url, type) => {
-  if (type === 'video') return true;
-  if (!url) return false;
-  return url.match(/\.(mp4|webm|mov|ogg)$/i) || url.includes('video');
-};
 
 export default function AdminDashboard() {
   const [activeModule, setActiveModule] = useState('Dashboard Hub');
@@ -86,7 +78,7 @@ export default function AdminDashboard() {
   const [dreamFeedback, setDreamFeedback] = useState([]);
   const [dreamArchive, setDreamArchive] = useState([]);
 
-  // STATE FOR EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE
+  // NEW: STATE FOR EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE
   const [bulkPipelineCat, setBulkTargetCat] = useState("");
   const [bulkPipelineSub, setBulkTargetSub] = useState("");
 
@@ -176,6 +168,7 @@ export default function AdminDashboard() {
       const { data: reviews } = await supabase.from('client_reviews').select('*').order('created_at', {ascending: false});
       if (reviews) setDreamFeedback(reviews);
 
+      // FIX FOR INITIAL LOAD: Sort descending by created_at
       const { data: archives } = await supabase.from('portfolio_projects').select('*').order('created_at', {ascending: false});
       if (archives) setDreamArchive(archives);
 
@@ -212,45 +205,30 @@ export default function AdminDashboard() {
           await supabase.from('client_reviews').insert(cleanReviews);
         }
 
+        // ================= FIX 1: STAGGERED CREATED_AT TIMESTAMPS =================
+        // Para siguradong 'di mag-random ang cover, nilagyan ko ng minus 1-second ang bawat entry 
+        // para kung ano ang nasa ibabaw ng listahan sa dashboard, siya ang pinakabago!
         await supabase.from('portfolio_projects').delete().neq('title', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (dreamArchive.length > 0) {
           const cleanArchives = dreamArchive.map((p, i) => ({
             category: p.category || "",
             subtitle: p.subtitle || "",
             title: p.title || "",
-            client_name: p.client_name || "", 
-            description: p.description || "", 
+            client_name: "", // Removed from DB tracking visually
+            description: "", // Removed from DB tracking visually
             featured_image_url: p.featured_image_url || "",
             video_url: p.video_url || "",
-            created_at: new Date(Date.now() - i * 1000).toISOString()
+            created_at: new Date(Date.now() - i * 1000).toISOString() // <--- Ensures proper chronological sorting
           }));
           const { error: archiveError } = await supabase.from('portfolio_projects').insert(cleanArchives);
           if (archiveError) throw archiveError;
         }
 
       } else if (activeModule === 'Data Analyst') {
-        await supabase.from('data_analyst').update({ 
-          performance_counters: analystStats, 
-          experience_roles: analystRoles, 
-          technical_competencies: analystSkills, 
-          software_ecosystem: analystEcosystem, 
-          future_roadmap: analystRoadmap, 
-          portfolio_dashboards: portfolioDashboards, 
-          portfolio_reports: portfolioReports, 
-          portfolio_automations: portfolioAutomations, 
-          portfolio_case_studies: portfolioCaseStudies, 
-          portfolio_projects: portfolioProjects 
-        }).eq('id', 1);
+        await supabase.from('data_analyst').update({ performance_counters: analystStats, experience_roles: analystRoles, technical_competencies: analystSkills, software_ecosystem: analystEcosystem, future_roadmap: analystRoadmap, portfolio_dashboards: portfolioDashboards, portfolio_reports: portfolioReports, portfolio_automations: portfolioAutomations, portfolio_case_studies: portfolioCaseStudies, portfolio_projects: portfolioProjects }).eq('id', 1);
       
       } else if (activeModule === 'AI Developer') {
-        await supabase.from('ai_developer').update({ 
-          metrics_counters: aiStats, 
-          development_timeline: aiTimeline, 
-          ai_partners: aiEcosystemState, 
-          architecture_stack: aiArchitecture, 
-          engineering_showcase: aiShowcase, 
-          github_sync: aiGithub 
-        }).eq('id', 1);
+        await supabase.from('ai_developer').update({ metrics_counters: aiStats, development_timeline: aiTimeline, ai_partners: aiEcosystemState, architecture_stack: aiArchitecture, engineering_showcase: aiShowcase, github_sync: aiGithub }).eq('id', 1);
       
       } else if (activeModule === 'Contact Links') {
         await supabase.from('contact_settings').update({ portfolio_url: contactPortfolioUrl }).eq('id', 1);
@@ -316,18 +294,16 @@ export default function AdminDashboard() {
 
         const { data: { publicUrl } } = supabase.storage.from('portfolio_media').getPublicUrl(storageCleanName);
 
-        const isVideo = file.type.includes('video') || file.name.match(/\.(mp4|webm|mov|ogg)$/i);
-
-        await supabase.from('media_library').insert([{ file_name: rawFileName, file_url: publicUrl, type: isVideo ? 'video' : 'image' }]);
+        await supabase.from('media_library').insert([{ file_name: rawFileName, file_url: publicUrl, type: 'image' }]);
 
         currentArchiveStack.unshift({
           category: bulkPipelineCat,
           subtitle: bulkPipelineSub,
           title: beautyTitle || "Untitled Asset",
-          client_name: "Independent Project", 
-          description: "Visual archive showcase item.", 
+          client_name: "", 
+          description: "",
           featured_image_url: publicUrl,
-          video_url: isVideo ? publicUrl : ""
+          video_url: ""
         });
 
         importedSuccess++;
@@ -338,7 +314,7 @@ export default function AdminDashboard() {
 
     setDreamArchive(currentArchiveStack);
     e.target.value = null; 
-    alert(`🟢 PIPELINE SUCCESS!\nNa-upload at nagawaan ng card ang ${importedSuccess} asset para sa subtitle na "${bulkPipelineSub}".\n\n⚠️ HUWAG KALIMUTAN: Pindot po sa malaking "SAVE MODULE" sa pinakataas para pumasok ito sa live site website natin!`);
+    alert(`🟢 PIPELINE SUCCESS!\nNa-upload at nagawaan ng card ang ${importedSuccess} larawan para sa subtitle na "${bulkPipelineSub}".\n\n⚠️ HUWAG KALIMUTAN: Pindot po sa malaking "SAVE MODULE" sa pinakataas para pumasok ito sa live site website natin!`);
   };
 
   const handleArchiveMessage = async (id, idx) => {
@@ -380,11 +356,7 @@ export default function AdminDashboard() {
         if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabase.storage.from('portfolio_media').getPublicUrl(fileName);
-        
-        const isVid = file.type.includes('video') || cleanName.match(/\.(mp4|webm|mov|ogg)$/i);
-        const mediaType = file.type.includes('image') ? 'image' : (isVid ? 'video' : 'document');
-
-        const { data: dbData, error: dbError } = await supabase.from('media_library').insert([{ file_name: cleanName, file_url: publicUrl, type: mediaType }]).select().single();
+        const { data: dbData, error: dbError } = await supabase.from('media_library').insert([{ file_name: cleanName, file_url: publicUrl, type: file.type.includes('image') ? 'image' : 'document' }]).select().single();
         if (dbError) throw dbError;
 
         uploadedRecords.push(dbData);
@@ -472,34 +444,25 @@ export default function AdminDashboard() {
                   <p className="text-[10px] text-zinc-500 mt-1 font-mono">Upload files to capture public link endpoints.</p>
                 </div>
                 <div className="relative">
-                  <input type="file" multiple onChange={handleFileUploadLive} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf,video/*" />
+                  <input type="file" multiple onChange={handleFileUploadLive} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf" />
                   <button className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white text-xs font-mono font-bold flex items-center gap-2 shadow-md">
                     <UploadCloud size={14} /> RAW UPLOAD
                   </button>
                 </div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {mediaFiles.map((file, idx) => {
-                  const isVid = isVideoUrl(file.file_url, file.type);
-                  return (
-                    <div key={file.id || idx} className="group relative rounded-xl bg-zinc-950 border border-zinc-900 overflow-hidden aspect-square flex flex-col items-center justify-center hover:border-blue-500/50 transition-colors">
-                      {isVid ? (
-                        <video src={`${file.file_url}#t=0.1`} className="w-full h-full object-cover pointer-events-none" preload="metadata" muted playsInline />
-                      ) : file.type === 'image' || file.file_url?.match(/\.(jpg|jpeg|png|webp|gif)$/i) ? (
-                        <img src={file.file_url} alt="media" className="w-full h-full object-cover" />
-                      ) : (
-                        <File size={32} className="text-zinc-600" />
-                      )}
-                      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center">
-                        <p className="text-[10px] text-white truncate w-full mb-3 font-mono">{file.file_name}</p>
-                        <div className="flex gap-2">
-                          <button onClick={() => { navigator.clipboard.writeText(file.file_url); alert('URL Copied!'); }} className="px-3 py-1.5 rounded-lg bg-zinc-800 text-white text-[10px] font-bold">Copy</button>
-                          <button onClick={() => handleDeleteMedia(file.id, idx)} className="px-3 py-1.5 rounded-lg bg-red-900 text-white text-[10px] font-bold"><Trash2 size={12}/></button>
-                        </div>
+                {mediaFiles.map((file, idx) => (
+                  <div key={file.id || idx} className="group relative rounded-xl bg-zinc-950 border border-zinc-900 overflow-hidden aspect-square flex flex-col items-center justify-center hover:border-blue-500/50 transition-colors">
+                    {file.type === 'image' ? <img src={file.file_url} alt="media" className="w-full h-full object-cover" /> : <File size={32} className="text-zinc-600" />}
+                    <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center">
+                      <p className="text-[10px] text-white truncate w-full mb-3 font-mono">{file.file_name}</p>
+                      <div className="flex gap-2">
+                        <button onClick={() => { navigator.clipboard.writeText(file.file_url); alert('URL Copied!'); }} className="px-3 py-1.5 rounded-lg bg-zinc-800 text-white text-[10px] font-bold">Copy</button>
+                        <button onClick={() => handleDeleteMedia(file.id, idx)} className="px-3 py-1.5 rounded-lg bg-red-900 text-white text-[10px] font-bold"><Trash2 size={12}/></button>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -681,15 +644,17 @@ export default function AdminDashboard() {
                   
                   <div className="flex items-center gap-2">
                     <div className="relative">
-                      <input type="file" multiple onChange={handleDropdownPipelineUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*, video/*" disabled={!bulkPipelineCat || !bulkPipelineSub} />
+                      <input type="file" multiple onChange={handleDropdownPipelineUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" disabled={!bulkPipelineCat || !bulkPipelineSub} />
                       <button type="button" disabled={!bulkPipelineCat || !bulkPipelineSub} className="px-3 py-1.5 text-[10px] font-mono rounded-lg bg-blue-600 hover:bg-blue-500 border border-blue-500 text-white font-bold flex items-center gap-1 shadow-md disabled:opacity-30">
                         <UploadCloud size={12} /> 🚀 BULK AUTO-IMPORT
                       </button>
                     </div>
-                    <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Card Title", client_name: "Independent Project", description: "Visual archive showcase item.", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> MANUAL ADD</button>
+                    {/* TINANGGAL NA NATIN ANG CLIENT_NAME AT DESCRIPTION DEFAULTS DITO */}
+                    <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Card Title", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> MANUAL ADD</button>
                   </div>
                 </div>
 
+                {/* DROPDOWN SELECTORS FOR BULK IMPORT */}
                 <div className="flex flex-wrap items-center gap-4 bg-black/40 p-4 rounded-xl border border-zinc-900">
                   <div className="flex flex-col gap-1.5">
                     <span className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-wider">Destination Category</span>
@@ -712,50 +677,28 @@ export default function AdminDashboard() {
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                   {dreamArchive.map((project, idx) => {
                     const selectedCatObj = creationsCategories.find(c => c.category === project.category);
-                    const isVid = isVideoUrl(project.featured_image_url) || isVideoUrl(project.video_url);
-
                     return (
-                      <div key={project.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative flex gap-3 items-center">
-                        <div className="w-16 h-16 shrink-0 rounded-lg bg-black border border-zinc-800 overflow-hidden flex items-center justify-center relative">
-                          {project.featured_image_url ? (
-                            isVid ? (
-                              <video src={`${project.featured_image_url}#t=0.1`} className="w-full h-full object-cover pointer-events-none" preload="metadata" muted playsInline />
-                            ) : (
-                              <img src={project.featured_image_url} alt="preview" className="w-full h-full object-cover" />
-                            )
-                          ) : (
-                            <ImageIcon size={20} className="text-zinc-700" />
-                          )}
-                          {isVid && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
-                              <Video size={14} className="text-cyan-400" />
-                            </div>
-                          )}
+                      <div key={project.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative">
+                        <button onClick={() => handleRemoveArrayItem(dreamArchive, setDreamArchive, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
+                        
+                        {/* MANUAL ENTRY GRID (TINANGGAL ANG CLIENT_NAME AT DESCRIPTION) */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <select value={project.category} onChange={(e) => {
+                              handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'category', e.target.value);
+                              handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', ''); 
+                            }} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 font-bold outline-none cursor-pointer">
+                            <option value="" disabled>Select Category...</option>
+                            {creationsCategories.map(c => <option key={c.id} value={c.category}>{c.category}</option>)}
+                          </select>
+                          <select value={project.subtitle} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 outline-none cursor-pointer" disabled={!project.category}>
+                            <option value="" disabled>Select Subtitle...</option>
+                            {selectedCatObj && selectedCatObj.items.map(sub => <option key={sub} value={sub}>{sub}</option>)}
+                          </select>
+                          <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
                         </div>
-
-                        <div className="flex-1 space-y-2">
-                          <button onClick={() => handleRemoveArrayItem(dreamArchive, setDreamArchive, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                          
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pr-6">
-                            <select value={project.category} onChange={(e) => {
-                                handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'category', e.target.value);
-                                handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', ''); 
-                              }} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 font-bold outline-none cursor-pointer">
-                              <option value="" disabled>Select Category...</option>
-                              {creationsCategories.map(c => <option key={c.id} value={c.category}>{c.category}</option>)}
-                            </select>
-                            <select value={project.subtitle} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 outline-none cursor-pointer" disabled={!project.category}>
-                              <option value="" disabled>Select Subtitle...</option>
-                              {selectedCatObj && selectedCatObj.items.map(sub => <option key={sub} value={sub}>{sub}</option>)}
-                            </select>
-                            <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
-                            <input type="text" value={project.client_name} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500" placeholder="Client Name" />
-                          </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                            <input type="text" value={project.featured_image_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'featured_image_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Featured Image/Video URL" />
-                            <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Flipbook Settings OR Video URL" />
-                            <input type="text" value={project.description} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'description', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Description Meta..." />
-                          </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <input type="text" value={project.featured_image_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'featured_image_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Featured Image URL" />
+                          <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Flipbook Settings (prefix,pages,ext) OR Video URL" />
                         </div>
 
                       </div>
@@ -819,148 +762,27 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* RESTORED: Software Ecosystem */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
-                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
-                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Software Ecosystem & Tools</h4>
-                  <button onClick={() => setAnalystEcosystem([...analystEcosystem, { name: "", category: "", imageSrc: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> ADD TOOL</button>
-                </div>
-                <div className="space-y-3">
-                  {analystEcosystem.map((item, idx) => (
-                    <div key={idx} className="p-3 rounded-xl border border-zinc-900 bg-zinc-950/20 grid grid-cols-1 sm:grid-cols-3 gap-2 relative pr-8">
-                      <button onClick={() => handleRemoveArrayItem(analystEcosystem, setAnalystEcosystem, idx)} className="absolute right-2 top-3 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                      <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(analystEcosystem, setAnalystEcosystem, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white" placeholder="Tool Name" />
-                      <input type="text" value={item.category} onChange={(e) => handleUpdateArrayField(analystEcosystem, setAnalystEcosystem, idx, 'category', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Category" />
-                      <input type="text" value={item.imageSrc || item.icon} onChange={(e) => handleUpdateArrayField(analystEcosystem, setAnalystEcosystem, idx, 'imageSrc', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Icon/Image URL" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* RESTORED: Future Analytics Roadmap */}
-              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
-                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
-                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Future Analytics Roadmap</h4>
-                  <button onClick={() => setAnalystRoadmap([...analystRoadmap, { phase: "", title: "", desc: "", target: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> ADD ROADMAP NODE</button>
-                </div>
-                <div className="space-y-3">
-                  {analystRoadmap.map((item, idx) => (
-                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative pr-8">
-                      <button onClick={() => handleRemoveArrayItem(analystRoadmap, setAnalystRoadmap, idx)} className="absolute right-2 top-3 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <input type="text" value={item.phase} onChange={(e) => handleUpdateArrayField(analystRoadmap, setAnalystRoadmap, idx, 'phase', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-emerald-400" placeholder="Phase/Milestone" />
-                        <input type="text" value={item.title} onChange={(e) => handleUpdateArrayField(analystRoadmap, setAnalystRoadmap, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Goal Title" />
-                        <input type="text" value={item.target} onChange={(e) => handleUpdateArrayField(analystRoadmap, setAnalystRoadmap, idx, 'target', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Target Date/Status" />
-                      </div>
-                      <textarea value={item.desc} onChange={(e) => handleUpdateArrayField(analystRoadmap, setAnalystRoadmap, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-400 h-16 resize-none" placeholder="Roadmap node details..." />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* RESTORED: Portfolio Showcase Tabs handling */}
-              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
-                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
-                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Analytics Portfolio Showcase</h4>
-                  <button 
-                    onClick={() => {
-                      if (activePortfolioTab === 'dashboards') setPortfolioDashboards([...portfolioDashboards, { name: "", purpose: "", link: "" }]);
-                      else if (activePortfolioTab === 'reports') setPortfolioReports([...portfolioReports, { name: "", purpose: "", link: "" }]);
-                      else if (activePortfolioTab === 'automations') setPortfolioAutomations([...portfolioAutomations, { name: "", tools: "", description: "" }]);
-                      else if (activePortfolioTab === 'caseStudies') setPortfolioCaseStudies([...portfolioCaseStudies, { title: "", client: "", impact: "", link: "" }]);
-                      else if (activePortfolioTab === 'projects') setPortfolioProjects([...portfolioProjects, { title: "", techStack: "", summary: "", link: "" }]);
-                    }} 
-                    className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"
-                  >
-                    <Plus size={12}/> ADD ITEM
-                  </button>
-                </div>
-
+                <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-900 pb-2">// Analytics Portfolio Showcase</h4>
                 <div className="flex flex-wrap gap-1 bg-zinc-950 p-1 rounded-xl border border-zinc-900">
                   {['dashboards', 'reports', 'automations', 'caseStudies', 'projects'].map((tab) => (
-                    <button key={tab} type="button" onClick={() => setActivePortfolioTab(tab)} className={`px-3 py-1.5 text-[11px] font-mono rounded-lg capitalize cursor-pointer ${activePortfolioTab === tab ? 'bg-zinc-900 text-white font-bold border border-zinc-800' : 'text-zinc-500'}`}>
+                    <button key={tab} type="button" onClick={() => setActivePortfolioTab(tab)} className={`px-3 py-1.5 text-[11px] font-mono rounded-lg capitalize ${activePortfolioTab === tab ? 'bg-zinc-900 text-white font-bold border border-zinc-800' : 'text-zinc-500'}`}>
                       {tab}
                     </button>
                   ))}
                 </div>
 
                 {activePortfolioTab === 'dashboards' && (
-                  <div className="space-y-3 pt-2">
+                  <div className="space-y-4 pt-2">
                     {portfolioDashboards.map((item, idx) => (
-                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative pr-8">
-                        <button onClick={() => handleRemoveArrayItem(portfolioDashboards, setPortfolioDashboards, idx)} className="absolute top-3 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white font-bold" placeholder="Dashboard Name" />
-                          <input type="text" value={item.link} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'link', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500 font-mono" placeholder="Dashboard URL Link" />
-                        </div>
+                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
+                        <button onClick={() => handleRemoveArrayItem(portfolioDashboards, setPortfolioDashboards, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
+                        <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Dashboard Name" />
                         <input type="text" value={item.purpose} onChange={(e) => handleUpdateArrayField(portfolioDashboards, setPortfolioDashboards, idx, 'purpose', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-300" placeholder="Purpose Statement" />
                       </div>
                     ))}
                   </div>
                 )}
-
-                {activePortfolioTab === 'reports' && (
-                  <div className="space-y-3 pt-2">
-                    {portfolioReports.map((item, idx) => (
-                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative pr-8">
-                        <button onClick={() => handleRemoveArrayItem(portfolioReports, setPortfolioReports, idx)} className="absolute top-3 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white font-bold" placeholder="Report Title" />
-                          <input type="text" value={item.link} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'link', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500 font-mono" placeholder="Report URL Link" />
-                        </div>
-                        <input type="text" value={item.purpose} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'purpose', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-300" placeholder="Key Insights Summary" />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {activePortfolioTab === 'automations' && (
-                  <div className="space-y-3 pt-2">
-                    {portfolioAutomations.map((item, idx) => (
-                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative pr-8">
-                        <button onClick={() => handleRemoveArrayItem(portfolioAutomations, setPortfolioAutomations, idx)} className="absolute top-3 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white font-bold" placeholder="Automation Workflow Name" />
-                          <input type="text" value={item.tools} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'tools', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400 font-mono" placeholder="Tools Used (Python, n8n, Airflow)" />
-                        </div>
-                        <textarea value={item.description} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'description', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-2 rounded text-zinc-400 font-mono h-16 resize-none" placeholder="Workflow description..." />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {activePortfolioTab === 'caseStudies' && (
-                  <div className="space-y-3 pt-2">
-                    {portfolioCaseStudies.map((item, idx) => (
-                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative pr-8">
-                        <button onClick={() => handleRemoveArrayItem(portfolioCaseStudies, setPortfolioCaseStudies, idx)} className="absolute top-3 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                          <input type="text" value={item.title} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white font-bold" placeholder="Case Study Title" />
-                          <input type="text" value={item.client} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'client', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-300" placeholder="Client/Domain" />
-                          <input type="text" value={item.link} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'link', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500 font-mono" placeholder="Doc/Link URL" />
-                        </div>
-                        <input type="text" value={item.impact} onChange={(e) => handleUpdateArrayField(portfolioCaseStudies, setPortfolioCaseStudies, idx, 'impact', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400 font-mono" placeholder="Business Impact Metrics" />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {activePortfolioTab === 'projects' && (
-                  <div className="space-y-3 pt-2">
-                    {portfolioProjects.map((item, idx) => (
-                      <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative pr-8">
-                        <button onClick={() => handleRemoveArrayItem(portfolioProjects, setPortfolioProjects, idx)} className="absolute top-3 right-2 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                          <input type="text" value={item.title} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white font-bold" placeholder="Project Title" />
-                          <input type="text" value={item.techStack} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'techStack', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-cyan-400 font-mono" placeholder="Tech Stack" />
-                          <input type="text" value={item.link} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'link', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500 font-mono" placeholder="Repository/Demo Link" />
-                        </div>
-                        <textarea value={item.summary} onChange={(e) => handleUpdateArrayField(portfolioProjects, setPortfolioProjects, idx, 'summary', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-2 rounded text-zinc-400 font-mono h-16 resize-none" placeholder="Project Summary..." />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
               </div>
             </div>
           )}
@@ -979,7 +801,6 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               </div>
-
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Development Chronology Flow</h4>
@@ -993,70 +814,6 @@ export default function AdminDashboard() {
                   </div>
                 ))}
               </div>
-
-              {/* RESTORED: Current AI Ecosystem / Partners */}
-              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
-                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
-                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Current AI Ecosystem & Models</h4>
-                  <button onClick={() => setAiEcosystemState([...aiEcosystemState, { name: "", category: "", logoUrl: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> ADD PARTNER</button>
-                </div>
-                <div className="space-y-3">
-                  {aiEcosystemState.map((partner, idx) => (
-                    <div key={idx} className="p-3 rounded-xl border border-zinc-900 bg-zinc-950/20 grid grid-cols-1 sm:grid-cols-3 gap-2 relative pr-8">
-                      <button onClick={() => handleRemoveArrayItem(aiEcosystemState, setAiEcosystemState, idx)} className="absolute right-2 top-3 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                      <input type="text" value={partner.name} onChange={(e) => handleUpdateArrayField(aiEcosystemState, setAiEcosystemState, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Ecosystem / Model Name" />
-                      <input type="text" value={partner.category} onChange={(e) => handleUpdateArrayField(aiEcosystemState, setAiEcosystemState, idx, 'category', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Category (e.g., LLM, Vision)" />
-                      <input type="text" value={partner.logoUrl || partner.icon} onChange={(e) => handleUpdateArrayField(aiEcosystemState, setAiEcosystemState, idx, 'logoUrl', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Icon / Logo URL" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* RESTORED: Development Architecture Stack */}
-              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
-                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
-                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Development Architecture Stack</h4>
-                  <button onClick={() => setAiArchitecture([...aiArchitecture, { layer: "", title: "", tools: "", desc: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> ADD LAYER</button>
-                </div>
-                <div className="space-y-3">
-                  {aiArchitecture.map((arch, idx) => (
-                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative pr-8">
-                      <button onClick={() => handleRemoveArrayItem(aiArchitecture, setAiArchitecture, idx)} className="absolute right-2 top-3 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <input type="text" value={arch.layer} onChange={(e) => handleUpdateArrayField(aiArchitecture, setAiArchitecture, idx, 'layer', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Layer Name (Frontend, API)" />
-                        <input type="text" value={arch.title} onChange={(e) => handleUpdateArrayField(aiArchitecture, setAiArchitecture, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Layer Title" />
-                        <input type="text" value={arch.tools} onChange={(e) => handleUpdateArrayField(aiArchitecture, setAiArchitecture, idx, 'tools', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-emerald-400 font-mono" placeholder="Tools (PyTorch, LangChain)" />
-                      </div>
-                      <textarea value={arch.desc} onChange={(e) => handleUpdateArrayField(aiArchitecture, setAiArchitecture, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-400 h-16 resize-none" placeholder="Architecture layer description..." />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* RESTORED: Engineering Showcase */}
-              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
-                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
-                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Engineering Showcase</h4>
-                  <button onClick={() => setAiShowcase([...aiShowcase, { title: "", category: "", desc: "", demoUrl: "", githubUrl: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> ADD SHOWCASE ITEM</button>
-                </div>
-                <div className="space-y-4">
-                  {aiShowcase.map((item, idx) => (
-                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative pr-8">
-                      <button onClick={() => handleRemoveArrayItem(aiShowcase, setAiShowcase, idx)} className="absolute right-2 top-3 text-zinc-600 hover:text-red-400"><Trash2 size={14}/></button>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <input type="text" value={item.title} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Showcase Title" />
-                        <input type="text" value={item.category} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'category', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Category (e.g. Agent, Computer Vision)" />
-                      </div>
-                      <textarea value={item.desc} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-400 h-16 resize-none" placeholder="Project overview..." />
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <input type="text" value={item.demoUrl} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'demoUrl', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Live Demo URL" />
-                        <input type="text" value={item.githubUrl} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'githubUrl', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="GitHub Repository URL" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
             </div>
           )}
 
