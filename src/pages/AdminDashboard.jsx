@@ -22,7 +22,7 @@ const sidebarModules = [
 ];
 
 // =========================================================================
-// CENTRALIZED CATEGORY DATA PARA SA DROPDOWNS (UPDATED)
+// CENTRALIZED CATEGORY DATA PARA SA DROPDOWNS
 // =========================================================================
 const creationsCategories = [
   { id: 1, category: "Branding & Identity", items: ["Logo Design", "Brand Guidelines", "Visual Identity", "Brand Refresh", "Brand Assets", "Business Identity Systems"] },
@@ -218,7 +218,6 @@ export default function AdminDashboard() {
           await supabase.from('client_reviews').insert(cleanReviews);
         }
 
-        // ================= FIX 1: STAGGERED CREATED_AT TIMESTAMPS + CLIENT NAME / DESC RESTORED =================
         await supabase.from('portfolio_projects').delete().neq('title', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (dreamArchive.length > 0) {
           const cleanArchives = dreamArchive.map((p, i) => ({
@@ -236,7 +235,7 @@ export default function AdminDashboard() {
         }
 
       } else if (activeModule === 'Data Analyst') {
-        await supabase.from('data_analyst').update({ performance_counters: analystStats, experience_roles: analystRoles, technical_competencies: analystSkills, software_ecosystem: analystEcosystem, future_roadmap: analystRoadmap, portfolio_dashboards: portfolioDashboards, portfolio_reports: portfolioReports, portfolio_automations: portfolioAutomations, portfolio_case_studies: portfolioCaseStudies, portfolio_projects: portfolioProjects }).eq('id', 1);
+        await supabase.from('data_analyst').update({ performance_counters: analystStats, experience_roles: analystRoles, technical_competencies: analystSkills, software_ecosystem: analystEcosystem, future_roadmap: portfolioDashboards, portfolio_dashboards: portfolioDashboards, portfolio_reports: portfolioReports, portfolio_automations: portfolioAutomations, portfolio_case_studies: portfolioCaseStudies, portfolio_projects: portfolioProjects }).eq('id', 1);
       
       } else if (activeModule === 'AI Developer') {
         await supabase.from('ai_developer').update({ metrics_counters: aiStats, development_timeline: aiTimeline, ai_partners: aiEcosystemState, architecture_stack: aiArchitecture, engineering_showcase: aiShowcase, github_sync: aiGithub }).eq('id', 1);
@@ -272,27 +271,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleArchiveMessage = async (id, idx) => {
-    if(!id) return;
-    try {
-      await supabase.from('contact_messages').delete().eq('id', id);
-      const copy = [...messagesLog];
-      copy.splice(idx, 1);
-      setMessagesLog(copy);
-    } catch(err) { console.error("Message Archive Error", err); }
-  };
-
-  const handleDeleteMedia = async (id, idx) => {
-    if(!id) return;
-    try {
-      await supabase.from('media_library').delete().eq('id', id);
-      const copy = [...mediaFiles];
-      copy.splice(idx, 1);
-      setMediaFiles(copy);
-    } catch(err) { console.error("Media Deletion Error", err); }
-  };
-
-  // EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE
   const handleDropdownPipelineUpload = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
@@ -349,6 +327,26 @@ export default function AdminDashboard() {
     setDreamArchive(currentArchiveStack);
     e.target.value = null; 
     alert(`🟢 PIPELINE SUCCESS!\nNa-upload at nagawaan ng card ang ${importedSuccess} asset para sa subtitle na "${bulkPipelineSub}".\n\n⚠️ HUWAG KALIMUTAN: Pindot po sa malaking "SAVE MODULE" sa pinakataas para pumasok ito sa live site website natin!`);
+  };
+
+  const handleArchiveMessage = async (id, idx) => {
+    if(!id) return;
+    try {
+      await supabase.from('contact_messages').delete().eq('id', id);
+      const copy = [...messagesLog];
+      copy.splice(idx, 1);
+      setMessagesLog(copy);
+    } catch(err) { console.error("Message Archive Error", err); }
+  };
+
+  const handleDeleteMedia = async (id, idx) => {
+    if(!id) return;
+    try {
+      await supabase.from('media_library').delete().eq('id', id);
+      const copy = [...mediaFiles];
+      copy.splice(idx, 1);
+      setMediaFiles(copy);
+    } catch(err) { console.error("Media Deletion Error", err); }
   };
 
   const handleFileUploadLive = async (e) => {
@@ -484,7 +482,7 @@ export default function AdminDashboard() {
                   <p className="text-[10px] text-zinc-500 mt-1 font-mono">Upload images/documents to copy URLs into your dynamic fields.</p>
                 </div>
                 <div className="relative">
-                  <input type="file" multiple onChange={handleFileUploadLive} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf,video/*,.xlsx,.xls,.csv" />
+                  <input type="file" multiple onChange={handleFileUploadLive} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf,video/*" />
                   <button className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md">
                     <UploadCloud size={14} /> RAW UPLOAD
                   </button>
@@ -716,7 +714,7 @@ export default function AdminDashboard() {
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Project", client_name: "", description: "", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> MANUAL ADD</button>
+                    <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Project", client_name: "Independent Project", description: "Visual archive showcase item.", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> MANUAL ADD</button>
                   </div>
                 </div>
 
@@ -752,6 +750,7 @@ export default function AdminDashboard() {
 
                     return (
                       <div key={project.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative flex gap-3 items-center">
+                        {/* VISUAL THUMBNAIL PREVIEW BOX (WITH VIDEO SUPPORT) */}
                         <div className="w-16 h-16 shrink-0 rounded-lg bg-black border border-zinc-800 overflow-hidden flex items-center justify-center relative">
                           {project.featured_image_url ? (
                             isVid ? (
@@ -788,7 +787,7 @@ export default function AdminDashboard() {
                             <input type="text" value={project.client_name} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500" placeholder="Client Name" />
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                            <input type="text" value={project.featured_image_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'featured_image_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Featured Image/Video URL" />
+                            <input type="text" value={project.featured_image_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'featured_image_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Featured Image URL" />
                             <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Flipbook Settings OR Video URL" />
                             <input type="text" value={project.description} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'description', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Description Meta..." />
                           </div>
