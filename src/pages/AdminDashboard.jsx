@@ -218,6 +218,7 @@ export default function AdminDashboard() {
           await supabase.from('client_reviews').insert(cleanReviews);
         }
 
+        // ================= FIX 1: STAGGERED CREATED_AT TIMESTAMPS + CLIENT NAME / DESC RESTORED =================
         await supabase.from('portfolio_projects').delete().neq('title', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (dreamArchive.length > 0) {
           const cleanArchives = dreamArchive.map((p, i) => ({
@@ -228,14 +229,14 @@ export default function AdminDashboard() {
             description: p.description || "", 
             featured_image_url: p.featured_image_url || "",
             video_url: p.video_url || "",
-            created_at: new Date(Date.now() - i * 1000).toISOString()
+            created_at: new Date(Date.now() - i * 1000).toISOString() // <--- SMART SORTING FIX (Staggered Timestamps)
           }));
           const { error: archiveError } = await supabase.from('portfolio_projects').insert(cleanArchives);
           if (archiveError) throw archiveError;
         }
 
       } else if (activeModule === 'Data Analyst') {
-        await supabase.from('data_analyst').update({ performance_counters: analystStats, experience_roles: analystRoles, technical_competencies: analystSkills, software_ecosystem: analystEcosystem, future_roadmap: portfolioDashboards, portfolio_dashboards: portfolioDashboards, portfolio_reports: portfolioReports, portfolio_automations: portfolioAutomations, portfolio_case_studies: portfolioCaseStudies, portfolio_projects: portfolioProjects }).eq('id', 1);
+        await supabase.from('data_analyst').update({ performance_counters: analystStats, experience_roles: analystRoles, technical_competencies: analystSkills, software_ecosystem: analystEcosystem, future_roadmap: analystRoadmap, portfolio_dashboards: portfolioDashboards, portfolio_reports: portfolioReports, portfolio_automations: portfolioAutomations, portfolio_case_studies: portfolioCaseStudies, portfolio_projects: portfolioProjects }).eq('id', 1);
       
       } else if (activeModule === 'AI Developer') {
         await supabase.from('ai_developer').update({ metrics_counters: aiStats, development_timeline: aiTimeline, ai_partners: aiEcosystemState, architecture_stack: aiArchitecture, engineering_showcase: aiShowcase, github_sync: aiGithub }).eq('id', 1);
@@ -271,6 +272,27 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleArchiveMessage = async (id, idx) => {
+    if(!id) return;
+    try {
+      await supabase.from('contact_messages').delete().eq('id', id);
+      const copy = [...messagesLog];
+      copy.splice(idx, 1);
+      setMessagesLog(copy);
+    } catch(err) { console.error("Message Archive Error", err); }
+  };
+
+  const handleDeleteMedia = async (id, idx) => {
+    if(!id) return;
+    try {
+      await supabase.from('media_library').delete().eq('id', id);
+      const copy = [...mediaFiles];
+      copy.splice(idx, 1);
+      setMediaFiles(copy);
+    } catch(err) { console.error("Media Deletion Error", err); }
+  };
+
+  // EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE
   const handleDropdownPipelineUpload = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
@@ -327,26 +349,6 @@ export default function AdminDashboard() {
     setDreamArchive(currentArchiveStack);
     e.target.value = null; 
     alert(`🟢 PIPELINE SUCCESS!\nNa-upload at nagawaan ng card ang ${importedSuccess} asset para sa subtitle na "${bulkPipelineSub}".\n\n⚠️ HUWAG KALIMUTAN: Pindot po sa malaking "SAVE MODULE" sa pinakataas para pumasok ito sa live site website natin!`);
-  };
-
-  const handleArchiveMessage = async (id, idx) => {
-    if(!id) return;
-    try {
-      await supabase.from('contact_messages').delete().eq('id', id);
-      const copy = [...messagesLog];
-      copy.splice(idx, 1);
-      setMessagesLog(copy);
-    } catch(err) { console.error("Message Archive Error", err); }
-  };
-
-  const handleDeleteMedia = async (id, idx) => {
-    if(!id) return;
-    try {
-      await supabase.from('media_library').delete().eq('id', id);
-      const copy = [...mediaFiles];
-      copy.splice(idx, 1);
-      setMediaFiles(copy);
-    } catch(err) { console.error("Media Deletion Error", err); }
   };
 
   const handleFileUploadLive = async (e) => {
@@ -482,7 +484,7 @@ export default function AdminDashboard() {
                   <p className="text-[10px] text-zinc-500 mt-1 font-mono">Upload images/documents to copy URLs into your dynamic fields.</p>
                 </div>
                 <div className="relative">
-                  <input type="file" multiple onChange={handleFileUploadLive} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf,video/*" />
+                  <input type="file" multiple onChange={handleFileUploadLive} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*,application/pdf,video/*,.xlsx,.xls,.csv" />
                   <button className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md">
                     <UploadCloud size={14} /> RAW UPLOAD
                   </button>
@@ -746,51 +748,30 @@ export default function AdminDashboard() {
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar mt-4">
                   {dreamArchive.map((project, idx) => {
                     const selectedCatObj = creationsCategories.find(c => c.category === project.category);
-                    const isVid = isVideoUrl(project.featured_image_url) || isVideoUrl(project.video_url);
 
                     return (
-                      <div key={project.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative flex gap-3 items-center">
-                        {/* VISUAL THUMBNAIL PREVIEW BOX (WITH VIDEO SUPPORT) */}
-                        <div className="w-16 h-16 shrink-0 rounded-lg bg-black border border-zinc-800 overflow-hidden flex items-center justify-center relative">
-                          {project.featured_image_url ? (
-                            isVid ? (
-                              <video src={`${project.featured_image_url}#t=0.1`} className="w-full h-full object-cover pointer-events-none" preload="metadata" muted playsInline />
-                            ) : (
-                              <img src={project.featured_image_url} alt="preview" className="w-full h-full object-cover" />
-                            )
-                          ) : (
-                            <ImageIcon size={20} className="text-zinc-700" />
-                          )}
-                          {isVid && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
-                              <Video size={14} className="text-cyan-400" />
-                            </div>
-                          )}
+                      <div key={project.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-2 relative">
+                        <button onClick={() => handleRemoveArrayItem(dreamArchive, setDreamArchive, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                        
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pr-6">
+                          <select value={project.category} onChange={(e) => {
+                              handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'category', e.target.value);
+                              handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', ''); 
+                            }} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 font-bold outline-none cursor-pointer">
+                            <option value="" disabled>Select Category...</option>
+                            {creationsCategories.map(c => <option key={c.id} value={c.category}>{c.category}</option>)}
+                          </select>
+                          <select value={project.subtitle} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 outline-none cursor-pointer" disabled={!project.category}>
+                            <option value="" disabled>Select Subtitle...</option>
+                            {selectedCatObj && selectedCatObj.items.map(sub => <option key={sub} value={sub}>{sub}</option>)}
+                          </select>
+                          <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
+                          <input type="text" value={project.client_name} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500" placeholder="Client Name" />
                         </div>
-
-                        <div className="flex-1 space-y-2">
-                          <button onClick={() => handleRemoveArrayItem(dreamArchive, setDreamArchive, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
-                          
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pr-6">
-                            <select value={project.category} onChange={(e) => {
-                                handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'category', e.target.value);
-                                handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', ''); 
-                              }} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 font-bold outline-none cursor-pointer">
-                              <option value="" disabled>Select Category...</option>
-                              {creationsCategories.map(c => <option key={c.id} value={c.category}>{c.category}</option>)}
-                            </select>
-                            <select value={project.subtitle} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 outline-none cursor-pointer" disabled={!project.category}>
-                              <option value="" disabled>Select Subtitle...</option>
-                              {selectedCatObj && selectedCatObj.items.map(sub => <option key={sub} value={sub}>{sub}</option>)}
-                            </select>
-                            <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
-                            <input type="text" value={project.client_name} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500" placeholder="Client Name" />
-                          </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                            <input type="text" value={project.featured_image_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'featured_image_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Featured Image URL" />
-                            <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Flipbook Settings OR Video URL" />
-                            <input type="text" value={project.description} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'description', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Description Meta..." />
-                          </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <input type="text" value={project.featured_image_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'featured_image_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Featured Image URL" />
+                          <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Flipbook Settings OR Video URL" />
+                          <input type="text" value={project.description} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'description', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Description Meta..." />
                         </div>
                       </div>
                     );
