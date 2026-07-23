@@ -22,20 +22,21 @@ const sidebarModules = [
 ];
 
 // =========================================================================
-// CENTRALIZED CATEGORY DATA PARA SA DROPDOWNS
+// CENTRALIZED CATEGORY DATA PARA SA DROPDOWNS (UPDATED)
 // =========================================================================
 const creationsCategories = [
   { id: 1, category: "Branding & Identity", items: ["Logo Design", "Brand Guidelines", "Visual Identity", "Brand Refresh", "Brand Assets", "Business Identity Systems"] },
-  { id: 2, category: "Graphic Design", items: ["Marketing Graphics", "Corporate Graphics", "Advertising Materials", "Print Design", "Creative Campaigns", "Promotional Graphics"] },
+  { id: 2, category: "Graphic Design", items: ["Instructional Posters", "Corporate Graphics", "Advertising Materials", "Infographics", "Creative Campaigns", "Promotional Graphics"] },
   { id: 3, category: "Social Media Design", items: ["Facebook Graphics", "Instagram Posts", "Carousel Posts", "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"] },
   { id: 4, category: "Marketing Materials", items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Product Sheets", "Sales Kits", "Business Presentations"] },
-  { id: 5, category: "Motion Graphics", items: ["Animated Ads", "Product Promotions", "Marketing Videos", "Social Media Motion Graphics", "Explainer Videos", "Logo Animation", "Video Thumbnails"] },
-  { id: 6, category: "Web Graphics", items: ["Website Banners", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"] },
-  { id: 7, category: "Photo Editing", items: ["Photo Retouching", "Photo Restoration", "Watercolor Portraits", "Background Removal", "Image Manipulation", "Color Correction", "Composite Editing"] },
-  { id: 8, category: "Apparel Design", items: ["Shirt Designs", "Streetwear Graphics", "Mockups", "Print-ready Artwork"] },
-  { id: 9, category: "Print Production", items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards"] },
-  { id: 10, category: "Packaging", items: ["Packaging Graphics", "Clothing Labels", "Product Labels"] },
-  { id: 11, category: "Illustration", items: ["Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"] }
+  { id: 5, category: "Video Editing", items: ["Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", "Podcast Editing", "Testimonial Videos", "Tutorial Videos"] },
+  { id: 6, category: "Motion Graphics", items: ["Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"] },
+  { id: 7, category: "Web Graphics", items: ["eCommerce Graphics", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"] },
+  { id: 8, category: "Photo Editing", items: ["Photo Retouching", "Photo Restoration", "Watercolor Portraits", "Background Removal", "Image Manipulation", "Color Correction", "Composite Editing"] },
+  { id: 9, category: "Apparel Design", items: ["Shirt Designs", "Streetwear Graphics", "Mockups", "Print-ready Artwork"] },
+  { id: 10, category: "Print Production", items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards"] },
+  { id: 11, category: "Packaging", items: ["Packaging Graphics", "Clothing Labels", "Product Labels"] },
+  { id: 12, category: "Illustration", items: ["Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"] }
 ];
 
 // =========================================================================
@@ -217,17 +218,18 @@ export default function AdminDashboard() {
           await supabase.from('client_reviews').insert(cleanReviews);
         }
 
+        // ================= FIX 1: STAGGERED CREATED_AT TIMESTAMPS + CLIENT NAME / DESC RESTORED =================
         await supabase.from('portfolio_projects').delete().neq('title', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (dreamArchive.length > 0) {
           const cleanArchives = dreamArchive.map((p, i) => ({
             category: p.category || "",
             subtitle: p.subtitle || "",
             title: p.title || "",
-            client_name: p.client_name || "", // Walang default override, kung ano tinype mo yun i-save
-            description: p.description || "", // Walang default override, kung ano tinype mo yun i-save
+            client_name: p.client_name || "", 
+            description: p.description || "", 
             featured_image_url: p.featured_image_url || "",
             video_url: p.video_url || "",
-            created_at: new Date(Date.now() - i * 1000).toISOString() // <--- SMART SORTING FIX (Staggered Timestamps)
+            created_at: new Date(Date.now() - i * 1000).toISOString()
           }));
           const { error: archiveError } = await supabase.from('portfolio_projects').insert(cleanArchives);
           if (archiveError) throw archiveError;
@@ -416,9 +418,7 @@ export default function AdminDashboard() {
   return (
     <div className="flex h-screen bg-[#09090b] text-zinc-200 overflow-hidden font-sans antialiased">
       
-      {isSidebarOpen && (
-        <div className="fixed inset-0 bg-black/80 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />
-      )}
+      {isSidebarOpen && <div className="fixed inset-0 bg-black/80 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />}
 
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#09090b] border-r border-zinc-900 flex flex-col justify-between transition-transform duration-300 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <button onClick={() => setIsSidebarOpen(false)} className="absolute top-6 right-4 md:hidden text-zinc-500 hover:text-white"><X size={20} /></button>
