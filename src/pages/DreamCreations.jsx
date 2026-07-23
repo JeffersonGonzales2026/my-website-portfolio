@@ -469,9 +469,10 @@ export default function DreamCreations() {
     setTimeout(() => { scrollToSection('portfolio-directory'); }, 350); 
   };
 
+  // ================= FIX: SCROLL TO COVER LOGIC ONLY =================
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(subtitleName); 
+    setActivePortfolioSubtitle(null); 
     
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
@@ -861,9 +862,9 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= FIX: CSS COLUMNS MASONRY LAYOUT (gap-1 space-y-1) ================= */}
+              {/* ================= FIX: CSS COLUMNS MASONRY LAYOUT (gap-0.5 space-y-0.5) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' ? (
-                <div className="columns-2 sm:columns-3 lg:columns-4 gap-1 space-y-1">
+                <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5">
                   {visualProjects.length > 0 ? (
                     visualProjects.map((project) => (
                       <div 
@@ -1151,23 +1152,23 @@ export default function DreamCreations() {
 
             {/* Zoom Controls */}
             <div 
-              className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[500] flex items-center gap-4 bg-black/80 backdrop-blur-md px-5 py-2 rounded-full border border-white/10"
+              className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[500] flex items-center gap-4 bg-black/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10"
               onClick={(e) => e.stopPropagation()}
             >
               <button 
                 onClick={() => setZoomScale(prev => Math.max(prev - 0.5, 1))}
-                className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/20 rounded-full text-xl cursor-pointer"
+                className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"
               >
-                −
+                <span className="text-2xl leading-none -mt-0.5">−</span>
               </button>
               <span className="text-xs font-mono font-bold text-white/80 w-12 text-center select-none">
                 {Math.round(zoomScale * 100)}%
               </span>
               <button 
                 onClick={() => setZoomScale(prev => Math.min(prev + 0.5, 4))}
-                className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/20 rounded-full text-xl cursor-pointer"
+                className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"
               >
-                +
+                <span className="text-2xl leading-none -mt-0.5">+</span>
               </button>
             </div>
 
@@ -1179,6 +1180,7 @@ export default function DreamCreations() {
               transition={{ duration: 0.3, ease: "easeOut" }}
               className="relative w-full h-full flex items-center justify-center pointer-events-none"
             >
+              {/* Swipe Fade Transition & Zoom Image */}
               <AnimatePresence mode="wait">
                 {isVideo(previewImage.featured_image_url) ? (
                   <motion.video 
@@ -1191,14 +1193,16 @@ export default function DreamCreations() {
                     className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing relative z-10 pointer-events-auto" 
                     autoPlay controls playsInline loop
                     onClick={(e) => { e.stopPropagation(); }} 
+                    /* TOUCH EVENTS PARA SA PINCH TO ZOOM */
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
+                    /* DRAG EVENTS (Kung naka-zoom, free panning. Kung hindi, X-axis swipe lang) */
                     drag={zoomScale > 1 ? true : "x"}
-                    dragConstraints={zoomScale > 1 ? { left: -500, right: 500, top: -500, bottom: 500 } : { left: 0, right: 0 }}
+                    dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }}
                     dragElastic={zoomScale > 1 ? 0.2 : 0.7}
                     onDragEnd={(e, { offset }) => {
-                      if (zoomScale > 1) return;
+                      if (zoomScale > 1) return; // Wag lumipat sa next video kapag naka-zoom in at nagda-drag
                       if (offset.x < -70) handleNextImage(e);
                       else if (offset.x > 70) handlePrevImage(e);
                     }}
@@ -1214,14 +1218,16 @@ export default function DreamCreations() {
                     className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing select-none pointer-events-auto relative z-10" 
                     alt="Preview" 
                     onClick={(e) => { e.stopPropagation(); }} 
+                    /* TOUCH EVENTS PARA SA PINCH TO ZOOM */
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
+                    /* DRAG EVENTS (Kung naka-zoom, free panning. Kung hindi, X-axis swipe lang) */
                     drag={zoomScale > 1 ? true : "x"}
-                    dragConstraints={zoomScale > 1 ? { left: -500, right: 500, top: -500, bottom: 500 } : { left: 0, right: 0 }}
+                    dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }}
                     dragElastic={zoomScale > 1 ? 0.2 : 0.7}
                     onDragEnd={(e, { offset }) => {
-                      if (zoomScale > 1) return; 
+                      if (zoomScale > 1) return; // Wag lumipat sa next picture kapag naka-zoom in at nagda-drag
                       if (offset.x < -70) handleNextImage(e);
                       else if (offset.x > 70) handlePrevImage(e);
                     }}
