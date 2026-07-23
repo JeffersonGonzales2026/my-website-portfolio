@@ -223,8 +223,8 @@ export default function AdminDashboard() {
             category: p.category || "",
             subtitle: p.subtitle || "",
             title: p.title || "",
-            client_name: p.client_name || "Independent Project", // Default restored logic
-            description: p.description || "Visual archive showcase item.", // Default restored logic
+            client_name: p.client_name || "", // Walang default override, kung ano tinype mo yun i-save
+            description: p.description || "", // Walang default override, kung ano tinype mo yun i-save
             featured_image_url: p.featured_image_url || "",
             video_url: p.video_url || "",
             created_at: new Date(Date.now() - i * 1000).toISOString() // <--- SMART SORTING FIX (Staggered Timestamps)
@@ -716,8 +716,7 @@ export default function AdminDashboard() {
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    {/* MANUAL ADD: Client Name at Description ay tatanggap ng default sa background, pero hindi na ipapakita sa input UI mamaya */}
-                    <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Project", client_name: "Independent Project", description: "Visual archive showcase item.", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> MANUAL ADD</button>
+                    <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Project", client_name: "", description: "", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> MANUAL ADD</button>
                   </div>
                 </div>
 
@@ -773,8 +772,7 @@ export default function AdminDashboard() {
                         <div className="flex-1 space-y-2">
                           <button onClick={() => handleRemoveArrayItem(dreamArchive, setDreamArchive, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                           
-                          {/* FIX 2: TINANGGAL ANG CLIENT NAME AT DESCRIPTION SA UI */}
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pr-6">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pr-6">
                             <select value={project.category} onChange={(e) => {
                                 handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'category', e.target.value);
                                 handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', ''); 
@@ -787,13 +785,13 @@ export default function AdminDashboard() {
                               {selectedCatObj && selectedCatObj.items.map(sub => <option key={sub} value={sub}>{sub}</option>)}
                             </select>
                             <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
+                            <input type="text" value={project.client_name} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500" placeholder="Client Name" />
                           </div>
-                          
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                             <input type="text" value={project.featured_image_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'featured_image_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Featured Image/Video URL" />
                             <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Flipbook Settings OR Video URL" />
+                            <input type="text" value={project.description} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'description', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Description Meta..." />
                           </div>
-
                         </div>
                       </div>
                     );
@@ -828,7 +826,7 @@ export default function AdminDashboard() {
                   <div key={role.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative">
                     <button onClick={() => handleRemoveArrayItem(analystRoles, setRoles, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pr-6">
-                      <input type="text" value={role.statusBadge} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'statusBadge', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-emerald-400" placeholder="Badge" />
+                      <input type="text" value={role.statusBadge} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'statusBadge', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-emerald-400" placeholder="Badge (Current Role)" />
                       <input type="text" value={role.title} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Role Title" />
                       <input type="text" value={role.company} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'company', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-300" placeholder="Company" />
                       <input type="text" value={role.logoUrl} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'logoUrl', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Company Logo URL" />
