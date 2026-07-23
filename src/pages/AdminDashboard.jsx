@@ -223,11 +223,11 @@ export default function AdminDashboard() {
             category: p.category || "",
             subtitle: p.subtitle || "",
             title: p.title || "",
-            client_name: p.client_name || "",
-            description: p.description || "",
+            client_name: p.client_name || "Independent Project", // Default restored logic
+            description: p.description || "Visual archive showcase item.", // Default restored logic
             featured_image_url: p.featured_image_url || "",
             video_url: p.video_url || "",
-            created_at: new Date(Date.now() - i * 1000).toISOString()
+            created_at: new Date(Date.now() - i * 1000).toISOString() // <--- SMART SORTING FIX (Staggered Timestamps)
           }));
           const { error: archiveError } = await supabase.from('portfolio_projects').insert(cleanArchives);
           if (archiveError) throw archiveError;
@@ -716,7 +716,8 @@ export default function AdminDashboard() {
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Project", client_name: "", description: "", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> MANUAL ADD</button>
+                    {/* MANUAL ADD: Client Name at Description ay tatanggap ng default sa background, pero hindi na ipapakita sa input UI mamaya */}
+                    <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Project", client_name: "Independent Project", description: "Visual archive showcase item.", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> MANUAL ADD</button>
                   </div>
                 </div>
 
@@ -772,7 +773,8 @@ export default function AdminDashboard() {
                         <div className="flex-1 space-y-2">
                           <button onClick={() => handleRemoveArrayItem(dreamArchive, setDreamArchive, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                           
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pr-6">
+                          {/* FIX 2: TINANGGAL ANG CLIENT NAME AT DESCRIPTION SA UI */}
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pr-6">
                             <select value={project.category} onChange={(e) => {
                                 handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'category', e.target.value);
                                 handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'subtitle', ''); 
@@ -785,13 +787,13 @@ export default function AdminDashboard() {
                               {selectedCatObj && selectedCatObj.items.map(sub => <option key={sub} value={sub}>{sub}</option>)}
                             </select>
                             <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
-                            <input type="text" value={project.client_name} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'client_name', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-500" placeholder="Client Name" />
                           </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <input type="text" value={project.featured_image_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'featured_image_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Featured Image/Video URL" />
                             <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Flipbook Settings OR Video URL" />
-                            <input type="text" value={project.description} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'description', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Description Meta..." />
                           </div>
+
                         </div>
                       </div>
                     );
@@ -826,7 +828,7 @@ export default function AdminDashboard() {
                   <div key={role.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative">
                     <button onClick={() => handleRemoveArrayItem(analystRoles, setRoles, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pr-6">
-                      <input type="text" value={role.statusBadge} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'statusBadge', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-emerald-400" placeholder="Badge (Current Role)" />
+                      <input type="text" value={role.statusBadge} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'statusBadge', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-emerald-400" placeholder="Badge" />
                       <input type="text" value={role.title} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Role Title" />
                       <input type="text" value={role.company} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'company', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-300" placeholder="Company" />
                       <input type="text" value={role.logoUrl} onChange={(e) => handleUpdateArrayField(analystRoles, setRoles, idx, 'logoUrl', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-zinc-500" placeholder="Company Logo URL" />
@@ -853,7 +855,7 @@ export default function AdminDashboard() {
                     <div key={catIdx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/10 space-y-2 relative pr-8">
                       <button onClick={() => handleRemoveArrayItem(analystSkills, setAnalystSkills, catIdx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                       <input type="text" value={section.category} onChange={(e) => handleUpdateArrayField(analystSkills, setAnalystSkills, catIdx, 'category', e.target.value)} className="bg-transparent text-xs font-mono text-white font-bold outline-none border-b border-zinc-800 pb-1 mb-2" placeholder="Cluster Name" />
-                      <textarea value={section.skills} onChange={(e) => handleUpdateArrayField(analystSkills, setAnalystSkills, catIdx, 'skills', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-300 font-mono h-16 resize-none" placeholder="Comma separated skills..." />
+                      <textarea value={section.skills} onChange={(e) => handleUpdateArrayField(analystSkills, setAnalystSkills, catIdx, 'skills', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-300 font-mono h-16 resize-none" placeholder="Comma separated strings..." />
                     </div>
                   ))}
                 </div>
