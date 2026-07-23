@@ -820,7 +820,7 @@ export default function DreamCreations() {
                       return (
                         <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
                           {isVideo(coverImage) ? (
-                            <video key={coverImage} src={coverImage} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" autoPlay loop muted playsInline onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                            <video key={coverImage} src={`${coverImage}#t=0.1`} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                           ) : (
                             <img key={coverImage} src={coverImage} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                           )}
@@ -872,14 +872,26 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project); 
                         }}
+                        onMouseEnter={(e) => {
+                          const vid = e.currentTarget.querySelector('video');
+                          if (vid) vid.play();
+                        }}
+                        onMouseLeave={(e) => {
+                          const vid = e.currentTarget.querySelector('video');
+                          if (vid) {
+                            vid.pause();
+                            vid.currentTime = 0.1;
+                          }
+                        }}
                         className="relative flex-auto w-[45%] md:w-[30%] lg:w-[22%] cursor-pointer group overflow-hidden border border-white/5 bg-black rounded-none"
                       >
                         {project.featured_image_url ? ( 
                           isVideo(project.featured_image_url) ? (
                             <video 
-                              src={project.featured_image_url} 
+                              key={project.featured_image_url} 
+                              src={`${project.featured_image_url}#t=0.1`} 
                               className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" 
-                              autoPlay loop muted playsInline
+                              loop muted playsInline preload="metadata"
                             />
                           ) : (
                             <img 
@@ -929,7 +941,7 @@ export default function DreamCreations() {
                          <div className="aspect-video relative overflow-hidden bg-black/60">
                            {project.featured_image_url ? ( 
                              isVideo(project.featured_image_url) ? (
-                               <video key={project.featured_image_url} src={project.featured_image_url} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline />
+                               <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
                              ) : (
                                <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
                              )
@@ -1143,7 +1155,7 @@ export default function DreamCreations() {
             >
               <button 
                 onClick={() => setZoomScale(prev => Math.max(prev - 0.5, 1))}
-                className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/20 rounded-full text-xl"
+                className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/20 rounded-full text-xl cursor-pointer"
               >
                 −
               </button>
@@ -1152,13 +1164,13 @@ export default function DreamCreations() {
               </span>
               <button 
                 onClick={() => setZoomScale(prev => Math.min(prev + 0.5, 4))}
-                className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/20 rounded-full text-xl"
+                className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/20 rounded-full text-xl cursor-pointer"
               >
                 +
               </button>
             </div>
 
-            {/* Smooth Zoom Wrapper for Close/Open (Prevents 'putol' cutoff, walang layoutId) */}
+            {/* Smooth Zoom Wrapper for Close/Open */}
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -1166,7 +1178,6 @@ export default function DreamCreations() {
               transition={{ duration: 0.3, ease: "easeOut" }}
               className="relative w-full h-full flex items-center justify-center pointer-events-none"
             >
-              {/* Swipe Fade Transition */}
               <AnimatePresence mode="wait">
                 {isVideo(previewImage.featured_image_url) ? (
                   <motion.video 
