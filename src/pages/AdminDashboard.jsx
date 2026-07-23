@@ -64,13 +64,13 @@ export default function AdminDashboard() {
     initializeAdmin();
   }, [navigate]);
 
-  // HOME ENGINE
+  // HOME ENGINE STATE
   const [homeHeroPhoto, setHomeHeroPhoto] = useState("/images/profile.jpg");
   const [homeStats, setHomeStats] = useState([]);
   const [homeSkills, setHomeSkills] = useState([]);
   const [homeTimeline, setHomeTimeline] = useState([]);
 
-  // DREAM CREATIONS
+  // DREAM CREATIONS STATE
   const [dreamBanner, setDreamBanner] = useState("/Logo Banner.png");
   const [dreamFounderPhoto, setDreamFounderPhoto] = useState("/images/jefferson.jpg");
   const [dreamFounderExp, setDreamFounderExp] = useState(10);
@@ -85,7 +85,7 @@ export default function AdminDashboard() {
   const [bulkPipelineCat, setBulkTargetCat] = useState("");
   const [bulkPipelineSub, setBulkTargetSub] = useState("");
 
-  // DATA ANALYST
+  // DATA ANALYST STATE
   const [analystStats, setAnalystStats] = useState([]);
   const [analystRoles, setRoles] = useState([]);
   const [analystSkills, setAnalystSkills] = useState([]);
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
   const [portfolioCaseStudies, setPortfolioCaseStudies] = useState([]);
   const [portfolioProjects, setPortfolioProjects] = useState([]);
 
-  // AI DEVELOPER
+  // AI DEVELOPER STATE
   const [aiStats, setAiStats] = useState([]);
   const [aiTimeline, setAiTimeline] = useState([]);
   const [aiEcosystemState, setAiEcosystemState] = useState([]);
@@ -105,7 +105,7 @@ export default function AdminDashboard() {
   const [aiShowcase, setAiShowcase] = useState([]);
   const [aiGithub, setAiGithub] = useState({});
 
-  // CONTACT & MEDIA
+  // CONTACT & MEDIA STATE
   const [dynamicResumes, setDynamicResumes] = useState([]); 
   const [contactPortfolioUrl, setContactPortfolioUrl] = useState("");
   const [contactPlatforms, setContactPlatforms] = useState([]);
@@ -643,11 +643,17 @@ export default function AdminDashboard() {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-900 pb-3">
                   <div>
                     <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Project Archive Matrix Registries</h4>
-                    <p className="text-[10px] text-zinc-500 font-mono mt-0.5">Mabilisang paraan: Pumili ng category/subtitle at gamitin ang Bulk Auto-Import sa ibaba.</p>
+                    <p className="text-[10px] text-zinc-500 font-mono mt-0.5">Mabilisang paraan: Gamitin ang Bulk Auto-Import sa kanan para iwas copy-paste.</p>
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Project", client_name: "Independent Project", description: "Visual archive showcase item.", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> MANUAL ADD</button>
+                    <div className="relative">
+                      <input type="file" multiple onChange={handleDropdownPipelineUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" disabled={!bulkPipelineCat || !bulkPipelineSub} />
+                      <button type="button" disabled={!bulkPipelineCat || !bulkPipelineSub} className="px-3 py-1.5 text-[10px] font-mono rounded-lg bg-blue-600 hover:bg-blue-500 border border-blue-500 text-white font-bold flex items-center gap-1 shadow-md disabled:opacity-30">
+                        <UploadCloud size={12} /> 🚀 BULK AUTO-IMPORT
+                      </button>
+                    </div>
+                    <button onClick={() => setDreamArchive([{ category: "", subtitle: "", title: "New Card Title", client_name: "Independent Project", description: "Visual archive showcase item.", featured_image_url: "", video_url: "" }, ...dreamArchive])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700"><Plus size={12}/> MANUAL ADD</button>
                   </div>
                 </div>
 
@@ -668,15 +674,9 @@ export default function AdminDashboard() {
                       ))}
                     </select>
                   </div>
-                  <div className="relative mt-2 md:mt-0 md:ml-auto">
-                    <input type="file" multiple onChange={handleDropdownPipelineUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" disabled={!bulkPipelineCat || !bulkPipelineSub} />
-                    <button type="button" disabled={!bulkPipelineCat || !bulkPipelineSub} className="w-full md:w-auto px-4 py-2 text-[10px] font-mono rounded-lg bg-blue-600 hover:bg-blue-500 border border-blue-500 text-white font-bold flex items-center justify-center gap-1.5 shadow-md disabled:opacity-30">
-                      <UploadCloud size={14} /> 🚀 BULK AUTO-IMPORT
-                    </button>
-                  </div>
                 </div>
 
-                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar mt-4">
+                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                   {dreamArchive.map((project, idx) => {
                     const selectedCatObj = creationsCategories.find(c => c.category === project.category);
                     return (
@@ -702,6 +702,7 @@ export default function AdminDashboard() {
                           <input type="text" value={project.video_url} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'video_url', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Flipbook Settings (prefix,pages,ext) OR Video URL" />
                           <input type="text" value={project.description} onChange={(e) => handleUpdateArrayField(dreamArchive, setDreamArchive, idx, 'description', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Description Meta..." />
                         </div>
+
                       </div>
                     );
                   })}
@@ -846,6 +847,7 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               </div>
+
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Development Chronology Flow</h4>
