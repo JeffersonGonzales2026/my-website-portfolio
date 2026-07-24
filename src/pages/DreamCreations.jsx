@@ -861,7 +861,21 @@ export default function DreamCreations() {
               </button>
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
-
+              {/* ================= ADDED: WATERCOLOR PORTRAITS DESCRIPTION ================= */}
+              {activePortfolioSubtitle === 'Watercolor Portraits' && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-8 p-5 rounded-2xl bg-[#1095d2]/10 border border-[#1095d2]/30 backdrop-blur-md max-w-4xl"
+                >
+                  <div className="flex items-start gap-3">
+                    <Info className="text-[#1095d2] shrink-0 mt-0.5" size={20} />
+                    <p className="text-sm text-white/80 leading-relaxed">
+                      <strong className="text-white">Creative Process:</strong> Merging different raw images, enhancing picture quality, seamlessly combining images into a single, proportional composition, and applying watercolor filters. Some includes adjustments like changing body parts or clothing.
+                    </p>
+                  </div>
+                </motion.div>
+              )}
               {/* ================= FIX: CSS COLUMNS MASONRY LAYOUT (gap-0.5 space-y-0.5) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' ? (
                 <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5">
