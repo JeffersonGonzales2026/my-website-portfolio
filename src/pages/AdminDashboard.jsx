@@ -303,7 +303,7 @@ export default function AdminDashboard() {
     } catch(err) { console.error("Media Deletion Error", err); }
   };
 
-  // EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE
+  // EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE (Dream Creations)
   const handleDropdownPipelineUpload = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
@@ -360,6 +360,61 @@ export default function AdminDashboard() {
     setDreamArchive(currentArchiveStack);
     e.target.value = null; 
     alert(`🟢 PIPELINE SUCCESS!\nNa-upload at nagawaan ng card ang ${importedSuccess} asset para sa subtitle na "${bulkPipelineSub}".\n\n⚠️ HUWAG KALIMUTAN: Pindot po sa malaking "SAVE MODULE" sa pinakataas para pumasok ito sa live site website natin!`);
+  };
+
+  // EXCLUSIVE BULK IMPORT FOR PHOTOGRAPHY (Visions Through the Lens)
+  const handlePhotographyBulkUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    alert(`🚀 Initializing Photography Bulk Upload: Injecting ${files.length} shots...`);
+
+    let importedSuccess = 0;
+    const currentPhotoStack = [...dreamPhotography];
+
+    for (const file of files) {
+      try {
+        const rawFileName = file.name;
+        const dotIndex = rawFileName.lastIndexOf('.');
+        const nameCleaned = dotIndex !== -1 ? rawFileName.substring(0, dotIndex) : rawFileName;
+        
+        const beautyTitle = nameCleaned
+          .replace(/[-_]+/g, ' ') 
+          .replace(/\s+/g, ' ')   
+          .trim();
+
+        const storageCleanName = `${Date.now()}_photo_${rawFileName.replace(/\s+/g, '').toLowerCase()}`;
+        
+        const { error: storageError } = await supabase.storage.from('portfolio_media').upload(storageCleanName, file);
+        if (storageError) throw storageError;
+
+        const { data: { publicUrl } } = supabase.storage.from('portfolio_media').getPublicUrl(storageCleanName);
+
+        await supabase.from('media_library').insert([{ file_name: rawFileName, file_url: publicUrl, type: 'image' }]);
+
+        // Generate dynamic placement for Polaroids
+        const rot = Math.floor(Math.random() * 20) - 10;
+        const x = Math.floor(Math.random() * 200) - 100;
+        const y = Math.floor(Math.random() * 100) - 50;
+
+        currentPhotoStack.unshift({
+          id: Date.now() + Math.random(),
+          url: publicUrl,
+          title: beautyTitle || "Captured Dream",
+          rot,
+          x,
+          y
+        });
+
+        importedSuccess++;
+      } catch (err) {
+        console.error("Photography bulk upload exception:", err);
+      }
+    }
+
+    setDreamPhotography(currentPhotoStack);
+    e.target.value = null; 
+    alert(`🟢 PIPELINE SUCCESS!\nNa-upload at nai-link ang ${importedSuccess} shot(s) bilang Polaroids.\n\n⚠️ HUWAG KALIMUTAN: Pindot po sa malaking "SAVE MODULE" sa pinakataas para ma-save sa live!`);
   };
 
   const handleFileUploadLive = async (e) => {
@@ -790,14 +845,22 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* ================= PHOTOGRAPHY MANAGER ================= */}
+              {/* ================= PHOTOGRAPHY MANAGER (NEW) ================= */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
-                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><Camera size={14}/> Visions Through the Lens (Photography)</h4>
-                  <button onClick={() => setDreamPhotography([{ id: Date.now(), url: "", title: "New Shot", rot: Math.floor(Math.random() * 20) - 10, x: Math.floor(Math.random() * 200) - 100, y: Math.floor(Math.random() * 100) - 50 }, ...dreamPhotography])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD SHOT</button>
+                  <div className="flex items-center gap-2">
+                    <div className="relative">
+                      <input type="file" multiple onChange={handlePhotographyBulkUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" />
+                      <button type="button" className="px-2.5 py-1 text-[10px] font-mono bg-blue-600 hover:bg-blue-500 border border-blue-500 rounded-lg text-white font-bold flex items-center gap-1 shadow-md cursor-pointer">
+                        <UploadCloud size={12}/> BULK UPLOAD SHOTS
+                      </button>
+                    </div>
+                    <button onClick={() => setDreamPhotography([{ id: Date.now(), url: "", title: "New Shot", rot: Math.floor(Math.random() * 20) - 10, x: Math.floor(Math.random() * 200) - 100, y: Math.floor(Math.random() * 100) - 50 }, ...dreamPhotography])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> MANUAL ADD</button>
+                  </div>
                 </div>
                 
-                <div className="space-y-4">
+                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                   {dreamPhotography.map((shot, idx) => (
                     <div key={shot.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative pr-8">
                       <button onClick={() => handleRemoveArrayItem(dreamPhotography, setDreamPhotography, idx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
@@ -1356,54 +1419,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </div>
-          )}
-
-          {/* ================= PHOTOGRAPHY MANAGER (NEW) ================= */}
-          {activeModule === 'Dream Creations' && (
-              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
-                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
-                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><Camera size={14}/> Visions Through the Lens (Photography)</h4>
-                  <button onClick={() => setDreamPhotography([{ id: Date.now(), url: "", title: "New Shot", rot: Math.floor(Math.random() * 20) - 10, x: Math.floor(Math.random() * 200) - 100, y: Math.floor(Math.random() * 100) - 50 }, ...dreamPhotography])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD SHOT</button>
-                </div>
-                
-                <div className="space-y-4">
-                  {dreamPhotography.map((shot, idx) => (
-                    <div key={shot.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative pr-8">
-                      <button onClick={() => handleRemoveArrayItem(dreamPhotography, setDreamPhotography, idx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Image URL (from Media Library)</label>
-                          <input type="text" value={shot.url} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'url', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-cyan-400" placeholder="https://..." />
-                        </div>
-                        <div>
-                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Polaroid Title</label>
-                          <input type="text" value={shot.title} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'title', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white font-bold" placeholder="Title" />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-3">
-                        <div>
-                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Rotation (deg)</label>
-                          <input type="number" value={shot.rot} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'rot', parseInt(e.target.value) || 0)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-center font-mono text-zinc-300" />
-                        </div>
-                        <div>
-                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">X Offset (px)</label>
-                          <input type="number" value={shot.x} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'x', parseInt(e.target.value) || 0)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-center font-mono text-zinc-300" />
-                        </div>
-                        <div>
-                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Y Offset (px)</label>
-                          <input type="number" value={shot.y} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'y', parseInt(e.target.value) || 0)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-center font-mono text-zinc-300" />
-                        </div>
-                      </div>
-
-                    </div>
-                  ))}
-                  {dreamPhotography.length === 0 && (
-                    <div className="text-[10px] text-zinc-600 font-mono italic text-center py-2">No photography shots added yet.</div>
-                  )}
-                </div>
-              </div>
           )}
 
         </div>
