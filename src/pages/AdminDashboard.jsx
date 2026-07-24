@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Activity, Palette, Database, BrainCircuit, 
   Mail, LogOut, Save, Plus, Trash2, Image, ExternalLink, 
   Sliders, Layers, Eye, CheckCircle, FileText, User, HelpCircle, 
-  Briefcase, Star, Cpu, Settings, UploadCloud, File, Image as ImageIcon, Menu, X, Loader2, Video
+  Briefcase, Star, Cpu, Settings, UploadCloud, File, Image as ImageIcon, Menu, X, Loader2, Video, Camera
 } from 'lucide-react';
 
 const sidebarModules = [
@@ -91,6 +91,7 @@ export default function AdminDashboard() {
   const [dreamClients, setDreamClients] = useState([]);
   const [dreamFeedback, setDreamFeedback] = useState([]);
   const [dreamArchive, setDreamArchive] = useState([]);
+  const [dreamPhotography, setDreamPhotography] = useState([]);
 
   // STATE FOR EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE
   const [bulkPipelineCat, setBulkTargetCat] = useState("");
@@ -142,6 +143,7 @@ export default function AdminDashboard() {
         setDreamTeam(dream.team_roster || []);
         setDreamSoftware(dream.software_stack || []);
         setDreamClients(dream.trusted_clients || []);
+        setDreamPhotography(dream.photography_shots || []);
       }
 
       const { data: analyst } = await supabase.from('data_analyst').select('*').single();
@@ -201,9 +203,18 @@ export default function AdminDashboard() {
     try {
       if (activeModule === 'Home Engine') {
         await supabase.from('home_engine').update({ hero_photo: homeHeroPhoto, quick_stats: homeStats, core_skills: homeSkills, career_timeline: homeTimeline }).eq('id', 1);
-      
+        
       } else if (activeModule === 'Dream Creations') {
-        await supabase.from('dream_creations').update({ banner_url: dreamBanner, founder_photo: dreamFounderPhoto, founder_experience: dreamFounderExp, founder_projects: dreamFounderProjects, team_roster: dreamTeam, software_stack: dreamSoftware, trusted_clients: dreamClients }).eq('id', 1);
+        await supabase.from('dream_creations').update({ 
+          banner_url: dreamBanner, 
+          founder_photo: dreamFounderPhoto, 
+          founder_experience: dreamFounderExp, 
+          founder_projects: dreamFounderProjects, 
+          team_roster: dreamTeam, 
+          software_stack: dreamSoftware, 
+          trusted_clients: dreamClients,
+          photography_shots: dreamPhotography 
+        }).eq('id', 1);
 
         await supabase.from('client_reviews').delete().neq('client_name', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (dreamFeedback.length > 0) {
@@ -237,10 +248,10 @@ export default function AdminDashboard() {
 
       } else if (activeModule === 'Data Analyst') {
         await supabase.from('data_analyst').update({ performance_counters: analystStats, experience_roles: analystRoles, technical_competencies: analystSkills, software_ecosystem: analystEcosystem, future_roadmap: analystRoadmap, portfolio_dashboards: portfolioDashboards, portfolio_reports: portfolioReports, portfolio_automations: portfolioAutomations, portfolio_case_studies: portfolioCaseStudies, portfolio_projects: portfolioProjects }).eq('id', 1);
-      
+        
       } else if (activeModule === 'AI Developer') {
         await supabase.from('ai_developer').update({ metrics_counters: aiStats, development_timeline: aiTimeline, ai_partners: aiEcosystemState, architecture_stack: aiArchitecture, engineering_showcase: aiShowcase, github_sync: aiGithub }).eq('id', 1);
-      
+        
       } else if (activeModule === 'Contact Links') {
         await supabase.from('contact_settings').update({ portfolio_url: contactPortfolioUrl }).eq('id', 1);
 
@@ -778,6 +789,53 @@ export default function AdminDashboard() {
                   })}
                 </div>
               </div>
+
+              {/* ================= PHOTOGRAPHY MANAGER ================= */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><Camera size={14}/> Visions Through the Lens (Photography)</h4>
+                  <button onClick={() => setDreamPhotography([{ id: Date.now(), url: "", title: "New Shot", rot: Math.floor(Math.random() * 20) - 10, x: Math.floor(Math.random() * 200) - 100, y: Math.floor(Math.random() * 100) - 50 }, ...dreamPhotography])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD SHOT</button>
+                </div>
+                
+                <div className="space-y-4">
+                  {dreamPhotography.map((shot, idx) => (
+                    <div key={shot.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative pr-8">
+                      <button onClick={() => handleRemoveArrayItem(dreamPhotography, setDreamPhotography, idx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                      
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Image URL (from Media Library)</label>
+                          <input type="text" value={shot.url} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'url', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-cyan-400" placeholder="https://..." />
+                        </div>
+                        <div>
+                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Polaroid Title</label>
+                          <input type="text" value={shot.title} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'title', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white font-bold" placeholder="Title" />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Rotation (deg)</label>
+                          <input type="number" value={shot.rot} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'rot', parseInt(e.target.value) || 0)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-center font-mono text-zinc-300" />
+                        </div>
+                        <div>
+                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">X Offset (px)</label>
+                          <input type="number" value={shot.x} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'x', parseInt(e.target.value) || 0)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-center font-mono text-zinc-300" />
+                        </div>
+                        <div>
+                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Y Offset (px)</label>
+                          <input type="number" value={shot.y} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'y', parseInt(e.target.value) || 0)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-center font-mono text-zinc-300" />
+                        </div>
+                      </div>
+
+                    </div>
+                  ))}
+                  {dreamPhotography.length === 0 && (
+                    <div className="text-[10px] text-zinc-600 font-mono italic text-center py-2">No photography shots added yet.</div>
+                  )}
+                </div>
+              </div>
+
             </div>
           )}
 
@@ -1298,6 +1356,54 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </div>
+          )}
+
+          {/* ================= PHOTOGRAPHY MANAGER (NEW) ================= */}
+          {activeModule === 'Dream Creations' && (
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><Camera size={14}/> Visions Through the Lens (Photography)</h4>
+                  <button onClick={() => setDreamPhotography([{ id: Date.now(), url: "", title: "New Shot", rot: Math.floor(Math.random() * 20) - 10, x: Math.floor(Math.random() * 200) - 100, y: Math.floor(Math.random() * 100) - 50 }, ...dreamPhotography])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD SHOT</button>
+                </div>
+                
+                <div className="space-y-4">
+                  {dreamPhotography.map((shot, idx) => (
+                    <div key={shot.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 space-y-3 relative pr-8">
+                      <button onClick={() => handleRemoveArrayItem(dreamPhotography, setDreamPhotography, idx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                      
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Image URL (from Media Library)</label>
+                          <input type="text" value={shot.url} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'url', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-cyan-400" placeholder="https://..." />
+                        </div>
+                        <div>
+                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Polaroid Title</label>
+                          <input type="text" value={shot.title} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'title', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-white font-bold" placeholder="Title" />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Rotation (deg)</label>
+                          <input type="number" value={shot.rot} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'rot', parseInt(e.target.value) || 0)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-center font-mono text-zinc-300" />
+                        </div>
+                        <div>
+                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">X Offset (px)</label>
+                          <input type="number" value={shot.x} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'x', parseInt(e.target.value) || 0)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-center font-mono text-zinc-300" />
+                        </div>
+                        <div>
+                          <label className="block text-[9px] font-mono font-bold text-zinc-500 uppercase mb-1">Y Offset (px)</label>
+                          <input type="number" value={shot.y} onChange={(e) => handleUpdateArrayField(dreamPhotography, setDreamPhotography, idx, 'y', parseInt(e.target.value) || 0)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-center font-mono text-zinc-300" />
+                        </div>
+                      </div>
+
+                    </div>
+                  ))}
+                  {dreamPhotography.length === 0 && (
+                    <div className="text-[10px] text-zinc-600 font-mono italic text-center py-2">No photography shots added yet.</div>
+                  )}
+                </div>
+              </div>
           )}
 
         </div>
