@@ -1,7 +1,7 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
-import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, PictureInPicture, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
 
@@ -181,7 +181,7 @@ export default function DreamCreations() {
 
   const [previewImage, setPreviewImage] = useState(null);
 
-  // --- ZOOM LOGIC START ---
+  // ================= ZOOM STATES & LOGIC =================
   const [zoomScale, setZoomScale] = useState(1);
   const initialPinchDist = useRef(null);
 
@@ -217,7 +217,7 @@ export default function DreamCreations() {
   const handleTouchEnd = () => {
     initialPinchDist.current = null;
   };
-  // --- ZOOM LOGIC END ---
+  // =======================================================
 
   const goNextPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext(); };
   const goPrevPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipPrev(); };
@@ -488,10 +488,7 @@ export default function DreamCreations() {
     ? projects.filter(p => p.subtitle?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || p.category?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
     : projects;
 
-  // ================= 🚀 ADDED: FLIPBOOK FOR PROFILES & BROCHURES =================
-  const isFlipbookMode = activePortfolioSubtitle === 'Company Profiles' || activePortfolioSubtitle === 'Brochures';
-
-  const visualProjects = !isFlipbookMode && activePortfolioSubtitle !== null
+  const visualProjects = (activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures') && activePortfolioSubtitle !== null
     ? [...filteredProjects].reverse() 
     : filteredProjects;
 
@@ -823,7 +820,7 @@ export default function DreamCreations() {
                       return (
                         <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
                           {isVideo(coverImage) ? (
-                            <video key={coverImage} src={coverImage} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" autoPlay loop muted playsInline onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                            <video key={coverImage} src={`${coverImage}#t=0.1`} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                           ) : (
                             <img key={coverImage} src={coverImage} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                           )}
@@ -864,8 +861,9 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {!isFlipbookMode ? (
-                <div className="flex flex-wrap gap-0.5 items-start">
+              {/* ================= UPDATED: COMPANY PROFILES AND BROCHURES USE FLIPBOOK / OTHERS USE MASONRY ================= */}
+              {activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' ? (
+                <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5">
                   {visualProjects.length > 0 ? (
                     visualProjects.map((project) => (
                       <div 
@@ -875,14 +873,26 @@ export default function DreamCreations() {
                           e.stopPropagation();
                           setPreviewImage(project); 
                         }}
-                        className="relative flex-auto w-[45%] md:w-[30%] lg:w-[22%] cursor-pointer group overflow-hidden border border-white/5 bg-black rounded-none"
+                        onMouseEnter={(e) => {
+                          const vid = e.currentTarget.querySelector('video');
+                          if (vid) vid.play();
+                        }}
+                        onMouseLeave={(e) => {
+                          const vid = e.currentTarget.querySelector('video');
+                          if (vid) {
+                            vid.pause();
+                            vid.currentTime = 0.1;
+                          }
+                        }}
+                        className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#050508] block rounded-none"
                       >
                         {project.featured_image_url ? ( 
                           isVideo(project.featured_image_url) ? (
                             <video 
-                              src={project.featured_image_url} 
+                              key={project.featured_image_url} 
+                              src={`${project.featured_image_url}#t=0.1`} 
                               className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" 
-                              autoPlay loop muted playsInline
+                              loop muted playsInline preload="metadata"
                             />
                           ) : (
                             <img 
@@ -892,7 +902,7 @@ export default function DreamCreations() {
                             /> 
                           )
                         ) : ( 
-                          <div className="w-full aspect-square flex items-center justify-center text-white/20"><ImagePlaceholder size={32} /></div> 
+                          <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> 
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20 pointer-events-none">
                           <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
@@ -901,7 +911,7 @@ export default function DreamCreations() {
                       </div>
                     ))
                   ) : (
-                    <div className="w-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
+                    <div className="w-full break-inside-avoid py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div>
                   )}
                 </div>
               ) : (
@@ -911,14 +921,10 @@ export default function DreamCreations() {
                       <div 
                         key={project.id} 
                         onClick={() => {
-                          const isProfileOrBrochure = project.title.toLowerCase().includes('profile') || 
-                                                      project.category.toLowerCase().includes('profile') || 
-                                                      project.description.toLowerCase().includes('company profile') ||
-                                                      project.title.toLowerCase().includes('brochure') || 
-                                                      project.category.toLowerCase().includes('brochure') || 
-                                                      project.description.toLowerCase().includes('brochure');
-
-                          if (isProfileOrBrochure) {
+                          if (
+                            project.title.toLowerCase().includes('profile') || project.category.toLowerCase().includes('profile') || project.description.toLowerCase().includes('company profile') ||
+                            project.title.toLowerCase().includes('brochure') || project.category.toLowerCase().includes('brochure') || project.description.toLowerCase().includes('brochure')
+                          ) {
                             let prefix = 'page-';
                             let pages = 91;
                             let extension = 'jpg'; 
@@ -939,7 +945,7 @@ export default function DreamCreations() {
                          <div className="aspect-video relative overflow-hidden bg-black/60">
                            {project.featured_image_url ? ( 
                              isVideo(project.featured_image_url) ? (
-                               <video key={project.featured_image_url} src={project.featured_image_url} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline />
+                               <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
                              ) : (
                                <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
                              )
@@ -1148,27 +1154,27 @@ export default function DreamCreations() {
 
             {/* Zoom Controls */}
             <div 
-              className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[500] flex items-center gap-4 bg-black/80 backdrop-blur-md px-5 py-2 rounded-full border border-white/10"
+              className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[500] flex items-center gap-4 bg-black/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10"
               onClick={(e) => e.stopPropagation()}
             >
               <button 
                 onClick={() => setZoomScale(prev => Math.max(prev - 0.5, 1))}
-                className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/20 rounded-full text-xl"
+                className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"
               >
-                −
+                <span className="text-2xl leading-none -mt-0.5">−</span>
               </button>
               <span className="text-xs font-mono font-bold text-white/80 w-12 text-center select-none">
                 {Math.round(zoomScale * 100)}%
               </span>
               <button 
                 onClick={() => setZoomScale(prev => Math.min(prev + 0.5, 4))}
-                className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/20 rounded-full text-xl"
+                className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"
               >
-                +
+                <span className="text-2xl leading-none -mt-0.5">+</span>
               </button>
             </div>
 
-            {/* Smooth Zoom Wrapper for Close/Open (Prevents 'putol' cutoff, walang layoutId) */}
+            {/* Smooth Zoom Wrapper for Close/Open */}
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -1176,7 +1182,6 @@ export default function DreamCreations() {
               transition={{ duration: 0.3, ease: "easeOut" }}
               className="relative w-full h-full flex items-center justify-center pointer-events-none"
             >
-              {/* Swipe Fade Transition */}
               <AnimatePresence mode="wait">
                 {isVideo(previewImage.featured_image_url) ? (
                   <motion.video 
@@ -1193,7 +1198,7 @@ export default function DreamCreations() {
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
                     drag={zoomScale > 1 ? true : "x"}
-                    dragConstraints={zoomScale > 1 ? { left: -500, right: 500, top: -500, bottom: 500 } : { left: 0, right: 0 }}
+                    dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }}
                     dragElastic={zoomScale > 1 ? 0.2 : 0.7}
                     onDragEnd={(e, { offset }) => {
                       if (zoomScale > 1) return;
@@ -1216,7 +1221,7 @@ export default function DreamCreations() {
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
                     drag={zoomScale > 1 ? true : "x"}
-                    dragConstraints={zoomScale > 1 ? { left: -500, right: 500, top: -500, bottom: 500 } : { left: 0, right: 0 }}
+                    dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }}
                     dragElastic={zoomScale > 1 ? 0.2 : 0.7}
                     onDragEnd={(e, { offset }) => {
                       if (zoomScale > 1) return; 
