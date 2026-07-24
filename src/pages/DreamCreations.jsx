@@ -1,7 +1,8 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
-import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+// Idinagdag ko na dito ang PictureInPicture sa import!
+import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, PictureInPicture, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
 
@@ -471,7 +472,7 @@ export default function DreamCreations() {
 
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(null); 
+    setActivePortfolioSubtitle(null); // Just null, don't open board directly
     
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
@@ -488,7 +489,7 @@ export default function DreamCreations() {
     ? projects.filter(p => p.subtitle?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || p.category?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
     : projects;
 
-  const visualProjects = (activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures') && activePortfolioSubtitle !== null
+  const visualProjects = activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' && activePortfolioSubtitle !== null
     ? [...filteredProjects].reverse() 
     : filteredProjects;
 
@@ -861,7 +862,7 @@ export default function DreamCreations() {
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
 
-              {/* ================= UPDATED: COMPANY PROFILES AND BROCHURES USE FLIPBOOK / OTHERS USE MASONRY ================= */}
+              {/* ================= FIX: CSS COLUMNS MASONRY LAYOUT (gap-0.5 space-y-0.5) ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' ? (
                 <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5">
                   {visualProjects.length > 0 ? (
@@ -921,10 +922,7 @@ export default function DreamCreations() {
                       <div 
                         key={project.id} 
                         onClick={() => {
-                          if (
-                            project.title.toLowerCase().includes('profile') || project.category.toLowerCase().includes('profile') || project.description.toLowerCase().includes('company profile') ||
-                            project.title.toLowerCase().includes('brochure') || project.category.toLowerCase().includes('brochure') || project.description.toLowerCase().includes('brochure')
-                          ) {
+                          if (project.title.toLowerCase().includes('profile') || project.category.toLowerCase().includes('profile') || project.description.toLowerCase().includes('company profile') || project.title.toLowerCase().includes('brochure') || project.category.toLowerCase().includes('brochure') || project.description.toLowerCase().includes('brochure')) {
                             let prefix = 'page-';
                             let pages = 91;
                             let extension = 'jpg'; 
@@ -1182,6 +1180,7 @@ export default function DreamCreations() {
               transition={{ duration: 0.3, ease: "easeOut" }}
               className="relative w-full h-full flex items-center justify-center pointer-events-none"
             >
+              {/* Swipe Fade Transition & Zoom Image */}
               <AnimatePresence mode="wait">
                 {isVideo(previewImage.featured_image_url) ? (
                   <motion.video 
@@ -1194,14 +1193,16 @@ export default function DreamCreations() {
                     className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing relative z-10 pointer-events-auto" 
                     autoPlay controls playsInline loop
                     onClick={(e) => { e.stopPropagation(); }} 
+                    /* TOUCH EVENTS PARA SA PINCH TO ZOOM */
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
+                    /* DRAG EVENTS (Kung naka-zoom, free panning. Kung hindi, X-axis swipe lang) */
                     drag={zoomScale > 1 ? true : "x"}
                     dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }}
                     dragElastic={zoomScale > 1 ? 0.2 : 0.7}
                     onDragEnd={(e, { offset }) => {
-                      if (zoomScale > 1) return;
+                      if (zoomScale > 1) return; // Wag lumipat sa next video kapag naka-zoom in at nagda-drag
                       if (offset.x < -70) handleNextImage(e);
                       else if (offset.x > 70) handlePrevImage(e);
                     }}
@@ -1217,14 +1218,16 @@ export default function DreamCreations() {
                     className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing select-none pointer-events-auto relative z-10" 
                     alt="Preview" 
                     onClick={(e) => { e.stopPropagation(); }} 
+                    /* TOUCH EVENTS PARA SA PINCH TO ZOOM */
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
+                    /* DRAG EVENTS (Kung naka-zoom, free panning. Kung hindi, X-axis swipe lang) */
                     drag={zoomScale > 1 ? true : "x"}
                     dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }}
                     dragElastic={zoomScale > 1 ? 0.2 : 0.7}
                     onDragEnd={(e, { offset }) => {
-                      if (zoomScale > 1) return; 
+                      if (zoomScale > 1) return; // Wag lumipat sa next picture kapag naka-zoom in at nagda-drag
                       if (offset.x < -70) handleNextImage(e);
                       else if (offset.x > 70) handlePrevImage(e);
                     }}
