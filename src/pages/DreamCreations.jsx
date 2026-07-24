@@ -1,7 +1,6 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
-// Idinagdag ko na dito ang PictureInPicture sa import!
 import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, PictureInPicture, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
@@ -151,16 +150,6 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
   scale: 0.8 + Math.random() * 1.5
 }));
 
-// ================= PHOTOGRAPHY DATA (BONUS OUTLET) =================
-const photographyShots = [
-  { id: 1, url: "https://images.unsplash.com/photo-1516802273409-68526ee1bdd6?q=80&w=800&auto=format&fit=crop", title: "Urban Dreams", rot: -6, x: -120, y: -50 },
-  { id: 2, url: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=800&auto=format&fit=crop", title: "Neon Nights", rot: 4, x: 150, y: -80 },
-  { id: 3, url: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=800&auto=format&fit=crop", title: "Nature's Scale", rot: -3, x: -50, y: 100 },
-  { id: 4, url: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=800&auto=format&fit=crop", title: "Golden Hour", rot: 8, x: 80, y: 120 },
-  { id: 5, url: "https://images.unsplash.com/photo-1554046920-90dc2069508f?q=80&w=800&auto=format&fit=crop", title: "Street Symmetry", rot: -8, x: 250, y: 20 },
-  { id: 6, url: "https://images.unsplash.com/photo-1504509546545-e000b4a62425?q=80&w=800&auto=format&fit=crop", title: "Raw Emotions", rot: 5, x: -250, y: 40 }
-];
-
 // ================= VIDEO CHECKER HELPER =================
 const isVideo = (url) => {
   if (!url) return false;
@@ -186,15 +175,16 @@ export default function DreamCreations() {
   const [softwareList, setSoftwareList] = useState(softwareExpertise);
   const [clientsList, setClientsList] = useState(featuredClients);
 
+  // Photography States (DYNAMIC FROM SUPABASE)
+  const [photographyShots, setPhotographyShots] = useState([]);
+  const [isPhotographyOpen, setIsPhotographyOpen] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+
   const [isFlipbookOpen, setIsFlipbookOpen] = useState(false);
   const [flipbookPage, setFlipbookCurrentPage] = useState(0); 
   const [activeFlipbookConfig, setActiveFlipbookConfig] = useState({ prefix: 'page-', totalPages: 91, extension: 'jpg' });
 
   const [previewImage, setPreviewImage] = useState(null);
-  
-  // Photography States
-  const [isPhotographyOpen, setIsPhotographyOpen] = useState(false);
-  const [selectedPhoto, setSelectedPhoto] = useState(null);
 
   // ================= ZOOM STATES & LOGIC =================
   const [zoomScale, setZoomScale] = useState(1);
@@ -452,6 +442,11 @@ export default function DreamCreations() {
               return { ...client, icon: iconComponent };
             });
             setClientsList(clientsWithIcons);
+          }
+
+          // DYNAMIC PHOTOGRAPHY SHOTS FETCH
+          if (dreamData.photography_shots && dreamData.photography_shots.length > 0) {
+            setPhotographyShots(dreamData.photography_shots);
           }
         }
 
@@ -875,7 +870,21 @@ export default function DreamCreations() {
               </button>
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
-
+              {/* ================= ADDED: WATERCOLOR PORTRAITS DESCRIPTION ================= */}
+              {activePortfolioSubtitle === 'Watercolor Portraits' && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-8 p-5 rounded-2xl bg-[#1095d2]/10 border border-[#1095d2]/30 backdrop-blur-md max-w-4xl"
+                >
+                  <div className="flex items-start gap-3">
+                    <Info className="text-[#1095d2] shrink-0 mt-0.5" size={20} />
+                    <p className="text-sm text-white/80 leading-relaxed">
+                      <strong className="text-white">Creative Process:</strong> Merging different raw images, enhancing picture quality, seamlessly combining images into a single, proportional composition, and applying watercolor filters. Some includes adjustments like changing body parts or clothing.
+                    </p>
+                  </div>
+                </motion.div>
+              )}
               {/* ================= FIX: CSS COLUMNS MASONRY LAYOUT ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' ? (
                 <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5">
@@ -1321,7 +1330,7 @@ export default function DreamCreations() {
             <div className="relative w-full h-full max-w-5xl mx-auto flex items-center justify-center">
               {photographyShots.map((shot, idx) => (
                 <motion.div
-                  key={shot.id}
+                  key={shot.id || idx}
                   initial={{ opacity: 0, scale: 0, x: 0, y: 0, rotate: 0 }}
                   animate={{ 
                     opacity: 1, 
