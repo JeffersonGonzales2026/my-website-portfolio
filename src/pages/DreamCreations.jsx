@@ -2,7 +2,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
 // Idinagdag ko na dito ang PictureInPicture sa import!
-import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, PictureInPicture, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, PictureInPicture, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
 
@@ -151,6 +151,16 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
   scale: 0.8 + Math.random() * 1.5
 }));
 
+// ================= PHOTOGRAPHY DATA (BONUS OUTLET) =================
+const photographyShots = [
+  { id: 1, url: "https://images.unsplash.com/photo-1516802273409-68526ee1bdd6?q=80&w=800&auto=format&fit=crop", title: "Urban Dreams", rot: -6, x: -120, y: -50 },
+  { id: 2, url: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=800&auto=format&fit=crop", title: "Neon Nights", rot: 4, x: 150, y: -80 },
+  { id: 3, url: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=800&auto=format&fit=crop", title: "Nature's Scale", rot: -3, x: -50, y: 100 },
+  { id: 4, url: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=800&auto=format&fit=crop", title: "Golden Hour", rot: 8, x: 80, y: 120 },
+  { id: 5, url: "https://images.unsplash.com/photo-1554046920-90dc2069508f?q=80&w=800&auto=format&fit=crop", title: "Street Symmetry", rot: -8, x: 250, y: 20 },
+  { id: 6, url: "https://images.unsplash.com/photo-1504509546545-e000b4a62425?q=80&w=800&auto=format&fit=crop", title: "Raw Emotions", rot: 5, x: -250, y: 40 }
+];
+
 // ================= VIDEO CHECKER HELPER =================
 const isVideo = (url) => {
   if (!url) return false;
@@ -181,6 +191,10 @@ export default function DreamCreations() {
   const [activeFlipbookConfig, setActiveFlipbookConfig] = useState({ prefix: 'page-', totalPages: 91, extension: 'jpg' });
 
   const [previewImage, setPreviewImage] = useState(null);
+  
+  // Photography States
+  const [isPhotographyOpen, setIsPhotographyOpen] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
 
   // ================= ZOOM STATES & LOGIC =================
   const [zoomScale, setZoomScale] = useState(1);
@@ -861,22 +875,8 @@ export default function DreamCreations() {
               </button>
 
               <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
-              {/* ================= ADDED: WATERCOLOR PORTRAITS DESCRIPTION ================= */}
-              {activePortfolioSubtitle === 'Watercolor Portraits' && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-8 p-5 rounded-2xl bg-[#1095d2]/10 border border-[#1095d2]/30 backdrop-blur-md max-w-4xl"
-                >
-                  <div className="flex items-start gap-3">
-                    <Info className="text-[#1095d2] shrink-0 mt-0.5" size={20} />
-                    <p className="text-sm text-white/80 leading-relaxed">
-                      <strong className="text-white">Creative Process:</strong> Merging different raw images, enhancing picture quality, seamlessly combining images into a single, proportional composition, and applying watercolor filters. Some includes adjustments like changing body parts or clothing.
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-              {/* ================= FIX: CSS COLUMNS MASONRY LAYOUT (gap-0.5 space-y-0.5) ================= */}
+
+              {/* ================= FIX: CSS COLUMNS MASONRY LAYOUT ================= */}
               {activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' ? (
                 <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5">
                   {visualProjects.length > 0 ? (
@@ -984,6 +984,45 @@ export default function DreamCreations() {
             </motion.div>
           )}
         </AnimatePresence>
+      </section>
+
+      {/* ================= BONUS: VISIONS THROUGH THE LENS (PHOTOGRAPHY) ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-10 z-10 relative border-t border-white/10 mt-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative rounded-3xl overflow-hidden group cursor-pointer border border-white/10 bg-black/40 min-h-[300px] flex items-center justify-center"
+          onClick={() => setIsPhotographyOpen(true)}
+        >
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516802273409-68526ee1bdd6?q=80&w=1600&auto=format&fit=crop')] bg-cover bg-center opacity-20 group-hover:opacity-40 group-hover:scale-105 transition-all duration-700 grayscale group-hover:grayscale-0" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+          
+          {/* Flash Effect on Hover */}
+          <div className="absolute inset-0 bg-white opacity-0 group-hover:animate-flash pointer-events-none" />
+          <style>{`
+            @keyframes flash {
+              0% { opacity: 0; }
+              10% { opacity: 0.8; }
+              100% { opacity: 0; }
+            }
+            .group-hover\\:animate-flash:hover { animation: flash 1s ease-out; }
+          `}</style>
+
+          <div className="relative z-10 text-center p-8 max-w-2xl">
+            <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center justify-center mx-auto mb-4 group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]/50 group-hover:text-[#1095d2] transition-colors duration-300">
+              <Camera size={28} className="text-white/80 group-hover:text-[#1095d2]" />
+            </div>
+            <h3 className="text-sm font-mono text-[#1095d2] uppercase tracking-widest font-bold mb-2">A Creative Outlet</h3>
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-4">Visions Through the Lens</h2>
+            <p className="text-sm text-white/60 leading-relaxed mb-6">
+              Beyond the canvas of digital design lies my rawest creative outlet. This isn't a formal service, but a personal gallery—a bonus glimpse into how I capture and compose reality through a camera lens.
+            </p>
+            <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-wider group-hover:bg-[#1095d2] transition-colors">
+              Enter Gallery <ArrowRight size={14} />
+            </span>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================= PRICING / PROJECT INVESTMENT ================= */}
@@ -1250,6 +1289,86 @@ export default function DreamCreations() {
               </AnimatePresence>
             </motion.div>
             
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= POLAROID PHOTOGRAPHY MODAL ================= */}
+      <AnimatePresence>
+        {isPhotographyOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.5 } }}
+            className="fixed inset-0 z-[400] flex items-center justify-center bg-[#0a0a0a] overflow-hidden"
+          >
+            {/* Background Texture */}
+            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')] pointer-events-none" />
+            
+            <button 
+              onClick={() => setIsPhotographyOpen(false)} 
+              className="absolute top-8 right-8 z-[500] w-12 h-12 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 backdrop-blur-md"
+            >
+              <X size={24} />
+            </button>
+
+            <div className="absolute top-8 left-8 z-[500]">
+              <h2 className="text-2xl font-black text-white tracking-widest uppercase">Captured Dreams</h2>
+              <p className="text-[#1095d2] font-mono text-xs mt-1">Select a polaroid to view full frame.</p>
+            </div>
+
+            {/* Scattered Polaroids Area */}
+            <div className="relative w-full h-full max-w-5xl mx-auto flex items-center justify-center">
+              {photographyShots.map((shot, idx) => (
+                <motion.div
+                  key={shot.id}
+                  initial={{ opacity: 0, scale: 0, x: 0, y: 0, rotate: 0 }}
+                  animate={{ 
+                    opacity: 1, 
+                    scale: 1, 
+                    x: shot.x, 
+                    y: shot.y, 
+                    rotate: shot.rot 
+                  }}
+                  transition={{ type: "spring", damping: 15, delay: idx * 0.1 }}
+                  whileHover={{ 
+                    scale: 1.2, 
+                    rotate: 0, 
+                    zIndex: 50,
+                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8)"
+                  }}
+                  className="absolute p-3 pb-10 bg-[#f8f8f8] shadow-2xl cursor-pointer rounded-sm"
+                  onClick={() => setSelectedPhoto(shot.url)}
+                  style={{ zIndex: 10 + idx }}
+                >
+                  <img src={shot.url} alt={shot.title} className="w-48 h-48 md:w-64 md:h-64 object-cover pointer-events-none filter contrast-[0.9] sepia-[0.2]" />
+                  <p className="absolute bottom-3 left-0 w-full text-center text-black/60 font-mono text-xs font-bold pointer-events-none">
+                    {shot.title}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Selected Photo Fullscreen Overlay */}
+            <AnimatePresence>
+              {selectedPhoto && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="absolute inset-0 z-[600] flex items-center justify-center bg-black/90 p-4 md:p-12 cursor-pointer backdrop-blur-md"
+                  onClick={() => setSelectedPhoto(null)}
+                >
+                  <img 
+                    src={selectedPhoto} 
+                    alt="Selected Zoom" 
+                    className="max-w-full max-h-full object-contain drop-shadow-[0_0_40px_rgba(0,0,0,1)]"
+                  />
+                  <p className="absolute bottom-8 text-white/50 text-xs font-mono tracking-widest uppercase">Click anywhere to close</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
           </motion.div>
         )}
       </AnimatePresence>
