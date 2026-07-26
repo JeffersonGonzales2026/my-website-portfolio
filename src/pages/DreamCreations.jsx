@@ -1001,10 +1001,16 @@ export default function DreamCreations() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="relative rounded-3xl overflow-hidden group cursor-pointer border border-white/10 bg-black/40 min-h-[300px] flex items-center justify-center"
+          className="relative rounded-3xl overflow-hidden group cursor-pointer border border-[#1095d2]/20 bg-black/40 min-h-[300px] flex items-center justify-center shadow-[0_0_30px_rgba(16,149,210,0.15)]"
           onClick={() => setIsPhotographyOpen(true)}
         >
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516802273409-68526ee1bdd6?q=80&w=1600&auto=format&fit=crop')] bg-cover bg-center opacity-20 group-hover:opacity-40 group-hover:scale-105 transition-all duration-700 grayscale group-hover:grayscale-0" />
+          {/* DYNAMIC LATEST PHOTOGRAPHY BACKGROUND COVER OR DREAM CREATIONS BRANDING FALLBACK */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center opacity-20 group-hover:opacity-40 group-hover:scale-105 transition-all duration-700 grayscale group-hover:grayscale-0" 
+            style={{ 
+              backgroundImage: `url(${photographyShots[0]?.url || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1600&auto=format&fit=crop'})` 
+            }}
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
           
           {/* Flash Effect on Hover */}
@@ -1242,7 +1248,6 @@ export default function DreamCreations() {
               transition={{ duration: 0.3, ease: "easeOut" }}
               className="relative w-full h-full flex items-center justify-center pointer-events-none"
             >
-              {/* Swipe Fade Transition & Zoom Image */}
               <AnimatePresence mode="wait">
                 {isVideo(previewImage.featured_image_url) ? (
                   <motion.video 
@@ -1261,7 +1266,7 @@ export default function DreamCreations() {
                     onTouchEnd={handleTouchEnd}
                     /* DRAG EVENTS (Kung naka-zoom, free panning. Kung hindi, X-axis swipe lang) */
                     drag={zoomScale > 1 ? true : "x"}
-                    dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }}
+                    dragConstraints={zoomScale > 1 ? { left: -500, right: 500, top: -500, bottom: 500 } : { left: 0, right: 0 }}
                     dragElastic={zoomScale > 1 ? 0.2 : 0.7}
                     onDragEnd={(e, { offset }) => {
                       if (zoomScale > 1) return; // Wag lumipat sa next video kapag naka-zoom in at nagda-drag
@@ -1286,7 +1291,7 @@ export default function DreamCreations() {
                     onTouchEnd={handleTouchEnd}
                     /* DRAG EVENTS (Kung naka-zoom, free panning. Kung hindi, X-axis swipe lang) */
                     drag={zoomScale > 1 ? true : "x"}
-                    dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }}
+                    dragConstraints={zoomScale > 1 ? { left: -500, right: 500, top: -500, bottom: 500 } : { left: 0, right: 0 }}
                     dragElastic={zoomScale > 1 ? 0.2 : 0.7}
                     onDragEnd={(e, { offset }) => {
                       if (zoomScale > 1) return; // Wag lumipat sa next picture kapag naka-zoom in at nagda-drag
@@ -1302,32 +1307,60 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= POLAROID PHOTOGRAPHY MODAL ================= */}
+      {/* ================= POLAROID PHOTOGRAPHY MODAL (RESPONSIVE MOBILE & DESKTOP) ================= */}
       <AnimatePresence>
         {isPhotographyOpen && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.5 } }}
-            className="fixed inset-0 z-[400] flex items-center justify-center bg-[#0a0a0a] overflow-hidden"
+            className="fixed inset-0 z-[400] flex flex-col items-center justify-between bg-[#050508]/90 backdrop-blur-xl overflow-hidden p-4 md:p-8"
           >
-            {/* Background Texture */}
-            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')] pointer-events-none" />
+            {/* Dream Creations Theme Background Glow */}
+            <div className="absolute inset-0 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16, 149, 210, 0.15), transparent 70%)' }} />
             
             <button 
               onClick={() => setIsPhotographyOpen(false)} 
-              className="absolute top-8 right-8 z-[500] w-12 h-12 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 backdrop-blur-md"
+              className="absolute top-6 right-6 z-[500] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 backdrop-blur-md"
             >
-              <X size={24} />
+              <X size={20} className="md:w-6 md:h-6" />
             </button>
 
-            <div className="absolute top-8 left-8 z-[500]">
-              <h2 className="text-2xl font-black text-white tracking-widest uppercase">Captured Dreams</h2>
-              <p className="text-[#1095d2] font-mono text-xs mt-1">Select a polaroid to view full frame.</p>
+            <div className="relative z-[500] text-center md:text-left md:absolute md:top-8 md:left-8 mt-2 md:mt-0">
+              <h2 className="text-xl md:text-2xl font-black text-white tracking-widest uppercase">Captured Dreams</h2>
+              <p className="text-[#1095d2] font-mono text-[10px] md:text-xs mt-0.5">Select a polaroid to view full frame.</p>
             </div>
 
-            {/* Scattered Polaroids Area */}
-            <div className="relative w-full h-full max-w-5xl mx-auto flex items-center justify-center">
+            {/* MOBILE LAYOUT: SCROLLABLE POLAROID GRID (Visible on phones) */}
+            <div className="md:hidden w-full flex-1 overflow-y-auto mt-6 pb-20 pr-1 space-y-6 flex flex-col items-center custom-scrollbar z-10">
+              {photographyShots.map((shot, idx) => {
+                const tilts = [-3, 2, -2, 4, -4, 3];
+                const tilt = tilts[idx % tilts.length];
+                return (
+                  <motion.div
+                    key={shot.id || idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.08 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="p-3 pb-8 bg-[#f8f8f8] shadow-[0_10px_30px_rgba(0,0,0,0.8)] rounded-sm cursor-pointer w-64 shrink-0"
+                    style={{ transform: `rotate(${tilt}deg)` }}
+                    onClick={() => setSelectedPhoto(shot.url)}
+                  >
+                    <img src={shot.url} alt={shot.title || "Captured Shot"} className="w-full h-56 object-cover pointer-events-none filter contrast-[0.95] sepia-[0.1]" />
+                    <p className="mt-2 text-center text-black/70 font-mono text-[11px] font-bold truncate px-2">
+                      {shot.title || "Captured Dream"}
+                    </p>
+                  </motion.div>
+                );
+              })}
+              {photographyShots.length === 0 && (
+                <div className="text-white/40 text-xs font-mono py-12">No photography shots added yet.</div>
+              )}
+            </div>
+
+            {/* DESKTOP LAYOUT: SCATTERED TABLE AREA (Visible on tablets/laptops) */}
+            <div className="hidden md:flex relative w-full h-full max-w-5xl mx-auto items-center justify-center z-10">
               {photographyShots.map((shot, idx) => (
                 <motion.div
                   key={shot.id || idx}
@@ -1335,24 +1368,24 @@ export default function DreamCreations() {
                   animate={{ 
                     opacity: 1, 
                     scale: 1, 
-                    x: shot.x, 
-                    y: shot.y, 
-                    rotate: shot.rot 
+                    x: shot.x || 0, 
+                    y: shot.y || 0, 
+                    rotate: shot.rot || 0 
                   }}
                   transition={{ type: "spring", damping: 15, delay: idx * 0.1 }}
                   whileHover={{ 
                     scale: 1.2, 
                     rotate: 0, 
                     zIndex: 50,
-                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8)"
+                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9)"
                   }}
-                  className="absolute p-3 pb-10 bg-[#f8f8f8] shadow-2xl cursor-pointer rounded-sm"
+                  className="absolute p-3 pb-10 bg-[#f8f8f8] shadow-[0_15px_35px_rgba(0,0,0,0.6)] cursor-pointer rounded-sm"
                   onClick={() => setSelectedPhoto(shot.url)}
                   style={{ zIndex: 10 + idx }}
                 >
-                  <img src={shot.url} alt={shot.title} className="w-48 h-48 md:w-64 md:h-64 object-cover pointer-events-none filter contrast-[0.9] sepia-[0.2]" />
-                  <p className="absolute bottom-3 left-0 w-full text-center text-black/60 font-mono text-xs font-bold pointer-events-none">
-                    {shot.title}
+                  <img src={shot.url} alt={shot.title || "Shot"} className="w-48 h-48 md:w-64 md:h-64 object-cover pointer-events-none filter contrast-[0.9] sepia-[0.2]" />
+                  <p className="absolute bottom-3 left-0 w-full text-center text-black/60 font-mono text-xs font-bold pointer-events-none truncate px-2">
+                    {shot.title || "Captured Dream"}
                   </p>
                 </motion.div>
               ))}
@@ -1365,15 +1398,15 @@ export default function DreamCreations() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  className="absolute inset-0 z-[600] flex items-center justify-center bg-black/90 p-4 md:p-12 cursor-pointer backdrop-blur-md"
+                  className="absolute inset-0 z-[600] flex items-center justify-center bg-black/95 p-4 md:p-12 cursor-pointer backdrop-blur-md"
                   onClick={() => setSelectedPhoto(null)}
                 >
                   <img 
                     src={selectedPhoto} 
                     alt="Selected Zoom" 
-                    className="max-w-full max-h-full object-contain drop-shadow-[0_0_40px_rgba(0,0,0,1)]"
+                    className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_40px_rgba(16,149,210,0.2)]"
                   />
-                  <p className="absolute bottom-8 text-white/50 text-xs font-mono tracking-widest uppercase">Click anywhere to close</p>
+                  <p className="absolute bottom-6 text-white/50 text-[10px] md:text-xs font-mono tracking-widest uppercase">Click anywhere to close</p>
                 </motion.div>
               )}
             </AnimatePresence>
