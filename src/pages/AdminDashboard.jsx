@@ -22,21 +22,111 @@ const sidebarModules = [
 ];
 
 // =========================================================================
-// CENTRALIZED CATEGORY DATA PARA SA DROPDOWNS
+// CENTRALIZED CATEGORY DATA PARA SA DROPDOWNS (SYNCHRONIZED WITH FRONTEND)
 // =========================================================================
 const creationsCategories = [
-  { id: 1, category: "Branding & Identity", items: ["Logo Design", "Brand Guidelines", "Visual Identity", "Brand Refresh", "Brand Assets", "Business Identity Systems"] },
-  { id: 2, category: "Graphic Design", items: ["Instructional Posters", "Corporate Graphics", "Advertising Materials", "Infographics", "Creative Campaigns", "Promotional Graphics"] },
-  { id: 3, category: "Social Media Design", items: ["Facebook Graphics", "Instagram Posts", "Carousel Posts", "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"] },
-  { id: 4, category: "Marketing Materials", items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Product Sheets", "Sales Kits", "Business Presentations"] },
-  { id: 5, category: "Video Editing", items: ["Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", "Podcast Editing", "Testimonial Videos", "Tutorial Videos","Video Thumbnails"] },
-  { id: 6, category: "Motion Graphics", items: ["Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"] },
-  { id: 7, category: "Web Graphics", items: ["eCommerce Graphics", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"] },
-  { id: 8, category: "Photo Editing", items: ["Photo Retouching", "Photo Restoration", "Watercolor Portraits", "Background Removal", "Image Manipulation", "Color Correction", "Composite Editing"] },
-  { id: 9, category: "Apparel Design", items: ["Shirt Designs", "Streetwear Graphics", "Mockups", "Print-ready Artwork"] },
-  { id: 10, category: "Print Production", items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards"] },
-  { id: 11, category: "Packaging", items: ["Packaging Graphics", "Clothing Labels", "Product Labels"] },
-  { id: 12, category: "Illustration", items: ["Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"] }
+  { 
+    id: 1, 
+    category: "Branding & Identity", 
+    items: [
+      "Logo Design", "Brand Identity Design", "Brand Style Guide", "Brand Refresh & Rebranding", 
+      "Business Card Design", "Letterhead & Stationery Design", "Email Signature Design", 
+      "Brand Pattern & Graphic Elements", "Packaging Design", "Label & Sticker Design", 
+      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", "Brand Asset Kit"
+    ] 
+  },
+  { 
+    id: 2, 
+    category: "Social Media Design", 
+    items: [
+      "Social Media Posts", "Story Designs", "Carousel Posts", "LinkedIn Graphics", 
+      "Social Media Campaigns", "Cover Photos", "Profile Branding", "Quote Graphics", 
+      "Event Announcement Graphics", "Holiday & eCards"
+    ] 
+  },
+  { 
+    id: 3, 
+    category: "Video Editing", 
+    items: [
+      "Social Media Videos", "Marketing Videos", "Product Promotion Videos", "Corporate Videos", 
+      "Event Highlights", "YouTube Video Editing", "Podcast Editing", "Testimonial Videos", 
+      "Tutorial Videos", "Video Thumbnails"
+    ] 
+  },
+  { 
+    id: 4, 
+    category: "Motion Graphics", 
+    items: [
+      "Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", 
+      "Kinetic Typography", "Animated Infographics", "UI/App Animations", "Lottie Animations", 
+      "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"
+    ] 
+  },
+  { 
+    id: 5, 
+    category: "Web Graphics", 
+    items: [
+      "Landing Page Graphics", "eCommerce Graphics", "Website Banners", "Hero Banners", 
+      "UI Graphics", "Icons", "Email Graphics", "WordPress Assets", "Blog Graphics", "Web Illustrations"
+    ] 
+  },
+  { 
+    id: 6, 
+    category: "Marketing & Corporate Graphics", 
+    items: [
+      "Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", 
+      "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"
+    ] 
+  },
+  { 
+    id: 7, 
+    category: "Marketing Materials", 
+    items: [
+      "Flyers", "Brochures", "Catalogs", "Business Presentations", "Posters", 
+      "Banners", "Rack Cards", "Sales Sheets", "Product Sheets"
+    ] 
+  },
+  { 
+    id: 8, 
+    category: "Packaging Design", 
+    items: [
+      "Packaging Graphics", "Product Labels", "Clothing Labels", "Box Packaging", 
+      "Bottle Labels", "Pouch Packaging", "Food Packaging", "Cosmetic Packaging"
+    ] 
+  },
+  { 
+    id: 9, 
+    category: "Photo Editing", 
+    items: [
+      "Photo Retouching", "Photo Restoration", "Background Removal", "Photo Manipulation", 
+      "Color Correction", "Product Photo Enhancement", "Watercolor Portraits"
+    ] 
+  },
+  { 
+    id: 10, 
+    category: "Apparel Design", 
+    items: [
+      "Streetwear Graphics", "T-Shirt Graphics", "Jersey Design", "Merchandise Graphics", 
+      "Apparel Mockups", "Clothing Hang Tags"
+    ] 
+  },
+  { 
+    id: 11, 
+    category: "Print Production", 
+    items: [
+      "Tarpaulins", "Business Cards", "Invitations", "Souvenirs", "ID Cards", 
+      "Certificates", "Book Covers", "Menu Cards", "Stickers", "Roll-up Banners", 
+      "Tent Cards", "Postcards", "Calendars"
+    ] 
+  },
+  { 
+    id: 12, 
+    category: "Illustration", 
+    items: [
+      "Digital Illustration", "Vector Artwork", "Character Illustration", "Cartoon Portraits", 
+      "Icon Design", "Mascot Design", "Sticker Illustration", "Seamless Patterns", "Editorial Illustration"
+    ] 
+  }
 ];
 
 // =========================================================================
@@ -229,7 +319,6 @@ export default function AdminDashboard() {
           await supabase.from('client_reviews').insert(cleanReviews);
         }
 
-        // ================= FIX 1: STAGGERED CREATED_AT TIMESTAMPS + CLIENT NAME / DESC RESTORED =================
         await supabase.from('portfolio_projects').delete().neq('title', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
         if (dreamArchive.length > 0) {
           const cleanArchives = dreamArchive.map((p, i) => ({
@@ -240,7 +329,7 @@ export default function AdminDashboard() {
             description: p.description || "", 
             featured_image_url: p.featured_image_url || "",
             video_url: p.video_url || "",
-            created_at: new Date(Date.now() - i * 1000).toISOString() // <--- SMART SORTING FIX (Staggered Timestamps)
+            created_at: new Date(Date.now() - i * 1000).toISOString()
           }));
           const { error: archiveError } = await supabase.from('portfolio_projects').insert(cleanArchives);
           if (archiveError) throw archiveError;
@@ -845,7 +934,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* ================= PHOTOGRAPHY MANAGER (NEW) ================= */}
+              {/* ================= PHOTOGRAPHY MANAGER ================= */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><Camera size={14}/> Visions Through the Lens (Photography)</h4>
@@ -1283,7 +1372,7 @@ export default function AdminDashboard() {
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                             <input type="text" value={project.badge} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'badge', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs font-mono text-cyan-400" placeholder="Badge (e.g. In Progress)" />
                             <input type="text" value={project.meta} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'meta', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Meta Subtitle" />
-                            <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Project Title" />
+                            <input type="text" value={project.title} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-white font-bold" placeholder="Project Title" />
                             <input type="text" value={project.role} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'role', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Role Assigned" />
                           </div>
                           <textarea value={project.desc} onChange={(e) => handleUpdateArrayField(aiShowcase, setAiShowcase, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs font-mono text-zinc-300 h-16 resize-none" placeholder="Project Description Narrative..." />
