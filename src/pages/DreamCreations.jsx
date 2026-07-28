@@ -499,7 +499,7 @@ export default function DreamCreations() {
   // SCROLL DIRECTLY TO COVER FIRST
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(null); 
+    setActivePortfolioSubtitle(null); // Just null, don't open board directly
     
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
@@ -872,7 +872,7 @@ export default function DreamCreations() {
             <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10 relative z-10 shrink-0 bg-black/40">
               <div>
                 <h2 className="text-lg md:text-2xl font-black text-white tracking-widest uppercase">
-                  {activePortfolioSubtitle === 'All Projects' ? 'Full Archive' : `Viewing: ${activePortfolioSubtitle}`}
+                  Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span>
                 </h2>
               </div>
               <button 
