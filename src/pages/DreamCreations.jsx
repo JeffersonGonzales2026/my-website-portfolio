@@ -480,7 +480,7 @@ export default function DreamCreations() {
   };
 
   const filteredProjects = activePortfolioSubtitle && activePortfolioSubtitle !== 'All Projects'
-    ? projects.filter(p => p.subtitle?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || p.category?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
+    ? projects.filter(p => (p.subtitle || '').toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || (p.category || '').toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
     : projects;
 
   const visualProjects = activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' && activePortfolioSubtitle !== null
@@ -1018,9 +1018,13 @@ export default function DreamCreations() {
                       <div 
                         key={project.id} 
                         onClick={() => {
-                          if (project.title.toLowerCase().includes('profile') || project.category.toLowerCase().includes('profile') || project.description.toLowerCase().includes('company profile') || project.title.toLowerCase().includes('brochure') || project.category.toLowerCase().includes('brochure') || project.description.toLowerCase().includes('brochure')) {
+                          const pTitle = (project.title || '').toLowerCase();
+                          const pCat = (project.category || '').toLowerCase();
+                          const pDesc = (project.description || '').toLowerCase();
+                          
+                          if (pTitle.includes('profile') || pCat.includes('profile') || pDesc.includes('company profile') || pTitle.includes('brochure') || pCat.includes('brochure') || pDesc.includes('brochure')) {
                             let prefix = 'page-'; let pages = 91; let extension = 'jpg'; 
-                            if (project.video_url && project.video_url.includes(',')) {
+                            if (project.video_url && typeof project.video_url === 'string' && project.video_url.includes(',')) {
                                const parts = project.video_url.split(','); prefix = parts[0].trim(); pages = parseInt(parts[1].trim()) || 91; if (parts[2]) extension = parts[2].trim().replace('.', ''); 
                             }
                             setActiveFlipbookConfig({ prefix, totalPages: pages, extension }); setIsFlipbookOpen(true); setFlipbookCurrentPage(0);
@@ -1036,7 +1040,7 @@ export default function DreamCreations() {
                                <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
                              )
                            ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
-                           {project.video_url && !project.video_url.includes(',') && !project.title.toLowerCase().includes('profile') && !project.title.toLowerCase().includes('brochure') && (
+                           {project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && !(project.title || '').toLowerCase().includes('profile') && !(project.title || '').toLowerCase().includes('brochure') && (
                              <a href={project.video_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"><div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform"><MonitorPlay size={24} className="ml-1" /></div></a>
                            )}
                          </div>
