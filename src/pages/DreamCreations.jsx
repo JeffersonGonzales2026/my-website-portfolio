@@ -499,7 +499,7 @@ export default function DreamCreations() {
   // SCROLL DIRECTLY TO COVER FIRST
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(null); // Just null, don't open board directly
+    setActivePortfolioSubtitle(null); 
     
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
@@ -1283,7 +1283,7 @@ export default function DreamCreations() {
                     onTouchEnd={handleTouchEnd}
                     /* DRAG EVENTS (Kung naka-zoom, free panning. Kung hindi, X-axis swipe lang) */
                     drag={zoomScale > 1 ? true : "x"}
-                    dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }}
+                    dragConstraints={zoomScale > 1 ? { left: -500, right: 500, top: -500, bottom: 500 } : { left: 0, right: 0 }}
                     dragElastic={zoomScale > 1 ? 0.2 : 0.7}
                     onDragEnd={(e, { offset }) => {
                       if (zoomScale > 1) return; // Wag lumipat sa next video kapag naka-zoom in at nagda-drag
@@ -1308,7 +1308,7 @@ export default function DreamCreations() {
                     onTouchEnd={handleTouchEnd}
                     /* DRAG EVENTS (Kung naka-zoom, free panning. Kung hindi, X-axis swipe lang) */
                     drag={zoomScale > 1 ? true : "x"}
-                    dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }}
+                    dragConstraints={zoomScale > 1 ? { left: -500, right: 500, top: -500, bottom: 500 } : { left: 0, right: 0 }}
                     dragElastic={zoomScale > 1 ? 0.2 : 0.7}
                     onDragEnd={(e, { offset }) => {
                       if (zoomScale > 1) return; // Wag lumipat sa next picture kapag naka-zoom in at nagda-drag
@@ -1349,22 +1349,26 @@ export default function DreamCreations() {
             </div>
 
             {/* UNIFIED SCATTERED POLAROIDS AREA (Mobile & Desktop) */}
-            <div className="relative w-full h-full max-w-5xl mx-auto flex items-center justify-center z-10 mt-8 md:mt-0">
+            <div className="relative w-full h-full max-w-[100vw] mx-auto flex items-center justify-center z-10 mt-8 md:mt-0 overflow-hidden">
               {photographyShots.map((shot, idx) => {
+                const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+                const spreadX = isMobile ? 1.5 : 4;
+                const spreadY = isMobile ? 2 : 4;
+
                 return (
                   <motion.div
                     key={shot.id || idx}
                     drag
-                    dragConstraints={{ left: -150, right: 150, top: -150, bottom: 150 }}
-                    initial={{ opacity: 0, scale: 0, x: 0, y: 0, rotate: 0 }}
+                    dragConstraints={{ left: -400, right: 400, top: -400, bottom: 400 }}
+                    initial={{ opacity: 0, scale: 0.8, x: (shot.x || 0) * spreadX, y: (shot.y || 0) * spreadY, rotate: (shot.rot || 0) }}
                     animate={{ 
                       opacity: 1, 
                       scale: 1, 
-                      x: shot.x || 0, 
-                      y: shot.y || 0, 
+                      x: (shot.x || 0) * spreadX, 
+                      y: (shot.y || 0) * spreadY, 
                       rotate: shot.rot || 0 
                     }}
-                    transition={{ type: "spring", damping: 15, delay: idx * 0.1 }}
+                    transition={{ type: "spring", damping: 20, stiffness: 100 }}
                     whileHover={{ 
                       scale: 1.15, 
                       rotate: 0, 
