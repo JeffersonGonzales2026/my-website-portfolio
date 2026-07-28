@@ -474,24 +474,15 @@ export default function DreamCreations() {
     if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  // Modified: Just sets state to open modal, no scrolling
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
-    setTimeout(() => { scrollToSection('portfolio-directory'); }, 350); 
   };
 
+  // Modified: Just sets state to open modal, no scrolling
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(null); // Just null, don't open board directly
-    
-    setTimeout(() => { 
-      const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
-      const targetElement = document.getElementById(targetId);
-      if (targetElement) {
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else {
-        scrollToSection('portfolio-directory');
-      }
-    }, 350); 
+    setActivePortfolioSubtitle(subtitleName); 
   };
 
   const filteredProjects = activePortfolioSubtitle 
@@ -795,82 +786,79 @@ export default function DreamCreations() {
 
       <div id="portfolio-directory" className="scroll-mt-24" />
 
-      {/* ================= UNIFIED PORTFOLIO DIRECTORY ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-[120vh]">
+      {/* ================= UNIFIED PORTFOLIO DIRECTORY (PERMANENTLY VISIBLE) ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-screen">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
           <div className="text-center md:text-left">
             <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Archive</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
             <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are pulled directly from our live CMS.</p>
           </div>
-          <button 
-            onClick={() => {
-              setActivePortfolioSubtitle(null);
-              setTimeout(() => { scrollToSection('portfolio-directory'); }, 350);
-            }} 
-            className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20"
-          >
-            View Full Archive
-          </button>
         </div>
 
-        <AnimatePresence mode="wait">
-          {!activePortfolioSubtitle ? (
-            <motion.div key="subtitle-list" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="space-y-16 relative z-20">
-              
-              {creationsCategories.map((cat) => (
-                <div key={cat.id} className="pt-4">
-                  <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block">{cat.category}</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {cat.items.map((subtitle, idx) => {
-                      
-                      const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
-                      const coverImage = latestProjectWithImage?.featured_image_url || `/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`;
+        <div className="space-y-16 relative z-20">
+          {creationsCategories.map((cat) => (
+            <div key={cat.id} className="pt-4">
+              <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block">{cat.category}</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {cat.items.map((subtitle, idx) => {
+                  
+                  const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
+                  const coverImage = latestProjectWithImage?.featured_image_url || `/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`;
 
-                      return (
-                        <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
-                          {isVideo(coverImage) ? (
-                            <video key={coverImage} src={`${coverImage}#t=0.1`} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
-                          ) : (
-                            <img key={coverImage} src={coverImage} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
-                          )}
-                          <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
-                          <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
-                          <div className="absolute inset-0 p-6 flex flex-col justify-end pointer-events-none">
-                            <span className="text-[#1095d2] text-[10px] font-black uppercase tracking-wider mb-2">View Works</span>
-                            <h4 className="text-white font-bold text-xl group-hover:text-[#1095d2] transition-colors">{subtitle}</h4>
-                          </div>
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          ) : (
-            <motion.div key="works-grid" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="relative z-20 pt-4">
-              
+                  return (
+                    <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
+                      {isVideo(coverImage) ? (
+                        <video key={coverImage} src={`${coverImage}#t=0.1`} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                      ) : (
+                        <img key={coverImage} src={coverImage} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
+                      <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
+                      <div className="absolute inset-0 p-6 flex flex-col justify-end pointer-events-none">
+                        <span className="text-[#1095d2] text-[10px] font-black uppercase tracking-wider mb-2">View Works</span>
+                        <h4 className="text-white font-bold text-xl group-hover:text-[#1095d2] transition-colors">{subtitle}</h4>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ================= PORTFOLIO SUBTITLE GALLERY MODAL ================= */}
+      <AnimatePresence>
+        {activePortfolioSubtitle && (
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50, transition: { duration: 0.3 } }}
+            className="fixed inset-0 z-[150] flex flex-col bg-[#050508]/95 backdrop-blur-xl overflow-hidden"
+          >
+            {/* Background Glow */}
+            <div className="absolute inset-0 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16, 149, 210, 0.1), transparent 80%)' }} />
+            
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 md:p-8 border-b border-white/10 relative z-10 shrink-0 bg-black/40">
+              <div>
+                <h2 className="text-xl md:text-3xl font-black text-white tracking-widest uppercase">
+                  Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span>
+                </h2>
+              </div>
               <button 
-                onClick={() => { 
-                  const prevSub = activePortfolioSubtitle;
-                  setActivePortfolioSubtitle(null); 
-                  setTimeout(() => { 
-                    if (prevSub) {
-                      const targetId = prevSub.toLowerCase().replace(/\s+/g, '-');
-                      const targetElement = document.getElementById(targetId);
-                      if (targetElement) {
-                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                      }
-                    }
-                  }, 350); 
-                }} 
-                className="flex items-center gap-2 text-sm text-white/60 hover:text-[#1095d2] transition-colors mb-8 cursor-pointer"
+                onClick={() => setActivePortfolioSubtitle(null)} 
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 shrink-0"
               >
-                <ArrowLeft size={16} /> Back to Directory
+                <X size={20} className="md:w-6 md:h-6" />
               </button>
+            </div>
 
-              <h4 className="text-2xl font-bold text-white mb-6">Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span></h4>
-              {/* ================= ADDED: WATERCOLOR PORTRAITS DESCRIPTION ================= */}
+            {/* Scrollable Gallery Content */}
+            <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar relative z-10">
+              
+              {/* Watercolor Portraits Description */}
               {activePortfolioSubtitle === 'Watercolor Portraits' && (
                 <motion.div 
                   initial={{ opacity: 0, y: -10 }}
@@ -885,7 +873,8 @@ export default function DreamCreations() {
                   </div>
                 </motion.div>
               )}
-              {/* ================= FIX: CSS COLUMNS MASONRY LAYOUT ================= */}
+
+              {/* Grid Render */}
               {activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' ? (
                 <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5">
                   {visualProjects.length > 0 ? (
@@ -990,10 +979,10 @@ export default function DreamCreations() {
                   )}
                 </div>
               )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </section>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ================= BONUS: VISIONS THROUGH THE LENS (PHOTOGRAPHY) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-10 z-10 relative border-t border-white/10 mt-10">
