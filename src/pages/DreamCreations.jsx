@@ -1232,10 +1232,10 @@ export default function DreamCreations() {
               {photographyShots.map((shot, idx) => {
                 
                 // MULTIPLIER NG KALAT (VW at VH):
-                // x ay mula -40vw hanggang +40vw (sakop buong left to right width)
-                // y ay mula -40vh hanggang +40vh (sakop buong top to bottom height)
-                const mappedX = `${(shot.x || 0) * 0.4}vw`;
-                const mappedY = `${(shot.y || 0) * 0.8}vh`;
+                // x ay mula -45vw hanggang +45vw (halos sakop buong left to right width)
+                // y ay mula -42vh hanggang +42vh (halos sakop buong top to bottom height)
+                const mappedX = `${(shot.x || 0) * 0.45}vw`;
+                const mappedY = `${(shot.y || 0) * 0.85}vh`;
 
                 return (
                   <motion.div
