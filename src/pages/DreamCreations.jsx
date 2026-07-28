@@ -1266,7 +1266,7 @@ export default function DreamCreations() {
                     onTouchEnd={handleTouchEnd}
                     /* DRAG EVENTS (Kung naka-zoom, free panning. Kung hindi, X-axis swipe lang) */
                     drag={zoomScale > 1 ? true : "x"}
-                    dragConstraints={zoomScale > 1 ? { left: -500, right: 500, top: -500, bottom: 500 } : { left: 0, right: 0 }}
+                    dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }}
                     dragElastic={zoomScale > 1 ? 0.2 : 0.7}
                     onDragEnd={(e, { offset }) => {
                       if (zoomScale > 1) return; // Wag lumipat sa next video kapag naka-zoom in at nagda-drag
@@ -1291,7 +1291,7 @@ export default function DreamCreations() {
                     onTouchEnd={handleTouchEnd}
                     /* DRAG EVENTS (Kung naka-zoom, free panning. Kung hindi, X-axis swipe lang) */
                     drag={zoomScale > 1 ? true : "x"}
-                    dragConstraints={zoomScale > 1 ? { left: -500, right: 500, top: -500, bottom: 500 } : { left: 0, right: 0 }}
+                    dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }}
                     dragElastic={zoomScale > 1 ? 0.2 : 0.7}
                     onDragEnd={(e, { offset }) => {
                       if (zoomScale > 1) return; // Wag lumipat sa next picture kapag naka-zoom in at nagda-drag
@@ -1307,7 +1307,7 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= POLAROID PHOTOGRAPHY MODAL (RESPONSIVE MOBILE & DESKTOP) ================= */}
+      {/* ================= POLAROID PHOTOGRAPHY MODAL (UNIFIED SCATTERED LAYOUT) ================= */}
       <AnimatePresence>
         {isPhotographyOpen && (
           <motion.div 
@@ -1331,24 +1331,36 @@ export default function DreamCreations() {
               <p className="text-[#1095d2] font-mono text-[10px] md:text-xs mt-0.5">Select a polaroid to view full frame.</p>
             </div>
 
-            {/* MOBILE LAYOUT: SCROLLABLE POLAROID GRID (Visible on phones) */}
-            <div className="md:hidden w-full flex-1 overflow-y-auto mt-6 pb-20 pr-1 space-y-6 flex flex-col items-center custom-scrollbar z-10">
+            {/* UNIFIED SCATTERED POLAROIDS AREA (Mobile & Desktop) */}
+            <div className="relative w-full h-full max-w-5xl mx-auto flex items-center justify-center z-10 mt-8 md:mt-0">
               {photographyShots.map((shot, idx) => {
-                const tilts = [-3, 2, -2, 4, -4, 3];
-                const tilt = tilts[idx % tilts.length];
                 return (
                   <motion.div
                     key={shot.id || idx}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.08 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="p-3 pb-8 bg-[#f8f8f8] shadow-[0_10px_30px_rgba(0,0,0,0.8)] rounded-sm cursor-pointer w-64 shrink-0"
-                    style={{ transform: `rotate(${tilt}deg)` }}
+                    drag
+                    dragConstraints={{ left: -150, right: 150, top: -150, bottom: 150 }}
+                    initial={{ opacity: 0, scale: 0, x: 0, y: 0, rotate: 0 }}
+                    animate={{ 
+                      opacity: 1, 
+                      scale: 1, 
+                      x: shot.x || 0, 
+                      y: shot.y || 0, 
+                      rotate: shot.rot || 0 
+                    }}
+                    transition={{ type: "spring", damping: 15, delay: idx * 0.1 }}
+                    whileHover={{ 
+                      scale: 1.15, 
+                      rotate: 0, 
+                      zIndex: 50,
+                      boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9)"
+                    }}
+                    whileTap={{ scale: 1.15, zIndex: 50 }}
+                    className="absolute p-2 pb-8 md:p-3 md:pb-10 bg-[#f8f8f8] shadow-[0_15px_35px_rgba(0,0,0,0.6)] cursor-grab active:cursor-grabbing rounded-sm"
                     onClick={() => setSelectedPhoto(shot.url)}
+                    style={{ zIndex: 10 + idx }}
                   >
-                    <img src={shot.url} alt={shot.title || "Captured Shot"} className="w-full h-56 object-cover pointer-events-none filter contrast-[0.95] sepia-[0.1]" />
-                    <p className="mt-2 text-center text-black/70 font-mono text-[11px] font-bold truncate px-2">
+                    <img src={shot.url} alt={shot.title || "Shot"} className="w-28 h-28 sm:w-48 sm:h-48 md:w-64 md:h-64 object-cover pointer-events-none filter contrast-[0.9] sepia-[0.2]" />
+                    <p className="absolute bottom-2 md:bottom-3 left-0 w-full text-center text-black/60 font-mono text-[9px] sm:text-[10px] md:text-xs font-bold pointer-events-none truncate px-2">
                       {shot.title || "Captured Dream"}
                     </p>
                   </motion.div>
@@ -1357,38 +1369,6 @@ export default function DreamCreations() {
               {photographyShots.length === 0 && (
                 <div className="text-white/40 text-xs font-mono py-12">No photography shots added yet.</div>
               )}
-            </div>
-
-            {/* DESKTOP LAYOUT: SCATTERED TABLE AREA (Visible on tablets/laptops) */}
-            <div className="hidden md:flex relative w-full h-full max-w-5xl mx-auto items-center justify-center z-10">
-              {photographyShots.map((shot, idx) => (
-                <motion.div
-                  key={shot.id || idx}
-                  initial={{ opacity: 0, scale: 0, x: 0, y: 0, rotate: 0 }}
-                  animate={{ 
-                    opacity: 1, 
-                    scale: 1, 
-                    x: shot.x || 0, 
-                    y: shot.y || 0, 
-                    rotate: shot.rot || 0 
-                  }}
-                  transition={{ type: "spring", damping: 15, delay: idx * 0.1 }}
-                  whileHover={{ 
-                    scale: 1.2, 
-                    rotate: 0, 
-                    zIndex: 50,
-                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9)"
-                  }}
-                  className="absolute p-3 pb-10 bg-[#f8f8f8] shadow-[0_15px_35px_rgba(0,0,0,0.6)] cursor-pointer rounded-sm"
-                  onClick={() => setSelectedPhoto(shot.url)}
-                  style={{ zIndex: 10 + idx }}
-                >
-                  <img src={shot.url} alt={shot.title || "Shot"} className="w-48 h-48 md:w-64 md:h-64 object-cover pointer-events-none filter contrast-[0.9] sepia-[0.2]" />
-                  <p className="absolute bottom-3 left-0 w-full text-center text-black/60 font-mono text-xs font-bold pointer-events-none truncate px-2">
-                    {shot.title || "Captured Dream"}
-                  </p>
-                </motion.div>
-              ))}
             </div>
 
             {/* Selected Photo Fullscreen Overlay */}
