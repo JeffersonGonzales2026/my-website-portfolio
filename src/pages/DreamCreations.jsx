@@ -190,47 +190,67 @@ export default function DreamCreations() {
   // SCROLL LOCK FIX FOR ALL MODALS
   useEffect(() => {
     const isAnyModalOpen = activePortfolioSubtitle || isPhotographyOpen || activeCreationPopup || previewImage || isFlipbookOpen;
+    const html = document.documentElement;
+    const body = document.body;
+    
     if (isAnyModalOpen) {
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
+      html.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      html.style.overflow = '';
+      body.style.overflow = '';
     }
+
     return () => {
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      html.style.overflow = '';
+      body.style.overflow = '';
     };
   }, [activePortfolioSubtitle, isPhotographyOpen, activeCreationPopup, previewImage, isFlipbookOpen]);
 
   // ZOOM STATES & LOGIC
   const [zoomScale, setZoomScale] = useState(1);
   const initialPinchDist = useRef(null);
-  useEffect(() => { setZoomScale(1); }, [previewImage]);
+
+  useEffect(() => {
+    setZoomScale(1);
+  }, [previewImage]);
 
   const handleTouchStart = (e) => {
     if (e.touches.length === 2) {
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
-      initialPinchDist.current = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+      initialPinchDist.current = Math.hypot(
+        touch1.clientX - touch2.clientX,
+        touch1.clientY - touch2.clientY
+      );
     }
   };
+
   const handleTouchMove = (e) => {
     if (e.touches.length === 2 && initialPinchDist.current !== null) {
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
-      const currentDist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+      const currentDist = Math.hypot(
+        touch1.clientX - touch2.clientX,
+        touch1.clientY - touch2.clientY
+      );
       const newScale = zoomScale * (currentDist / initialPinchDist.current);
       setZoomScale(Math.min(Math.max(1, newScale), 4));
       initialPinchDist.current = currentDist;
     }
   };
-  const handleTouchEnd = () => { initialPinchDist.current = null; };
+
+  const handleTouchEnd = () => {
+    initialPinchDist.current = null;
+  };
 
   const goNextPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext(); };
   const goPrevPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipPrev(); };
   const onPageFlip = (e) => { setFlipbookCurrentPage(e.data); };
-  const getFlipbookUrl = (pageIndex, prefix = 'page-', ext = 'jpg') => `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/${prefix}${pageIndex}.${ext}`;
+
+  const getFlipbookUrl = (pageIndex, prefix = 'page-', ext = 'jpg') => {
+    return `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/${prefix}${pageIndex}.${ext}`;
+  };
 
   const [pageResume, setPageResume] = useState(null);
   const [randomGlowIndex, setRandomGlowIndex] = useState(null);
@@ -626,7 +646,7 @@ export default function DreamCreations() {
             </div>
             <div className="space-y-4">
               <p className="text-base md:text-lg text-white/70 leading-relaxed">Jeff created Dream Creations with the vision of helping businesses communicate more effectively through thoughtful and impactful visual design.</p>
-              <p className="text-base md:text-lg text-white/70 leading-relaxed">With more than ten years of professional experience, he has worked across multiple industries including healthcare, finance, insurance, technology, apparel, education, e-commerce, printing, media, and real estate.</p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">With more than ten years of professional experience, he has worked across many industries including healthcare, finance, insurance, technology, apparel, education, e-commerce, printing, media, and real estate.</p>
               <p className="text-base md:text-lg text-white/70 leading-relaxed">Inspired by his former team manager, he started building his own team of graphic designers with a vision to empower more dreamers (clients) and creators (designers).</p>
               <p className="text-base md:text-lg text-white/70 leading-relaxed">Today, he continues leading Dream Creations while expanding its capabilities through data analytics, automation, and software development.</p>
             </div>
@@ -802,6 +822,12 @@ export default function DreamCreations() {
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
             <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are pulled directly from our live CMS.</p>
           </div>
+          <button 
+            onClick={() => openPortfolioGallery('All Projects')} 
+            className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20"
+          >
+            View Full Archive
+          </button>
         </div>
 
         <div className="space-y-16 relative z-20">
@@ -819,24 +845,44 @@ export default function DreamCreations() {
                   const isYt = !!ytID;
 
                   return (
-                    <button key={idx} id={getSafeText(subtitle).replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
+                    <button key={idx} id={getSafeText(subtitle).replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500 bg-[#0e111a]">
                       
                       {!isYt && isVideo(finalCover) ? (
-                        <video key={finalCover} src={`${finalCover}#t=0.1`} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                        <video 
+                          key={finalCover} 
+                          src={`${finalCover}#t=0.1`} 
+                          className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none z-10" 
+                          autoPlay loop muted playsInline preload="metadata" 
+                          onError={(e) => { 
+                            e.currentTarget.style.display = 'none'; 
+                          }} 
+                        />
                       ) : (
-                        <img key={finalCover} src={finalCover} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                        <img 
+                           key={finalCover} 
+                           src={finalCover} 
+                           alt={subtitle} 
+                           className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none z-10" 
+                           onError={(e) => { 
+                              e.currentTarget.style.display = 'none'; 
+                           }} 
+                        />
                       )}
                       
-                      <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
-                      <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 z-0" />
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+                         <ImagePlaceholder size={48} className="text-white/10" />
+                      </div>
+
+                      <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300 z-20" />
                       
                       {isYt && (
-                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
                             <MonitorPlay size={36} className="text-white/50 group-hover:text-[#1095d2] transition-colors drop-shadow-lg" />
                          </div>
                       )}
 
-                      <div className="absolute inset-0 p-6 flex flex-col justify-end pointer-events-none">
+                      <div className="absolute inset-0 p-6 flex flex-col justify-end pointer-events-none z-30">
                         <span className="text-[#1095d2] text-[10px] font-black uppercase tracking-wider mb-2">View Works</span>
                         <h4 className="text-white font-bold text-xl group-hover:text-[#1095d2] transition-colors">{subtitle}</h4>
                       </div>
@@ -858,10 +904,8 @@ export default function DreamCreations() {
             exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
             className="fixed inset-0 z-[150] flex flex-col bg-[#050508]/95 backdrop-blur-2xl overflow-hidden pointer-events-auto"
           >
-            {/* Background Glow */}
             <div className="absolute inset-0 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16, 149, 210, 0.1), transparent 80%)' }} />
             
-            {/* Header */}
             <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10 relative z-10 shrink-0 bg-black/40 pointer-events-auto">
               <div>
                 <h2 className="text-lg md:text-2xl font-black text-white tracking-widest uppercase">
@@ -876,10 +920,8 @@ export default function DreamCreations() {
               </button>
             </div>
 
-            {/* Scrollable Gallery Content */}
             <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar relative z-10 pointer-events-auto">
               
-              {/* Watercolor Portraits Description */}
               {activePortfolioSubtitle === 'Watercolor Portraits' && (
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 p-5 rounded-2xl bg-[#1095d2]/10 border border-[#1095d2]/30 backdrop-blur-md max-w-4xl">
                   <div className="flex items-start gap-3">
@@ -896,23 +938,23 @@ export default function DreamCreations() {
                     visualProjects.map((project) => {
                       const ytID = getYouTubeID(project.featured_image_url) || getYouTubeID(project.video_url);
                       const displayImg = ytID ? `https://img.youtube.com/vi/${ytID}/hqdefault.jpg` : project.featured_image_url;
-
+                      
                       return (
                         <div 
                           key={project.id} 
                           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPreviewImage(project); }}
                           onMouseEnter={(e) => { const vid = e.currentTarget.querySelector('video'); if (vid) vid.play(); }}
                           onMouseLeave={(e) => { const vid = e.currentTarget.querySelector('video'); if (vid) { vid.pause(); vid.currentTime = 0.1; } }}
-                          className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#050508] block rounded-none pointer-events-auto"
+                          className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#0e111a] block rounded-none pointer-events-auto"
                         >
                           {displayImg ? ( 
                             !ytID && isVideo(displayImg) ? (
-                              <video key={displayImg} src={`${displayImg}#t=0.1`} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" loop muted playsInline preload="metadata" />
+                              <video src={`${displayImg}#t=0.1`} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none relative z-10" loop muted playsInline preload="metadata" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                             ) : (
                               <>
-                                <img src={displayImg} alt={project.title} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
+                                <img src={displayImg} alt={project.title} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none relative z-10" onError={(e) => { e.currentTarget.style.display = 'none'; }} /> 
                                 {ytID && (
-                                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors pointer-events-none">
+                                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors pointer-events-none z-20">
                                       <div className="w-12 h-12 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
                                         <MonitorPlay size={20} className="ml-1" />
                                       </div>
@@ -921,7 +963,10 @@ export default function DreamCreations() {
                               </>
                             )
                           ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20 pointer-events-none">
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+                            <ImagePlaceholder size={32} className="text-white/10" />
+                          </div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-30 pointer-events-none">
                             <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
                             <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
                           </div>
@@ -954,24 +999,28 @@ export default function DreamCreations() {
                               setPreviewImage(project); 
                             }
                           }}
-                          className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer pointer-events-auto"
+                          className="relative rounded-2xl border border-white/10 bg-[#0e111a] overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer pointer-events-auto"
                         >
                            <div className="aspect-video relative overflow-hidden bg-black/60">
                              {displayImg ? ( 
                                !ytID && isVideo(displayImg) ? (
-                                 <video key={displayImg} src={`${displayImg}#t=0.1`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
+                                 <video src={`${displayImg}#t=0.1`} className="w-full h-full relative z-10 object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                                ) : (
-                                 <img key={displayImg} src={displayImg} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
+                                 <img src={displayImg} alt={project.title} className="w-full h-full relative z-10 object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" onError={(e) => { e.currentTarget.style.display = 'none'; }} /> 
                                )
                              ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
                              
+                             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+                                <ImagePlaceholder size={48} className="text-white/10" />
+                             </div>
+
                              {(project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && !safeTitle.includes('profile') && !safeTitle.includes('brochure')) || ytID ? (
-                               <a onClick={(e) => { e.preventDefault(); setPreviewImage(project); }} className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                               <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
                                  <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform"><MonitorPlay size={24} className="ml-1" /></div>
-                               </a>
+                               </div>
                              ) : null}
                            </div>
-                           <div className="p-6">
+                           <div className="p-6 relative z-30">
                               <h4 className="text-lg font-bold text-white mb-1 group-hover:text-[#1095d2] transition-colors">{project.title}</h4>
                               <p className="text-xs text-[#1095d2] font-mono mb-4">{project.client_name || 'Independent Project'}</p>
                               <p className="text-sm text-white/60 line-clamp-3 leading-relaxed">{project.description}</p>
@@ -1011,7 +1060,7 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= POPUP MODAL NAVIGATION ================= */}
+      {/* ================= POPUP MODAL NAVIGATION & YOUTUBE PLAYER ================= */}
       <AnimatePresence>
         {previewImage && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.3 } }} className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer pointer-events-auto" onClick={() => setPreviewImage(null)}>
@@ -1023,6 +1072,7 @@ export default function DreamCreations() {
             {hasPrev && ( <button onClick={handlePrevImage} className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400] cursor-pointer pointer-events-auto"><ChevronLeft size={24} /></button> )}
             {hasNext && ( <button onClick={handleNextImage} className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400] cursor-pointer pointer-events-auto"><ChevronRight size={24} /></button> )}
             
+            {/* Zoom Controls (Only show if NOT YouTube) */}
             {!(getYouTubeID(previewImage.featured_image_url) || getYouTubeID(previewImage.video_url)) && (
               <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[500] flex items-center gap-4 bg-black/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
                 <button onClick={() => setZoomScale(prev => Math.max(prev - 0.5, 1))} className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"><span className="text-2xl leading-none -mt-0.5">−</span></button>
@@ -1062,6 +1112,7 @@ export default function DreamCreations() {
                          onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} 
                          drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} 
                          onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} 
+                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                       />
                     )
                   }
@@ -1069,6 +1120,115 @@ export default function DreamCreations() {
               </AnimatePresence>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= BONUS: VISIONS THROUGH THE LENS (PHOTOGRAPHY) ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-10 z-10 relative border-t border-white/10 mt-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative rounded-3xl overflow-hidden group cursor-pointer border border-[#1095d2]/20 bg-black/40 min-h-[300px] flex items-center justify-center shadow-[0_0_30px_rgba(16,149,210,0.15)]"
+          onClick={() => setIsPhotographyOpen(true)}
+        >
+          <div 
+            className="absolute inset-0 bg-cover bg-center opacity-20 group-hover:opacity-40 group-hover:scale-105 transition-all duration-700 grayscale group-hover:grayscale-0" 
+            style={{ backgroundImage: `url(${photographyShots[0]?.url || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1600&auto=format&fit=crop'})` }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+          <div className="absolute inset-0 bg-white opacity-0 group-hover:animate-flash pointer-events-none" />
+          <style>{`@keyframes flash { 0% { opacity: 0; } 10% { opacity: 0.8; } 100% { opacity: 0; } } .group-hover\\:animate-flash:hover { animation: flash 1s ease-out; }`}</style>
+
+          <div className="relative z-10 text-center p-8 max-w-2xl">
+            <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center justify-center mx-auto mb-4 group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]/50 group-hover:text-[#1095d2] transition-colors duration-300">
+              <Camera size={28} className="text-white/80 group-hover:text-[#1095d2]" />
+            </div>
+            <h3 className="text-sm font-mono text-[#1095d2] uppercase tracking-widest font-bold mb-2">A Creative Outlet</h3>
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-4">Visions Through the Lens</h2>
+            <p className="text-sm text-white/60 leading-relaxed mb-6">
+              Beyond the canvas of digital design lies my rawest creative outlet. This isn't a formal service, but a personal gallery—a bonus glimpse into how I capture and compose reality through a camera lens.
+            </p>
+            <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-wider group-hover:bg-[#1095d2] transition-colors">
+              Enter Gallery <ArrowRight size={14} />
+            </span>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ================= PRICING / PROJECT INVESTMENT ================= */}
+      <section className="max-w-4xl mx-auto w-full px-6 py-24 z-10 relative text-center mt-10">
+        <div className="mb-12"><h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Investment</h3><div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" /></div>
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="p-10 md:p-14 rounded-3xl border border-[#1095d2]/20 bg-gradient-to-b from-[#1095d2]/10 to-black/40 backdrop-blur-md relative overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-[#1095d2]/20 blur-[80px] -z-10 pointer-events-none" />
+          <div className="w-16 h-16 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center mx-auto mb-6"><Calculator size={32} /></div>
+          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">Custom Tailored <span className="text-[#1095d2]">Quotations</span></h2>
+          <p className="text-base text-white/70 mb-8 max-w-xl mx-auto">Every dream is unique. Rather than offering rigid pricing tiers, we provide tailored quotations based exactly on your specific project requirements, timeline, and requested deliverables. Let's discuss your vision.</p>
+          <button onClick={() => window.location.href = '/contact'} className="px-8 py-4 rounded-xl bg-[#1095d2] text-white font-bold text-sm hover:bg-[#0c7ab0] transition-colors shadow-[0_0_20px_rgba(16,149,210,0.4)] hover:shadow-[0_0_30px_rgba(16,149,210,0.6)] group cursor-pointer relative z-20">Request a Quote</button>
+        </motion.div>
+      </section>
+
+      {/* ================= PAGE RESUME DOWNLOAD ================= */}
+      {pageResume && (
+        <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center">
+          <motion.a href={pageResume.file_url || pageResume.pdf_url} target="_blank" rel="noopener noreferrer" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} whileHover={{ scale: 1.02 }} className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-[#1095d2]/20 to-black/40 border border-[#1095d2]/30 hover:border-[#1095d2] transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(16,149,210,0.15)] hover:shadow-[0_0_30px_rgba(16,149,210,0.3)]">
+            <div className="w-12 h-12 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0"><Download size={20} /></div>
+            <div className="text-left">
+              <span className="text-[10px] text-white/50 uppercase tracking-widest block font-semibold mb-0.5">Download Professional Resume</span>
+              <span className="text-sm md:text-base font-bold text-white group-hover:text-[#1095d2] transition-colors block">{pageResume.title || 'Dream Creations Resume'}</span>
+            </div>
+          </motion.a>
+        </section>
+      )}
+
+      {/* ================= TRANSITION TO THE NEXT JOURNEY ================= */}
+      <section className="w-full relative border-t border-white/10 mt-16 pt-32 pb-32 px-6 overflow-hidden z-10 flex flex-col items-center text-center">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#021f1a] to-[#011410] -z-10" />
+        <div className="max-w-3xl mx-auto relative z-20">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="flex flex-col items-center">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-8"><Database size={14} /> The Next Chapter</div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight mb-8">Evolution of <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Design & Data.</span></h2>
+            <div className="space-y-6 text-base md:text-lg text-slate-300 mb-12 leading-relaxed">
+              <p>Every stage of my career builds upon the previous one. The transition from a creative professional to a data-driven analyst reflects my evolution from crafting visual stories to uncovering the insights that drive them.</p>
+              <p>The next chapter introduces my journey into Data Analytics, where structured logic, reporting, and dashboarding converge with creative problem-solving.</p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+              <button onClick={() => window.location.href = '/data-analyst'} className="w-full sm:w-auto px-8 py-4 rounded-xl bg-emerald-500 text-black font-bold text-sm hover:bg-emerald-400 transition-colors shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 cursor-pointer relative z-20">Continue as Data Analyst <ArrowRight size={16} /></button>
+              <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-sm transition-colors flex items-center justify-center gap-2 backdrop-blur-md cursor-pointer relative z-20"><ArrowUp size={16} /> Back to Top</button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ================= INTERACTIVE POP-UP MODAL (CREATIONS DIRECTORY MENU) ================= */}
+      <AnimatePresence>
+        {activeCreationPopup && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setActiveCreationPopup(null)} className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer" />
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-lg bg-[#0b1026] border border-[#1095d2]/30 rounded-3xl p-8 shadow-[0_0_50px_rgba(16,149,210,0.4)] overflow-hidden">
+              <button onClick={() => setActiveCreationPopup(null)} className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors cursor-pointer"><X size={24} /></button>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-xl bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center shrink-0">{activeCreationPopup.icon}</div>
+                <div>
+                  <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">{activeCreationPopup.category}</h3>
+                  <p className="text-xs md:text-sm text-white/60">Select a specific area to view works</p>
+                </div>
+              </div>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {activeCreationPopup.items.map((item, idx) => (
+                  <li key={idx}>
+                    <button 
+                      onClick={() => handleSubtitleModalClick(item)}
+                      className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group cursor-pointer"
+                    >
+                      <span className="text-[#1095d2] group-hover:translate-x-1 transition-transform">▹</span>
+                      <span className="text-sm font-medium text-white/80 group-hover:text-white">{item}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
