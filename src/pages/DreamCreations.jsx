@@ -834,9 +834,9 @@ export default function DreamCreations() {
                   const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
                   let rawCover = latestProjectWithImage?.featured_image_url || `/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`;
                   
-                  // YOUTUBE AUTO-THUMBNAIL LOGIC FOR COVER
+                  // YOUTUBE AUTO-THUMBNAIL LOGIC FOR COVER (USING hqdefault.jpg SAFER FALLBACK)
                   const ytID = getYouTubeID(rawCover);
-                  const finalCover = ytID ? `https://img.youtube.com/vi/${ytID}/maxresdefault.jpg` : rawCover;
+                  const finalCover = ytID ? `https://img.youtube.com/vi/${ytID}/hqdefault.jpg` : rawCover;
                   const isYt = !!ytID;
 
                   return (
@@ -844,7 +844,13 @@ export default function DreamCreations() {
                       {!isYt && isVideo(finalCover) ? (
                         <video key={finalCover} src={`${finalCover}#t=0.1`} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                       ) : (
-                        <img key={finalCover} src={finalCover} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                        <img 
+                           key={finalCover} 
+                           src={finalCover} 
+                           alt={subtitle} 
+                           className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" 
+                           onError={(e) => { e.target.onerror = null; e.target.src = '/Logo Banner.png'; }} 
+                        />
                       )}
                       <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
                       <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
@@ -869,115 +875,6 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= BONUS: VISIONS THROUGH THE LENS (PHOTOGRAPHY) ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-10 z-10 relative border-t border-white/10 mt-10">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="relative rounded-3xl overflow-hidden group cursor-pointer border border-[#1095d2]/20 bg-black/40 min-h-[300px] flex items-center justify-center shadow-[0_0_30px_rgba(16,149,210,0.15)]"
-          onClick={() => setIsPhotographyOpen(true)}
-        >
-          <div 
-            className="absolute inset-0 bg-cover bg-center opacity-20 group-hover:opacity-40 group-hover:scale-105 transition-all duration-700 grayscale group-hover:grayscale-0" 
-            style={{ backgroundImage: `url(${photographyShots[0]?.url || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1600&auto=format&fit=crop'})` }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
-          <div className="absolute inset-0 bg-white opacity-0 group-hover:animate-flash pointer-events-none" />
-          <style>{`@keyframes flash { 0% { opacity: 0; } 10% { opacity: 0.8; } 100% { opacity: 0; } } .group-hover\\:animate-flash:hover { animation: flash 1s ease-out; }`}</style>
-
-          <div className="relative z-10 text-center p-8 max-w-2xl">
-            <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center justify-center mx-auto mb-4 group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]/50 group-hover:text-[#1095d2] transition-colors duration-300">
-              <Camera size={28} className="text-white/80 group-hover:text-[#1095d2]" />
-            </div>
-            <h3 className="text-sm font-mono text-[#1095d2] uppercase tracking-widest font-bold mb-2">A Creative Outlet</h3>
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-4">Visions Through the Lens</h2>
-            <p className="text-sm text-white/60 leading-relaxed mb-6">
-              Beyond the canvas of digital design lies my rawest creative outlet. This isn't a formal service, but a personal gallery—a bonus glimpse into how I capture and compose reality through a camera lens.
-            </p>
-            <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-wider group-hover:bg-[#1095d2] transition-colors">
-              Enter Gallery <ArrowRight size={14} />
-            </span>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* ================= PRICING / PROJECT INVESTMENT ================= */}
-      <section className="max-w-4xl mx-auto w-full px-6 py-24 z-10 relative text-center mt-10">
-        <div className="mb-12"><h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Investment</h3><div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" /></div>
-        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="p-10 md:p-14 rounded-3xl border border-[#1095d2]/20 bg-gradient-to-b from-[#1095d2]/10 to-black/40 backdrop-blur-md relative overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-[#1095d2]/20 blur-[80px] -z-10 pointer-events-none" />
-          <div className="w-16 h-16 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center mx-auto mb-6"><Calculator size={32} /></div>
-          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">Custom Tailored <span className="text-[#1095d2]">Quotations</span></h2>
-          <p className="text-base text-white/70 mb-8 max-w-xl mx-auto">Every dream is unique. Rather than offering rigid pricing tiers, we provide tailored quotations based exactly on your specific project requirements, timeline, and requested deliverables. Let's discuss your vision.</p>
-          <button onClick={() => window.location.href = '/contact'} className="px-8 py-4 rounded-xl bg-[#1095d2] text-white font-bold text-sm hover:bg-[#0c7ab0] transition-colors shadow-[0_0_20px_rgba(16,149,210,0.4)] hover:shadow-[0_0_30px_rgba(16,149,210,0.6)] group cursor-pointer relative z-20">Request a Quote</button>
-        </motion.div>
-      </section>
-
-      {/* ================= PAGE RESUME DOWNLOAD ================= */}
-      {pageResume && (
-        <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center">
-          <motion.a href={pageResume.file_url || pageResume.pdf_url} target="_blank" rel="noopener noreferrer" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} whileHover={{ scale: 1.02 }} className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-[#1095d2]/20 to-black/40 border border-[#1095d2]/30 hover:border-[#1095d2] transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(16,149,210,0.15)] hover:shadow-[0_0_30px_rgba(16,149,210,0.3)]">
-            <div className="w-12 h-12 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0"><Download size={20} /></div>
-            <div className="text-left">
-              <span className="text-[10px] text-white/50 uppercase tracking-widest block font-semibold mb-0.5">Download Professional Resume</span>
-              <span className="text-sm md:text-base font-bold text-white group-hover:text-[#1095d2] transition-colors block">{pageResume.title || 'Dream Creations Resume'}</span>
-            </div>
-          </motion.a>
-        </section>
-      )}
-
-      {/* ================= TRANSITION TO THE NEXT JOURNEY ================= */}
-      <section className="w-full relative border-t border-white/10 mt-16 pt-32 pb-32 px-6 overflow-hidden z-10 flex flex-col items-center text-center">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#021f1a] to-[#011410] -z-10" />
-        <div className="max-w-3xl mx-auto relative z-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="flex flex-col items-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-8"><Database size={14} /> The Next Chapter</div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight mb-8">Evolution of <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Design & Data.</span></h2>
-            <div className="space-y-6 text-base md:text-lg text-slate-300 mb-12 leading-relaxed">
-              <p>Every stage of my career builds upon the previous one. The transition from a creative professional to a data-driven analyst reflects my evolution from crafting visual stories to uncovering the insights that drive them.</p>
-              <p>The next chapter introduces my journey into Data Analytics, where structured logic, reporting, and dashboarding converge with creative problem-solving.</p>
-            </div>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-              <button onClick={() => window.location.href = '/data-analyst'} className="w-full sm:w-auto px-8 py-4 rounded-xl bg-emerald-500 text-black font-bold text-sm hover:bg-emerald-400 transition-colors shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 cursor-pointer relative z-20">Continue as Data Analyst <ArrowRight size={16} /></button>
-              <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-sm transition-colors flex items-center justify-center gap-2 backdrop-blur-md cursor-pointer relative z-20"><ArrowUp size={16} /> Back to Top</button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ================= INTERACTIVE POP-UP MODAL (CREATIONS DIRECTORY MENU) ================= */}
-      <AnimatePresence>
-        {activeCreationPopup && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setActiveCreationPopup(null)} className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer" />
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-lg bg-[#0b1026] border border-[#1095d2]/30 rounded-3xl p-8 shadow-[0_0_50px_rgba(16,149,210,0.4)] overflow-hidden">
-              <button onClick={() => setActiveCreationPopup(null)} className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors cursor-pointer"><X size={24} /></button>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-xl bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center shrink-0">{activeCreationPopup.icon}</div>
-                <div>
-                  <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">{activeCreationPopup.category}</h3>
-                  <p className="text-xs md:text-sm text-white/60">Select a specific area to view works</p>
-                </div>
-              </div>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {activeCreationPopup.items.map((item, idx) => (
-                  <li key={idx}>
-                    <button 
-                      onClick={() => handleSubtitleModalClick(item)}
-                      className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group cursor-pointer"
-                    >
-                      <span className="text-[#1095d2] group-hover:translate-x-1 transition-transform">▹</span>
-                      <span className="text-sm font-medium text-white/80 group-hover:text-white">{item}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
       {/* ================= PORTFOLIO SUBTITLE GALLERY FULL-SCREEN MODAL ================= */}
       <AnimatePresence>
         {activePortfolioSubtitle && (
@@ -987,8 +884,10 @@ export default function DreamCreations() {
             exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
             className="fixed inset-0 z-[150] flex flex-col bg-[#050508]/95 backdrop-blur-2xl overflow-hidden pointer-events-auto"
           >
+            {/* Background Glow */}
             <div className="absolute inset-0 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16, 149, 210, 0.1), transparent 80%)' }} />
             
+            {/* Header */}
             <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10 relative z-10 shrink-0 bg-black/40 pointer-events-auto">
               <div>
                 <h2 className="text-lg md:text-2xl font-black text-white tracking-widest uppercase">
@@ -1003,8 +902,10 @@ export default function DreamCreations() {
               </button>
             </div>
 
+            {/* Scrollable Gallery Content */}
             <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar relative z-10 pointer-events-auto">
               
+              {/* Watercolor Portraits Description */}
               {activePortfolioSubtitle === 'Watercolor Portraits' && (
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 p-5 rounded-2xl bg-[#1095d2]/10 border border-[#1095d2]/30 backdrop-blur-md max-w-4xl">
                   <div className="flex items-start gap-3">
@@ -1014,12 +915,14 @@ export default function DreamCreations() {
                 </motion.div>
               )}
 
+              {/* Grid Render */}
               {activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' ? (
                 <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5 block">
                   {visualProjects.length > 0 ? (
                     visualProjects.map((project) => {
+                      // YOUTUBE AUTO-THUMBNAIL LOGIC FOR INNER MASONRY GRID (hqdefault.jpg)
                       const pYtID = getYouTubeID(project.featured_image_url) || getYouTubeID(project.video_url);
-                      const pDisplayImg = pYtID ? `https://img.youtube.com/vi/${pYtID}/maxresdefault.jpg` : project.featured_image_url;
+                      const pDisplayImg = pYtID ? `https://img.youtube.com/vi/${pYtID}/hqdefault.jpg` : project.featured_image_url;
                       
                       return (
                         <div 
@@ -1034,7 +937,12 @@ export default function DreamCreations() {
                               <video src={`${pDisplayImg}#t=0.1`} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" loop muted playsInline preload="metadata" />
                             ) : (
                               <>
-                                <img src={pDisplayImg} alt={project.title} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
+                                <img 
+                                   src={pDisplayImg} 
+                                   alt={project.title} 
+                                   className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" 
+                                   onError={(e) => { e.target.onerror = null; e.target.src = '/Logo Banner.png'; }}
+                                /> 
                                 {pYtID && (
                                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors pointer-events-none">
                                       <div className="w-12 h-12 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
@@ -1059,7 +967,7 @@ export default function DreamCreations() {
                   {filteredProjects.length > 0 ? (
                     filteredProjects.map((project) => {
                       const bpYtID = getYouTubeID(project.featured_image_url) || getYouTubeID(project.video_url);
-                      const bpDisplayImg = bpYtID ? `https://img.youtube.com/vi/${bpYtID}/maxresdefault.jpg` : project.featured_image_url;
+                      const bpDisplayImg = bpYtID ? `https://img.youtube.com/vi/${bpYtID}/hqdefault.jpg` : project.featured_image_url;
 
                       return (
                         <div 
@@ -1072,6 +980,8 @@ export default function DreamCreations() {
                               }
                               setActiveFlipbookConfig({ prefix, totalPages: pages, extension }); setIsFlipbookOpen(true); setFlipbookCurrentPage(0);
                             } else if (bpYtID) {
+                              setPreviewImage(project); // Send to preview modal to play youtube
+                            } else {
                               setPreviewImage(project); 
                             }
                           }}
@@ -1082,7 +992,12 @@ export default function DreamCreations() {
                                !bpYtID && isVideo(bpDisplayImg) ? (
                                  <video src={`${bpDisplayImg}#t=0.1`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
                                ) : (
-                                 <img src={bpDisplayImg} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
+                                 <img 
+                                    src={bpDisplayImg} 
+                                    alt={project.title} 
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" 
+                                    onError={(e) => { e.target.onerror = null; e.target.src = '/Logo Banner.png'; }}
+                                 /> 
                                )
                              ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
                              
@@ -1174,7 +1089,18 @@ export default function DreamCreations() {
                     )
                   } else {
                     return (
-                      <motion.img key={previewImage.id} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={previewImage.featured_image_url} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing select-none pointer-events-auto relative z-10" alt="Preview" onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
+                      <motion.img 
+                         key={previewImage.id} 
+                         initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} 
+                         src={previewImage.featured_image_url} 
+                         className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing select-none pointer-events-auto relative z-10" 
+                         alt="Preview" 
+                         onClick={(e) => { e.stopPropagation(); }} 
+                         onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} 
+                         drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} 
+                         onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} 
+                         onError={(e) => { e.target.onerror = null; e.target.src = '/Logo Banner.png'; }}
+                      />
                     )
                   }
                 })()}
@@ -1221,6 +1147,25 @@ export default function DreamCreations() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ================= TRANSITION TO THE NEXT JOURNEY ================= */}
+      <section className="w-full relative border-t border-white/10 mt-16 pt-32 pb-32 px-6 overflow-hidden z-10 flex flex-col items-center text-center">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#021f1a] to-[#011410] -z-10" />
+        <div className="max-w-3xl mx-auto relative z-20">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="flex flex-col items-center">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-8"><Database size={14} /> The Next Chapter</div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight mb-8">Evolution of <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Design & Data.</span></h2>
+            <div className="space-y-6 text-base md:text-lg text-slate-300 mb-12 leading-relaxed">
+              <p>Every stage of my career builds upon the previous one. The transition from a creative professional to a data-driven analyst reflects my evolution from crafting visual stories to uncovering the insights that drive them.</p>
+              <p>The next chapter introduces my journey into Data Analytics, where structured logic, reporting, and dashboarding converge with creative problem-solving.</p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+              <button onClick={() => window.location.href = '/data-analyst'} className="w-full sm:w-auto px-8 py-4 rounded-xl bg-emerald-500 text-black font-bold text-sm hover:bg-emerald-400 transition-colors shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 cursor-pointer relative z-20">Continue as Data Analyst <ArrowRight size={16} /></button>
+              <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-sm transition-colors flex items-center justify-center gap-2 backdrop-blur-md cursor-pointer relative z-20"><ArrowUp size={16} /> Back to Top</button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
       {/* 🚀 Custom 3D Spaceship Cursor */}
       <motion.div className="fixed top-0 left-0 w-16 h-16 z-[9999] pointer-events-none drop-shadow-[0_20px_20px_rgba(16,149,210,0.6)]" style={{ x: smoothX, y: smoothY, rotateX: rotateX, rotateY: rotateY, rotateZ: rotateZ, perspective: 800 }}>
