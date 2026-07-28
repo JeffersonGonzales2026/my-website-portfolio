@@ -22,34 +22,36 @@ const sidebarModules = [
 ];
 
 // =========================================================================
-// CENTRALIZED CATEGORY DATA PARA SA DROPDOWNS (SYNCHRONIZED WITH FRONTEND)
+// CENTRALIZED CATEGORY DATA (MERGED ORIGINAL + NEW TO PREVENT DATA LOSS)
 // =========================================================================
 const creationsCategories = [
   { 
     id: 1, 
     category: "Branding & Identity", 
     items: [
-      "Logo Design", "Visual Identity", "Brand Guidelines", "Brand Refresh", 
+      "Logo Design", "Brand Identity Design", "Brand Guidelines", "Brand Style Guide", 
+      "Visual Identity", "Brand Refresh", "Brand Refresh & Rebranding", 
       "Business Card Design", "Letterhead & Stationery Design", "Email Signature Design", 
       "Brand Pattern & Graphic Elements", "Packaging Design", "Label & Sticker Design", 
-      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profiles", "Brand Assets",
-      "Business Identity Systems"
+      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", 
+      "Brand Assets", "Brand Asset Kit", "Business Identity Systems"
     ] 
   },
   { 
     id: 2, 
     category: "Social Media Design", 
     items: [
-      "Facebook Graphics", "Instagram Posts", "Social Media Posts", "Story Designs", "Carousel Posts", "LinkedIn Graphics", 
-      "Social Media Campaigns", "Cover Photos", "Profile Branding", "Quote Graphics", 
-      "Event Announcement Graphics", "Holiday & eCards"
+      "Facebook Graphics", "Instagram Posts", "Social Media Posts", "Story Designs", 
+      "Carousel Posts", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", 
+      "Profile Branding", "Quote Graphics", "Event Announcement Graphics", "Holiday & eCards"
     ] 
   },
   { 
     id: 3, 
     category: "Video Editing", 
     items: [
-      "Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", "Corporate Videos & Motion Graphics", 
+      "Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", 
+      "Product Promotion Videos", "Corporate Videos & Motion Graphics", "Corporate Videos", 
       "Event Highlights", "YouTube Video Editing", "Podcast Editing", "Testimonial Videos", 
       "Tutorial Videos", "Video Thumbnails"
     ] 
@@ -59,8 +61,8 @@ const creationsCategories = [
     category: "Motion Graphics", 
     items: [
       "Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", 
-      "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", 
-      "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"
+      "Kinetic Typography", "Animated Infographics", "UI or App Animations", "UI/App Animations", 
+      "Lottie Animations", "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"
     ] 
   },
   { 
@@ -76,16 +78,16 @@ const creationsCategories = [
     category: "Marketing & Corporate Graphics", 
     items: [
       "Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", 
-      "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage",
-      "Advertising Materials", "Creative Campaigns"
+      "Advertising Materials", "Creative Campaigns", "Infographics", "Presentation Design", 
+      "Report Design", "Annual Report Design", "Event Signage"
     ] 
   },
   { 
     id: 7, 
     category: "Marketing Materials", 
     items: [
-      "Flyers", "Brochures", "Catalogs", "Business Presentations", "Posters", 
-      "Banners", "Rack Cards", "Sales Sheets", "Product Sheets", "Sales Kits"
+      "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations", 
+      "Posters", "Banners", "Rack Cards", "Sales Sheets", "Product Sheets", "Sales Kits"
     ] 
   },
   { 
@@ -108,15 +110,15 @@ const creationsCategories = [
     id: 10, 
     category: "Apparel Design", 
     items: [
-      "Streetwear Graphics", "Shirt Designs", "Jersey Design", "Merchandise Graphics", 
-      "Mockups", "Clothing Hang Tags", "Print-ready Artwork"
+      "Streetwear Graphics", "Shirt Designs", "T-Shirt Graphics", "Jersey Design", 
+      "Merchandise Graphics", "Mockups", "Apparel Mockups", "Clothing Hang Tags", "Print-ready Artwork"
     ] 
   },
   { 
     id: 11, 
     category: "Print Production", 
     items: [
-      "Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", 
+      "Tarpaulins", "Calling Cards", "Business Cards", "Invitations", "Souvenirs", "ID Cards", 
       "Certificates", "Book Covers", "Menu Cards", "Stickers", "Roll-up Banners", 
       "Tent Cards", "Postcards", "Calendars"
     ] 

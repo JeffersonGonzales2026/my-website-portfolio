@@ -49,7 +49,7 @@ const featuredClients = [
 ];
 
 // =========================================================================
-// CENTRALIZED CATEGORY DATA (UPDATED WITH NEW LIST)
+// CENTRALIZED CATEGORY DATA (MERGED ORIGINAL + NEW TO PREVENT DATA LOSS)
 // =========================================================================
 const creationsCategories = [
   { 
@@ -57,10 +57,12 @@ const creationsCategories = [
     category: "Branding & Identity", 
     icon: <Fingerprint size={14} />, 
     items: [
-      "Logo Design", "Brand Identity Design", "Brand Style Guide", "Brand Refresh & Rebranding", 
+      "Logo Design", "Brand Identity Design", "Brand Guidelines", "Brand Style Guide", 
+      "Visual Identity", "Brand Refresh", "Brand Refresh & Rebranding", 
       "Business Card Design", "Letterhead & Stationery Design", "Email Signature Design", 
       "Brand Pattern & Graphic Elements", "Packaging Design", "Label & Sticker Design", 
-      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", "Brand Asset Kit"
+      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", 
+      "Brand Assets", "Brand Asset Kit", "Business Identity Systems"
     ] 
   },
   { 
@@ -68,9 +70,9 @@ const creationsCategories = [
     category: "Social Media Design", 
     icon: <Share2 size={14} />, 
     items: [
-      "Social Media Posts", "Story Designs", "Carousel Posts", "LinkedIn Graphics", 
-      "Social Media Campaigns", "Cover Photos", "Profile Branding", "Quote Graphics", 
-      "Event Announcement Graphics", "Holiday & eCards"
+      "Facebook Graphics", "Instagram Posts", "Social Media Posts", "Story Designs", 
+      "Carousel Posts", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", 
+      "Profile Branding", "Quote Graphics", "Event Announcement Graphics", "Holiday & eCards"
     ] 
   },
   { 
@@ -78,7 +80,8 @@ const creationsCategories = [
     category: "Video Editing", 
     icon: <Video size={14} />, 
     items: [
-      "Social Media Videos", "Marketing Videos", "Product Promotion Videos", "Corporate Videos", 
+      "Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", 
+      "Product Promotion Videos", "Corporate Videos & Motion Graphics", "Corporate Videos", 
       "Event Highlights", "YouTube Video Editing", "Podcast Editing", "Testimonial Videos", 
       "Tutorial Videos", "Video Thumbnails"
     ] 
@@ -89,8 +92,8 @@ const creationsCategories = [
     icon: <PictureInPicture size={14} />, 
     items: [
       "Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", 
-      "Kinetic Typography", "Animated Infographics", "UI/App Animations", "Lottie Animations", 
-      "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"
+      "Kinetic Typography", "Animated Infographics", "UI or App Animations", "UI/App Animations", 
+      "Lottie Animations", "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"
     ] 
   },
   { 
@@ -108,7 +111,8 @@ const creationsCategories = [
     icon: <Briefcase size={14} />, 
     items: [
       "Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", 
-      "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"
+      "Advertising Materials", "Creative Campaigns", "Infographics", "Presentation Design", 
+      "Report Design", "Annual Report Design", "Event Signage"
     ] 
   },
   { 
@@ -116,8 +120,8 @@ const creationsCategories = [
     category: "Marketing Materials", 
     icon: <FileText size={14} />, 
     items: [
-      "Flyers", "Brochures", "Catalogs", "Business Presentations", "Posters", 
-      "Banners", "Rack Cards", "Sales Sheets", "Product Sheets"
+      "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations", 
+      "Posters", "Banners", "Rack Cards", "Sales Sheets", "Product Sheets", "Sales Kits"
     ] 
   },
   { 
@@ -135,7 +139,7 @@ const creationsCategories = [
     icon: <ImageIcon size={14} />, 
     items: [
       "Photo Retouching", "Photo Restoration", "Background Removal", "Photo Manipulation", 
-      "Color Correction", "Product Photo Enhancement", "Watercolor Portraits"
+      "Color Correction", "Product Photo Enhancement", "Watercolor Portraits", "Composite Editing"
     ] 
   },
   { 
@@ -143,8 +147,8 @@ const creationsCategories = [
     category: "Apparel Design", 
     icon: <Shirt size={14} />, 
     items: [
-      "Streetwear Graphics", "T-Shirt Graphics", "Jersey Design", "Merchandise Graphics", 
-      "Apparel Mockups", "Clothing Hang Tags"
+      "Streetwear Graphics", "Shirt Designs", "T-Shirt Graphics", "Jersey Design", 
+      "Merchandise Graphics", "Mockups", "Apparel Mockups", "Clothing Hang Tags", "Print-ready Artwork"
     ] 
   },
   { 
@@ -152,7 +156,7 @@ const creationsCategories = [
     category: "Print Production", 
     icon: <Printer size={14} />, 
     items: [
-      "Tarpaulins", "Business Cards", "Invitations", "Souvenirs", "ID Cards", 
+      "Tarpaulins", "Calling Cards", "Business Cards", "Invitations", "Souvenirs", "ID Cards", 
       "Certificates", "Book Covers", "Menu Cards", "Stickers", "Roll-up Banners", 
       "Tent Cards", "Postcards", "Calendars"
     ] 
@@ -168,23 +172,23 @@ const creationsCategories = [
   }
 ];
 
-// Contextual Fallback Images for Empty Folders
-const getFallbackCover = (categoryName) => {
-  switch (categoryName) {
-    case "Branding & Identity": return "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=600&auto=format&fit=crop"; // Brand workspaces
-    case "Social Media Design": return "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=600&auto=format&fit=crop"; // Social Media / Phones
-    case "Video Editing": return "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=600&auto=format&fit=crop"; // Video Timeline
-    case "Motion Graphics": return "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop"; // Retro Screen / Animation
-    case "Web Graphics": return "https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=600&auto=format&fit=crop"; // Web wireframes
-    case "Marketing & Corporate Graphics": return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&auto=format&fit=crop"; // Business Analytics
-    case "Marketing Materials": return "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?q=80&w=600&auto=format&fit=crop"; // Print / Documents
-    case "Packaging Design": return "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop"; // Boxes / Packaging
-    case "Photo Editing": return "https://images.unsplash.com/photo-1551269901-5c5e14c25df7?q=80&w=600&auto=format&fit=crop"; // Retouching Software
-    case "Apparel Design": return "https://images.unsplash.com/photo-1562157873-818bc0726f68?q=80&w=600&auto=format&fit=crop"; // Shirts
-    case "Print Production": return "https://images.unsplash.com/photo-1562240020-ce31ccb0fa7d?q=80&w=600&auto=format&fit=crop"; // Print Shop Swatches
-    case "Illustration": return "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=600&auto=format&fit=crop"; // Drawing Tablet
-    default: return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop"; // Abstract Fallback
-  }
+// Contextual Fallback Images for Empty Folders Based on Subtitle Strings
+const getFallbackCover = (subtitleName) => {
+  const s = subtitleName.toLowerCase();
+  if (s.includes('logo') || s.includes('identit') || s.includes('brand') || s.includes('stationery') || s.includes('card')) return "https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=600&auto=format&fit=crop"; 
+  if (s.includes('social') || s.includes('post') || s.includes('facebook') || s.includes('instagram') || s.includes('linkedin') || s.includes('cover')) return "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=600&auto=format&fit=crop";
+  if (s.includes('video') || s.includes('youtube') || s.includes('podcast')) return "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=600&auto=format&fit=crop";
+  if (s.includes('motion') || s.includes('animat') || s.includes('kinetic') || s.includes('lottie')) return "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop";
+  if (s.includes('web') || s.includes('ui ') || s.includes('landing') || s.includes('ecommerce') || s.includes('banner')) return "https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=600&auto=format&fit=crop";
+  if (s.includes('poster') || s.includes('flyer') || s.includes('brochure') || s.includes('catalog') || s.includes('report') || s.includes('presentation') || s.includes('profile')) return "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?q=80&w=600&auto=format&fit=crop";
+  if (s.includes('packag') || s.includes('label') || s.includes('box') || s.includes('bottle')) return "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop";
+  if (s.includes('photo') || s.includes('retouch') || s.includes('watercolor')) return "https://images.unsplash.com/photo-1551269901-5c5e14c25df7?q=80&w=600&auto=format&fit=crop";
+  if (s.includes('shirt') || s.includes('apparel') || s.includes('streetwear') || s.includes('jersey') || s.includes('mockup') || s.includes('artwork')) return "https://images.unsplash.com/photo-1562157873-818bc0726f68?q=80&w=600&auto=format&fit=crop";
+  if (s.includes('print') || s.includes('tarpaulin') || s.includes('invitation') || s.includes('menu')) return "https://images.unsplash.com/photo-1562240020-ce31ccb0fa7d?q=80&w=600&auto=format&fit=crop";
+  if (s.includes('illustrat') || s.includes('vector') || s.includes('cartoon') || s.includes('mascot')) return "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=600&auto=format&fit=crop";
+  
+  // Default abstract fallback
+  return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop";
 };
 
 const softwareExpertise = [
@@ -923,7 +927,9 @@ export default function DreamCreations() {
         <div className="space-y-16 relative z-20">
           {creationsCategories.map((cat) => (
             <div key={cat.id} className="pt-4">
-              <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block">{cat.category}</h4>
+              <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block flex items-center gap-3">
+                {cat.icon} {cat.category}
+              </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {cat.items.map((subtitle, idx) => {
                   
@@ -931,8 +937,8 @@ export default function DreamCreations() {
                   
                   const hasWork = !!latestProjectWithImage;
                   
-                  // Contextual Fallback Cover depending on category
-                  const coverImage = latestProjectWithImage?.featured_image_url || getFallbackCover(cat.category);
+                  // Contextual Fallback Cover depending on subtitle name
+                  const coverImage = latestProjectWithImage?.featured_image_url || getFallbackCover(subtitle);
 
                   return (
                     <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
@@ -1066,7 +1072,6 @@ export default function DreamCreations() {
                   <p className="text-xs md:text-sm text-white/60">Select a specific area to view works</p>
                 </div>
               </div>
-              {/* Added Scrollable Unordered List here */}
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
                 {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
@@ -1235,7 +1240,7 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= POPUP MODAL NAVIGATION (YOUTUBE CINEMA SUPPORTED) ================= */}
+{/* ================= POPUP MODAL NAVIGATION (YOUTUBE CINEMA SUPPORTED) ================= */}
       <AnimatePresence>
         {previewImage && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.3 } }} className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer pointer-events-auto" onClick={() => setPreviewImage(null)}>
