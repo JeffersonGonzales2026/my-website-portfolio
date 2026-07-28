@@ -1004,19 +1004,13 @@ export default function DreamCreations() {
                           )
                         ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
                         
-                        {/* YouTube / Video Link Overlay for Masonry Layout */}
+                        {/* YouTube / Video Play Overlay for Masonry Layout - Now passive to open modal */}
                         {project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && (
-                          <a 
-                            href={project.video_url} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            onClick={(e) => e.stopPropagation()} 
-                            className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform">
+                          <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                            <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
                               <MonitorPlay size={24} className="ml-1" />
                             </div>
-                          </a>
+                          </div>
                         )}
 
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20 pointer-events-none">
@@ -1044,6 +1038,8 @@ export default function DreamCreations() {
                                const parts = project.video_url.split(','); prefix = parts[0].trim(); pages = parseInt(parts[1].trim()) || 91; if (parts[2]) extension = parts[2].trim().replace('.', ''); 
                             }
                             setActiveFlipbookConfig({ prefix, totalPages: pages, extension }); setIsFlipbookOpen(true); setFlipbookCurrentPage(0);
+                          } else {
+                            setPreviewImage(project);
                           }
                         }}
                         className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer pointer-events-auto"
@@ -1056,8 +1052,14 @@ export default function DreamCreations() {
                                <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
                              )
                            ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
+                           
+                           {/* YouTube / Video Play Overlay for Grid Layout - Now passive to open modal */}
                            {project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && !(project.title || '').toLowerCase().includes('profile') && !(project.title || '').toLowerCase().includes('brochure') && (
-                             <a href={project.video_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"><div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform"><MonitorPlay size={24} className="ml-1" /></div></a>
+                             <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                               <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
+                                 <MonitorPlay size={24} className="ml-1" />
+                               </div>
+                             </div>
                            )}
                          </div>
                          <div className="p-6">
@@ -1099,7 +1101,7 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= POPUP MODAL NAVIGATION ================= */}
+      {/* ================= POPUP MODAL NAVIGATION (YOUTUBE CINEMA SUPPORTED) ================= */}
       <AnimatePresence>
         {previewImage && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.3 } }} className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer pointer-events-auto" onClick={() => setPreviewImage(null)}>
