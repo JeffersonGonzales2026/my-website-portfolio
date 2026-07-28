@@ -28,7 +28,7 @@ const BookPage = React.forwardRef((props, ref) => {
   return (
     <div className="bg-[#0e111a] border border-white/5 flex items-center justify-center overflow-hidden shadow-2xl relative" ref={ref} data-density="soft">
       <div className={`absolute inset-y-0 ${props.number % 2 === 0 ? 'right-0' : 'left-0'} w-8 bg-gradient-to-${props.number % 2 === 0 ? 'l' : 'r'} from-black/40 to-transparent z-10 pointer-events-none`} />
-      <img key={props.imageUrl} src={props.imageUrl} onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} alt={`Page ${props.number}`} className="w-full h-full object-contain pointer-events-none relative z-0" />
+      <img key={props.imageUrl} src={props.imageUrl} onError={(e) => { e.currentTarget.style.display = 'none'; if (e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'flex'; }} alt={`Page ${props.number}`} className="w-full h-full object-contain pointer-events-none relative z-0" />
       <div className="hidden absolute inset-0 flex-col items-center justify-center text-xs text-red-400 font-mono text-center p-6 z-20">
         <span className="text-2xl mb-2">⚠️</span>
         <span className="font-bold mb-2">IMAGE NOT FOUND</span>
@@ -139,14 +139,15 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
   scale: 0.8 + Math.random() * 1.5
 }));
 
-// ================= HELPERS FOR VIDEO & YOUTUBE =================
+// ================= FAIL-SAFE HELPERS FOR VIDEO & YOUTUBE =================
 const isVideo = (url) => {
-  if (!url) return false;
-  return (url.match(/\.(mp4|webm|mov|ogg)$/i) || url.includes('video')) && !url.includes('youtube.com') && !url.includes('youtu.be');
+  if (!url || typeof url !== 'string') return false;
+  const lowerUrl = url.toLowerCase();
+  return (lowerUrl.match(/\.(mp4|webm|mov|ogg)$/i) || lowerUrl.includes('video')) && !lowerUrl.includes('youtube.com') && !lowerUrl.includes('youtu.be');
 };
 
 const getYouTubeID = (url) => {
-  if (!url) return null;
+  if (!url || typeof url !== 'string') return null;
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
   const match = url.match(regExp);
   return (match && match[2].length === 11) ? match[2] : null;
@@ -471,7 +472,7 @@ export default function DreamCreations() {
 
         const { data: allResumes } = await supabase.from('portfolio_resumes').select('*');
         if (allResumes && allResumes.length > 0) {
-          const graphicResume = allResumes.find(res => res.title.toLowerCase().includes('graphic') || res.title.toLowerCase().includes('artist') || res.title.toLowerCase().includes('dream')) || allResumes[0]; 
+          const graphicResume = allResumes.find(res => res.title?.toLowerCase().includes('graphic') || res.title?.toLowerCase().includes('artist') || res.title?.toLowerCase().includes('dream')) || allResumes[0]; 
           setPageResume(graphicResume);
         }
 
@@ -507,6 +508,7 @@ export default function DreamCreations() {
     }, 350); 
   };
 
+  // FAIL-SAFE FILTERING TO PREVENT CRASHES
   const filteredProjects = activePortfolioSubtitle && activePortfolioSubtitle !== 'All Projects'
     ? projects.filter(p => p.subtitle?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || p.category?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
     : projects;
@@ -596,7 +598,7 @@ export default function DreamCreations() {
       <div id="creations-grid" className="scroll-mt-24" />
 
       {/* ================= CREATIONS SECTION ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative">
         <div className="mb-12 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
           <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
@@ -831,10 +833,9 @@ export default function DreamCreations() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {cat.items.map((subtitle, idx) => {
                   
-                  const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
+                  const latestProjectWithImage = projects.find(p => p.subtitle?.toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
                   let rawCover = latestProjectWithImage?.featured_image_url || `/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`;
                   
-                  // YOUTUBE AUTO-THUMBNAIL LOGIC FOR COVER (USING hqdefault.jpg SAFER FALLBACK)
                   const ytID = getYouTubeID(rawCover);
                   const finalCover = ytID ? `https://img.youtube.com/vi/${ytID}/hqdefault.jpg` : rawCover;
                   const isYt = !!ytID;
@@ -842,36 +843,31 @@ export default function DreamCreations() {
                   return (
                     <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
                       
-                      {/* TRANSPARENT GIF FALLBACK PARA WALANG BLINKING ERROR */}
+                      {/* FALLBACK LOGIC PARA WALANG BLINKING ERROR */}
                       {!isYt && isVideo(finalCover) ? (
-                        <video 
-                          key={finalCover} 
-                          src={`${finalCover}#t=0.1`} 
-                          className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" 
-                          autoPlay loop muted playsInline preload="metadata" 
-                          onError={(e) => { 
-                            e.target.style.display = 'none'; 
-                            if(e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'block'; 
-                          }} 
-                        />
+                        <>
+                          <video 
+                            src={`${finalCover}#t=0.1`} 
+                            className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" 
+                            autoPlay loop muted playsInline preload="metadata" 
+                            onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'block'; }} 
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
+                        </>
                       ) : (
-                        <img 
-                           key={finalCover} 
-                           src={finalCover} 
-                           alt={subtitle} 
-                           className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" 
-                           onError={(e) => { 
-                              e.target.style.display = 'none'; 
-                              if(e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'block'; 
-                           }} 
-                        />
+                        <>
+                          <img 
+                             src={finalCover} 
+                             alt={subtitle} 
+                             className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" 
+                             onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'block'; }} 
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
+                        </>
                       )}
                       
-                      {/* THIS GRADIENT SHOWS UP IF IMAGE FAILS TO LOAD */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
                       <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
                       
-                      {/* Play Button Overlay if it is a YouTube Link */}
                       {isYt && (
                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <MonitorPlay size={36} className="text-white/50 group-hover:text-[#1095d2] transition-colors drop-shadow-lg" />
@@ -890,6 +886,234 @@ export default function DreamCreations() {
           ))}
         </div>
       </section>
+
+      {/* ================= PORTFOLIO SUBTITLE GALLERY FULL-SCREEN MODAL ================= */}
+      <AnimatePresence>
+        {activePortfolioSubtitle && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+            className="fixed inset-0 z-[150] flex flex-col bg-[#050508]/95 backdrop-blur-2xl overflow-hidden pointer-events-auto"
+          >
+            <div className="absolute inset-0 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16, 149, 210, 0.1), transparent 80%)' }} />
+            
+            <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10 relative z-10 shrink-0 bg-black/40 pointer-events-auto">
+              <div>
+                <h2 className="text-lg md:text-2xl font-black text-white tracking-widest uppercase">
+                  {activePortfolioSubtitle === 'All Projects' ? 'Full Archive' : `Viewing: ${activePortfolioSubtitle}`}
+                </h2>
+              </div>
+              <button 
+                onClick={() => setActivePortfolioSubtitle(null)} 
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 shrink-0 pointer-events-auto"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar relative z-10 pointer-events-auto">
+              
+              {activePortfolioSubtitle === 'Watercolor Portraits' && (
+                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 p-5 rounded-2xl bg-[#1095d2]/10 border border-[#1095d2]/30 backdrop-blur-md max-w-4xl">
+                  <div className="flex items-start gap-3">
+                    <Info className="text-[#1095d2] shrink-0 mt-0.5" size={20} />
+                    <p className="text-sm text-white/80 leading-relaxed"><strong className="text-white">Creative Process:</strong> Merging different raw images, enhancing picture quality, seamlessly combining images into a single, proportional composition, and applying watercolor filters. Some includes adjustments like changing body parts or clothing.</p>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Grid Render */}
+              {activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' ? (
+                <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5 block">
+                  {visualProjects.length > 0 ? (
+                    visualProjects.map((project) => {
+                      const pYtID = getYouTubeID(project.featured_image_url) || getYouTubeID(project.video_url);
+                      const pDisplayImg = pYtID ? `https://img.youtube.com/vi/${pYtID}/hqdefault.jpg` : project.featured_image_url;
+                      
+                      return (
+                        <div 
+                          key={project.id} 
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPreviewImage(project); }}
+                          onMouseEnter={(e) => { const vid = e.currentTarget.querySelector('video'); if (vid) vid.play(); }}
+                          onMouseLeave={(e) => { const vid = e.currentTarget.querySelector('video'); if (vid) { vid.pause(); vid.currentTime = 0.1; } }}
+                          className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#050508] block rounded-none pointer-events-auto"
+                        >
+                          {pDisplayImg ? ( 
+                            !pYtID && isVideo(pDisplayImg) ? (
+                              <>
+                                <video src={`${pDisplayImg}#t=0.1`} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" loop muted playsInline preload="metadata" onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'flex'; }} />
+                                <div className="hidden w-full aspect-square items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div>
+                              </>
+                            ) : (
+                              <>
+                                <img src={pDisplayImg} alt={project.title} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'flex'; }} /> 
+                                <div className="hidden w-full aspect-square items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div>
+                                {pYtID && (
+                                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors pointer-events-none">
+                                      <div className="w-12 h-12 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
+                                        <MonitorPlay size={20} className="ml-1" />
+                                      </div>
+                                   </div>
+                                )}
+                              </>
+                            )
+                          ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20 pointer-events-none">
+                            <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
+                            <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
+                          </div>
+                        </div>
+                      )
+                    })
+                  ) : ( <div className="w-full break-inside-avoid py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div> )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredProjects.length > 0 ? (
+                    filteredProjects.map((project) => {
+                      const bpYtID = getYouTubeID(project.featured_image_url) || getYouTubeID(project.video_url);
+                      const bpDisplayImg = bpYtID ? `https://img.youtube.com/vi/${bpYtID}/hqdefault.jpg` : project.featured_image_url;
+
+                      return (
+                        <div 
+                          key={project.id} 
+                          onClick={() => {
+                            if (project.title?.toLowerCase().includes('profile') || project.category?.toLowerCase().includes('profile') || project.description?.toLowerCase().includes('company profile') || project.title?.toLowerCase().includes('brochure') || project.category?.toLowerCase().includes('brochure') || project.description?.toLowerCase().includes('brochure')) {
+                              let prefix = 'page-'; let pages = 91; let extension = 'jpg'; 
+                              if (project.video_url && typeof project.video_url === 'string' && project.video_url.includes(',')) {
+                                 const parts = project.video_url.split(','); prefix = parts[0].trim(); pages = parseInt(parts[1].trim()) || 91; if (parts[2]) extension = parts[2].trim().replace('.', ''); 
+                              }
+                              setActiveFlipbookConfig({ prefix, totalPages: pages, extension }); setIsFlipbookOpen(true); setFlipbookCurrentPage(0);
+                            } else {
+                              setPreviewImage(project); 
+                            }
+                          }}
+                          className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer pointer-events-auto"
+                        >
+                           <div className="aspect-video relative overflow-hidden bg-black/60">
+                             {bpDisplayImg ? ( 
+                               !bpYtID && isVideo(bpDisplayImg) ? (
+                                 <>
+                                   <video src={`${bpDisplayImg}#t=0.1`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'flex'; }} />
+                                   <div className="hidden absolute inset-0 items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div>
+                                 </>
+                               ) : (
+                                 <>
+                                   <img src={bpDisplayImg} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'flex'; }} /> 
+                                   <div className="hidden absolute inset-0 items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div>
+                                 </>
+                               )
+                             ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
+                             
+                             {(project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && !project.title?.toLowerCase().includes('profile') && !project.title?.toLowerCase().includes('brochure')) || bpYtID ? (
+                               <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                                 <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform"><MonitorPlay size={24} className="ml-1" /></div>
+                               </div>
+                             ) : null}
+                           </div>
+                           <div className="p-6">
+                              <h4 className="text-lg font-bold text-white mb-1 group-hover:text-[#1095d2] transition-colors">{project.title}</h4>
+                              <p className="text-xs text-[#1095d2] font-mono mb-4">{project.client_name || 'Independent Project'}</p>
+                              <p className="text-sm text-white/60 line-clamp-3 leading-relaxed">{project.description}</p>
+                           </div>
+                        </div>
+                      )
+                    })
+                  ) : ( <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm border border-dashed border-white/10 rounded-2xl"><ImageIcon size={32} className="mb-4 opacity-30" />No projects have been published to this archive category yet.</div> )}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= PAGE CURL PHYSICS FLIPBOOK MODAL ================= */}
+      <AnimatePresence>
+        {isFlipbookOpen && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md pointer-events-auto">
+            <div className="absolute top-6 right-6 z-50 flex items-center gap-4 pointer-events-auto">
+              <span className="text-xs font-mono text-white/40 hidden sm:block">Click page edges or drag to turn</span>
+              <button onClick={() => setIsFlipbookOpen(false)} className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"><X size={20} /></button>
+            </div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <div className="flex-grow w-full flex items-center justify-center px-4 max-h-[80vh] cursor-grab active:cursor-grabbing mt-8">
+                <HTMLFlipBook width={500} height={700} size="stretch" minWidth={300} maxWidth={800} minHeight={400} maxHeight={1000} maxShadowOpacity={0.6} showCover={true} mobileScrollSupport={true} className="mx-auto shadow-[0_0_50px_rgba(0,0,0,0.8)]" ref={flipBookRef} usePortrait={true} onFlip={onPageFlip}>
+                  {Array.from({ length: activeFlipbookConfig.totalPages }, (_, i) => ( <BookPage key={i} number={i + 1} imageUrl={getFlipbookUrl(i + 1, activeFlipbookConfig.prefix, activeFlipbookConfig.extension)} /> ))}
+                </HTMLFlipBook>
+              </div>
+              <div className="flex items-center gap-6 bg-black/40 border border-white/10 backdrop-blur-md px-6 py-3 rounded-full relative z-20 mt-8 mb-4 shadow-xl pointer-events-auto">
+                <button onClick={goPrevPage} className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer"><ChevronLeft size={24} /></button>
+                <span className="text-xs font-mono font-bold tracking-widest text-zinc-400 uppercase select-none min-w-[100px] text-center">Page {flipbookPage + 1} / {activeFlipbookConfig.totalPages}</span>
+                <button onClick={goNextPage} className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer"><ChevronRight size={24} /></button>
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= POPUP MODAL NAVIGATION & YOUTUBE PLAYER ================= */}
+      <AnimatePresence>
+        {previewImage && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.3 } }} className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer pointer-events-auto" onClick={() => setPreviewImage(null)}>
+            <div className="absolute top-6 right-6 z-50 flex items-center gap-4 pointer-events-auto">
+              <span className="text-xs font-mono text-white/40 hidden sm:block">Click anywhere to close</span>
+              <button onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }} className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"><X size={20} /></button>
+            </div>
+            
+            {hasPrev && ( <button onClick={handlePrevImage} className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400] cursor-pointer pointer-events-auto"><ChevronLeft size={24} /></button> )}
+            {hasNext && ( <button onClick={handleNextImage} className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400] cursor-pointer pointer-events-auto"><ChevronRight size={24} /></button> )}
+            
+            {/* Zoom Controls (Only show if NOT YouTube) */}
+            {!(getYouTubeID(previewImage.featured_image_url) || getYouTubeID(previewImage.video_url)) && (
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[500] flex items-center gap-4 bg-black/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+                <button onClick={() => setZoomScale(prev => Math.max(prev - 0.5, 1))} className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"><span className="text-2xl leading-none -mt-0.5">−</span></button>
+                <span className="text-xs font-mono font-bold text-white/80 w-12 text-center select-none">{Math.round(zoomScale * 100)}%</span>
+                <button onClick={() => setZoomScale(prev => Math.min(prev + 0.5, 4))} className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"><span className="text-2xl leading-none -mt-0.5">+</span></button>
+              </div>
+            )}
+
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="relative w-full h-full flex items-center justify-center pointer-events-none">
+              <AnimatePresence mode="wait">
+                {(() => {
+                  const previewYtID = getYouTubeID(previewImage.featured_image_url) || getYouTubeID(previewImage.video_url);
+                  
+                  if (previewYtID) {
+                    return (
+                      <motion.iframe 
+                        key={previewImage.id}
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        src={`https://www.youtube.com/embed/${previewYtID}?autoplay=1`}
+                        allow="autoplay; fullscreen"
+                        className="w-[90vw] max-w-5xl aspect-video rounded-2xl drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] relative z-10 pointer-events-auto"
+                      />
+                    )
+                  } else if (isVideo(previewImage.featured_image_url)) {
+                    return (
+                      <motion.video key={previewImage.id} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={previewImage.featured_image_url} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing relative z-10 pointer-events-auto" autoPlay controls playsInline loop onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
+                    )
+                  } else {
+                    return (
+                      <motion.img 
+                         key={previewImage.id} 
+                         initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} 
+                         src={previewImage.featured_image_url} 
+                         className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing select-none pointer-events-auto relative z-10" 
+                         alt="Preview" 
+                         onClick={(e) => { e.stopPropagation(); }} 
+                         onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} 
+                         drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} 
+                         onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} 
+                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      />
+                    )
+                  }
+                })()}
+              </AnimatePresence>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ================= BONUS: VISIONS THROUGH THE LENS (PHOTOGRAPHY) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-10 z-10 relative border-t border-white/10 mt-10">
@@ -997,261 +1221,6 @@ export default function DreamCreations() {
               </ul>
             </motion.div>
           </div>
-        )}
-      </AnimatePresence>
-
-      {/* ================= PORTFOLIO SUBTITLE GALLERY FULL-SCREEN MODAL ================= */}
-      <AnimatePresence>
-        {activePortfolioSubtitle && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
-            className="fixed inset-0 z-[150] flex flex-col bg-[#050508]/95 backdrop-blur-2xl overflow-hidden pointer-events-auto"
-          >
-            {/* Background Glow */}
-            <div className="absolute inset-0 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16, 149, 210, 0.1), transparent 80%)' }} />
-            
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10 relative z-10 shrink-0 bg-black/40 pointer-events-auto">
-              <div>
-                <h2 className="text-lg md:text-2xl font-black text-white tracking-widest uppercase">
-                  {activePortfolioSubtitle === 'All Projects' ? 'Full Archive' : `Viewing: ${activePortfolioSubtitle}`}
-                </h2>
-              </div>
-              <button 
-                onClick={() => setActivePortfolioSubtitle(null)} 
-                className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 shrink-0 pointer-events-auto"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            {/* Scrollable Gallery Content */}
-            <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar relative z-10 pointer-events-auto">
-              
-              {/* Watercolor Portraits Description */}
-              {activePortfolioSubtitle === 'Watercolor Portraits' && (
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 p-5 rounded-2xl bg-[#1095d2]/10 border border-[#1095d2]/30 backdrop-blur-md max-w-4xl">
-                  <div className="flex items-start gap-3">
-                    <Info className="text-[#1095d2] shrink-0 mt-0.5" size={20} />
-                    <p className="text-sm text-white/80 leading-relaxed"><strong className="text-white">Creative Process:</strong> Merging different raw images, enhancing picture quality, seamlessly combining images into a single, proportional composition, and applying watercolor filters. Some includes adjustments like changing body parts or clothing.</p>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Grid Render */}
-              {activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' ? (
-                <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5 block">
-                  {visualProjects.length > 0 ? (
-                    visualProjects.map((project) => {
-                      // YOUTUBE AUTO-THUMBNAIL LOGIC FOR INNER MASONRY GRID (hqdefault.jpg)
-                      const pYtID = getYouTubeID(project.featured_image_url) || getYouTubeID(project.video_url);
-                      const pDisplayImg = pYtID ? `https://img.youtube.com/vi/${pYtID}/hqdefault.jpg` : project.featured_image_url;
-                      
-                      return (
-                        <div 
-                          key={project.id} 
-                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPreviewImage(project); }}
-                          onMouseEnter={(e) => { const vid = e.currentTarget.querySelector('video'); if (vid) vid.play(); }}
-                          onMouseLeave={(e) => { const vid = e.currentTarget.querySelector('video'); if (vid) { vid.pause(); vid.currentTime = 0.1; } }}
-                          className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#050508] block rounded-none pointer-events-auto"
-                        >
-                          {pDisplayImg ? ( 
-                            !pYtID && isVideo(pDisplayImg) ? (
-                              <>
-                                <video src={`${pDisplayImg}#t=0.1`} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" loop muted playsInline preload="metadata" onError={(e) => { e.target.style.display = 'none'; if(e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'flex'; }} />
-                                <div className="hidden w-full aspect-square items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div>
-                              </>
-                            ) : (
-                              <>
-                                <img 
-                                   src={pDisplayImg} 
-                                   alt={project.title} 
-                                   className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" 
-                                   onError={(e) => { 
-                                      e.target.style.display = 'none'; 
-                                      if(e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'flex'; 
-                                   }}
-                                /> 
-                                <div className="hidden w-full aspect-square items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div>
-
-                                {pYtID && (
-                                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors pointer-events-none">
-                                      <div className="w-12 h-12 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
-                                        <MonitorPlay size={20} className="ml-1" />
-                                      </div>
-                                   </div>
-                                )}
-                              </>
-                            )
-                          ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20 pointer-events-none">
-                            <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
-                            <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
-                          </div>
-                        </div>
-                      )
-                    })
-                  ) : ( <div className="w-full break-inside-avoid py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div> )}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProjects.length > 0 ? (
-                    filteredProjects.map((project) => {
-                      const bpYtID = getYouTubeID(project.featured_image_url) || getYouTubeID(project.video_url);
-                      const bpDisplayImg = bpYtID ? `https://img.youtube.com/vi/${bpYtID}/hqdefault.jpg` : project.featured_image_url;
-
-                      return (
-                        <div 
-                          key={project.id} 
-                          onClick={() => {
-                            if (project.title.toLowerCase().includes('profile') || project.category.toLowerCase().includes('profile') || project.description.toLowerCase().includes('company profile') || project.title.toLowerCase().includes('brochure') || project.category.toLowerCase().includes('brochure') || project.description.toLowerCase().includes('brochure')) {
-                              let prefix = 'page-'; let pages = 91; let extension = 'jpg'; 
-                              if (project.video_url && project.video_url.includes(',')) {
-                                 const parts = project.video_url.split(','); prefix = parts[0].trim(); pages = parseInt(parts[1].trim()) || 91; if (parts[2]) extension = parts[2].trim().replace('.', ''); 
-                              }
-                              setActiveFlipbookConfig({ prefix, totalPages: pages, extension }); setIsFlipbookOpen(true); setFlipbookCurrentPage(0);
-                            } else if (bpYtID) {
-                              setPreviewImage(project); 
-                            } else {
-                              setPreviewImage(project); 
-                            }
-                          }}
-                          className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer pointer-events-auto"
-                        >
-                           <div className="aspect-video relative overflow-hidden bg-black/60">
-                             {bpDisplayImg ? ( 
-                               !bpYtID && isVideo(bpDisplayImg) ? (
-                                 <>
-                                   <video src={`${bpDisplayImg}#t=0.1`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.target.style.display = 'none'; if(e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'flex'; }} />
-                                   <div className="hidden absolute inset-0 items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div>
-                                 </>
-                               ) : (
-                                 <>
-                                   <img 
-                                      src={bpDisplayImg} 
-                                      alt={project.title} 
-                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" 
-                                      onError={(e) => { 
-                                         e.target.style.display = 'none'; 
-                                         if(e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'flex'; 
-                                      }}
-                                   /> 
-                                   <div className="hidden absolute inset-0 items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div>
-                                 </>
-                               )
-                             ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
-                             
-                             {(project.video_url && !project.video_url.includes(',') && !project.title.toLowerCase().includes('profile') && !project.title.toLowerCase().includes('brochure')) || bpYtID ? (
-                               <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
-                                 <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform"><MonitorPlay size={24} className="ml-1" /></div>
-                               </div>
-                             ) : null}
-                           </div>
-                           <div className="p-6">
-                              <h4 className="text-lg font-bold text-white mb-1 group-hover:text-[#1095d2] transition-colors">{project.title}</h4>
-                              <p className="text-xs text-[#1095d2] font-mono mb-4">{project.client_name || 'Independent Project'}</p>
-                              <p className="text-sm text-white/60 line-clamp-3 leading-relaxed">{project.description}</p>
-                           </div>
-                        </div>
-                      )
-                    })
-                  ) : ( <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm border border-dashed border-white/10 rounded-2xl"><ImageIcon size={32} className="mb-4 opacity-30" />No projects have been published to this archive category yet.</div> )}
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ================= PAGE CURL PHYSICS FLIPBOOK MODAL ================= */}
-      <AnimatePresence>
-        {isFlipbookOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md pointer-events-auto">
-            <div className="absolute top-6 right-6 z-50 flex items-center gap-4 pointer-events-auto">
-              <span className="text-xs font-mono text-white/40 hidden sm:block">Click page edges or drag to turn</span>
-              <button onClick={() => setIsFlipbookOpen(false)} className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"><X size={20} /></button>
-            </div>
-            <div className="w-full h-full flex flex-col items-center justify-center">
-              <div className="flex-grow w-full flex items-center justify-center px-4 max-h-[80vh] cursor-grab active:cursor-grabbing mt-8">
-                <HTMLFlipBook width={500} height={700} size="stretch" minWidth={300} maxWidth={800} minHeight={400} maxHeight={1000} maxShadowOpacity={0.6} showCover={true} mobileScrollSupport={true} className="mx-auto shadow-[0_0_50px_rgba(0,0,0,0.8)]" ref={flipBookRef} usePortrait={true} onFlip={onPageFlip}>
-                  {Array.from({ length: activeFlipbookConfig.totalPages }, (_, i) => ( <BookPage key={i} number={i + 1} imageUrl={getFlipbookUrl(i + 1, activeFlipbookConfig.prefix, activeFlipbookConfig.extension)} /> ))}
-                </HTMLFlipBook>
-              </div>
-              <div className="flex items-center gap-6 bg-black/40 border border-white/10 backdrop-blur-md px-6 py-3 rounded-full relative z-20 mt-8 mb-4 shadow-xl pointer-events-auto">
-                <button onClick={goPrevPage} className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer"><ChevronLeft size={24} /></button>
-                <span className="text-xs font-mono font-bold tracking-widest text-zinc-400 uppercase select-none min-w-[100px] text-center">Page {flipbookPage + 1} / {activeFlipbookConfig.totalPages}</span>
-                <button onClick={goNextPage} className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer"><ChevronRight size={24} /></button>
-              </div>
-            </div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* ================= POPUP MODAL NAVIGATION & YOUTUBE PLAYER ================= */}
-      <AnimatePresence>
-        {previewImage && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.3 } }} className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer pointer-events-auto" onClick={() => setPreviewImage(null)}>
-            <div className="absolute top-6 right-6 z-50 flex items-center gap-4 pointer-events-auto">
-              <span className="text-xs font-mono text-white/40 hidden sm:block">Click anywhere to close</span>
-              <button onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }} className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"><X size={20} /></button>
-            </div>
-            
-            {hasPrev && ( <button onClick={handlePrevImage} className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400] cursor-pointer pointer-events-auto"><ChevronLeft size={24} /></button> )}
-            {hasNext && ( <button onClick={handleNextImage} className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400] cursor-pointer pointer-events-auto"><ChevronRight size={24} /></button> )}
-            
-            {/* Zoom Controls (Only show if NOT YouTube) */}
-            {!(getYouTubeID(previewImage.featured_image_url) || getYouTubeID(previewImage.video_url)) && (
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[500] flex items-center gap-4 bg-black/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-                <button onClick={() => setZoomScale(prev => Math.max(prev - 0.5, 1))} className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"><span className="text-2xl leading-none -mt-0.5">−</span></button>
-                <span className="text-xs font-mono font-bold text-white/80 w-12 text-center select-none">{Math.round(zoomScale * 100)}%</span>
-                <button onClick={() => setZoomScale(prev => Math.min(prev + 0.5, 4))} className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"><span className="text-2xl leading-none -mt-0.5">+</span></button>
-              </div>
-            )}
-
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="relative w-full h-full flex items-center justify-center pointer-events-none">
-              <AnimatePresence mode="wait">
-                {(() => {
-                  const previewYtID = getYouTubeID(previewImage.featured_image_url) || getYouTubeID(previewImage.video_url);
-                  
-                  if (previewYtID) {
-                    return (
-                      <motion.iframe 
-                        key={previewImage.id}
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        src={`https://www.youtube.com/embed/${previewYtID}?autoplay=1`}
-                        allow="autoplay; fullscreen"
-                        className="w-[90vw] max-w-5xl aspect-video rounded-2xl drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] relative z-10 pointer-events-auto"
-                      />
-                    )
-                  } else if (isVideo(previewImage.featured_image_url)) {
-                    return (
-                      <motion.video key={previewImage.id} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={previewImage.featured_image_url} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing relative z-10 pointer-events-auto" autoPlay controls playsInline loop onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
-                    )
-                  } else {
-                    return (
-                      <motion.img 
-                         key={previewImage.id} 
-                         initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} 
-                         src={previewImage.featured_image_url} 
-                         className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing select-none pointer-events-auto relative z-10" 
-                         alt="Preview" 
-                         onClick={(e) => { e.stopPropagation(); }} 
-                         onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} 
-                         drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} 
-                         onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} 
-                         onError={(e) => { 
-                           e.target.style.display = 'none'; 
-                           if(e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'block'; 
-                         }}
-                      />
-                    )
-                  }
-                })()}
-              </AnimatePresence>
-            </motion.div>
-          </motion.div>
         )}
       </AnimatePresence>
 
