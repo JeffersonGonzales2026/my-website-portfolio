@@ -992,19 +992,17 @@ export default function DreamCreations() {
                       <div 
                         key={project.id} 
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPreviewImage(project); }}
-                        onMouseEnter={(e) => { const vid = e.currentTarget.querySelector('video'); if (vid) vid.play(); }}
-                        onMouseLeave={(e) => { const vid = e.currentTarget.querySelector('video'); if (vid) { vid.pause(); vid.currentTime = 0.1; } }}
                         className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#050508] block rounded-none pointer-events-auto"
                       >
                         {project.featured_image_url ? ( 
                           isVideo(project.featured_image_url) ? (
-                            <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" loop muted playsInline preload="metadata" />
+                            <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-auto block object-cover transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
                           ) : (
                             <img src={project.featured_image_url} alt={project.title} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
                           )
                         ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
                         
-                        {/* YouTube / Video Link Overlay for Masonry Layout */}
+                        {/* YouTube / Video Play Overlay for Masonry Layout - Now passive to open modal */}
                         {project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && (
                           <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                             <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
@@ -1047,7 +1045,7 @@ export default function DreamCreations() {
                          <div className="aspect-video relative overflow-hidden bg-black/60">
                            {project.featured_image_url ? ( 
                              isVideo(project.featured_image_url) ? (
-                               <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
+                               <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-full object-cover transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
                              ) : (
                                <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
                              )
