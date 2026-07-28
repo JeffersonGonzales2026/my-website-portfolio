@@ -186,6 +186,26 @@ export default function DreamCreations() {
 
   const [previewImage, setPreviewImage] = useState(null);
 
+  // ================= SCROLL LOCK FIX (PREVENTS BACKGROUND SCROLLING) =================
+  useEffect(() => {
+    const isAnyModalOpen = activePortfolioSubtitle || isPhotographyOpen || activeCreationPopup || previewImage || isFlipbookOpen;
+    const html = document.documentElement;
+    const body = document.body;
+    
+    if (isAnyModalOpen) {
+      html.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
+    } else {
+      html.style.overflow = '';
+      body.style.overflow = '';
+    }
+
+    return () => {
+      html.style.overflow = '';
+      body.style.overflow = '';
+    };
+  }, [activePortfolioSubtitle, isPhotographyOpen, activeCreationPopup, previewImage, isFlipbookOpen]);
+
   // ================= ZOOM STATES & LOGIC =================
   const [zoomScale, setZoomScale] = useState(1);
   const initialPinchDist = useRef(null);
@@ -222,7 +242,6 @@ export default function DreamCreations() {
   const handleTouchEnd = () => {
     initialPinchDist.current = null;
   };
-  // =======================================================
 
   const goNextPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext(); };
   const goPrevPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipPrev(); };
@@ -444,7 +463,6 @@ export default function DreamCreations() {
             setClientsList(clientsWithIcons);
           }
 
-          // DYNAMIC PHOTOGRAPHY SHOTS FETCH
           if (dreamData.photography_shots && dreamData.photography_shots.length > 0) {
             setPhotographyShots(dreamData.photography_shots);
           }
@@ -474,18 +492,19 @@ export default function DreamCreations() {
     if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // Modified: Just sets state to open modal, no scrolling
+  // OPEN MODAL LANG, NO SCROLLING DOWN
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
   };
 
-  // Modified: Just sets state to open modal, no scrolling
+  // OPEN MODAL LANG, NO SCROLLING DOWN
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
     setActivePortfolioSubtitle(subtitleName); 
   };
 
-  const filteredProjects = activePortfolioSubtitle 
+  // FILTER LOGIC FOR ARCHIVE
+  const filteredProjects = activePortfolioSubtitle && activePortfolioSubtitle !== 'All Projects'
     ? projects.filter(p => p.subtitle?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || p.category?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
     : projects;
 
@@ -784,7 +803,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      <div id="portfolio-directory" className="scroll-mt-24" />
+      <div id="portfolio-directory" />
 
       {/* ================= UNIFIED PORTFOLIO DIRECTORY (PERMANENTLY VISIBLE) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-screen">
@@ -794,6 +813,12 @@ export default function DreamCreations() {
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
             <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are pulled directly from our live CMS.</p>
           </div>
+          <button 
+            onClick={() => openPortfolioGallery('All Projects')} 
+            className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20"
+          >
+            View Full Archive
+          </button>
         </div>
 
         <div className="space-y-16 relative z-20">
@@ -832,31 +857,31 @@ export default function DreamCreations() {
       <AnimatePresence>
         {activePortfolioSubtitle && (
           <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50, transition: { duration: 0.3 } }}
-            className="fixed inset-0 z-[150] flex flex-col bg-[#050508]/95 backdrop-blur-xl overflow-hidden"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+            className="fixed inset-0 z-[150] flex flex-col bg-[#050508]/95 backdrop-blur-2xl overflow-hidden"
           >
             {/* Background Glow */}
             <div className="absolute inset-0 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16, 149, 210, 0.1), transparent 80%)' }} />
             
             {/* Header */}
-            <div className="flex items-center justify-between p-6 md:p-8 border-b border-white/10 relative z-10 shrink-0 bg-black/40">
+            <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10 relative z-10 shrink-0 bg-black/40">
               <div>
-                <h2 className="text-xl md:text-3xl font-black text-white tracking-widest uppercase">
-                  Viewing: <span className="text-[#1095d2]">{activePortfolioSubtitle}</span>
+                <h2 className="text-lg md:text-2xl font-black text-white tracking-widest uppercase">
+                  {activePortfolioSubtitle === 'All Projects' ? 'Full Archive' : `Viewing: ${activePortfolioSubtitle}`}
                 </h2>
               </div>
               <button 
                 onClick={() => setActivePortfolioSubtitle(null)} 
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 shrink-0"
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 shrink-0"
               >
-                <X size={20} className="md:w-6 md:h-6" />
+                <X size={20} />
               </button>
             </div>
 
             {/* Scrollable Gallery Content */}
-            <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar relative z-10">
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar relative z-10">
               
               {/* Watercolor Portraits Description */}
               {activePortfolioSubtitle === 'Watercolor Portraits' && (
@@ -876,7 +901,7 @@ export default function DreamCreations() {
 
               {/* Grid Render */}
               {activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' ? (
-                <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5">
+                <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5 block">
                   {visualProjects.length > 0 ? (
                     visualProjects.map((project) => (
                       <div 
