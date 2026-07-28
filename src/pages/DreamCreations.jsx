@@ -492,15 +492,24 @@ export default function DreamCreations() {
     if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // OPEN MODAL LANG, NO SCROLLING DOWN
   const openPortfolioGallery = (subtitle) => {
     setActivePortfolioSubtitle(subtitle);
   };
 
-  // OPEN MODAL LANG, NO SCROLLING DOWN
+  // SCROLL DIRECTLY TO COVER FIRST
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
-    setActivePortfolioSubtitle(subtitleName); 
+    setActivePortfolioSubtitle(null); // Just null, don't open board directly
+    
+    setTimeout(() => { 
+      const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        scrollToSection('portfolio-directory');
+      }
+    }, 350); 
   };
 
   // FILTER LOGIC FOR ARCHIVE
@@ -805,7 +814,7 @@ export default function DreamCreations() {
 
       <div id="portfolio-directory" />
 
-      {/* ================= UNIFIED PORTFOLIO DIRECTORY (PERMANENTLY VISIBLE) ================= */}
+      {/* ================= UNIFIED PORTFOLIO DIRECTORY (PERMANENTLY VISIBLE COVERS) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-screen">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
           <div className="text-center md:text-left">
@@ -813,12 +822,6 @@ export default function DreamCreations() {
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
             <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are pulled directly from our live CMS.</p>
           </div>
-          <button 
-            onClick={() => openPortfolioGallery('All Projects')} 
-            className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20"
-          >
-            View Full Archive
-          </button>
         </div>
 
         <div className="space-y-16 relative z-20">
@@ -853,7 +856,7 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= PORTFOLIO SUBTITLE GALLERY MODAL ================= */}
+      {/* ================= PORTFOLIO SUBTITLE GALLERY FULL-SCREEN MODAL ================= */}
       <AnimatePresence>
         {activePortfolioSubtitle && (
           <motion.div 
