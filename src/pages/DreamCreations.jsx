@@ -1003,6 +1003,22 @@ export default function DreamCreations() {
                             <img src={project.featured_image_url} alt={project.title} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
                           )
                         ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
+                        
+                        {/* YouTube / Video Link Overlay for Masonry Layout */}
+                        {project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && (
+                          <a 
+                            href={project.video_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            onClick={(e) => e.stopPropagation()} 
+                            className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform">
+                              <MonitorPlay size={24} className="ml-1" />
+                            </div>
+                          </a>
+                        )}
+
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20 pointer-events-none">
                           <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
                           <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
@@ -1098,13 +1114,44 @@ export default function DreamCreations() {
               <span className="text-xs font-mono font-bold text-white/80 w-12 text-center select-none">{Math.round(zoomScale * 100)}%</span>
               <button onClick={() => setZoomScale(prev => Math.min(prev + 0.5, 4))} className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"><span className="text-2xl leading-none -mt-0.5">+</span></button>
             </div>
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="relative w-full h-full flex items-center justify-center pointer-events-none">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="relative w-full h-full flex items-center justify-center pointer-events-none px-4">
               <AnimatePresence mode="wait">
-                {isVideo(previewImage.featured_image_url) ? (
-                  <motion.video key={previewImage.id} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={previewImage.featured_image_url} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing relative z-10 pointer-events-auto" autoPlay controls playsInline loop onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
-                ) : (
-                  <motion.img key={previewImage.id} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={previewImage.featured_image_url} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing select-none pointer-events-auto relative z-10" alt="Preview" onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
-                )}
+                {(() => {
+                  const p = previewImage;
+                  const vUrl = p.video_url;
+                  const iUrl = p.featured_image_url;
+                  
+                  // Extract YouTube ID if it exists
+                  let ytId = null;
+                  if (vUrl && typeof vUrl === 'string') {
+                    const match = vUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+                    if (match && match[1]) ytId = match[1];
+                  }
+
+                  if (ytId) {
+                    // Render YouTube embedded cinema player
+                    return (
+                      <motion.div key={`yt-${p.id}`} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.2 }} className="w-full max-w-5xl aspect-video relative z-10 pointer-events-auto shadow-[0_0_50px_rgba(0,0,0,0.8)] rounded-2xl overflow-hidden bg-black">
+                        <iframe src={`https://www.youtube.com/embed/${ytId}?autoplay=1`} className="w-full h-full border-0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowFullScreen />
+                      </motion.div>
+                    );
+                  } else if (vUrl && typeof vUrl === 'string' && isVideo(vUrl) && !vUrl.includes(',')) {
+                    // Render raw .mp4 from video_url
+                    return (
+                      <motion.video key={`vid-${p.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={vUrl} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing relative z-10 pointer-events-auto" autoPlay controls playsInline loop onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
+                    );
+                  } else if (iUrl && isVideo(iUrl)) {
+                    // Render raw .mp4 from featured_image_url
+                    return (
+                      <motion.video key={`vid-${p.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={iUrl} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing relative z-10 pointer-events-auto" autoPlay controls playsInline loop onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
+                    );
+                  } else {
+                    // Render standard Image
+                    return (
+                      <motion.img key={`img-${p.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={iUrl} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing select-none pointer-events-auto relative z-10" alt="Preview" onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
+                    );
+                  }
+                })()}
               </AnimatePresence>
             </motion.div>
           </motion.div>
