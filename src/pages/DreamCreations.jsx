@@ -1004,7 +1004,7 @@ export default function DreamCreations() {
                           )
                         ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
                         
-                        {/* YouTube / Video Play Overlay for Masonry Layout - Now passive to open modal */}
+                        {/* YouTube / Video Link Overlay for Masonry Layout */}
                         {project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && (
                           <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                             <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
@@ -1123,11 +1123,14 @@ export default function DreamCreations() {
                   const vUrl = p.video_url;
                   const iUrl = p.featured_image_url;
                   
-                  // Extract YouTube ID if it exists
+                  // ULTIMATE YOUTUBE SCANNER (Catches all formats including shorts, youtu.be, embed, watch?v)
                   let ytId = null;
                   if (vUrl && typeof vUrl === 'string') {
-                    const match = vUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
-                    if (match && match[1]) ytId = match[1];
+                    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+                    const match = vUrl.match(regExp);
+                    if (match && match[2] && match[2].length === 11) {
+                      ytId = match[2];
+                    }
                   }
 
                   if (ytId) {
