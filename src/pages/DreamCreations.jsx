@@ -5,6 +5,26 @@ import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Build
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
 
+// ================= ANTI-CRASH AT YOUTUBE HELPERS =================
+const getSafeText = (str) => {
+  return (typeof str === 'string' ? str : '').toLowerCase().trim();
+};
+
+const isVideo = (url) => {
+  if (!url || typeof url !== 'string') return false;
+  const lowerUrl = url.toLowerCase();
+  return (lowerUrl.match(/\.(mp4|webm|mov|ogg)$/i) || lowerUrl.includes('video')) && !lowerUrl.includes('youtube.com') && !lowerUrl.includes('youtu.be');
+};
+
+const getYouTubeID = (url) => {
+  if (!url || typeof url !== 'string') return null;
+  // INDUSTRY STANDARD REGEX: Catches Shorts, embeds, youtu.be, and standard links perfectly
+  const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/i;
+  const match = url.match(regExp);
+  return match ? match[1] : null;
+};
+// =================================================================
+
 const AnimatedNumber = ({ value, suffix }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -139,11 +159,6 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
   scale: 0.8 + Math.random() * 1.5
 }));
 
-const isVideo = (url) => {
-  if (!url) return false;
-  return url.match(/\.(mp4|webm|mov|ogg)$/i) || url.includes('video');
-};
-
 export default function DreamCreations() {
   const containerRef = useRef(null);
   const processScrollRef = useRef(null); 
@@ -176,47 +191,67 @@ export default function DreamCreations() {
   // SCROLL LOCK FIX FOR ALL MODALS
   useEffect(() => {
     const isAnyModalOpen = activePortfolioSubtitle || isPhotographyOpen || activeCreationPopup || previewImage || isFlipbookOpen;
+    const html = document.documentElement;
+    const body = document.body;
+    
     if (isAnyModalOpen) {
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
+      html.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      html.style.overflow = '';
+      body.style.overflow = '';
     }
+
     return () => {
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      html.style.overflow = '';
+      body.style.overflow = '';
     };
   }, [activePortfolioSubtitle, isPhotographyOpen, activeCreationPopup, previewImage, isFlipbookOpen]);
 
   // ZOOM STATES & LOGIC
   const [zoomScale, setZoomScale] = useState(1);
   const initialPinchDist = useRef(null);
-  useEffect(() => { setZoomScale(1); }, [previewImage]);
+
+  useEffect(() => {
+    setZoomScale(1);
+  }, [previewImage]);
 
   const handleTouchStart = (e) => {
     if (e.touches.length === 2) {
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
-      initialPinchDist.current = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+      initialPinchDist.current = Math.hypot(
+        touch1.clientX - touch2.clientX,
+        touch1.clientY - touch2.clientY
+      );
     }
   };
+
   const handleTouchMove = (e) => {
     if (e.touches.length === 2 && initialPinchDist.current !== null) {
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
-      const currentDist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+      const currentDist = Math.hypot(
+        touch1.clientX - touch2.clientX,
+        touch1.clientY - touch2.clientY
+      );
       const newScale = zoomScale * (currentDist / initialPinchDist.current);
       setZoomScale(Math.min(Math.max(1, newScale), 4));
       initialPinchDist.current = currentDist;
     }
   };
-  const handleTouchEnd = () => { initialPinchDist.current = null; };
+
+  const handleTouchEnd = () => {
+    initialPinchDist.current = null;
+  };
 
   const goNextPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext(); };
   const goPrevPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipPrev(); };
   const onPageFlip = (e) => { setFlipbookCurrentPage(e.data); };
-  const getFlipbookUrl = (pageIndex, prefix = 'page-', ext = 'jpg') => `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/${prefix}${pageIndex}.${ext}`;
+
+  const getFlipbookUrl = (pageIndex, prefix = 'page-', ext = 'jpg') => {
+    return `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/${prefix}${pageIndex}.${ext}`;
+  };
 
   const [pageResume, setPageResume] = useState(null);
   const [randomGlowIndex, setRandomGlowIndex] = useState(null);
@@ -419,11 +454,11 @@ export default function DreamCreations() {
               if (imgUrl) return { ...client, customImage: imgUrl };
 
               let iconComponent = <Globe size={32} />;
-              if (client.industry.toLowerCase().includes('health')) iconComponent = <HeartPulse size={32} />;
-              if (client.industry.toLowerCase().includes('property') || client.industry.toLowerCase().includes('real estate')) iconComponent = <Building2 size={32} />;
-              if (client.industry.toLowerCase().includes('commerce')) iconComponent = <ShoppingBag size={32} />;
-              if (client.industry.toLowerCase().includes('media')) iconComponent = <MonitorPlay size={32} />;
-              if (client.industry.toLowerCase().includes('consulting') || client.industry.toLowerCase().includes('finance')) iconComponent = <Briefcase size={32} />;
+              if (getSafeText(client.industry).includes('health')) iconComponent = <HeartPulse size={32} />;
+              if (getSafeText(client.industry).includes('property') || getSafeText(client.industry).includes('real estate')) iconComponent = <Building2 size={32} />;
+              if (getSafeText(client.industry).includes('commerce')) iconComponent = <ShoppingBag size={32} />;
+              if (getSafeText(client.industry).includes('media')) iconComponent = <MonitorPlay size={32} />;
+              if (getSafeText(client.industry).includes('consulting') || getSafeText(client.industry).includes('finance')) iconComponent = <Briefcase size={32} />;
               
               return { ...client, icon: iconComponent };
             });
@@ -443,7 +478,7 @@ export default function DreamCreations() {
 
         const { data: allResumes } = await supabase.from('portfolio_resumes').select('*');
         if (allResumes && allResumes.length > 0) {
-          const graphicResume = allResumes.find(res => res.title.toLowerCase().includes('graphic') || res.title.toLowerCase().includes('artist') || res.title.toLowerCase().includes('dream')) || allResumes[0]; 
+          const graphicResume = allResumes.find(res => getSafeText(res.title).includes('graphic') || getSafeText(res.title).includes('artist') || getSafeText(res.title).includes('dream')) || allResumes[0]; 
           setPageResume(graphicResume);
         }
 
@@ -469,7 +504,7 @@ export default function DreamCreations() {
     setActivePortfolioSubtitle(null); 
     
     setTimeout(() => { 
-      const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
+      const targetId = getSafeText(subtitleName).replace(/\s+/g, '-');
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -480,7 +515,7 @@ export default function DreamCreations() {
   };
 
   const filteredProjects = activePortfolioSubtitle && activePortfolioSubtitle !== 'All Projects'
-    ? projects.filter(p => p.subtitle?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || p.category?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
+    ? projects.filter(p => getSafeText(p.subtitle) === getSafeText(activePortfolioSubtitle) || getSafeText(p.category) === getSafeText(activePortfolioSubtitle))
     : projects;
 
   const visualProjects = activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' && activePortfolioSubtitle !== null
@@ -612,7 +647,7 @@ export default function DreamCreations() {
             </div>
             <div className="space-y-4">
               <p className="text-base md:text-lg text-white/70 leading-relaxed">Jeff created Dream Creations with the vision of helping businesses communicate more effectively through thoughtful and impactful visual design.</p>
-              <p className="text-base md:text-lg text-white/70 leading-relaxed">With more than ten years of professional experience, he has worked across multiple industries including healthcare, finance, insurance, technology, apparel, education, e-commerce, printing, media, and real estate.</p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">With more than ten years of professional experience, he has worked across many industries including healthcare, finance, insurance, technology, apparel, education, e-commerce, printing, media, and real estate.</p>
               <p className="text-base md:text-lg text-white/70 leading-relaxed">Inspired by his former team manager, he started building his own team of graphic designers with a vision to empower more dreamers (clients) and creators (designers).</p>
               <p className="text-base md:text-lg text-white/70 leading-relaxed">Today, he continues leading Dream Creations while expanding its capabilities through data analytics, automation, and software development.</p>
             </div>
@@ -803,19 +838,52 @@ export default function DreamCreations() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {cat.items.map((subtitle, idx) => {
                   
-                  const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
-                  const coverImage = latestProjectWithImage?.featured_image_url || `/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`;
+                  const latestProjectWithImage = projects.find(p => getSafeText(p.subtitle) === getSafeText(subtitle) && (p.featured_image_url || p.video_url));
+                  const rawCover = latestProjectWithImage?.featured_image_url || latestProjectWithImage?.video_url || `/images/covers/${getSafeText(subtitle).replace(/\s+/g, '-')}.jpg`;
+                  
+                  const ytID = getYouTubeID(rawCover);
+                  const finalCover = ytID ? `https://img.youtube.com/vi/${ytID}/hqdefault.jpg` : rawCover;
+                  const isYt = !!ytID;
 
                   return (
-                    <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
-                      {isVideo(coverImage) ? (
-                        <video key={coverImage} src={`${coverImage}#t=0.1`} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                    <button key={idx} id={getSafeText(subtitle).replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500 bg-[#0e111a]">
+                      
+                      {!isYt && isVideo(finalCover) ? (
+                        <video 
+                          key={finalCover} 
+                          src={`${finalCover}#t=0.1`} 
+                          className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none z-10" 
+                          autoPlay loop muted playsInline preload="metadata" 
+                          onError={(e) => { 
+                            e.currentTarget.style.display = 'none'; 
+                          }} 
+                        />
                       ) : (
-                        <img key={coverImage} src={coverImage} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                        <img 
+                           key={finalCover} 
+                           src={finalCover} 
+                           alt={subtitle} 
+                           className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none z-10" 
+                           onError={(e) => { 
+                              e.currentTarget.style.display = 'none'; 
+                           }} 
+                        />
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
-                      <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
-                      <div className="absolute inset-0 p-6 flex flex-col justify-end pointer-events-none">
+                      
+                      <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 z-0" />
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+                         <ImagePlaceholder size={48} className="text-white/10" />
+                      </div>
+
+                      <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300 z-20" />
+                      
+                      {isYt && (
+                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
+                            <MonitorPlay size={36} className="text-white/50 group-hover:text-[#1095d2] transition-colors drop-shadow-lg" />
+                         </div>
+                      )}
+
+                      <div className="absolute inset-0 p-6 flex flex-col justify-end pointer-events-none z-30">
                         <span className="text-[#1095d2] text-[10px] font-black uppercase tracking-wider mb-2">View Works</span>
                         <h4 className="text-white font-bold text-xl group-hover:text-[#1095d2] transition-colors">{subtitle}</h4>
                       </div>
@@ -828,6 +896,238 @@ export default function DreamCreations() {
         </div>
       </section>
 
+      {/* ================= PORTFOLIO SUBTITLE GALLERY FULL-SCREEN MODAL ================= */}
+      <AnimatePresence>
+        {activePortfolioSubtitle && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+            className="fixed inset-0 z-[150] flex flex-col bg-[#050508]/95 backdrop-blur-2xl overflow-hidden pointer-events-auto"
+          >
+            <div className="absolute inset-0 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16, 149, 210, 0.1), transparent 80%)' }} />
+            
+            <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10 relative z-10 shrink-0 bg-black/40 pointer-events-auto">
+              <div>
+                <h2 className="text-lg md:text-2xl font-black text-white tracking-widest uppercase">
+                  {activePortfolioSubtitle === 'All Projects' ? 'Full Archive' : `Viewing: ${activePortfolioSubtitle}`}
+                </h2>
+              </div>
+              <button 
+                onClick={() => setActivePortfolioSubtitle(null)} 
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 shrink-0 pointer-events-auto"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar relative z-10 pointer-events-auto">
+              
+              {activePortfolioSubtitle === 'Watercolor Portraits' && (
+                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 p-5 rounded-2xl bg-[#1095d2]/10 border border-[#1095d2]/30 backdrop-blur-md max-w-4xl">
+                  <div className="flex items-start gap-3">
+                    <Info className="text-[#1095d2] shrink-0 mt-0.5" size={20} />
+                    <p className="text-sm text-white/80 leading-relaxed"><strong className="text-white">Creative Process:</strong> Merging different raw images, enhancing picture quality, seamlessly combining images into a single, proportional composition, and applying watercolor filters. Some includes adjustments like changing body parts or clothing.</p>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Grid Render */}
+              {activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' ? (
+                <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5 block">
+                  {visualProjects.length > 0 ? (
+                    visualProjects.map((project) => {
+                      const ytID = getYouTubeID(project.featured_image_url) || getYouTubeID(project.video_url);
+                      // FIXED FALLBACK LOGIC HERE
+                      const displayImg = ytID ? `https://img.youtube.com/vi/${ytID}/hqdefault.jpg` : (project.featured_image_url || project.video_url);
+                      
+                      return (
+                        <div 
+                          key={project.id} 
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPreviewImage(project); }}
+                          onMouseEnter={(e) => { const vid = e.currentTarget.querySelector('video'); if (vid) vid.play(); }}
+                          onMouseLeave={(e) => { const vid = e.currentTarget.querySelector('video'); if (vid) { vid.pause(); vid.currentTime = 0.1; } }}
+                          className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#0e111a] block rounded-none pointer-events-auto"
+                        >
+                          {displayImg ? ( 
+                            !ytID && isVideo(displayImg) ? (
+                              <video src={`${displayImg}#t=0.1`} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none relative z-10" loop muted playsInline preload="metadata" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                            ) : (
+                              <>
+                                <img src={displayImg} alt={project.title} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none relative z-10" onError={(e) => { e.currentTarget.style.display = 'none'; }} /> 
+                                {ytID && (
+                                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors pointer-events-none z-20">
+                                      <div className="w-12 h-12 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
+                                        <MonitorPlay size={20} className="ml-1" />
+                                      </div>
+                                   </div>
+                                )}
+                              </>
+                            )
+                          ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+                            <ImagePlaceholder size={32} className="text-white/10" />
+                          </div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-30 pointer-events-none">
+                            <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
+                            <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
+                          </div>
+                        </div>
+                      )
+                    })
+                  ) : ( <div className="w-full break-inside-avoid py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div> )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredProjects.length > 0 ? (
+                    filteredProjects.map((project) => {
+                      const ytID = getYouTubeID(project.featured_image_url) || getYouTubeID(project.video_url);
+                      // FIXED FALLBACK LOGIC HERE
+                      const displayImg = ytID ? `https://img.youtube.com/vi/${ytID}/hqdefault.jpg` : (project.featured_image_url || project.video_url);
+                      const safeTitle = getSafeText(project.title);
+                      const safeCat = getSafeText(project.category);
+                      const safeDesc = getSafeText(project.description);
+
+                      return (
+                        <div 
+                          key={project.id} 
+                          onClick={() => {
+                            if (safeTitle.includes('profile') || safeCat.includes('profile') || safeDesc.includes('company profile') || safeTitle.includes('brochure') || safeCat.includes('brochure') || safeDesc.includes('brochure')) {
+                              let prefix = 'page-'; let pages = 91; let extension = 'jpg'; 
+                              if (project.video_url && typeof project.video_url === 'string' && project.video_url.includes(',')) {
+                                 const parts = project.video_url.split(','); prefix = parts[0].trim(); pages = parseInt(parts[1].trim()) || 91; if (parts[2]) extension = parts[2].trim().replace('.', ''); 
+                              }
+                              setActiveFlipbookConfig({ prefix, totalPages: pages, extension }); setIsFlipbookOpen(true); setFlipbookCurrentPage(0);
+                            } else {
+                              setPreviewImage(project); 
+                            }
+                          }}
+                          className="relative rounded-2xl border border-white/10 bg-[#0e111a] overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer pointer-events-auto"
+                        >
+                           <div className="aspect-video relative overflow-hidden bg-black/60">
+                             {displayImg ? ( 
+                               !ytID && isVideo(displayImg) ? (
+                                 <video src={`${displayImg}#t=0.1`} className="w-full h-full relative z-10 object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                               ) : (
+                                 <img src={displayImg} alt={project.title} className="w-full h-full relative z-10 object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" onError={(e) => { e.currentTarget.style.display = 'none'; }} /> 
+                               )
+                             ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
+                             
+                             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+                                <ImagePlaceholder size={48} className="text-white/10" />
+                             </div>
+
+                             {(project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && !safeTitle.includes('profile') && !safeTitle.includes('brochure')) || ytID ? (
+                               <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                                 <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform"><MonitorPlay size={24} className="ml-1" /></div>
+                               </div>
+                             ) : null}
+                           </div>
+                           <div className="p-6 relative z-30">
+                              <h4 className="text-lg font-bold text-white mb-1 group-hover:text-[#1095d2] transition-colors">{project.title}</h4>
+                              <p className="text-xs text-[#1095d2] font-mono mb-4">{project.client_name || 'Independent Project'}</p>
+                              <p className="text-sm text-white/60 line-clamp-3 leading-relaxed">{project.description}</p>
+                           </div>
+                        </div>
+                      )
+                    })
+                  ) : ( <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm border border-dashed border-white/10 rounded-2xl"><ImageIcon size={32} className="mb-4 opacity-30" />No projects have been published to this archive category yet.</div> )}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= PAGE CURL PHYSICS FLIPBOOK MODAL ================= */}
+      <AnimatePresence>
+        {isFlipbookOpen && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md pointer-events-auto">
+            <div className="absolute top-6 right-6 z-50 flex items-center gap-4 pointer-events-auto">
+              <span className="text-xs font-mono text-white/40 hidden sm:block">Click page edges or drag to turn</span>
+              <button onClick={() => setIsFlipbookOpen(false)} className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"><X size={20} /></button>
+            </div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <div className="flex-grow w-full flex items-center justify-center px-4 max-h-[80vh] cursor-grab active:cursor-grabbing mt-8">
+                <HTMLFlipBook width={500} height={700} size="stretch" minWidth={300} maxWidth={800} minHeight={400} maxHeight={1000} maxShadowOpacity={0.6} showCover={true} mobileScrollSupport={true} className="mx-auto shadow-[0_0_50px_rgba(0,0,0,0.8)]" ref={flipBookRef} usePortrait={true} onFlip={onPageFlip}>
+                  {Array.from({ length: activeFlipbookConfig.totalPages }, (_, i) => ( <BookPage key={i} number={i + 1} imageUrl={getFlipbookUrl(i + 1, activeFlipbookConfig.prefix, activeFlipbookConfig.extension)} /> ))}
+                </HTMLFlipBook>
+              </div>
+              <div className="flex items-center gap-6 bg-black/40 border border-white/10 backdrop-blur-md px-6 py-3 rounded-full relative z-20 mt-8 mb-4 shadow-xl pointer-events-auto">
+                <button onClick={goPrevPage} className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer"><ChevronLeft size={24} /></button>
+                <span className="text-xs font-mono font-bold tracking-widest text-zinc-400 uppercase select-none min-w-[100px] text-center">Page {flipbookPage + 1} / {activeFlipbookConfig.totalPages}</span>
+                <button onClick={goNextPage} className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer"><ChevronRight size={24} /></button>
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= POPUP MODAL NAVIGATION & YOUTUBE PLAYER ================= */}
+      <AnimatePresence>
+        {previewImage && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.3 } }} className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer pointer-events-auto" onClick={() => setPreviewImage(null)}>
+            <div className="absolute top-6 right-6 z-50 flex items-center gap-4 pointer-events-auto">
+              <span className="text-xs font-mono text-white/40 hidden sm:block">Click anywhere to close</span>
+              <button onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }} className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"><X size={20} /></button>
+            </div>
+            
+            {hasPrev && ( <button onClick={handlePrevImage} className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400] cursor-pointer pointer-events-auto"><ChevronLeft size={24} /></button> )}
+            {hasNext && ( <button onClick={handleNextImage} className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400] cursor-pointer pointer-events-auto"><ChevronRight size={24} /></button> )}
+            
+            {/* Zoom Controls (Only show if NOT YouTube) */}
+            {!(getYouTubeID(previewImage.featured_image_url) || getYouTubeID(previewImage.video_url)) && (
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[500] flex items-center gap-4 bg-black/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+                <button onClick={() => setZoomScale(prev => Math.max(prev - 0.5, 1))} className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"><span className="text-2xl leading-none -mt-0.5">−</span></button>
+                <span className="text-xs font-mono font-bold text-white/80 w-12 text-center select-none">{Math.round(zoomScale * 100)}%</span>
+                <button onClick={() => setZoomScale(prev => Math.min(prev + 0.5, 4))} className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"><span className="text-2xl leading-none -mt-0.5">+</span></button>
+              </div>
+            )}
+
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="relative w-full h-full flex items-center justify-center pointer-events-none">
+              <AnimatePresence mode="wait">
+                {(() => {
+                  const previewYtID = getYouTubeID(previewImage.featured_image_url) || getYouTubeID(previewImage.video_url);
+                  
+                  if (previewYtID) {
+                    return (
+                      <motion.iframe 
+                        key={previewImage.id}
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        src={`https://www.youtube.com/embed/${previewYtID}?autoplay=1`}
+                        allow="autoplay; fullscreen"
+                        className="w-[90vw] max-w-5xl aspect-video rounded-2xl drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] relative z-10 pointer-events-auto border-0"
+                      />
+                    )
+                  } else if (isVideo(previewImage.featured_image_url) || isVideo(previewImage.video_url)) {
+                    // Also fixed fallback here just in case they click a normal video
+                    const videoSrc = previewImage.featured_image_url || previewImage.video_url;
+                    return (
+                      <motion.video key={previewImage.id} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={videoSrc} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing relative z-10 pointer-events-auto" autoPlay controls playsInline loop onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
+                    )
+                  } else {
+                    return (
+                      <motion.img 
+                         key={previewImage.id} 
+                         initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} 
+                         src={previewImage.featured_image_url} 
+                         className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing select-none pointer-events-auto relative z-10" 
+                         alt="Preview" 
+                         onClick={(e) => { e.stopPropagation(); }} 
+                         onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} 
+                         drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} 
+                         onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} 
+                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      />
+                    )
+                  }
+                })()}
+              </AnimatePresence>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ================= BONUS: VISIONS THROUGH THE LENS (PHOTOGRAPHY) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-10 z-10 relative border-t border-white/10 mt-10">
         <motion.div 
@@ -837,25 +1137,13 @@ export default function DreamCreations() {
           className="relative rounded-3xl overflow-hidden group cursor-pointer border border-[#1095d2]/20 bg-black/40 min-h-[300px] flex items-center justify-center shadow-[0_0_30px_rgba(16,149,210,0.15)]"
           onClick={() => setIsPhotographyOpen(true)}
         >
-          {/* DYNAMIC LATEST PHOTOGRAPHY BACKGROUND COVER OR DREAM CREATIONS BRANDING FALLBACK */}
           <div 
             className="absolute inset-0 bg-cover bg-center opacity-20 group-hover:opacity-40 group-hover:scale-105 transition-all duration-700 grayscale group-hover:grayscale-0" 
-            style={{ 
-              backgroundImage: `url(${photographyShots[0]?.url || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1600&auto=format&fit=crop'})` 
-            }}
+            style={{ backgroundImage: `url(${photographyShots[0]?.url || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1600&auto=format&fit=crop'})` }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
-          
-          {/* Flash Effect on Hover */}
           <div className="absolute inset-0 bg-white opacity-0 group-hover:animate-flash pointer-events-none" />
-          <style>{`
-            @keyframes flash {
-              0% { opacity: 0; }
-              10% { opacity: 0.8; }
-              100% { opacity: 0; }
-            }
-            .group-hover\\:animate-flash:hover { animation: flash 1s ease-out; }
-          `}</style>
+          <style>{`@keyframes flash { 0% { opacity: 0; } 10% { opacity: 0.8; } 100% { opacity: 0; } } .group-hover\\:animate-flash:hover { animation: flash 1s ease-out; }`}</style>
 
           <div className="relative z-10 text-center p-8 max-w-2xl">
             <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center justify-center mx-auto mb-4 group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]/50 group-hover:text-[#1095d2] transition-colors duration-300">
@@ -949,164 +1237,6 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= PORTFOLIO SUBTITLE GALLERY FULL-SCREEN MODAL ================= */}
-      <AnimatePresence>
-        {activePortfolioSubtitle && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
-            className="fixed inset-0 z-[150] flex flex-col bg-[#050508]/95 backdrop-blur-2xl overflow-hidden pointer-events-auto"
-          >
-            <div className="absolute inset-0 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16, 149, 210, 0.1), transparent 80%)' }} />
-            
-            <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10 relative z-10 shrink-0 bg-black/40 pointer-events-auto">
-              <div>
-                <h2 className="text-lg md:text-2xl font-black text-white tracking-widest uppercase">
-                  {activePortfolioSubtitle === 'All Projects' ? 'Full Archive' : `Viewing: ${activePortfolioSubtitle}`}
-                </h2>
-              </div>
-              <button 
-                onClick={() => setActivePortfolioSubtitle(null)} 
-                className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 shrink-0 pointer-events-auto"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar relative z-10 pointer-events-auto">
-              
-              {activePortfolioSubtitle === 'Watercolor Portraits' && (
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 p-5 rounded-2xl bg-[#1095d2]/10 border border-[#1095d2]/30 backdrop-blur-md max-w-4xl">
-                  <div className="flex items-start gap-3">
-                    <Info className="text-[#1095d2] shrink-0 mt-0.5" size={20} />
-                    <p className="text-sm text-white/80 leading-relaxed"><strong className="text-white">Creative Process:</strong> Merging different raw images, enhancing picture quality, seamlessly combining images into a single, proportional composition, and applying watercolor filters. Some includes adjustments like changing body parts or clothing.</p>
-                  </div>
-                </motion.div>
-              )}
-
-              {activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' ? (
-                <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5 block">
-                  {visualProjects.length > 0 ? (
-                    visualProjects.map((project) => (
-                      <div 
-                        key={project.id} 
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPreviewImage(project); }}
-                        onMouseEnter={(e) => { const vid = e.currentTarget.querySelector('video'); if (vid) vid.play(); }}
-                        onMouseLeave={(e) => { const vid = e.currentTarget.querySelector('video'); if (vid) { vid.pause(); vid.currentTime = 0.1; } }}
-                        className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#050508] block rounded-none pointer-events-auto"
-                      >
-                        {project.featured_image_url ? ( 
-                          isVideo(project.featured_image_url) ? (
-                            <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" loop muted playsInline preload="metadata" />
-                          ) : (
-                            <img src={project.featured_image_url} alt={project.title} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
-                          )
-                        ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20 pointer-events-none">
-                          <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
-                          <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
-                        </div>
-                      </div>
-                    ))
-                  ) : ( <div className="w-full break-inside-avoid py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div> )}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProjects.length > 0 ? (
-                    filteredProjects.map((project) => (
-                      <div 
-                        key={project.id} 
-                        onClick={() => {
-                          if (project.title.toLowerCase().includes('profile') || project.category.toLowerCase().includes('profile') || project.description.toLowerCase().includes('company profile') || project.title.toLowerCase().includes('brochure') || project.category.toLowerCase().includes('brochure') || project.description.toLowerCase().includes('brochure')) {
-                            let prefix = 'page-'; let pages = 91; let extension = 'jpg'; 
-                            if (project.video_url && project.video_url.includes(',')) {
-                               const parts = project.video_url.split(','); prefix = parts[0].trim(); pages = parseInt(parts[1].trim()) || 91; if (parts[2]) extension = parts[2].trim().replace('.', ''); 
-                            }
-                            setActiveFlipbookConfig({ prefix, totalPages: pages, extension }); setIsFlipbookOpen(true); setFlipbookCurrentPage(0);
-                          }
-                        }}
-                        className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer pointer-events-auto"
-                      >
-                         <div className="aspect-video relative overflow-hidden bg-black/60">
-                           {project.featured_image_url ? ( 
-                             isVideo(project.featured_image_url) ? (
-                               <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
-                             ) : (
-                               <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
-                             )
-                           ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
-                           {project.video_url && !project.video_url.includes(',') && !project.title.toLowerCase().includes('profile') && !project.title.toLowerCase().includes('brochure') && (
-                             <a href={project.video_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"><div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform"><MonitorPlay size={24} className="ml-1" /></div></a>
-                           )}
-                         </div>
-                         <div className="p-6">
-                            <h4 className="text-lg font-bold text-white mb-1 group-hover:text-[#1095d2] transition-colors">{project.title}</h4>
-                            <p className="text-xs text-[#1095d2] font-mono mb-4">{project.client_name || 'Independent Project'}</p>
-                            <p className="text-sm text-white/60 line-clamp-3 leading-relaxed">{project.description}</p>
-                         </div>
-                      </div>
-                    ))
-                  ) : ( <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm border border-dashed border-white/10 rounded-2xl"><ImageIcon size={32} className="mb-4 opacity-30" />No projects have been published to this archive category yet.</div> )}
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ================= PAGE CURL PHYSICS FLIPBOOK MODAL ================= */}
-      <AnimatePresence>
-        {isFlipbookOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md pointer-events-auto">
-            <div className="absolute top-6 right-6 z-50 flex items-center gap-4 pointer-events-auto">
-              <span className="text-xs font-mono text-white/40 hidden sm:block">Click page edges or drag to turn</span>
-              <button onClick={() => setIsFlipbookOpen(false)} className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"><X size={20} /></button>
-            </div>
-            <div className="w-full h-full flex flex-col items-center justify-center">
-              <div className="flex-grow w-full flex items-center justify-center px-4 max-h-[80vh] cursor-grab active:cursor-grabbing mt-8">
-                <HTMLFlipBook width={500} height={700} size="stretch" minWidth={300} maxWidth={800} minHeight={400} maxHeight={1000} maxShadowOpacity={0.6} showCover={true} mobileScrollSupport={true} className="mx-auto shadow-[0_0_50px_rgba(0,0,0,0.8)]" ref={flipBookRef} usePortrait={true} onFlip={onPageFlip}>
-                  {Array.from({ length: activeFlipbookConfig.totalPages }, (_, i) => ( <BookPage key={i} number={i + 1} imageUrl={getFlipbookUrl(i + 1, activeFlipbookConfig.prefix, activeFlipbookConfig.extension)} /> ))}
-                </HTMLFlipBook>
-              </div>
-              <div className="flex items-center gap-6 bg-black/40 border border-white/10 backdrop-blur-md px-6 py-3 rounded-full relative z-20 mt-8 mb-4 shadow-xl pointer-events-auto">
-                <button onClick={goPrevPage} className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer"><ChevronLeft size={24} /></button>
-                <span className="text-xs font-mono font-bold tracking-widest text-zinc-400 uppercase select-none min-w-[100px] text-center">Page {flipbookPage + 1} / {activeFlipbookConfig.totalPages}</span>
-                <button onClick={goNextPage} className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer"><ChevronRight size={24} /></button>
-              </div>
-            </div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* ================= POPUP MODAL NAVIGATION ================= */}
-      <AnimatePresence>
-        {previewImage && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.3 } }} className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer pointer-events-auto" onClick={() => setPreviewImage(null)}>
-            <div className="absolute top-6 right-6 z-50 flex items-center gap-4 pointer-events-auto">
-              <span className="text-xs font-mono text-white/40 hidden sm:block">Click anywhere to close</span>
-              <button onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }} className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"><X size={20} /></button>
-            </div>
-            {hasPrev && ( <button onClick={handlePrevImage} className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400] cursor-pointer pointer-events-auto"><ChevronLeft size={24} /></button> )}
-            {hasNext && ( <button onClick={handleNextImage} className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400] cursor-pointer pointer-events-auto"><ChevronRight size={24} /></button> )}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[500] flex items-center gap-4 bg-black/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-              <button onClick={() => setZoomScale(prev => Math.max(prev - 0.5, 1))} className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"><span className="text-2xl leading-none -mt-0.5">−</span></button>
-              <span className="text-xs font-mono font-bold text-white/80 w-12 text-center select-none">{Math.round(zoomScale * 100)}%</span>
-              <button onClick={() => setZoomScale(prev => Math.min(prev + 0.5, 4))} className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"><span className="text-2xl leading-none -mt-0.5">+</span></button>
-            </div>
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="relative w-full h-full flex items-center justify-center pointer-events-none">
-              <AnimatePresence mode="wait">
-                {isVideo(previewImage.featured_image_url) ? (
-                  <motion.video key={previewImage.id} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={previewImage.featured_image_url} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing relative z-10 pointer-events-auto" autoPlay controls playsInline loop onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
-                ) : (
-                  <motion.img key={previewImage.id} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={previewImage.featured_image_url} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing select-none pointer-events-auto relative z-10" alt="Preview" onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* ================= POLAROID PHOTOGRAPHY MODAL (UNIFIED SCATTERED LAYOUT) ================= */}
       <AnimatePresence>
         {isPhotographyOpen && (
@@ -1119,8 +1249,11 @@ export default function DreamCreations() {
             </div>
             <div className="absolute inset-0 w-full h-full flex items-center justify-center z-10 overflow-hidden pointer-events-none">
               {photographyShots.map((shot, idx) => {
-                const mappedX = `${((shot.x || 0) / 100) * 45}vw`;
-                const mappedY = `${((shot.y || 0) / 50) * 45}vh`;
+                const parsedX = parseFloat(shot.x) || 0;
+                const parsedY = parseFloat(shot.y) || 0;
+                const mappedX = `${(parsedX / 100) * 45}vw`;
+                const mappedY = `${(parsedY / 50) * 45}vh`;
+                
                 return (
                   <motion.div key={shot.id || idx} drag dragConstraints={{ left: -1000, right: 1000, top: -1000, bottom: 1000 }} initial={{ opacity: 0, scale: 0.5, x: 0, y: 0, rotate: 0 }} animate={{ opacity: 1, scale: 1, x: mappedX, y: mappedY, rotate: shot.rot || 0 }} transition={{ type: "spring", damping: 20, stiffness: 100, delay: idx * 0.05 }} whileHover={{ scale: 1.15, rotate: 0, zIndex: 50, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9)" }} whileTap={{ scale: 1.15, zIndex: 50 }} className="absolute p-2 pb-8 md:p-3 md:pb-10 bg-[#f8f8f8] shadow-[0_15px_35px_rgba(0,0,0,0.6)] cursor-grab active:cursor-grabbing rounded-sm pointer-events-auto" onClick={() => setSelectedPhoto(shot.url)} style={{ zIndex: 10 + idx }}>
                     <img src={shot.url} alt={shot.title || "Shot"} className="w-28 h-28 sm:w-48 sm:h-48 md:w-64 md:h-64 object-cover pointer-events-none filter contrast-[0.9] sepia-[0.2]" />
