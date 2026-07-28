@@ -5,6 +5,62 @@ import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Build
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
 
+// ================= ULTRA-SAFE HELPERS (ANTI-CRASH) =================
+const getSafeText = (str) => {
+  return (typeof str === 'string' ? str : '').toLowerCase().trim();
+};
+
+const isVideo = (url) => {
+  if (!url || typeof url !== 'string') return false;
+  const lowerUrl = url.toLowerCase();
+  return (lowerUrl.match(/\.(mp4|webm|mov|ogg)$/i) || lowerUrl.includes('video')) && !lowerUrl.includes('youtube.com') && !lowerUrl.includes('youtu.be');
+};
+
+const getYouTubeID = (url) => {
+  if (!url || typeof url !== 'string') return null;
+  const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+  const match = url.match(regExp);
+  return match ? match[1] : null;
+};
+
+// ================= SAFE MEDIA COMPONENT (PREVENTS BLANK CARDS) =================
+const SafeMedia = ({ src, alt, isYt, className }) => {
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    setError(false);
+  }, [src]);
+
+  if (error || !src) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white/10 z-0">
+         <ImagePlaceholder size={48} className="opacity-30" />
+      </div>
+    );
+  }
+
+  if (!isYt && isVideo(src)) {
+    return (
+      <video 
+        src={`${src}#t=0.1`} 
+        className={className} 
+        autoPlay loop muted playsInline preload="metadata" 
+        onError={() => setError(true)} 
+      />
+    );
+  }
+
+  return (
+    <img 
+       src={src} 
+       alt={alt} 
+       className={className} 
+       onError={() => setError(true)} 
+    />
+  );
+};
+
+// ================= ANIMATED NUMBERS =================
 const AnimatedNumber = ({ value, suffix }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -138,24 +194,6 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
   duration: 40 + Math.random() * 20,
   scale: 0.8 + Math.random() * 1.5
 }));
-
-// ================= ULTRA-SAFE HELPERS (ANTI-CRASH) =================
-const getSafeText = (str) => {
-  return (typeof str === 'string' ? str : '').toLowerCase().trim();
-};
-
-const isVideo = (url) => {
-  if (!url || typeof url !== 'string') return false;
-  const lowerUrl = url.toLowerCase();
-  return (lowerUrl.match(/\.(mp4|webm|mov|ogg)$/i) || lowerUrl.includes('video')) && !lowerUrl.includes('youtube.com') && !lowerUrl.includes('youtu.be');
-};
-
-const getYouTubeID = (url) => {
-  if (!url || typeof url !== 'string') return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : null;
-};
 
 export default function DreamCreations() {
   const containerRef = useRef(null);
@@ -496,7 +534,7 @@ export default function DreamCreations() {
     setActivePortfolioSubtitle(subtitle);
   };
 
-  // SCROLL DIRECTLY TO COVER FIRST (HINDI AGAD SA LOOB)
+  // SCROLL DIRECTLY TO COVER FIRST
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
     setActivePortfolioSubtitle(null); 
@@ -512,7 +550,7 @@ export default function DreamCreations() {
     }, 350); 
   };
 
-  // 100% BULLETPROOF FILTER LOGIC
+  // FAIL-SAFE FILTERING TO PREVENT CRASHES
   const filteredProjects = activePortfolioSubtitle && activePortfolioSubtitle !== 'All Projects'
     ? projects.filter(p => getSafeText(p.subtitle) === getSafeText(activePortfolioSubtitle) || getSafeText(p.category) === getSafeText(activePortfolioSubtitle))
     : projects;
@@ -837,43 +875,28 @@ export default function DreamCreations() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {cat.items.map((subtitle, idx) => {
                   
-                  const latestProjectWithImage = projects.find(p => getSafeText(p.subtitle) === getSafeText(subtitle) && p.featured_image_url);
-                  let rawCover = latestProjectWithImage?.featured_image_url || `/images/covers/${getSafeText(subtitle).replace(/\s+/g, '-')}.jpg`;
+                  // SAFE MATCHING: Hahanapin niya kahit anong project basta pareho ang subtitle
+                  const latestProjectWithImage = projects.find(p => getSafeText(p.subtitle) === getSafeText(subtitle) && (p.featured_image_url || p.video_url));
+                  
+                  let rawCover = latestProjectWithImage?.featured_image_url || latestProjectWithImage?.video_url || null;
                   
                   const ytID = getYouTubeID(rawCover);
                   const finalCover = ytID ? `https://img.youtube.com/vi/${ytID}/hqdefault.jpg` : rawCover;
                   const isYt = !!ytID;
 
                   return (
-                    <button key={idx} id={getSafeText(subtitle).replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
+                    <button key={idx} id={getSafeText(subtitle).replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500 bg-[#0e111a]">
                       
-                      {/* LIGTAS NA FALLBACK LOGIC PARA WALANG BLINKING ERROR */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 z-0" />
+                      {/* SAFE MEDIA COMPONENT */}
+                      <SafeMedia 
+                         src={finalCover} 
+                         alt={subtitle} 
+                         isYt={isYt} 
+                         className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none z-10" 
+                      />
                       
-                      {!isYt && isVideo(finalCover) ? (
-                        <video 
-                          key={finalCover} 
-                          src={`${finalCover}#t=0.1`} 
-                          className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none z-10" 
-                          autoPlay loop muted playsInline preload="metadata" 
-                          onError={(e) => { 
-                            e.currentTarget.onerror = null; 
-                            e.currentTarget.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"; 
-                          }} 
-                        />
-                      ) : (
-                        <img 
-                           key={finalCover} 
-                           src={finalCover} 
-                           alt={subtitle} 
-                           className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none z-10" 
-                           onError={(e) => { 
-                              e.currentTarget.onerror = null; 
-                              e.currentTarget.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"; 
-                           }} 
-                        />
-                      )}
-                      
+                      {/* GRADIENT OVERLAY */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-20" />
                       <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300 z-20" />
                       
                       {/* Play Button Overlay kung YouTube Link */}
@@ -946,28 +969,23 @@ export default function DreamCreations() {
                           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPreviewImage(project); }}
                           onMouseEnter={(e) => { const vid = e.currentTarget.querySelector('video'); if (vid) vid.play(); }}
                           onMouseLeave={(e) => { const vid = e.currentTarget.querySelector('video'); if (vid) { vid.pause(); vid.currentTime = 0.1; } }}
-                          className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#050508] block rounded-none pointer-events-auto"
+                          className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#0e111a] block rounded-none pointer-events-auto"
                         >
-                          {pDisplayImg ? ( 
-                            !pYtID && isVideo(pDisplayImg) ? (
-                              <>
-                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white/20 z-0"><ImagePlaceholder size={32} /></div>
-                                <video src={`${pDisplayImg}#t=0.1`} className="w-full h-auto relative z-10 block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" loop muted playsInline preload="metadata" onError={(e) => { e.currentTarget.onerror=null; e.currentTarget.src='/Logo Banner.png'; }} />
-                              </>
-                            ) : (
-                              <>
-                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white/20 z-0"><ImagePlaceholder size={32} /></div>
-                                <img src={pDisplayImg} alt={project.title} className="w-full h-auto relative z-10 block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" onError={(e) => { e.currentTarget.onerror=null; e.currentTarget.src='/Logo Banner.png'; }} /> 
-                                {pYtID && (
-                                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors pointer-events-none z-20">
-                                      <div className="w-12 h-12 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
-                                        <MonitorPlay size={20} className="ml-1" />
-                                      </div>
-                                   </div>
-                                )}
-                              </>
-                            )
-                          ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
+                          <SafeMedia 
+                             src={pDisplayImg} 
+                             alt={project.title} 
+                             isYt={!!pYtID} 
+                             className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none z-10" 
+                          />
+                          
+                          {pYtID && (
+                             <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors pointer-events-none z-20">
+                                <div className="w-12 h-12 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
+                                  <MonitorPlay size={20} className="ml-1" />
+                                </div>
+                             </div>
+                          )}
+
                           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-30 pointer-events-none">
                             <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
                             <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
@@ -1002,22 +1020,16 @@ export default function DreamCreations() {
                               setPreviewImage(project); 
                             }
                           }}
-                          className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer pointer-events-auto"
+                          className="relative rounded-2xl border border-white/10 bg-[#0e111a] overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer pointer-events-auto"
                         >
                            <div className="aspect-video relative overflow-hidden bg-black/60">
-                             {bpDisplayImg ? ( 
-                               !bpYtID && isVideo(bpDisplayImg) ? (
-                                 <>
-                                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white/20 z-0"><ImagePlaceholder size={48} /></div>
-                                   <video src={`${bpDisplayImg}#t=0.1`} className="w-full h-full relative z-10 object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.currentTarget.onerror=null; e.currentTarget.src='/Logo Banner.png'; }} />
-                                 </>
-                               ) : (
-                                 <>
-                                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white/20 z-0"><ImagePlaceholder size={48} /></div>
-                                   <img src={bpDisplayImg} alt={project.title} className="w-full h-full relative z-10 object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" onError={(e) => { e.currentTarget.onerror=null; e.currentTarget.src='/Logo Banner.png'; }} /> 
-                                 </>
-                               )
-                             ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
+                             
+                             <SafeMedia 
+                                src={bpDisplayImg} 
+                                alt={project.title} 
+                                isYt={!!bpYtID} 
+                                className="w-full h-full relative z-10 object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" 
+                             />
                              
                              {(project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && !safeTitle.includes('profile') && !safeTitle.includes('brochure')) || bpYtID ? (
                                <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1025,7 +1037,7 @@ export default function DreamCreations() {
                                </div>
                              ) : null}
                            </div>
-                           <div className="p-6">
+                           <div className="p-6 relative z-30">
                               <h4 className="text-lg font-bold text-white mb-1 group-hover:text-[#1095d2] transition-colors">{project.title}</h4>
                               <p className="text-xs text-[#1095d2] font-mono mb-4">{project.client_name || 'Independent Project'}</p>
                               <p className="text-sm text-white/60 line-clamp-3 leading-relaxed">{project.description}</p>
@@ -1117,7 +1129,7 @@ export default function DreamCreations() {
                          onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} 
                          drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} 
                          onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} 
-                         onError={(e) => { e.currentTarget.onerror=null; e.currentTarget.src='/Logo Banner.png'; }}
+                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                       />
                     )
                   }
