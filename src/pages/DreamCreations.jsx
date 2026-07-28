@@ -28,7 +28,7 @@ const BookPage = React.forwardRef((props, ref) => {
   return (
     <div className="bg-[#0e111a] border border-white/5 flex items-center justify-center overflow-hidden shadow-2xl relative" ref={ref} data-density="soft">
       <div className={`absolute inset-y-0 ${props.number % 2 === 0 ? 'right-0' : 'left-0'} w-8 bg-gradient-to-${props.number % 2 === 0 ? 'l' : 'r'} from-black/40 to-transparent z-10 pointer-events-none`} />
-      <img key={props.imageUrl} src={props.imageUrl} onError={(e) => { e.currentTarget.style.display = 'none'; if (e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'flex'; }} alt={`Page ${props.number}`} className="w-full h-full object-contain pointer-events-none relative z-0" />
+      <img key={props.imageUrl} src={props.imageUrl} onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'flex'; }} alt={`Page ${props.number}`} className="w-full h-full object-contain pointer-events-none relative z-0" />
       <div className="hidden absolute inset-0 flex-col items-center justify-center text-xs text-red-400 font-mono text-center p-6 z-20">
         <span className="text-2xl mb-2">⚠️</span>
         <span className="font-bold mb-2">IMAGE NOT FOUND</span>
@@ -139,7 +139,11 @@ const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
   scale: 0.8 + Math.random() * 1.5
 }));
 
-// ================= FAIL-SAFE HELPERS FOR VIDEO & YOUTUBE =================
+// ================= ULTRA-SAFE HELPERS (ANTI-CRASH) =================
+const getSafeText = (str) => {
+  return (typeof str === 'string' ? str : '').toLowerCase().trim();
+};
+
 const isVideo = (url) => {
   if (!url || typeof url !== 'string') return false;
   const lowerUrl = url.toLowerCase();
@@ -448,11 +452,11 @@ export default function DreamCreations() {
               if (imgUrl) return { ...client, customImage: imgUrl };
 
               let iconComponent = <Globe size={32} />;
-              if (client.industry.toLowerCase().includes('health')) iconComponent = <HeartPulse size={32} />;
-              if (client.industry.toLowerCase().includes('property') || client.industry.toLowerCase().includes('real estate')) iconComponent = <Building2 size={32} />;
-              if (client.industry.toLowerCase().includes('commerce')) iconComponent = <ShoppingBag size={32} />;
-              if (client.industry.toLowerCase().includes('media')) iconComponent = <MonitorPlay size={32} />;
-              if (client.industry.toLowerCase().includes('consulting') || client.industry.toLowerCase().includes('finance')) iconComponent = <Briefcase size={32} />;
+              if (getSafeText(client.industry).includes('health')) iconComponent = <HeartPulse size={32} />;
+              if (getSafeText(client.industry).includes('property') || getSafeText(client.industry).includes('real estate')) iconComponent = <Building2 size={32} />;
+              if (getSafeText(client.industry).includes('commerce')) iconComponent = <ShoppingBag size={32} />;
+              if (getSafeText(client.industry).includes('media')) iconComponent = <MonitorPlay size={32} />;
+              if (getSafeText(client.industry).includes('consulting') || getSafeText(client.industry).includes('finance')) iconComponent = <Briefcase size={32} />;
               
               return { ...client, icon: iconComponent };
             });
@@ -472,7 +476,7 @@ export default function DreamCreations() {
 
         const { data: allResumes } = await supabase.from('portfolio_resumes').select('*');
         if (allResumes && allResumes.length > 0) {
-          const graphicResume = allResumes.find(res => res.title?.toLowerCase().includes('graphic') || res.title?.toLowerCase().includes('artist') || res.title?.toLowerCase().includes('dream')) || allResumes[0]; 
+          const graphicResume = allResumes.find(res => getSafeText(res.title).includes('graphic') || getSafeText(res.title).includes('artist') || getSafeText(res.title).includes('dream')) || allResumes[0]; 
           setPageResume(graphicResume);
         }
 
@@ -498,7 +502,7 @@ export default function DreamCreations() {
     setActivePortfolioSubtitle(null); 
     
     setTimeout(() => { 
-      const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
+      const targetId = getSafeText(subtitleName).replace(/\s+/g, '-');
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -508,9 +512,9 @@ export default function DreamCreations() {
     }, 350); 
   };
 
-  // FAIL-SAFE FILTERING TO PREVENT CRASHES
+  // 100% BULLETPROOF FILTER LOGIC
   const filteredProjects = activePortfolioSubtitle && activePortfolioSubtitle !== 'All Projects'
-    ? projects.filter(p => p.subtitle?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || p.category?.toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
+    ? projects.filter(p => getSafeText(p.subtitle) === getSafeText(activePortfolioSubtitle) || getSafeText(p.category) === getSafeText(activePortfolioSubtitle))
     : projects;
 
   const visualProjects = activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' && activePortfolioSubtitle !== null
@@ -833,48 +837,53 @@ export default function DreamCreations() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {cat.items.map((subtitle, idx) => {
                   
-                  const latestProjectWithImage = projects.find(p => p.subtitle?.toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
-                  let rawCover = latestProjectWithImage?.featured_image_url || `/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`;
+                  const latestProjectWithImage = projects.find(p => getSafeText(p.subtitle) === getSafeText(subtitle) && p.featured_image_url);
+                  let rawCover = latestProjectWithImage?.featured_image_url || `/images/covers/${getSafeText(subtitle).replace(/\s+/g, '-')}.jpg`;
                   
                   const ytID = getYouTubeID(rawCover);
                   const finalCover = ytID ? `https://img.youtube.com/vi/${ytID}/hqdefault.jpg` : rawCover;
                   const isYt = !!ytID;
 
                   return (
-                    <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
+                    <button key={idx} id={getSafeText(subtitle).replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
                       
-                      {/* FALLBACK LOGIC PARA WALANG BLINKING ERROR */}
+                      {/* LIGTAS NA FALLBACK LOGIC PARA WALANG BLINKING ERROR */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 z-0" />
+                      
                       {!isYt && isVideo(finalCover) ? (
-                        <>
-                          <video 
-                            src={`${finalCover}#t=0.1`} 
-                            className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" 
-                            autoPlay loop muted playsInline preload="metadata" 
-                            onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'block'; }} 
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
-                        </>
+                        <video 
+                          key={finalCover} 
+                          src={`${finalCover}#t=0.1`} 
+                          className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none z-10" 
+                          autoPlay loop muted playsInline preload="metadata" 
+                          onError={(e) => { 
+                            e.currentTarget.onerror = null; 
+                            e.currentTarget.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"; 
+                          }} 
+                        />
                       ) : (
-                        <>
-                          <img 
-                             src={finalCover} 
-                             alt={subtitle} 
-                             className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" 
-                             onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'block'; }} 
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
-                        </>
+                        <img 
+                           key={finalCover} 
+                           src={finalCover} 
+                           alt={subtitle} 
+                           className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none z-10" 
+                           onError={(e) => { 
+                              e.currentTarget.onerror = null; 
+                              e.currentTarget.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"; 
+                           }} 
+                        />
                       )}
                       
-                      <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
+                      <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300 z-20" />
                       
+                      {/* Play Button Overlay kung YouTube Link */}
                       {isYt && (
-                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
                             <MonitorPlay size={36} className="text-white/50 group-hover:text-[#1095d2] transition-colors drop-shadow-lg" />
                          </div>
                       )}
 
-                      <div className="absolute inset-0 p-6 flex flex-col justify-end pointer-events-none">
+                      <div className="absolute inset-0 p-6 flex flex-col justify-end pointer-events-none z-30">
                         <span className="text-[#1095d2] text-[10px] font-black uppercase tracking-wider mb-2">View Works</span>
                         <h4 className="text-white font-bold text-xl group-hover:text-[#1095d2] transition-colors">{subtitle}</h4>
                       </div>
@@ -942,15 +951,15 @@ export default function DreamCreations() {
                           {pDisplayImg ? ( 
                             !pYtID && isVideo(pDisplayImg) ? (
                               <>
-                                <video src={`${pDisplayImg}#t=0.1`} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" loop muted playsInline preload="metadata" onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'flex'; }} />
-                                <div className="hidden w-full aspect-square items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div>
+                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white/20 z-0"><ImagePlaceholder size={32} /></div>
+                                <video src={`${pDisplayImg}#t=0.1`} className="w-full h-auto relative z-10 block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" loop muted playsInline preload="metadata" onError={(e) => { e.currentTarget.onerror=null; e.currentTarget.src='/Logo Banner.png'; }} />
                               </>
                             ) : (
                               <>
-                                <img src={pDisplayImg} alt={project.title} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'flex'; }} /> 
-                                <div className="hidden w-full aspect-square items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div>
+                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white/20 z-0"><ImagePlaceholder size={32} /></div>
+                                <img src={pDisplayImg} alt={project.title} className="w-full h-auto relative z-10 block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" onError={(e) => { e.currentTarget.onerror=null; e.currentTarget.src='/Logo Banner.png'; }} /> 
                                 {pYtID && (
-                                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors pointer-events-none">
+                                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors pointer-events-none z-20">
                                       <div className="w-12 h-12 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
                                         <MonitorPlay size={20} className="ml-1" />
                                       </div>
@@ -959,7 +968,7 @@ export default function DreamCreations() {
                               </>
                             )
                           ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20 pointer-events-none">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-30 pointer-events-none">
                             <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
                             <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
                           </div>
@@ -975,11 +984,15 @@ export default function DreamCreations() {
                       const bpYtID = getYouTubeID(project.featured_image_url) || getYouTubeID(project.video_url);
                       const bpDisplayImg = bpYtID ? `https://img.youtube.com/vi/${bpYtID}/hqdefault.jpg` : project.featured_image_url;
 
+                      const safeTitle = getSafeText(project.title);
+                      const safeCat = getSafeText(project.category);
+                      const safeDesc = getSafeText(project.description);
+
                       return (
                         <div 
                           key={project.id} 
                           onClick={() => {
-                            if (project.title?.toLowerCase().includes('profile') || project.category?.toLowerCase().includes('profile') || project.description?.toLowerCase().includes('company profile') || project.title?.toLowerCase().includes('brochure') || project.category?.toLowerCase().includes('brochure') || project.description?.toLowerCase().includes('brochure')) {
+                            if (safeTitle.includes('profile') || safeCat.includes('profile') || safeDesc.includes('company profile') || safeTitle.includes('brochure') || safeCat.includes('brochure') || safeDesc.includes('brochure')) {
                               let prefix = 'page-'; let pages = 91; let extension = 'jpg'; 
                               if (project.video_url && typeof project.video_url === 'string' && project.video_url.includes(',')) {
                                  const parts = project.video_url.split(','); prefix = parts[0].trim(); pages = parseInt(parts[1].trim()) || 91; if (parts[2]) extension = parts[2].trim().replace('.', ''); 
@@ -995,19 +1008,19 @@ export default function DreamCreations() {
                              {bpDisplayImg ? ( 
                                !bpYtID && isVideo(bpDisplayImg) ? (
                                  <>
-                                   <video src={`${bpDisplayImg}#t=0.1`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'flex'; }} />
-                                   <div className="hidden absolute inset-0 items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div>
+                                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white/20 z-0"><ImagePlaceholder size={48} /></div>
+                                   <video src={`${bpDisplayImg}#t=0.1`} className="w-full h-full relative z-10 object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.currentTarget.onerror=null; e.currentTarget.src='/Logo Banner.png'; }} />
                                  </>
                                ) : (
                                  <>
-                                   <img src={bpDisplayImg} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'flex'; }} /> 
-                                   <div className="hidden absolute inset-0 items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div>
+                                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white/20 z-0"><ImagePlaceholder size={48} /></div>
+                                   <img src={bpDisplayImg} alt={project.title} className="w-full h-full relative z-10 object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" onError={(e) => { e.currentTarget.onerror=null; e.currentTarget.src='/Logo Banner.png'; }} /> 
                                  </>
                                )
                              ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
                              
-                             {(project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && !project.title?.toLowerCase().includes('profile') && !project.title?.toLowerCase().includes('brochure')) || bpYtID ? (
-                               <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                             {(project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && !safeTitle.includes('profile') && !safeTitle.includes('brochure')) || bpYtID ? (
+                               <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
                                  <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] hover:scale-110 transition-transform"><MonitorPlay size={24} className="ml-1" /></div>
                                </div>
                              ) : null}
@@ -1104,7 +1117,7 @@ export default function DreamCreations() {
                          onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} 
                          drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} 
                          onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} 
-                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                         onError={(e) => { e.currentTarget.onerror=null; e.currentTarget.src='/Logo Banner.png'; }}
                       />
                     )
                   }
