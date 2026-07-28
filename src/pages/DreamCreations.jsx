@@ -168,6 +168,25 @@ const creationsCategories = [
   }
 ];
 
+// Contextual Fallback Images for Empty Folders
+const getFallbackCover = (categoryName) => {
+  switch (categoryName) {
+    case "Branding & Identity": return "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=600&auto=format&fit=crop"; // Brand workspaces
+    case "Social Media Design": return "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=600&auto=format&fit=crop"; // Social Media / Phones
+    case "Video Editing": return "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=600&auto=format&fit=crop"; // Video Timeline
+    case "Motion Graphics": return "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop"; // Retro Screen / Animation
+    case "Web Graphics": return "https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=600&auto=format&fit=crop"; // Web wireframes
+    case "Marketing & Corporate Graphics": return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&auto=format&fit=crop"; // Business Analytics
+    case "Marketing Materials": return "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?q=80&w=600&auto=format&fit=crop"; // Print / Documents
+    case "Packaging Design": return "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop"; // Boxes / Packaging
+    case "Photo Editing": return "https://images.unsplash.com/photo-1551269901-5c5e14c25df7?q=80&w=600&auto=format&fit=crop"; // Retouching Software
+    case "Apparel Design": return "https://images.unsplash.com/photo-1562157873-818bc0726f68?q=80&w=600&auto=format&fit=crop"; // Shirts
+    case "Print Production": return "https://images.unsplash.com/photo-1562240020-ce31ccb0fa7d?q=80&w=600&auto=format&fit=crop"; // Print Shop Swatches
+    case "Illustration": return "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=600&auto=format&fit=crop"; // Drawing Tablet
+    default: return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop"; // Abstract Fallback
+  }
+};
+
 const softwareExpertise = [
   { id: 1, name: "Photoshop", imageSrc: "/images/photoshop.png" },
   { id: 2, name: "Illustrator", imageSrc: "/images/illustrator.png" },
@@ -912,8 +931,8 @@ export default function DreamCreations() {
                   
                   const hasWork = !!latestProjectWithImage;
                   
-                  // Generic Internet Fallback using an abstract high-quality Unsplash image to guarantee it never fails or leaves a blank cover
-                  const coverImage = latestProjectWithImage?.featured_image_url || `https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop`;
+                  // Contextual Fallback Cover depending on category
+                  const coverImage = latestProjectWithImage?.featured_image_url || getFallbackCover(cat.category);
 
                   return (
                     <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
@@ -926,7 +945,7 @@ export default function DreamCreations() {
                       <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
                       
                       {!hasWork && (
-                        <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md border border-white/20 text-white/80 text-[8px] uppercase tracking-widest px-2 py-1 rounded pointer-events-none">
+                        <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md border border-white/20 text-white/80 text-[8px] uppercase tracking-widest px-2 py-1 rounded pointer-events-none shadow-md">
                           Available • No Works Yet
                         </div>
                       )}
@@ -1047,7 +1066,8 @@ export default function DreamCreations() {
                   <p className="text-xs md:text-sm text-white/60">Select a specific area to view works</p>
                 </div>
               </div>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Added Scrollable Unordered List here */}
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
                 {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
                     <button 
@@ -1118,7 +1138,7 @@ export default function DreamCreations() {
                           )
                         ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
                         
-                        {/* YouTube / Video Link Overlay for Masonry Layout */}
+                        {/* YouTube / Video Play Overlay for Masonry Layout */}
                         {project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && (
                           <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                             <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
