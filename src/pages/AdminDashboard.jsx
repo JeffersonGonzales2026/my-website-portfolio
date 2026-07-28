@@ -29,17 +29,18 @@ const creationsCategories = [
     id: 1, 
     category: "Branding & Identity", 
     items: [
-      "Logo Design", "Brand Identity Design", "Brand Style Guide", "Brand Refresh & Rebranding", 
+      "Logo Design", "Visual Identity", "Brand Guidelines", "Brand Refresh", 
       "Business Card Design", "Letterhead & Stationery Design", "Email Signature Design", 
       "Brand Pattern & Graphic Elements", "Packaging Design", "Label & Sticker Design", 
-      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", "Brand Asset Kit"
+      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profiles", "Brand Assets",
+      "Business Identity Systems"
     ] 
   },
   { 
     id: 2, 
     category: "Social Media Design", 
     items: [
-      "Social Media Posts", "Story Designs", "Carousel Posts", "LinkedIn Graphics", 
+      "Facebook Graphics", "Instagram Posts", "Social Media Posts", "Story Designs", "Carousel Posts", "LinkedIn Graphics", 
       "Social Media Campaigns", "Cover Photos", "Profile Branding", "Quote Graphics", 
       "Event Announcement Graphics", "Holiday & eCards"
     ] 
@@ -48,7 +49,7 @@ const creationsCategories = [
     id: 3, 
     category: "Video Editing", 
     items: [
-      "Social Media Videos", "Marketing Videos", "Product Promotion Videos", "Corporate Videos", 
+      "Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", "Corporate Videos & Motion Graphics", 
       "Event Highlights", "YouTube Video Editing", "Podcast Editing", "Testimonial Videos", 
       "Tutorial Videos", "Video Thumbnails"
     ] 
@@ -58,7 +59,7 @@ const creationsCategories = [
     category: "Motion Graphics", 
     items: [
       "Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", 
-      "Kinetic Typography", "Animated Infographics", "UI/App Animations", "Lottie Animations", 
+      "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", 
       "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"
     ] 
   },
@@ -75,7 +76,8 @@ const creationsCategories = [
     category: "Marketing & Corporate Graphics", 
     items: [
       "Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", 
-      "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"
+      "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage",
+      "Advertising Materials", "Creative Campaigns"
     ] 
   },
   { 
@@ -83,7 +85,7 @@ const creationsCategories = [
     category: "Marketing Materials", 
     items: [
       "Flyers", "Brochures", "Catalogs", "Business Presentations", "Posters", 
-      "Banners", "Rack Cards", "Sales Sheets", "Product Sheets"
+      "Banners", "Rack Cards", "Sales Sheets", "Product Sheets", "Sales Kits"
     ] 
   },
   { 
@@ -99,22 +101,22 @@ const creationsCategories = [
     category: "Photo Editing", 
     items: [
       "Photo Retouching", "Photo Restoration", "Background Removal", "Photo Manipulation", 
-      "Color Correction", "Product Photo Enhancement", "Watercolor Portraits"
+      "Color Correction", "Product Photo Enhancement", "Watercolor Portraits", "Composite Editing"
     ] 
   },
   { 
     id: 10, 
     category: "Apparel Design", 
     items: [
-      "Streetwear Graphics", "T-Shirt Graphics", "Jersey Design", "Merchandise Graphics", 
-      "Apparel Mockups", "Clothing Hang Tags"
+      "Streetwear Graphics", "Shirt Designs", "Jersey Design", "Merchandise Graphics", 
+      "Mockups", "Clothing Hang Tags", "Print-ready Artwork"
     ] 
   },
   { 
     id: 11, 
     category: "Print Production", 
     items: [
-      "Tarpaulins", "Business Cards", "Invitations", "Souvenirs", "ID Cards", 
+      "Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", 
       "Certificates", "Book Covers", "Menu Cards", "Stickers", "Roll-up Banners", 
       "Tent Cards", "Postcards", "Calendars"
     ] 
