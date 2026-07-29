@@ -22,114 +22,109 @@ const sidebarModules = [
 ];
 
 // =========================================================================
-// CENTRALIZED CATEGORY DATA (MERGED ORIGINAL + NEW TO PREVENT DATA LOSS)
+// CENTRALIZED CATEGORY DATA (ADMIN DASHBOARD)
 // =========================================================================
 const creationsCategories = [
   { 
     id: 1, 
     category: "Branding & Identity", 
     items: [
-      "Logo Design", "Brand Identity Design", "Brand Guidelines", "Brand Style Guide", 
-      "Visual Identity", "Brand Refresh", "Brand Refresh & Rebranding", 
+      "Logo Design", "Brand Identity Design", "Brand Style Guide", "Brand Refresh & Rebranding", 
       "Business Card Design", "Letterhead & Stationery Design", "Email Signature Design", 
       "Brand Pattern & Graphic Elements", "Packaging Design", "Label & Sticker Design", 
-      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", 
-      "Brand Assets", "Brand Asset Kit", "Business Identity Systems"
+      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", "Brand Asset Kit"
     ] 
   },
   { 
     id: 2, 
-    category: "Graphic Design", 
-    items: [
-      "Instructional Posters", "Corporate Graphics", "Infographics", "Promotional Graphics"
-    ] 
-  },
-  { 
-    id: 3, 
     category: "Social Media Design", 
     items: [
-      "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding",
-      "Facebook Graphics", "Instagram Posts", "Social Media Posts", "Carousel Posts", "Quote Graphics", 
+      "Social Media Posts", "Story Designs", "Carousel Posts", "LinkedIn Graphics", 
+      "Social Media Campaigns", "Cover Photos", "Profile Branding", "Quote Graphics", 
       "Event Announcement Graphics", "Holiday & eCards"
     ] 
   },
   { 
-    id: 4, 
-    category: "Marketing Materials", 
+    id: 3, 
+    category: "Video Editing", 
     items: [
-      "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations",
-      "Posters", "Banners", "Rack Cards", "Sales Sheets", "Product Sheets", "Sales Kits"
+      "Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", 
+      "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", 
+      "Podcast Editing", "Testimonial Videos", "Tutorial Videos", "Video Thumbnails"
+    ] 
+  },
+  { 
+    id: 4, 
+    category: "Motion Graphics", 
+    items: [
+      "Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", 
+      "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", 
+      "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"
     ] 
   },
   { 
     id: 5, 
     category: "Web Graphics", 
     items: [
-      "eCommerce Graphics", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets",
-      "Website Banners", "Hero Banners", "Blog Graphics", "Web Illustrations"
+      "Landing Page Graphics", "eCommerce Graphics", "Website Banners", "Hero Banners", 
+      "UI Graphics", "Icons", "Email Graphics", "WordPress Assets", "Blog Graphics", "Web Illustrations"
     ] 
   },
   { 
     id: 6, 
-    category: "Photo Editing", 
+    category: "Marketing & Corporate Graphics", 
     items: [
-      "Photo Retouching", "Photo Restoration", "Watercolor Portraits",
-      "Background Removal", "Photo Manipulation", "Color Correction", "Product Photo Enhancement", "Composite Editing"
+      "Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", 
+      "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"
     ] 
   },
   { 
     id: 7, 
-    category: "Apparel Design", 
+    category: "Marketing Materials", 
     items: [
-      "Streetwear Graphics", "Mockups",
-      "Shirt Designs", "T-Shirt Graphics", "Jersey Design", "Merchandise Graphics", "Apparel Mockups", 
-      "Clothing Hang Tags", "Print-ready Artwork"
+      "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations", 
+      "Posters", "Banners", "Rack Cards", "Sales Sheets", "Product Sheets"
     ] 
   },
   { 
     id: 8, 
-    category: "Print Production", 
+    category: "Packaging Design", 
     items: [
-      "Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", 
-      "Certificates", "Book Covers", "Menu Cards",
-      "Business Cards", "Stickers", "Roll-up Banners", "Tent Cards", "Postcards", "Calendars"
+      "Packaging Graphics", "Product Labels", "Clothing Labels", "Box Packaging", 
+      "Bottle Labels", "Pouch Packaging", "Food Packaging", "Cosmetic Packaging"
     ] 
   },
   { 
     id: 9, 
-    category: "Packaging", 
+    category: "Photo Editing", 
     items: [
-      "Packaging Graphics", "Clothing Labels", "Product Labels",
-      "Box Packaging", "Bottle Labels", "Pouch Packaging", "Food Packaging", "Cosmetic Packaging"
+      "Photo Retouching", "Photo Restoration", "Background Removal", "Photo Manipulation", 
+      "Color Correction", "Product Photo Enhancement", "Watercolor Portraits"
     ] 
   },
   { 
     id: 10, 
-    category: "Illustration", 
+    category: "Apparel Design", 
     items: [
-      "Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", 
-      "Seamless Patterns", "Digital Illustration",
-      "Mascot Design", "Sticker Illustration", "Editorial Illustration"
+      "Streetwear Graphics", "T-Shirt Graphics", "Jersey Design", "Merchandise Graphics", 
+      "Mockups", "Clothing Hang Tags"
     ] 
   },
   { 
     id: 11, 
-    category: "Video Editing", 
+    category: "Print Production", 
     items: [
-      "Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", 
-      "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", 
-      "Podcast Editing", "Testimonial Videos", "Tutorial Videos", "Video Thumbnails",
-      "Product Promotion Videos", "Corporate Videos"
+      "Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", 
+      "Certificates", "Book Covers", "Menu Cards", "Stickers", "Roll-up Banners", 
+      "Tent Cards", "Postcards", "Calendars"
     ] 
   },
   { 
     id: 12, 
-    category: "Motion Graphics", 
+    category: "Illustration", 
     items: [
-      "Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", 
-      "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", 
-      "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics",
-      "UI/App Animations"
+      "Digital Illustration", "Vector Artwork", "Character Illustration", "Cartoon Portraits", 
+      "Icon Design", "Mascot Design", "Sticker Illustration", "Seamless Patterns", "Editorial Illustration"
     ] 
   }
 ];

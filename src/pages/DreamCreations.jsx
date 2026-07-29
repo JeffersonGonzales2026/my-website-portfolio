@@ -49,7 +49,7 @@ const featuredClients = [
 ];
 
 // =========================================================================
-// CENTRALIZED CATEGORY DATA (MERGED ORIGINAL + NEW TO PREVENT DATA LOSS)
+// CENTRALIZED CATEGORY DATA (FRONTEND WITH ICONS)
 // =========================================================================
 const creationsCategories = [
   { 
@@ -57,90 +57,24 @@ const creationsCategories = [
     category: "Branding & Identity", 
     icon: <Fingerprint size={14} />, 
     items: [
-      "Logo Design", "Brand Identity Design", "Brand Guidelines", "Brand Style Guide", 
-      "Visual Identity", "Brand Refresh", "Brand Refresh & Rebranding", 
+      "Logo Design", "Brand Identity Design", "Brand Style Guide", "Brand Refresh & Rebranding", 
       "Business Card Design", "Letterhead & Stationery Design", "Email Signature Design", 
       "Brand Pattern & Graphic Elements", "Packaging Design", "Label & Sticker Design", 
-      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", 
-      "Brand Assets", "Brand Asset Kit", "Business Identity Systems"
+      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", "Brand Asset Kit"
     ] 
   },
   { 
     id: 2, 
-    category: "Graphic Design", 
-    icon: <PenTool size={14} />,
+    category: "Social Media Design", 
+    icon: <Share2 size={14} />, 
     items: [
-      "Instructional Posters", "Corporate Graphics", "Infographics", "Promotional Graphics"
+      "Social Media Posts", "Story Designs", "Carousel Posts", "LinkedIn Graphics", 
+      "Social Media Campaigns", "Cover Photos", "Profile Branding", "Quote Graphics", 
+      "Event Announcement Graphics", "Holiday & eCards"
     ] 
   },
   { 
     id: 3, 
-    category: "Social Media Design", 
-    icon: <Share2 size={14} />, 
-    items: [
-      "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"
-    ] 
-  },
-  { 
-    id: 4, 
-    category: "Marketing Materials", 
-    icon: <FileText size={14} />, 
-    items: [
-      "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations"
-    ] 
-  },
-  { 
-    id: 5, 
-    category: "Web Graphics", 
-    icon: <MousePointerClick size={14} />, 
-    items: [
-      "eCommerce Graphics", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"
-    ] 
-  },
-  { 
-    id: 6, 
-    category: "Photo Editing", 
-    icon: <ImageIcon size={14} />, 
-    items: [
-      "Photo Retouching", "Photo Restoration", "Watercolor Portraits"
-    ] 
-  },
-  { 
-    id: 7, 
-    category: "Apparel Design", 
-    icon: <Shirt size={14} />, 
-    items: [
-      "Streetwear Graphics", "Mockups"
-    ] 
-  },
-  { 
-    id: 8, 
-    category: "Print Production", 
-    icon: <Printer size={14} />, 
-    items: [
-      "Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", 
-      "Certificates", "Book Covers", "Menu Cards"
-    ] 
-  },
-  { 
-    id: 9, 
-    category: "Packaging", 
-    icon: <Box size={14} />, 
-    items: [
-      "Packaging Graphics", "Clothing Labels", "Product Labels"
-    ] 
-  },
-  { 
-    id: 10, 
-    category: "Illustration", 
-    icon: <Pencil size={14} />, 
-    items: [
-      "Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", 
-      "Seamless Patterns", "Digital Illustration"
-    ] 
-  },
-  { 
-    id: 11, 
     category: "Video Editing", 
     icon: <Video size={14} />, 
     items: [
@@ -150,13 +84,86 @@ const creationsCategories = [
     ] 
   },
   { 
-    id: 12, 
+    id: 4, 
     category: "Motion Graphics", 
     icon: <PictureInPicture size={14} />, 
     items: [
       "Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", 
       "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", 
       "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"
+    ] 
+  },
+  { 
+    id: 5, 
+    category: "Web Graphics", 
+    icon: <MousePointerClick size={14} />, 
+    items: [
+      "Landing Page Graphics", "eCommerce Graphics", "Website Banners", "Hero Banners", 
+      "UI Graphics", "Icons", "Email Graphics", "WordPress Assets", "Blog Graphics", "Web Illustrations"
+    ] 
+  },
+  { 
+    id: 6, 
+    category: "Marketing & Corporate Graphics", 
+    icon: <Briefcase size={14} />, 
+    items: [
+      "Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", 
+      "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"
+    ] 
+  },
+  { 
+    id: 7, 
+    category: "Marketing Materials", 
+    icon: <FileText size={14} />, 
+    items: [
+      "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations", 
+      "Posters", "Banners", "Rack Cards", "Sales Sheets", "Product Sheets"
+    ] 
+  },
+  { 
+    id: 8, 
+    category: "Packaging Design", 
+    icon: <Box size={14} />, 
+    items: [
+      "Packaging Graphics", "Product Labels", "Clothing Labels", "Box Packaging", 
+      "Bottle Labels", "Pouch Packaging", "Food Packaging", "Cosmetic Packaging"
+    ] 
+  },
+  { 
+    id: 9, 
+    category: "Photo Editing", 
+    icon: <ImageIcon size={14} />, 
+    items: [
+      "Photo Retouching", "Photo Restoration", "Background Removal", "Photo Manipulation", 
+      "Color Correction", "Product Photo Enhancement", "Watercolor Portraits"
+    ] 
+  },
+  { 
+    id: 10, 
+    category: "Apparel Design", 
+    icon: <Shirt size={14} />, 
+    items: [
+      "Streetwear Graphics", "T-Shirt Graphics", "Jersey Design", "Merchandise Graphics", 
+      "Mockups", "Clothing Hang Tags"
+    ] 
+  },
+  { 
+    id: 11, 
+    category: "Print Production", 
+    icon: <Printer size={14} />, 
+    items: [
+      "Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", 
+      "Certificates", "Book Covers", "Menu Cards", "Stickers", "Roll-up Banners", 
+      "Tent Cards", "Postcards", "Calendars"
+    ] 
+  },
+  { 
+    id: 12, 
+    category: "Illustration", 
+    icon: <Pencil size={14} />, 
+    items: [
+      "Digital Illustration", "Vector Artwork", "Character Illustration", "Cartoon Portraits", 
+      "Icon Design", "Mascot Design", "Sticker Illustration", "Seamless Patterns", "Editorial Illustration"
     ] 
   }
 ];
