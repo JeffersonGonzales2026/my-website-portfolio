@@ -124,7 +124,7 @@ const creationsCategories = [
     category: "Illustration", 
     items: [
       "Digital Illustration", "Vector Artwork", "Character Illustration", "Cartoon Portraits", 
-      "Icon Design", "Mascot Design", "Sticker Illustration", "Seamless Patterns", "Editorial Illustration"
+      "Icon Design", "Seamless Patterns"
     ] 
   }
 ];

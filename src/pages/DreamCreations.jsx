@@ -163,7 +163,7 @@ const creationsCategories = [
     icon: <Pencil size={14} />, 
     items: [
       "Digital Illustration", "Vector Artwork", "Character Illustration", "Cartoon Portraits", 
-      "Icon Design", "Mascot Design", "Sticker Illustration", "Seamless Patterns", "Editorial Illustration"
+      "Icon Design", "Seamless Patterns"
     ] 
   }
 ];
