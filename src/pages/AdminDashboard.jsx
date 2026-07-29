@@ -22,19 +22,17 @@ const sidebarModules = [
 ];
 
 // =========================================================================
-// CENTRALIZED CATEGORY DATA (MERGED ORIGINAL + NEW TO PREVENT DATA LOSS)
+// CENTRALIZED CATEGORY DATA (EXACT ORDER & NAMES BASED ON YOUR LIST)
 // =========================================================================
 const creationsCategories = [
   { 
     id: 1, 
     category: "Branding & Identity", 
     items: [
-      "Logo Design", "Brand Identity Design", "Brand Guidelines", "Brand Style Guide", 
-      "Visual Identity", "Brand Refresh", "Brand Refresh & Rebranding", 
+      "Logo Design", "Brand Identity Design", "Brand Style Guide", "Brand Refresh & Rebranding", 
       "Business Card Design", "Letterhead & Stationery Design", "Email Signature Design", 
       "Brand Pattern & Graphic Elements", "Packaging Design", "Label & Sticker Design", 
-      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", 
-      "Brand Assets", "Brand Asset Kit", "Business Identity Systems"
+      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", "Brand Asset Kit"
     ] 
   },
   { 
@@ -48,68 +46,56 @@ const creationsCategories = [
     id: 3, 
     category: "Social Media Design", 
     items: [
-      "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding",
-      "Facebook Graphics", "Instagram Posts", "Social Media Posts", "Carousel Posts", "Quote Graphics", 
-      "Event Announcement Graphics", "Holiday & eCards"
+      "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"
     ] 
   },
   { 
     id: 4, 
     category: "Marketing Materials", 
     items: [
-      "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations",
-      "Posters", "Banners", "Rack Cards", "Sales Sheets", "Product Sheets", "Sales Kits"
+      "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations"
     ] 
   },
   { 
     id: 5, 
     category: "Web Graphics", 
     items: [
-      "eCommerce Graphics", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets",
-      "Website Banners", "Hero Banners", "Blog Graphics", "Web Illustrations"
+      "eCommerce Graphics", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"
     ] 
   },
   { 
     id: 6, 
     category: "Photo Editing", 
     items: [
-      "Photo Retouching", "Photo Restoration", "Watercolor Portraits",
-      "Background Removal", "Photo Manipulation", "Color Correction", "Product Photo Enhancement", "Composite Editing"
+      "Photo Retouching", "Photo Restoration", "Watercolor Portraits"
     ] 
   },
   { 
     id: 7, 
     category: "Apparel Design", 
     items: [
-      "Streetwear Graphics", "Mockups",
-      "Shirt Designs", "T-Shirt Graphics", "Jersey Design", "Merchandise Graphics", "Apparel Mockups", 
-      "Clothing Hang Tags", "Print-ready Artwork"
+      "Streetwear Graphics", "Mockups"
     ] 
   },
   { 
     id: 8, 
     category: "Print Production", 
     items: [
-      "Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", 
-      "Certificates", "Book Covers", "Menu Cards",
-      "Business Cards", "Stickers", "Roll-up Banners", "Tent Cards", "Postcards", "Calendars"
+      "Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards"
     ] 
   },
   { 
     id: 9, 
     category: "Packaging", 
     items: [
-      "Packaging Graphics", "Clothing Labels", "Product Labels",
-      "Box Packaging", "Bottle Labels", "Pouch Packaging", "Food Packaging", "Cosmetic Packaging"
+      "Packaging Graphics", "Clothing Labels", "Product Labels"
     ] 
   },
   { 
     id: 10, 
     category: "Illustration", 
     items: [
-      "Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", 
-      "Seamless Patterns", "Digital Illustration",
-      "Mascot Design", "Sticker Illustration", "Editorial Illustration"
+      "Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"
     ] 
   },
   { 
@@ -118,8 +104,7 @@ const creationsCategories = [
     items: [
       "Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", 
       "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", 
-      "Podcast Editing", "Testimonial Videos", "Tutorial Videos", "Video Thumbnails",
-      "Product Promotion Videos", "Corporate Videos"
+      "Podcast Editing", "Testimonial Videos", "Tutorial Videos", "Video Thumbnails"
     ] 
   },
   { 
@@ -128,8 +113,7 @@ const creationsCategories = [
     items: [
       "Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", 
       "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", 
-      "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics",
-      "UI/App Animations"
+      "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"
     ] 
   }
 ];

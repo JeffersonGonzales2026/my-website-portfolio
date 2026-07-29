@@ -78,7 +78,9 @@ const creationsCategories = [
     category: "Social Media Design", 
     icon: <Share2 size={14} />, 
     items: [
-      "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"
+      "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding",
+      "Facebook Graphics", "Instagram Posts", "Social Media Posts", "Carousel Posts", "Quote Graphics", 
+      "Event Announcement Graphics", "Holiday & eCards"
     ] 
   },
   { 
@@ -86,7 +88,8 @@ const creationsCategories = [
     category: "Marketing Materials", 
     icon: <FileText size={14} />, 
     items: [
-      "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations"
+      "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations",
+      "Posters", "Banners", "Rack Cards", "Sales Sheets", "Product Sheets", "Sales Kits"
     ] 
   },
   { 
@@ -94,7 +97,8 @@ const creationsCategories = [
     category: "Web Graphics", 
     icon: <MousePointerClick size={14} />, 
     items: [
-      "eCommerce Graphics", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"
+      "eCommerce Graphics", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets",
+      "Website Banners", "Hero Banners", "Blog Graphics", "Web Illustrations"
     ] 
   },
   { 
@@ -102,7 +106,8 @@ const creationsCategories = [
     category: "Photo Editing", 
     icon: <ImageIcon size={14} />, 
     items: [
-      "Photo Retouching", "Photo Restoration", "Watercolor Portraits"
+      "Photo Retouching", "Photo Restoration", "Watercolor Portraits",
+      "Background Removal", "Photo Manipulation", "Color Correction", "Product Photo Enhancement", "Composite Editing"
     ] 
   },
   { 
@@ -110,7 +115,9 @@ const creationsCategories = [
     category: "Apparel Design", 
     icon: <Shirt size={14} />, 
     items: [
-      "Streetwear Graphics", "Mockups"
+      "Streetwear Graphics", "Mockups",
+      "Shirt Designs", "T-Shirt Graphics", "Jersey Design", "Merchandise Graphics", "Apparel Mockups", 
+      "Clothing Hang Tags", "Print-ready Artwork"
     ] 
   },
   { 
@@ -119,7 +126,8 @@ const creationsCategories = [
     icon: <Printer size={14} />, 
     items: [
       "Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", 
-      "Certificates", "Book Covers", "Menu Cards"
+      "Certificates", "Book Covers", "Menu Cards",
+      "Business Cards", "Stickers", "Roll-up Banners", "Tent Cards", "Postcards", "Calendars"
     ] 
   },
   { 
@@ -127,7 +135,8 @@ const creationsCategories = [
     category: "Packaging", 
     icon: <Box size={14} />, 
     items: [
-      "Packaging Graphics", "Clothing Labels", "Product Labels"
+      "Packaging Graphics", "Clothing Labels", "Product Labels",
+      "Box Packaging", "Bottle Labels", "Pouch Packaging", "Food Packaging", "Cosmetic Packaging"
     ] 
   },
   { 
@@ -136,7 +145,8 @@ const creationsCategories = [
     icon: <Pencil size={14} />, 
     items: [
       "Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", 
-      "Seamless Patterns", "Digital Illustration"
+      "Seamless Patterns", "Digital Illustration",
+      "Mascot Design", "Sticker Illustration", "Editorial Illustration"
     ] 
   },
   { 
@@ -146,7 +156,8 @@ const creationsCategories = [
     items: [
       "Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", 
       "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", 
-      "Podcast Editing", "Testimonial Videos", "Tutorial Videos", "Video Thumbnails"
+      "Podcast Editing", "Testimonial Videos", "Tutorial Videos", "Video Thumbnails",
+      "Product Promotion Videos", "Corporate Videos"
     ] 
   },
   { 
@@ -156,7 +167,8 @@ const creationsCategories = [
     items: [
       "Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", 
       "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", 
-      "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"
+      "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics",
+      "UI/App Animations"
     ] 
   }
 ];
@@ -878,7 +890,7 @@ export default function DreamCreations() {
 
       <div id="portfolio-directory" className="scroll-mt-24" />
 
-      {/* ================= UNIFIED PORTFOLIO DIRECTORY (PERMANENTLY VISIBLE COVERS WITH EMPTY STATES) ================= */}
+      {/* ================= UNIFIED PORTFOLIO DIRECTORY (PERMANENTLY VISIBLE COVERS WITH MINIMALIST EMPTY STATES) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-screen">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
           <div className="text-center md:text-left">
@@ -906,17 +918,17 @@ export default function DreamCreations() {
                   const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
                   const hasWork = !!latestProjectWithImage;
                   
-                  // MINIMALIST EMPTY STATE: If no work exists, render a sleek tag block without image cover
+                  // MINIMALIST EMPTY STATE: If no work exists, render a sleek borderless tag block without an image cover
                   if (!hasWork) {
                     return (
-                      <div key={idx} className="relative rounded-2xl border border-dashed border-white/10 bg-black/20 flex flex-col items-start justify-center p-5 text-left min-h-[100px] cursor-not-allowed">
-                        <span className="text-[#1095d2]/80 text-[8px] font-mono font-bold uppercase tracking-widest mb-1.5 bg-[#1095d2]/10 px-2 py-0.5 rounded">Available • No Work Yet</span>
-                        <h4 className="text-white/50 font-bold text-sm leading-tight">{subtitle}</h4>
+                      <div key={idx} className="flex flex-col justify-center p-3 opacity-60">
+                        <span className="text-[#1095d2] text-[8px] font-mono font-bold uppercase tracking-widest mb-1">Available • No Work Yet</span>
+                        <h4 className="text-white font-bold text-sm">{subtitle}</h4>
                       </div>
                     );
                   }
 
-                  // ACTIVE STATE: Render the full cover card
+                  // ACTIVE STATE: Render the full interactive cover card
                   const coverImage = latestProjectWithImage.featured_image_url;
                   return (
                     <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
@@ -1282,8 +1294,7 @@ export default function DreamCreations() {
             <button onClick={() => setIsPhotographyOpen(false)} className="absolute top-6 right-6 md:top-8 md:right-8 z-[500] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 backdrop-blur-md pointer-events-auto"><X size={20} className="md:w-6 md:h-6" /></button>
             <div className="absolute top-6 left-6 md:top-8 md:left-8 z-[500] pointer-events-auto">
               <h2 className="text-xl md:text-3xl font-black text-white tracking-widest uppercase drop-shadow-md">Captured Dreams</h2>
-              <p className="text-[#1095d2] font-mono text-[10px] 
-              :text-xs mt-0.5 drop-shadow-md">Select a polaroid to view full frame.</p>
+              <p className="text-[#1095d2] font-mono text-[10px] md:text-xs mt-0.5 drop-shadow-md">Select a polaroid to view full frame.</p>
             </div>
             <div className="absolute inset-0 w-full h-full flex items-center justify-center z-10 overflow-hidden pointer-events-none">
               {photographyShots.map((shot, idx) => {
