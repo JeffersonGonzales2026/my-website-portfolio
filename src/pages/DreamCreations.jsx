@@ -48,19 +48,117 @@ const featuredClients = [
   { id: 6, name: "Corporate B2B", industry: "Consulting & Finance", icon: <Briefcase size={32} /> },
 ];
 
+// =========================================================================
+// CENTRALIZED CATEGORY DATA (MERGED ORIGINAL + NEW TO PREVENT DATA LOSS)
+// =========================================================================
 const creationsCategories = [
-  { id: 1, category: "Branding & Identity", icon: <Fingerprint size={14} />, items: ["Logo Design", "Brand Guidelines", "Visual Identity", "Brand Refresh", "Brand Assets", "Business Identity Systems"] },
-  { id: 2, category: "Graphic Design", icon: <PenTool size={14} />, items: ["Instructional Posters", "Corporate Graphics", "Advertising Materials", "Infographics", "Creative Campaigns", "Promotional Graphics"] },
-  { id: 3, category: "Social Media Design", icon: <Share2 size={14} />, items: ["Facebook Graphics", "Instagram Posts", "Carousel Posts", "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"] },
-  { id: 4, category: "Marketing Materials", icon: <FileText size={14} />, items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Product Sheets", "Sales Kits", "Business Presentations"] },
-  { id: 5, category: "Video Editing", icon: <Video size={14} />, items: ["Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", "Podcast Editing","Testimonial Videos","Tutorial Videos","Video Thumbnails"] },
-  { id: 6, category: "Motion Graphics", icon: <PictureInPicture size={14} />, items: ["Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", "Kinetic Typography", "Animated Infographics", "UI or App Animations","Lottie Animations","Intro & Outro Animations","Lower Thirds & Broadcast Graphics"] },
-  { id: 7, category: "Web Graphics", icon: <MousePointerClick size={14} />, items: ["eCommerce Graphics", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"] },
-  { id: 8, category: "Photo Editing", icon: <ImageIcon size={14} />, items: ["Photo Retouching", "Photo Restoration", "Watercolor Portraits", "Background Removal", "Image Manipulation", "Color Correction", "Composite Editing"] },
-  { id: 9, category: "Apparel Design", icon: <Shirt size={14} />, items: ["Shirt Designs", "Streetwear Graphics", "Mockups", "Print-ready Artwork"] },
-  { id: 10, category: "Print Production", icon: <Printer size={14} />, items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards"] },
-  { id: 11, category: "Packaging", icon: <Box size={14} />, items: ["Packaging Graphics", "Clothing Labels", "Product Labels"] },
-  { id: 12, category: "Illustration", icon: <Pencil size={14} />, items: ["Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", "Seamless Patterns", "Digital Illustration"] }
+  { 
+    id: 1, 
+    category: "Branding & Identity", 
+    icon: <Fingerprint size={14} />, 
+    items: [
+      "Logo Design", "Brand Identity Design", "Brand Guidelines", "Brand Style Guide", 
+      "Visual Identity", "Brand Refresh", "Brand Refresh & Rebranding", 
+      "Business Card Design", "Letterhead & Stationery Design", "Email Signature Design", 
+      "Brand Pattern & Graphic Elements", "Packaging Design", "Label & Sticker Design", 
+      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", 
+      "Brand Assets", "Brand Asset Kit", "Business Identity Systems"
+    ] 
+  },
+  { 
+    id: 2, 
+    category: "Graphic Design", 
+    icon: <PenTool size={14} />,
+    items: [
+      "Instructional Posters", "Corporate Graphics", "Infographics", "Promotional Graphics"
+    ] 
+  },
+  { 
+    id: 3, 
+    category: "Social Media Design", 
+    icon: <Share2 size={14} />, 
+    items: [
+      "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"
+    ] 
+  },
+  { 
+    id: 4, 
+    category: "Marketing Materials", 
+    icon: <FileText size={14} />, 
+    items: [
+      "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations"
+    ] 
+  },
+  { 
+    id: 5, 
+    category: "Web Graphics", 
+    icon: <MousePointerClick size={14} />, 
+    items: [
+      "eCommerce Graphics", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"
+    ] 
+  },
+  { 
+    id: 6, 
+    category: "Photo Editing", 
+    icon: <ImageIcon size={14} />, 
+    items: [
+      "Photo Retouching", "Photo Restoration", "Watercolor Portraits"
+    ] 
+  },
+  { 
+    id: 7, 
+    category: "Apparel Design", 
+    icon: <Shirt size={14} />, 
+    items: [
+      "Streetwear Graphics", "Mockups"
+    ] 
+  },
+  { 
+    id: 8, 
+    category: "Print Production", 
+    icon: <Printer size={14} />, 
+    items: [
+      "Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", 
+      "Certificates", "Book Covers", "Menu Cards"
+    ] 
+  },
+  { 
+    id: 9, 
+    category: "Packaging", 
+    icon: <Box size={14} />, 
+    items: [
+      "Packaging Graphics", "Clothing Labels", "Product Labels"
+    ] 
+  },
+  { 
+    id: 10, 
+    category: "Illustration", 
+    icon: <Pencil size={14} />, 
+    items: [
+      "Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", 
+      "Seamless Patterns", "Digital Illustration"
+    ] 
+  },
+  { 
+    id: 11, 
+    category: "Video Editing", 
+    icon: <Video size={14} />, 
+    items: [
+      "Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", 
+      "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", 
+      "Podcast Editing", "Testimonial Videos", "Tutorial Videos", "Video Thumbnails"
+    ] 
+  },
+  { 
+    id: 12, 
+    category: "Motion Graphics", 
+    icon: <PictureInPicture size={14} />, 
+    items: [
+      "Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", 
+      "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", 
+      "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"
+    ] 
+  }
 ];
 
 const softwareExpertise = [
@@ -780,7 +878,7 @@ export default function DreamCreations() {
 
       <div id="portfolio-directory" className="scroll-mt-24" />
 
-      {/* ================= UNIFIED PORTFOLIO DIRECTORY (PERMANENTLY VISIBLE COVERS) ================= */}
+      {/* ================= UNIFIED PORTFOLIO DIRECTORY (PERMANENTLY VISIBLE COVERS WITH EMPTY STATES) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-screen">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
           <div className="text-center md:text-left">
@@ -799,13 +897,27 @@ export default function DreamCreations() {
         <div className="space-y-16 relative z-20">
           {creationsCategories.map((cat) => (
             <div key={cat.id} className="pt-4">
-              <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block">{cat.category}</h4>
+              <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block flex items-center gap-3">
+                {cat.icon} {cat.category}
+              </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {cat.items.map((subtitle, idx) => {
                   
                   const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
-                  const coverImage = latestProjectWithImage?.featured_image_url || `/images/covers/${subtitle.toLowerCase().replace(/\s+/g, '-')}.jpg`;
+                  const hasWork = !!latestProjectWithImage;
+                  
+                  // MINIMALIST EMPTY STATE: If no work exists, render a sleek tag block without image cover
+                  if (!hasWork) {
+                    return (
+                      <div key={idx} className="relative rounded-2xl border border-dashed border-white/10 bg-black/20 flex flex-col items-start justify-center p-5 text-left min-h-[100px] cursor-not-allowed">
+                        <span className="text-[#1095d2]/80 text-[8px] font-mono font-bold uppercase tracking-widest mb-1.5 bg-[#1095d2]/10 px-2 py-0.5 rounded">Available • No Work Yet</span>
+                        <h4 className="text-white/50 font-bold text-sm leading-tight">{subtitle}</h4>
+                      </div>
+                    );
+                  }
 
+                  // ACTIVE STATE: Render the full cover card
+                  const coverImage = latestProjectWithImage.featured_image_url;
                   return (
                     <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
                       {isVideo(coverImage) ? (
@@ -815,12 +927,13 @@ export default function DreamCreations() {
                       )}
                       <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
                       <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
+                      
                       <div className="absolute inset-0 p-6 flex flex-col justify-end pointer-events-none">
                         <span className="text-[#1095d2] text-[10px] font-black uppercase tracking-wider mb-2">View Works</span>
                         <h4 className="text-white font-bold text-xl group-hover:text-[#1095d2] transition-colors">{subtitle}</h4>
                       </div>
                     </button>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -931,7 +1044,7 @@ export default function DreamCreations() {
                   <p className="text-xs md:text-sm text-white/60">Select a specific area to view works</p>
                 </div>
               </div>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
                 {activeCreationPopup.items.map((item, idx) => (
                   <li key={idx}>
                     <button 
@@ -996,13 +1109,13 @@ export default function DreamCreations() {
                       >
                         {project.featured_image_url ? ( 
                           isVideo(project.featured_image_url) ? (
-                            <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-auto block object-cover transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
+                            <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
                           ) : (
                             <img src={project.featured_image_url} alt={project.title} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
                           )
                         ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
                         
-                        {/* YouTube / Video Play Overlay for Masonry Layout - Now passive to open modal */}
+                        {/* YouTube / Video Link Overlay for Masonry Layout */}
                         {project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && (
                           <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                             <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
@@ -1045,13 +1158,13 @@ export default function DreamCreations() {
                          <div className="aspect-video relative overflow-hidden bg-black/60">
                            {project.featured_image_url ? ( 
                              isVideo(project.featured_image_url) ? (
-                               <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-full object-cover transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
+                               <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
                              ) : (
                                <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
                              )
                            ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
                            
-                           {/* YouTube / Video Play Overlay for Grid Layout - Now passive to open modal */}
+                           {/* YouTube / Video Play Overlay for Grid Layout */}
                            {project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && !(project.title || '').toLowerCase().includes('profile') && !(project.title || '').toLowerCase().includes('brochure') && (
                              <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                                <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
@@ -1169,7 +1282,8 @@ export default function DreamCreations() {
             <button onClick={() => setIsPhotographyOpen(false)} className="absolute top-6 right-6 md:top-8 md:right-8 z-[500] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 backdrop-blur-md pointer-events-auto"><X size={20} className="md:w-6 md:h-6" /></button>
             <div className="absolute top-6 left-6 md:top-8 md:left-8 z-[500] pointer-events-auto">
               <h2 className="text-xl md:text-3xl font-black text-white tracking-widest uppercase drop-shadow-md">Captured Dreams</h2>
-              <p className="text-[#1095d2] font-mono text-[10px] md:text-xs mt-0.5 drop-shadow-md">Select a polaroid to view full frame.</p>
+              <p className="text-[#1095d2] font-mono text-[10px] 
+              :text-xs mt-0.5 drop-shadow-md">Select a polaroid to view full frame.</p>
             </div>
             <div className="absolute inset-0 w-full h-full flex items-center justify-center z-10 overflow-hidden pointer-events-none">
               {photographyShots.map((shot, idx) => {
