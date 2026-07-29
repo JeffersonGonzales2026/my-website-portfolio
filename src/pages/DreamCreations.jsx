@@ -65,16 +65,80 @@ const creationsCategories = [
   },
   { 
     id: 2, 
-    category: "Social Media Design", 
-    icon: <Share2 size={14} />, 
+    category: "Graphic Design", 
+    icon: <PenTool size={14} />,
     items: [
-      "Social Media Posts", "Story Designs", "Carousel Posts", "LinkedIn Graphics", 
-      "Social Media Campaigns", "Cover Photos", "Profile Branding", "Quote Graphics", 
-      "Event Announcement Graphics", "Holiday & eCards"
+      "Instructional Posters", "Corporate Graphics", "Infographics", "Promotional Graphics"
     ] 
   },
   { 
     id: 3, 
+    category: "Social Media Design", 
+    icon: <Share2 size={14} />, 
+    items: [
+      "Story Designs", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding"
+    ] 
+  },
+  { 
+    id: 4, 
+    category: "Marketing Materials", 
+    icon: <FileText size={14} />, 
+    items: [
+      "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations"
+    ] 
+  },
+  { 
+    id: 5, 
+    category: "Web Graphics", 
+    icon: <MousePointerClick size={14} />, 
+    items: [
+      "eCommerce Graphics", "Landing Page Graphics", "Icons", "UI Graphics", "Email Graphics", "WordPress Assets"
+    ] 
+  },
+  { 
+    id: 6, 
+    category: "Photo Editing", 
+    icon: <ImageIcon size={14} />, 
+    items: [
+      "Photo Retouching", "Photo Restoration", "Watercolor Portraits"
+    ] 
+  },
+  { 
+    id: 7, 
+    category: "Apparel Design", 
+    icon: <Shirt size={14} />, 
+    items: [
+      "Streetwear Graphics", "Mockups"
+    ] 
+  },
+  { 
+    id: 8, 
+    category: "Print Production", 
+    icon: <Printer size={14} />, 
+    items: [
+      "Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", 
+      "Certificates", "Book Covers", "Menu Cards"
+    ] 
+  },
+  { 
+    id: 9, 
+    category: "Packaging", 
+    icon: <Box size={14} />, 
+    items: [
+      "Packaging Graphics", "Clothing Labels", "Product Labels"
+    ] 
+  },
+  { 
+    id: 10, 
+    category: "Illustration", 
+    icon: <Pencil size={14} />, 
+    items: [
+      "Vector Artwork", "Cartoon Portraits", "Character Illustration", "Icon Design", 
+      "Seamless Patterns", "Digital Illustration"
+    ] 
+  },
+  { 
+    id: 11, 
     category: "Video Editing", 
     icon: <Video size={14} />, 
     items: [
@@ -84,86 +148,13 @@ const creationsCategories = [
     ] 
   },
   { 
-    id: 4, 
+    id: 12, 
     category: "Motion Graphics", 
     icon: <PictureInPicture size={14} />, 
     items: [
       "Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", 
       "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", 
       "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"
-    ] 
-  },
-  { 
-    id: 5, 
-    category: "Web Graphics", 
-    icon: <MousePointerClick size={14} />, 
-    items: [
-      "Landing Page Graphics", "eCommerce Graphics", "Website Banners", "Hero Banners", 
-      "UI Graphics", "Icons", "Email Graphics", "WordPress Assets", "Blog Graphics", "Web Illustrations"
-    ] 
-  },
-  { 
-    id: 6, 
-    category: "Marketing & Corporate Graphics", 
-    icon: <Briefcase size={14} />, 
-    items: [
-      "Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", 
-      "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"
-    ] 
-  },
-  { 
-    id: 7, 
-    category: "Marketing Materials", 
-    icon: <FileText size={14} />, 
-    items: [
-      "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations", 
-      "Posters", "Banners", "Sales Sheets", "Product Sheets"
-    ] 
-  },
-  { 
-    id: 8, 
-    category: "Packaging Design", 
-    icon: <Box size={14} />, 
-    items: [
-      "Packaging Graphics", "Product Labels", "Clothing Labels", "Box Packaging", 
-      "Bottle Labels", "Pouch Packaging", "Food Packaging", "Cosmetic Packaging"
-    ] 
-  },
-  { 
-    id: 9, 
-    category: "Photo Editing", 
-    icon: <ImageIcon size={14} />, 
-    items: [
-      "Photo Retouching", "Photo Restoration", "Background Removal", "Photo Manipulation", 
-      "Color Correction", "Product Photo Enhancement", "Watercolor Portraits"
-    ] 
-  },
-  { 
-    id: 10, 
-    category: "Apparel Design", 
-    icon: <Shirt size={14} />, 
-    items: [
-      "Streetwear Graphics", "T-Shirt Graphics", "Jersey Design", "Merchandise Graphics", 
-      "Mockups", "Clothing Hang Tags"
-    ] 
-  },
-  { 
-    id: 11, 
-    category: "Print Production", 
-    icon: <Printer size={14} />, 
-    items: [
-      "Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", 
-      "Certificates", "Book Covers", "Menu Cards", "Stickers", "Roll-up Banners", 
-      "Calendars"
-    ] 
-  },
-  { 
-    id: 12, 
-    category: "Illustration", 
-    icon: <Pencil size={14} />, 
-    items: [
-      "Digital Illustration", "Vector Artwork", "Character Illustration", "Cartoon Portraits", 
-      "Icon Design", "Seamless Patterns"
     ] 
   }
 ];
@@ -258,7 +249,19 @@ export default function DreamCreations() {
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
   const [projects, setProjects] = useState([]); 
-  const [reviews, setReviews] = useState([]); 
+
+  // PANSAMANTALANG HARDCODED REVIEWS HABANG MAY LIMIT ANG SUPABASE QUOTA
+  const [reviews, setReviews] = useState([
+    {
+      id: "temp-mr-king",
+      client_name: "Mr. King",
+      company: "GodsKing Royalty",
+      project_type: "Design Project", // Based on context
+      rating: 5,
+      feedback: "The design is very impressive and unique.",
+      face_image_url: "/images/King.jpg"
+    }
+  ]); 
 
   const [bannerUrl, setBannerUrl] = useState("/Logo Banner.png");
   const [founderPhoto, setFounderPhoto] = useState("");
@@ -544,7 +547,10 @@ export default function DreamCreations() {
         setProjects(projectData || []);
 
         const { data: reviewData } = await supabase.from('client_reviews').select('*').order('created_at', { ascending: false });
-        setReviews(reviewData || []);
+        // OVERWRITE LAMANG KUNG SUCCESSFUL AT MAY LAMAN PARA HINDI MABURA ANG HARDCODED
+        if (reviewData && reviewData.length > 0) {
+          setReviews(reviewData);
+        }
 
         const { data: allResumes } = await supabase.from('portfolio_resumes').select('*');
         if (allResumes && allResumes.length > 0) {
@@ -568,7 +574,7 @@ export default function DreamCreations() {
     setActivePortfolioSubtitle(subtitle);
   };
 
-  // SCROLL DIRECTLY TO COVER FIRST (HINDI AGAD SA LOOB)
+  // SCROLL DIRECTLY TO COVER FIRST
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
     setActivePortfolioSubtitle(null); 
@@ -902,7 +908,7 @@ export default function DreamCreations() {
 
       <div id="portfolio-directory" className="scroll-mt-24" />
 
-      {/* ================= UNIFIED PORTFOLIO DIRECTORY (PERMANENTLY VISIBLE COVERS WITH EMPTY STATES) ================= */}
+      {/* ================= UNIFIED PORTFOLIO DIRECTORY (PERMANENTLY VISIBLE COVERS WITH MINIMALIST EMPTY STATES) ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-screen">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
           <div className="text-center md:text-left">
@@ -930,17 +936,17 @@ export default function DreamCreations() {
                   const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
                   const hasWork = !!latestProjectWithImage;
                   
-                  // MINIMALIST EMPTY STATE: If no work exists, render a sleek tag block without image cover
+                  // MINIMALIST EMPTY STATE: If no work exists, render a sleek borderless tag block without an image cover
                   if (!hasWork) {
                     return (
-                      <div key={idx} className="relative rounded-2xl border border-dashed border-white/10 bg-black/20 flex flex-col items-start justify-center p-5 text-left min-h-[100px] cursor-not-allowed">
-                        <span className="text-[#1095d2]/80 text-[8px] font-mono font-bold uppercase tracking-widest mb-1.5 bg-[#1095d2]/10 px-2 py-0.5 rounded">Available • No Work Yet</span>
-                        <h4 className="text-white/50 font-bold text-sm leading-tight">{subtitle}</h4>
+                      <div key={idx} className="flex flex-col justify-center p-3 opacity-60">
+                        <span className="text-[#1095d2] text-[8px] font-mono font-bold uppercase tracking-widest mb-1">Available • No Work Yet</span>
+                        <h4 className="text-white font-bold text-sm">{subtitle}</h4>
                       </div>
                     );
                   }
 
-                  // ACTIVE STATE: Render the full cover card
+                  // ACTIVE STATE: Render the full interactive cover card
                   const coverImage = latestProjectWithImage.featured_image_url;
                   return (
                     <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
