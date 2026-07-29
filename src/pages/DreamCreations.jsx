@@ -863,22 +863,39 @@ export default function DreamCreations() {
           <div ref={feedbackScrollRef} {...feedbackDragHandlers} className="flex overflow-x-auto gap-6 py-4 hide-scrollbar w-full relative z-20 cursor-grab active:cursor-grabbing px-6">
             {reviews.length > 0 ? (
               [...reviews, ...reviews, ...reviews, ...reviews].map((testimonial, index) => (
-                <div key={`${testimonial.id}-${index}`} className="shrink-0 w-[85vw] md:w-[400px] p-8 rounded-3xl bg-black/20 border border-white/10 backdrop-blur-md flex flex-col relative group hover:border-[#1095d2]/40 transition-colors">
+                <div key={`review-${testimonial.id || index}-${index}`} className="shrink-0 w-[85vw] md:w-[400px] p-8 rounded-3xl bg-black/20 border border-white/10 backdrop-blur-md flex flex-col relative group hover:border-[#1095d2]/40 transition-colors">
                   <Quote size={40} className="text-[#1095d2]/10 absolute top-6 right-6 group-hover:text-[#1095d2]/20 transition-colors pointer-events-none" />
+                  
+                  {/* Safely map the stars, defaulting to 5 if empty or invalid */}
                   <div className="flex gap-1 mb-6 text-[#1095d2] pointer-events-none">
-                    {[...Array(testimonial.rating)].map((_, i) => ( <Star key={i} size={14} fill="currentColor" /> ))}
+                    {[...Array(Number(testimonial.rating) || 5)].map((_, i) => ( <Star key={i} size={14} fill="currentColor" /> ))}
                   </div>
-                  <p className="text-sm text-white/80 leading-relaxed mb-8 flex-grow italic select-none">"{testimonial.feedback}"</p>
+                  
+                  <p className="text-sm text-white/80 leading-relaxed mb-8 flex-grow italic select-none">
+                    "{testimonial.feedback || "Great service and highly recommended!"}"
+                  </p>
+                  
                   <div className="flex items-center gap-4 mt-auto pointer-events-none">
-                    {testimonial.face_image_url ? ( <img src={testimonial.face_image_url} alt={testimonial.client_name} className="w-10 h-10 rounded-full object-cover border border-white/10" /> ) : ( <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 border border-white/5">{testimonial.client_name.charAt(0)}</div> )}
+                    {testimonial.face_image_url ? ( 
+                      <img src={testimonial.face_image_url} alt={testimonial.client_name || 'Client'} className="w-10 h-10 rounded-full object-cover border border-white/10" /> 
+                    ) : ( 
+                      <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 border border-white/5">
+                        {/* Safely get the first letter, fallback to 'A' if anonymous */}
+                        {(testimonial.client_name || 'Anonymous').charAt(0).toUpperCase()}
+                      </div> 
+                    )}
                     <div>
-                      <h4 className="text-sm font-bold text-white leading-tight">{testimonial.client_name}</h4>
-                      <p className="text-[10px] text-white/50">{testimonial.project_type} • {testimonial.company}</p>
+                      <h4 className="text-sm font-bold text-white leading-tight">{testimonial.client_name || 'Anonymous Client'}</h4>
+                      <p className="text-[10px] text-white/50">{(testimonial.project_type || 'Project')} • {(testimonial.company || 'Company')}</p>
                     </div>
                   </div>
                 </div>
               ))
-            ) : ( <div className="w-full py-16 text-center text-slate-500 font-mono text-sm border border-dashed border-white/10 rounded-2xl mx-6">No client testimonials have been published yet.</div> )}
+            ) : ( 
+              <div className="w-full py-16 text-center text-slate-500 font-mono text-sm border border-dashed border-white/10 rounded-2xl mx-6">
+                No client testimonials have been published yet.
+              </div> 
+            )}
           </div>
         </div>
       </section>
@@ -1289,8 +1306,7 @@ export default function DreamCreations() {
             <button onClick={() => setIsPhotographyOpen(false)} className="absolute top-6 right-6 md:top-8 md:right-8 z-[500] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 backdrop-blur-md pointer-events-auto"><X size={20} className="md:w-6 md:h-6" /></button>
             <div className="absolute top-6 left-6 md:top-8 md:left-8 z-[500] pointer-events-auto">
               <h2 className="text-xl md:text-3xl font-black text-white tracking-widest uppercase drop-shadow-md">Captured Dreams</h2>
-              <p className="text-[#1095d2] font-mono text-[10px] 
-              :text-xs mt-0.5 drop-shadow-md">Select a polaroid to view full frame.</p>
+              <p className="text-[#1095d2] font-mono text-[10px] md:text-xs mt-0.5 drop-shadow-md">Select a polaroid to view full frame.</p>
             </div>
             <div className="absolute inset-0 w-full h-full flex items-center justify-center z-10 overflow-hidden pointer-events-none">
               {photographyShots.map((shot, idx) => {
