@@ -117,7 +117,7 @@ const creationsCategories = [
     icon: <FileText size={14} />, 
     items: [
       "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations", 
-      "Posters", "Banners", "Rack Cards", "Sales Sheets", "Product Sheets"
+      "Posters", "Banners", "Sales Sheets", "Product Sheets"
     ] 
   },
   { 
