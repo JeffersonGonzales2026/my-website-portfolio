@@ -116,7 +116,7 @@ const creationsCategories = [
     items: [
       "Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", 
       "Certificates", "Book Covers", "Menu Cards", "Stickers", "Roll-up Banners", 
-      "Tent Cards", "Postcards", "Calendars"
+      "Calendars"
     ] 
   },
   { 
