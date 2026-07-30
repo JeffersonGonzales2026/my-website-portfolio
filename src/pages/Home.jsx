@@ -11,6 +11,7 @@ import QuickStats from '../sections/home/QuickStats';
 import SkillsOverview from '../sections/home/SkillsOverview';
 import CareerTimeline from '../sections/home/CareerTimeline';
 import Certifications from '../sections/home/Certifications';
+import BeyondTheCode from '../sections/home/BeyondTheCode';
 
 export default function Home() {
   // FUTURE: Tanggalin ang "//" kung may modal ka na
@@ -63,6 +64,7 @@ export default function Home() {
         <SkillsOverview homeData={homeData} />
         <CareerTimeline homeData={homeData} />
         <Certifications homeData={homeData} />
+        <BeyondTheCode />
         <JourneySelector homeData={homeData} />
       </div>
     </div>
