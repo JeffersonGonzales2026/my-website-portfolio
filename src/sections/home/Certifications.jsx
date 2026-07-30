@@ -4,10 +4,9 @@ import { motion } from 'framer-motion';
 import { Award, ExternalLink, ShieldCheck } from 'lucide-react';
 
 export default function Certifications({ homeData }) {
-  // Kunin ang data, o gumamit ng fallback kung wala pang laman sa CMS
   const certs = homeData?.certifications || [];
 
-  if (certs.length === 0) return null; // Wag ipapakita kung walang data sa CMS
+  if (certs.length === 0) return null;
 
   return (
     <section className="max-w-7xl mx-auto px-6 relative z-10">
@@ -30,39 +29,59 @@ export default function Certifications({ homeData }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="p-6 rounded-2xl bg-slate-900/30 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-900/50 transition-all group flex flex-col h-full"
+            className="rounded-2xl bg-slate-900/30 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-900/50 transition-all group flex flex-col h-full overflow-hidden"
           >
-            <div className="flex justify-between items-start mb-4">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner border border-blue-500/20">
-                <Award size={20} />
+            {/* Elegant Image Banner */}
+            {cert.image_url && (
+              <div className="w-full h-44 bg-black/60 relative overflow-hidden border-b border-slate-800/50">
+                <img 
+                  src={cert.image_url} 
+                  alt={cert.title} 
+                  className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                />
+                {/* Subtle gradient overlay to blend into the card */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent pointer-events-none" />
               </div>
-              {cert.date && (
-                <span className="text-[10px] font-mono text-slate-500 bg-slate-950 px-2 py-1 rounded-md border border-slate-800">
-                  {cert.date}
-                </span>
-              )}
-            </div>
+            )}
 
-            <h4 className="text-lg font-bold text-slate-200 mb-1 leading-tight group-hover:text-blue-400 transition-colors">
-              {cert.title}
-            </h4>
-            <p className="text-xs font-semibold text-slate-400 mb-4 flex items-center gap-1.5 uppercase tracking-wider">
-              <ShieldCheck size={12} className="text-emerald-500" /> {cert.issuer}
-            </p>
+            <div className={`p-6 flex flex-col flex-grow ${cert.image_url ? 'pt-4' : ''}`}>
+              <div className="flex justify-between items-start mb-4">
+                {/* Fallback Icon if NO Image */}
+                {!cert.image_url && (
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner border border-blue-500/20">
+                    <Award size={20} />
+                  </div>
+                )}
+                
+                {/* Date Badge */}
+                {cert.date && (
+                  <span className={`text-[10px] font-mono text-slate-500 bg-slate-950 px-2 py-1 rounded-md border border-slate-800 ${cert.image_url ? 'ml-auto' : ''}`}>
+                    {cert.date}
+                  </span>
+                )}
+              </div>
 
-            <div className="mt-auto pt-5 border-t border-slate-800/50">
-              {cert.link ? (
-                <a 
-                  href={cert.link} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1.5 w-fit"
-                >
-                  Verify Credential <ExternalLink size={12} />
-                </a>
-              ) : (
-                <span className="text-[10px] text-slate-500 italic">Credential ID available upon request</span>
-              )}
+              <h4 className="text-lg font-bold text-slate-200 mb-1 leading-tight group-hover:text-blue-400 transition-colors">
+                {cert.title}
+              </h4>
+              <p className="text-xs font-semibold text-slate-400 mb-4 flex items-center gap-1.5 uppercase tracking-wider">
+                <ShieldCheck size={12} className="text-emerald-500" /> {cert.issuer}
+              </p>
+
+              <div className="mt-auto pt-5 border-t border-slate-800/50">
+                {cert.link ? (
+                  <a 
+                    href={cert.link} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1.5 w-fit"
+                  >
+                    Verify Credential <ExternalLink size={12} />
+                  </a>
+                ) : (
+                  <span className="text-[10px] text-slate-500 italic">Credential ID available upon request</span>
+                )}
+              </div>
             </div>
           </motion.div>
         ))}

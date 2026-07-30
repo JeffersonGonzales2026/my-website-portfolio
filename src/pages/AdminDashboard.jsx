@@ -737,10 +737,11 @@ export default function AdminDashboard() {
                 </div>
               </div>
               {/* ================= WORKSPACE PANEL: CERTIFICATIONS ================= */}
+              {/* ================= WORKSPACE PANEL: CERTIFICATIONS ================= */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
                   <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Licenses & Certifications Hub</h4>
-                  <button onClick={() => setHomeCertifications([...homeCertifications, { title: "", issuer: "", date: "", link: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD CERT</button>
+                  <button onClick={() => setHomeCertifications([...homeCertifications, { title: "", issuer: "", date: "", link: "", image_url: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD CERT</button>
                 </div>
                 <div className="space-y-3">
                   {homeCertifications.map((item, idx) => (
@@ -751,6 +752,7 @@ export default function AdminDashboard() {
                         <input type="text" value={item.issuer} onChange={(e) => handleUpdateArrayField(homeCertifications, setHomeCertifications, idx, 'issuer', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Issuer (e.g. Coursera / Google)" />
                         <input type="text" value={item.date} onChange={(e) => handleUpdateArrayField(homeCertifications, setHomeCertifications, idx, 'date', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 font-mono" placeholder="Date (e.g. Oct 2026)" />
                         <input type="text" value={item.link} onChange={(e) => handleUpdateArrayField(homeCertifications, setHomeCertifications, idx, 'link', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-blue-400 font-mono" placeholder="Verification Link URL" />
+                        <input type="text" value={item.image_url || ''} onChange={(e) => handleUpdateArrayField(homeCertifications, setHomeCertifications, idx, 'image_url', e.target.value)} className="md:col-span-2 bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-cyan-400 font-mono" placeholder="Image URL (Kopyahin mula sa Media Library)" />
                       </div>
                     </div>
                   ))}
