@@ -97,7 +97,7 @@ export default function BeyondTheCode() {
                     <div className="flex items-center gap-2"><Palette size={14} className="text-pink-400/70"/> Painting</div>
                     <div className="flex items-center gap-2"><PenTool size={14} className="text-pink-400/70"/> Sketching Portraits</div>
                     <div className="flex items-center gap-2"><Camera size={14} className="text-pink-400/70"/> Photography</div>
-                    <div className="flex items-center gap-2"><Telescope size={14} className="text-pink-400/70"/> Astrophile (Universe)</div>
+                    <div className="flex items-center gap-2"><Telescope size={14} className="text-pink-400/70"/> Astrophile</div>
                     <div className="flex items-center gap-2"><ChefHat size={14} className="text-pink-400/70"/> Cooking</div>
                   </div>
                 </div>
