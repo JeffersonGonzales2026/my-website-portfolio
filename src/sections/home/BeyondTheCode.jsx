@@ -174,10 +174,10 @@ export default function BeyondTheCode() {
                 </h4>
                 
                 <p className="text-sm md:text-base text-slate-300 leading-relaxed font-medium relative z-10">
-                  Did you know my childhood dream was actually Military scout ranger, 5 star cruise chef, professional white hat hacker?
+                  As a kid, I dreamed of becoming a Military Scout Ranger, a chef on a five-star cruise ship, or a professional white-hat hacker.
                   <br /><br />
                   <span className="text-indigo-300 font-bold text-lg block mt-2">
-                    Now my highest dream is Chief Technology Officer. 🚀
+                    Today, I find joy in exploring the world of software development, creating digital experiences, and continuously learning new skills. Life is a journey of discovery, and I'm excited to see where my passions take me next! 🚀
                   </span>
                 </p>
               </div>
