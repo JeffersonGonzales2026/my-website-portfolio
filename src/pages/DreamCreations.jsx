@@ -160,7 +160,22 @@ export default function DreamCreations() {
   // ================= GSAP REFS =================
   const processSectionRef = useRef(null);
   const processTrackRef = useRef(null);
+  // ================= DYNAMIC MARGIN PARA SA CREATIVE PROCESS =================
+  const [processMargin, setProcessMargin] = useState('1125px');
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setProcessMargin('1475px'); // Exact sukat mo para sa Mobile Phone
+      } else {
+        setProcessMargin('1125px'); // Exact sukat mo para sa PC / Desktop
+      }
+    };
+
+    handleResize(); // I-run pagka-load ng page
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   // PURE GSAP SCROLL-JACKING LOGIC
   useGSAP(() => {
     if (!processSectionRef.current || !processTrackRef.current) return;
@@ -764,7 +779,11 @@ export default function DreamCreations() {
       </section>
 
       {/* ================= CREATIVE PROCESS (GSAP PINNED SCROLL) ================= */}
-      <section ref={processSectionRef} className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mb-[1475px] md:mb-[1125px]">
+      <section 
+        ref={processSectionRef} 
+        className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden"
+        style={{ marginBottom: processMargin }}
+      >
         <div className="h-screen flex flex-col justify-center pt-16 md:pt-24 pb-24">
           <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
             <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
