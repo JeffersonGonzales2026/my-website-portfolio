@@ -15,9 +15,6 @@ export default function Certifications({ homeData }) {
       <div className="mb-12 flex flex-col items-center text-center md:items-start md:text-left">
         <h3 className="text-2xl md:text-4xl font-bold text-white mb-3">Licenses & Certifications</h3>
         <div className="w-16 h-1 bg-blue-500 rounded-full" />
-        <p className="text-sm text-slate-400 mt-4 max-w-2xl">
-          Verified professional credentials demonstrating continuous learning and technical proficiency.
-        </p>
       </div>
 
       {/* Grid Layout for Certifications */}
