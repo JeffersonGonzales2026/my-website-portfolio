@@ -275,7 +275,7 @@ export default function DreamCreations() {
       id: "temp-memorialize-client",
       client_name: "Memorialize Client",
       company: "Memorialize",
-      project_type: "Water",
+      project_type: "Watercolor Portrait",
       rating: 5,
       feedback: "Oh my goodness!!!! Im extremely happy with how it turned out!! Thank you so much… Im sure there will be lots of tears when my Mom opens this!!!",
       face_image_url: "/images/MClient1.png"
