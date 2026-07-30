@@ -779,10 +779,10 @@ export default function DreamCreations() {
       </section>
 
       {/* ================= CREATIVE PROCESS (GSAP PINNED SCROLL) ================= */}
+      {/* Dito natin isinalpak ang mb-1475 (mobile) at md:mb-1125 (PC) */}
       <section 
         ref={processSectionRef} 
-        className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden"
-        style={{ marginBottom: processMargin }}
+        className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mb-1475 md:mb-1125"
       >
         <div className="h-screen flex flex-col justify-center pt-16 md:pt-24 pb-24">
           <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
