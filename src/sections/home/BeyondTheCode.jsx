@@ -11,7 +11,7 @@ import { useMobileBack } from '../../hooks/useMobileBack';
 export default function BeyondTheCode() {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Gamitin ang ginawa nating global system hook para sa mobile back button!
+  // Global mobile back button interceptor
   useMobileBack(isOpen, () => setIsOpen(false));
 
   // I-lock ang background scroll kapag nakabukas ang pop-up
@@ -27,10 +27,9 @@ export default function BeyondTheCode() {
   return (
     <section className="max-w-7xl mx-auto px-6 relative z-10 py-16">
       
-      {/* The Reveal Button - Nananatiling seryoso sa labas */}
+      {/* The Reveal Button */}
       <div className="flex justify-center relative">
-        {/* Subtle glow effect sa likod ng button */}
-        <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full scale-110 opacity-50" />
+        <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full scale-110 opacity-50 pointer-events-none" />
         
         <button 
           onClick={() => setIsOpen(true)}
@@ -39,44 +38,46 @@ export default function BeyondTheCode() {
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
           <User size={18} className="text-cyan-400 group-hover:scale-110 transition-transform" />
           <span className="font-mono text-sm font-bold tracking-widest uppercase relative z-10">
-            Initialize Personal Override
+            Unlock my hidden lore 👀
           </span>
         </button>
       </div>
 
-      {/* The Playful Modal Pop-up */}
+      {/* The Playful Modal Pop-up (FIXED Z-INDEX & STACKING) */}
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
             
-            {/* Backdrop Blur */}
+            {/* Backdrop Blur (Clicking this also closes the modal) */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"
+              className="absolute inset-0 bg-black/90 backdrop-blur-sm cursor-pointer"
             />
 
-            {/* Modal Content */}
+            {/* Modal Content Box */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-4xl max-h-[85vh] bg-[#0f111a] border border-cyan-500/30 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(6,182,212,0.2)] flex flex-col"
+              className="relative z-10 w-full max-w-4xl max-h-[85vh] bg-[#0f111a] border border-cyan-500/30 rounded-3xl shadow-[0_0_50px_rgba(6,182,212,0.3)] flex flex-col overflow-hidden"
             >
               
-              {/* Modal Header */}
-              <div className="flex items-center justify-between p-6 border-b border-white/5 bg-slate-900/50 shrink-0">
+              {/* Modal Header with explicit X Button */}
+              <div className="flex items-center justify-between p-6 border-b border-white/10 bg-slate-900/80 shrink-0">
                 <h3 className="text-xl md:text-2xl font-black text-white flex items-center gap-3 tracking-wide">
                   <span className="text-2xl">👋</span> Fun Facts About Me!
                 </h3>
+                {/* X CLOSE BUTTON */}
                 <button 
                   onClick={() => setIsOpen(false)} 
-                  className="w-10 h-10 rounded-full bg-white/5 hover:bg-red-500/20 text-slate-400 hover:text-red-400 flex items-center justify-center transition-colors border border-white/5 cursor-pointer"
+                  className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-all border border-white/20 cursor-pointer shadow-md group"
+                  title="Close Modal"
                 >
-                  <X size={20} />
+                  <X size={20} className="group-hover:scale-110 transition-transform" />
                 </button>
               </div>
 
@@ -84,7 +85,7 @@ export default function BeyondTheCode() {
               <div className="overflow-y-auto p-6 space-y-6 custom-scrollbar">
                 
                 {/* The Fun Fact Intro */}
-                <div className="p-5 rounded-2xl bg-cyan-500/10 border border-cyan-500/20">
+                <div className="p-5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 shadow-inner">
                   <h4 className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                     <MessageCircleQuestion size={14} /> Did you know?
                   </h4>
@@ -97,7 +98,7 @@ export default function BeyondTheCode() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   
                   {/* Brain Specs */}
-                  <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/50 transition-colors">
+                  <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 transition-colors shadow-lg">
                     <h4 className="text-white font-bold mb-4 flex items-center gap-2 border-b border-slate-800 pb-2">
                       <Brain className="text-purple-400" size={18} /> Brain Specs
                     </h4>
@@ -110,7 +111,7 @@ export default function BeyondTheCode() {
                   </div>
 
                   {/* Ball is Life */}
-                  <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-orange-500/50 transition-colors">
+                  <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-orange-500/50 transition-colors shadow-lg">
                     <h4 className="text-white font-bold mb-4 flex items-center gap-2 border-b border-slate-800 pb-2">
                       <Gamepad2 className="text-orange-400" size={18} /> Ball is Life 🏀
                     </h4>
@@ -123,7 +124,7 @@ export default function BeyondTheCode() {
                   </div>
 
                   {/* Chess & Tactics */}
-                  <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-slate-400/50 transition-colors lg:row-span-2">
+                  <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-emerald-500/50 transition-colors shadow-lg lg:row-span-2">
                     <h4 className="text-white font-bold mb-4 flex items-center gap-2 border-b border-slate-800 pb-2">
                       <Swords className="text-slate-300" size={18} /> Chess & Tactics ♟️
                     </h4>
@@ -133,7 +134,7 @@ export default function BeyondTheCode() {
                         href="https://www.chess.com/member/nosreffej_03" 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="inline-flex items-center gap-2 text-white bg-slate-800 hover:bg-slate-700 px-4 py-3 rounded-xl border border-slate-600 transition-colors w-full"
+                        className="inline-flex items-center justify-center gap-2 text-white bg-slate-800 hover:bg-slate-700 px-4 py-3 rounded-xl border border-slate-600 transition-colors w-full shadow-md"
                       >
                         <Crosshair size={16} className="text-emerald-400" />
                         Chess.com: <span className="font-mono font-bold text-emerald-300">nosreffej_03</span>
@@ -142,7 +143,7 @@ export default function BeyondTheCode() {
                   </div>
 
                   {/* The Arts */}
-                  <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-pink-500/50 transition-colors md:col-span-2">
+                  <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-pink-500/50 transition-colors shadow-lg md:col-span-2">
                     <h4 className="text-white font-bold mb-4 flex items-center gap-2 border-b border-slate-800 pb-2">
                       <Palette className="text-pink-400" size={18} /> Arts, Audio & Visuals
                     </h4>
@@ -157,22 +158,22 @@ export default function BeyondTheCode() {
                   </div>
 
                   {/* Vibes & Lifestyle */}
-                  <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-emerald-500/50 transition-colors md:col-span-2">
+                  <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 transition-colors shadow-lg md:col-span-2">
                     <h4 className="text-white font-bold mb-4 flex items-center gap-2 border-b border-slate-800 pb-2">
                       <MapPin className="text-emerald-400" size={18} /> Vibes & Lifestyle 🏕️
                     </h4>
                     <div className="flex flex-wrap gap-2 text-xs font-semibold">
-                      <span className="px-3 py-1.5 bg-black rounded-lg border border-slate-800 flex items-center gap-1.5"><Plane size={14} className="text-emerald-400"/> Traveling</span>
-                      <span className="px-3 py-1.5 bg-black rounded-lg border border-slate-800 flex items-center gap-1.5"><Utensils size={14} className="text-emerald-400"/> Food Trip</span>
-                      <span className="px-3 py-1.5 bg-black rounded-lg border border-slate-800 flex items-center gap-1.5"><Cat size={14} className="text-emerald-400"/> Cat Whisperer</span>
-                      <span className="px-3 py-1.5 bg-black rounded-lg border border-slate-800 flex items-center gap-1.5"><MapPin size={14} className="text-emerald-400"/> Nature Lover</span>
-                      <span className="px-3 py-1.5 bg-black rounded-lg border border-slate-800 flex items-center gap-1.5"><Moon size={14} className="text-emerald-400"/> Sleeping</span>
-                      <span className="px-3 py-1.5 bg-black rounded-lg border border-slate-800 flex items-center gap-1.5"><Shirt size={14} className="text-emerald-400"/> Streetwear & Corp Casual</span>
+                      <span className="px-3 py-1.5 bg-black rounded-lg border border-slate-700 flex items-center gap-1.5 shadow-sm"><Plane size={14} className="text-emerald-400"/> Traveling</span>
+                      <span className="px-3 py-1.5 bg-black rounded-lg border border-slate-700 flex items-center gap-1.5 shadow-sm"><Utensils size={14} className="text-emerald-400"/> Food Trip</span>
+                      <span className="px-3 py-1.5 bg-black rounded-lg border border-slate-700 flex items-center gap-1.5 shadow-sm"><Cat size={14} className="text-emerald-400"/> Cat Whisperer</span>
+                      <span className="px-3 py-1.5 bg-black rounded-lg border border-slate-700 flex items-center gap-1.5 shadow-sm"><MapPin size={14} className="text-emerald-400"/> Nature Lover</span>
+                      <span className="px-3 py-1.5 bg-black rounded-lg border border-slate-700 flex items-center gap-1.5 shadow-sm"><Moon size={14} className="text-emerald-400"/> Sleeping</span>
+                      <span className="px-3 py-1.5 bg-black rounded-lg border border-slate-700 flex items-center gap-1.5 shadow-sm"><Shirt size={14} className="text-emerald-400"/> Streetwear & Corp Casual</span>
                     </div>
                   </div>
 
                   {/* Screen Time */}
-                  <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-red-500/50 transition-colors">
+                  <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-red-500/50 transition-colors shadow-lg">
                     <h4 className="text-white font-bold mb-4 flex items-center gap-2 border-b border-slate-800 pb-2">
                       <Tv className="text-red-400" size={18} /> Screen Time 📺
                     </h4>
@@ -183,7 +184,6 @@ export default function BeyondTheCode() {
                   </div>
 
                 </div>
-
               </div>
             </motion.div>
           </div>
