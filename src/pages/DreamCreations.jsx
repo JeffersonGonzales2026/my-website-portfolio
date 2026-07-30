@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
 import { useMobileBack } from '../hooks/useMobileBack';
 
-// ================= GSAP IMPORTS =================
+// GSAP IMPORTS
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -57,120 +57,18 @@ const featuredClients = [
 ];
 
 const creationsCategories = [
-  { 
-    id: 1, 
-    category: "Branding & Identity", 
-    icon: <Fingerprint size={14} />, 
-    items: [
-      "Logo Design", "Brand Identity Design", "Brand Style Guide", "Brand Refresh & Rebranding", 
-      "Business Card Design", "Letterhead & Stationery Design", "Email Signature Design", 
-      "Brand Pattern & Graphic Elements", "Packaging Design", "Label & Sticker Design", 
-      "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", "Brand Asset Kit"
-    ] 
-  },
-  { 
-    id: 2, 
-    category: "Social Media Design", 
-    icon: <Share2 size={14} />, 
-    items: [
-      "Social Media Posts", "Story Designs", "Carousel Posts", "LinkedIn Graphics", 
-      "Social Media Campaigns", "Cover Photos", "Profile Branding", "Quote Graphics", 
-      "Event Announcement Graphics", "Holiday & eCards"
-    ] 
-  },
-  { 
-    id: 3, 
-    category: "Video Editing", 
-    icon: <Video size={14} />, 
-    items: [
-      "Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", 
-      "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", 
-      "Podcast Editing", "Testimonial Videos", "Tutorial Videos", "Video Thumbnails"
-    ] 
-  },
-  { 
-    id: 4, 
-    category: "Motion Graphics", 
-    icon: <PictureInPicture size={14} />, 
-    items: [
-      "Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", 
-      "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", 
-      "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"
-    ] 
-  },
-  { 
-    id: 5, 
-    category: "Web Graphics", 
-    icon: <MousePointerClick size={14} />, 
-    items: [
-      "Landing Page Graphics", "eCommerce Graphics", "Website Banners", "Hero Banners", 
-      "UI Graphics", "Icons", "Email Graphics", "WordPress Assets", "Blog Graphics", "Web Illustrations"
-    ] 
-  },
-  { 
-    id: 6, 
-    category: "Marketing & Corporate Graphics", 
-    icon: <Briefcase size={14} />, 
-    items: [
-      "Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", 
-      "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"
-    ] 
-  },
-  { 
-    id: 7, 
-    category: "Marketing Materials", 
-    icon: <FileText size={14} />, 
-    items: [
-      "Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations", 
-      "Posters", "Banners", "Sales Sheets", "Product Sheets"
-    ] 
-  },
-  { 
-    id: 8, 
-    category: "Packaging Design", 
-    icon: <Box size={14} />, 
-    items: [
-      "Packaging Graphics", "Product Labels", "Clothing Labels", "Box Packaging", 
-      "Bottle Labels", "Pouch Packaging", "Food Packaging", "Cosmetic Packaging"
-    ] 
-  },
-  { 
-    id: 9, 
-    category: "Photo Editing", 
-    icon: <ImageIcon size={14} />, 
-    items: [
-      "Photo Retouching", "Photo Restoration", "Background Removal", "Photo Manipulation", 
-      "Color Correction", "Product Photo Enhancement", "Watercolor Portraits"
-    ] 
-  },
-  { 
-    id: 10, 
-    category: "Apparel Design", 
-    icon: <Shirt size={14} />, 
-    items: [
-      "Streetwear Graphics", "T-Shirt Graphics", "Jersey Design", "Merchandise Graphics", 
-      "Mockups", "Clothing Hang Tags"
-    ] 
-  },
-  { 
-    id: 11, 
-    category: "Print Production", 
-    icon: <Printer size={14} />, 
-    items: [
-      "Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", 
-      "Certificates", "Book Covers", "Menu Cards", "Stickers", "Roll-up Banners", 
-      "Calendars"
-    ] 
-  },
-  { 
-    id: 12, 
-    category: "Illustration", 
-    icon: <Pencil size={14} />, 
-    items: [
-      "Digital Illustration", "Vector Artwork", "Character Illustration", "Cartoon Portraits", 
-      "Icon Design", "Seamless Patterns"
-    ] 
-  }
+  { id: 1, category: "Branding & Identity", icon: <Fingerprint size={14} />, items: ["Logo Design", "Brand Identity Design", "Brand Style Guide", "Brand Refresh & Rebranding", "Business Card Design", "Letterhead & Stationery Design", "Email Signature Design", "Brand Pattern & Graphic Elements", "Packaging Design", "Label & Sticker Design", "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", "Brand Asset Kit"] },
+  { id: 2, category: "Social Media Design", icon: <Share2 size={14} />, items: ["Social Media Posts", "Story Designs", "Carousel Posts", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding", "Quote Graphics", "Event Announcement Graphics", "Holiday & eCards"] },
+  { id: 3, category: "Video Editing", icon: <Video size={14} />, items: ["Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", "Podcast Editing", "Testimonial Videos", "Tutorial Videos", "Video Thumbnails"] },
+  { id: 4, category: "Motion Graphics", icon: <PictureInPicture size={14} />, items: ["Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"] },
+  { id: 5, category: "Web Graphics", icon: <MousePointerClick size={14} />, items: ["Landing Page Graphics", "eCommerce Graphics", "Website Banners", "Hero Banners", "UI Graphics", "Icons", "Email Graphics", "WordPress Assets", "Blog Graphics", "Web Illustrations"] },
+  { id: 6, category: "Marketing & Corporate Graphics", icon: <Briefcase size={14} />, items: ["Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"] },
+  { id: 7, category: "Marketing Materials", icon: <FileText size={14} />, items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations", "Posters", "Banners", "Sales Sheets", "Product Sheets"] },
+  { id: 8, category: "Packaging Design", icon: <Box size={14} />, items: ["Packaging Graphics", "Product Labels", "Clothing Labels", "Box Packaging", "Bottle Labels", "Pouch Packaging", "Food Packaging", "Cosmetic Packaging"] },
+  { id: 9, category: "Photo Editing", icon: <ImageIcon size={14} />, items: ["Photo Retouching", "Photo Restoration", "Background Removal", "Photo Manipulation", "Color Correction", "Product Photo Enhancement", "Watercolor Portraits"] },
+  { id: 10, category: "Apparel Design", icon: <Shirt size={14} />, items: ["Streetwear Graphics", "T-Shirt Graphics", "Jersey Design", "Merchandise Graphics", "Mockups", "Clothing Hang Tags"] },
+  { id: 11, category: "Print Production", icon: <Printer size={14} />, items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards", "Stickers", "Roll-up Banners", "Calendars"] },
+  { id: 12, category: "Illustration", icon: <Pencil size={14} />, items: ["Digital Illustration", "Vector Artwork", "Character Illustration", "Cartoon Portraits", "Icon Design", "Seamless Patterns"] }
 ];
 
 const softwareExpertise = [
@@ -263,36 +161,35 @@ export default function DreamCreations() {
   const processSectionRef = useRef(null);
   const processTrackRef = useRef(null);
 
-  // GSAP SCROLL-JACKING LOGIC
+  // PURE GSAP SCROLL-JACKING LOGIC
   useGSAP(() => {
-    // Only run if the element exists
     if (!processSectionRef.current || !processTrackRef.current) return;
 
-    // Kunin ang lapad ng buong horizontal track at ibawas ang lapad ng screen
-    const getScrollAmount = () => -(processTrackRef.current.scrollWidth - window.innerWidth + 48); // 48 is for padding
+    // Computed scroll width minus window width so it stops exactly at the end
+    const getScrollAmount = () => {
+      let trackWidth = processTrackRef.current.scrollWidth;
+      return Math.max(0, trackWidth - window.innerWidth + 48); // 48 is for padding buffer
+    };
 
-    // I-setup ang animation
     const tween = gsap.to(processTrackRef.current, {
-      x: getScrollAmount,
+      x: () => -getScrollAmount(),
       ease: "none"
     });
 
-    // Ikabit ang ScrollTrigger
     ScrollTrigger.create({
       trigger: processSectionRef.current,
-      start: "top top", // Magsisimula kapag tumama na sa tuktok ng screen
-      end: () => `+=${getScrollAmount() * -2}`, // Pinahaba at pinabagal ng x2
-      pin: true, // I-freeze ang screen
+      start: "top top", // Pin when section hits the top of viewport
+      end: () => `+=${getScrollAmount() * 1.5}`, // Make scroll longer/slower
+      pin: true,
       animation: tween,
       scrub: 1, // Smooth catch-up delay
-      invalidateOnRefresh: true, // I-recalculate kung mag-resize ang browser
+      invalidateOnRefresh: true, // Recalculate on screen resize
     });
 
     return () => {
       ScrollTrigger.getAll().forEach(t => t.kill());
     };
   }, { scope: processSectionRef });
-
 
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
@@ -435,7 +332,7 @@ export default function DreamCreations() {
 
     const scroll = () => {
       if (!isClientsPaused && !isClientsDragging.current) {
-        container.scrollLeft -= 1; // SCROLL Pakanan (Right)
+        container.scrollLeft -= 1; 
         if (container.scrollLeft <= 0) {
           container.scrollLeft += container.scrollWidth / 2;
         }
@@ -477,7 +374,7 @@ export default function DreamCreations() {
 
     const scroll = () => {
       if (!isFeedbackPaused && !isFeedbackDragging.current) {
-        container.scrollLeft += 1; // SCROLL Pakaliwa (Left)
+        container.scrollLeft += 1; 
         if (container.scrollLeft >= container.scrollWidth / 2) {
           container.scrollLeft = 0; 
         }
@@ -697,7 +594,6 @@ export default function DreamCreations() {
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
-      {/* Background Elements */}
       <div className="absolute inset-0 z-0 opacity-80 pointer-events-none">
         {starsData.map((star) => (
           <motion.div key={star.id} className="absolute bg-white rounded-full shadow-[0_0_4px_rgba(255,255,255,0.6)]" style={{ top: star.top, left: star.left, width: star.size, height: star.size }} animate={{ opacity: [0.1, 1, 0.1] }} transition={{ duration: star.duration, repeat: Infinity, delay: star.delay, ease: "easeInOut" }} />
@@ -869,14 +765,13 @@ export default function DreamCreations() {
 
       {/* ================= CREATIVE PROCESS (GSAP PINNED SCROLL) ================= */}
       <section ref={processSectionRef} className="w-full relative z-10 border-t border-white/10 bg-transparent overflow-hidden">
-        <div className="h-screen flex flex-col justify-center pt-16 md:pt-24">
+        <div className="h-screen flex flex-col justify-center">
           <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
             <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
             <p className="text-base text-white/70 mt-4 max-w-2xl">Journey through our structured, transparent workflow.</p>
           </div>
           
-          {/* GSAP will animate this div to the left */}
           <div ref={processTrackRef} className="flex items-center gap-4 px-6 md:px-12 w-max pb-8 flex-nowrap">
             {creativeProcess.map((item, index) => (
               <React.Fragment key={item.step}>
