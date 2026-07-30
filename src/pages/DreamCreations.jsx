@@ -1,10 +1,17 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity, useScroll } from 'framer-motion';
+import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
 import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, PictureInPicture, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
 import { useMobileBack } from '../hooks/useMobileBack';
+
+// ================= GSAP IMPORTS =================
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const AnimatedNumber = ({ value, suffix }) => {
   const ref = useRef(null);
@@ -252,14 +259,40 @@ export default function DreamCreations() {
   const teamScrollRef = useRef(null);
   const flipBookRef = useRef(null); 
 
-  // Refs for the horizontal scroll pinning of Creative Process
-  const processContainerRef = useRef(null);
-  const { scrollYProgress: processScrollYProgress } = useScroll({
-    target: processContainerRef,
-    offset: ["start start", "end end"]
-  });
-  // Transform horizontal translation based on vertical scroll
-  const processX = useTransform(processScrollYProgress, [0, 1], ["0%", "calc(-100% + 100vw)"]);
+  // ================= GSAP REFS =================
+  const processSectionRef = useRef(null);
+  const processTrackRef = useRef(null);
+
+  // GSAP SCROLL-JACKING LOGIC
+  useGSAP(() => {
+    // Only run if the element exists
+    if (!processSectionRef.current || !processTrackRef.current) return;
+
+    // Kunin ang lapad ng buong horizontal track at ibawas ang lapad ng screen
+    const getScrollAmount = () => -(processTrackRef.current.scrollWidth - window.innerWidth + 48); // 48 is for padding
+
+    // I-setup ang animation
+    const tween = gsap.to(processTrackRef.current, {
+      x: getScrollAmount,
+      ease: "none"
+    });
+
+    // Ikabit ang ScrollTrigger
+    ScrollTrigger.create({
+      trigger: processSectionRef.current,
+      start: "top top", // Magsisimula kapag tumama na sa tuktok ng screen
+      end: () => `+=${getScrollAmount() * -2}`, // Pinahaba at pinabagal ng x2
+      pin: true, // I-freeze ang screen
+      animation: tween,
+      scrub: 1, // Smooth catch-up delay
+      invalidateOnRefresh: true, // I-recalculate kung mag-resize ang browser
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, { scope: processSectionRef });
+
 
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
@@ -834,16 +867,17 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= CREATIVE PROCESS (FIXED SCROLL-JACKING & SLOWED DOWN) ================= */}
-      <section ref={processContainerRef} className="w-full relative z-10 border-t border-white/10 h-[400vh] bg-transparent">
-        <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
+      {/* ================= CREATIVE PROCESS (GSAP PINNED SCROLL) ================= */}
+      <section ref={processSectionRef} className="w-full relative z-10 border-t border-white/10 bg-transparent overflow-hidden">
+        <div className="h-screen flex flex-col justify-center pt-16 md:pt-24">
           <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
             <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
             <p className="text-base text-white/70 mt-4 max-w-2xl">Journey through our structured, transparent workflow.</p>
           </div>
           
-          <motion.div style={{ x: processX }} className="flex items-center gap-4 px-6 md:px-12 w-max pb-8">
+          {/* GSAP will animate this div to the left */}
+          <div ref={processTrackRef} className="flex items-center gap-4 px-6 md:px-12 w-max pb-8 flex-nowrap">
             {creativeProcess.map((item, index) => (
               <React.Fragment key={item.step}>
                 <div className="shrink-0 w-64 p-6 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group shadow-lg select-none">
@@ -858,7 +892,7 @@ export default function DreamCreations() {
                 )}
               </React.Fragment>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
