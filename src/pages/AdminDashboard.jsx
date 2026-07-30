@@ -170,6 +170,7 @@ export default function AdminDashboard() {
   const [homeStats, setHomeStats] = useState([]);
   const [homeSkills, setHomeSkills] = useState([]);
   const [homeTimeline, setHomeTimeline] = useState([]);
+  const [homeCertifications, setHomeCertifications] = useState([]);
 
   // DREAM CREATIONS
   const [dreamBanner, setDreamBanner] = useState("/Logo Banner.png");
@@ -222,6 +223,7 @@ export default function AdminDashboard() {
         setHomeStats(home.quick_stats || []);
         setHomeSkills(home.core_skills || []);
         setHomeTimeline(home.career_timeline || []);
+        setHomeCertifications(home.certifications || []);
       }
 
       const { data: dream } = await supabase.from('dream_creations').select('*').single();
@@ -292,7 +294,7 @@ export default function AdminDashboard() {
     setIsSaving(true);
     try {
       if (activeModule === 'Home Engine') {
-        await supabase.from('home_engine').update({ hero_photo: homeHeroPhoto, quick_stats: homeStats, core_skills: homeSkills, career_timeline: homeTimeline }).eq('id', 1);
+        await supabase.from('home_engine').update({ hero_photo: homeHeroPhoto, quick_stats: homeStats, core_skills: homeSkills, career_timeline: homeTimeline, certifications: homeCertifications }).eq('id', 1);
         
       } else if (activeModule === 'Dream Creations') {
         await supabase.from('dream_creations').update({ 
@@ -732,6 +734,27 @@ export default function AdminDashboard() {
                       <textarea value={item.desc} onChange={(e) => handleUpdateArrayField(homeTimeline, setHomeTimeline, idx, 'desc', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-2 text-xs text-zinc-500 font-mono h-16 resize-none focus:outline-none" placeholder="Description..." />
                     </div>
                   ))}
+                </div>
+              </div>
+              {/* ================= WORKSPACE PANEL: CERTIFICATIONS ================= */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Licenses & Certifications Hub</h4>
+                  <button onClick={() => setHomeCertifications([...homeCertifications, { title: "", issuer: "", date: "", link: "" }])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD CERT</button>
+                </div>
+                <div className="space-y-3">
+                  {homeCertifications.map((item, idx) => (
+                    <div key={idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/10 space-y-2 relative pr-8">
+                      <button onClick={() => handleRemoveArrayItem(homeCertifications, setHomeCertifications, idx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <input type="text" value={item.title} onChange={(e) => handleUpdateArrayField(homeCertifications, setHomeCertifications, idx, 'title', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-white font-bold" placeholder="Certification Title (e.g. Google Data Analytics)" />
+                        <input type="text" value={item.issuer} onChange={(e) => handleUpdateArrayField(homeCertifications, setHomeCertifications, idx, 'issuer', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400" placeholder="Issuer (e.g. Coursera / Google)" />
+                        <input type="text" value={item.date} onChange={(e) => handleUpdateArrayField(homeCertifications, setHomeCertifications, idx, 'date', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-zinc-400 font-mono" placeholder="Date (e.g. Oct 2026)" />
+                        <input type="text" value={item.link} onChange={(e) => handleUpdateArrayField(homeCertifications, setHomeCertifications, idx, 'link', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-blue-400 font-mono" placeholder="Verification Link URL" />
+                      </div>
+                    </div>
+                  ))}
+                  {homeCertifications.length === 0 && <div className="text-[10px] text-zinc-600 font-mono italic text-center py-2">No certifications added yet. Click "ADD CERT".</div>}
                 </div>
               </div>
             </div>

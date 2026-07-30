@@ -55,7 +55,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#09090b] bg-none text-slate-200 overflow-x-hidden selection:bg-blue-500/30 selection:text-blue-200">
       {/* Clean, professional dark background with no grids or glows */}
-      <div className="relative z-10 pt-16 pb-24 space-y-32">
+      <div className="relative z-10 pt-16 pb-24 space-y-16 md:space-y-20">
         {/* Pass the fetched data into your components as props */}
         <Hero homeData={homeData} />
         <AboutMe homeData={homeData} />
