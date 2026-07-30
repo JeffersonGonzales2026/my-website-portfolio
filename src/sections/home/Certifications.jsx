@@ -1,0 +1,72 @@
+// src/sections/home/Certifications.jsx
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Award, ExternalLink, ShieldCheck } from 'lucide-react';
+
+export default function Certifications({ homeData }) {
+  // Kunin ang data, o gumamit ng fallback kung wala pang laman sa CMS
+  const certs = homeData?.certifications || [];
+
+  if (certs.length === 0) return null; // Wag ipapakita kung walang data sa CMS
+
+  return (
+    <section className="max-w-7xl mx-auto px-6 relative z-10">
+      
+      {/* Header - Professional & Clean */}
+      <div className="mb-12 flex flex-col items-center text-center md:items-start md:text-left">
+        <h3 className="text-2xl md:text-4xl font-bold text-white mb-3">Licenses & Certifications</h3>
+        <div className="w-16 h-1 bg-blue-500 rounded-full" />
+        <p className="text-sm text-slate-400 mt-4 max-w-2xl">
+          Verified professional credentials demonstrating continuous learning and technical proficiency.
+        </p>
+      </div>
+
+      {/* Grid Layout for Certifications */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {certs.map((cert, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            className="p-6 rounded-2xl bg-slate-900/30 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-900/50 transition-all group flex flex-col h-full"
+          >
+            <div className="flex justify-between items-start mb-4">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner border border-blue-500/20">
+                <Award size={20} />
+              </div>
+              {cert.date && (
+                <span className="text-[10px] font-mono text-slate-500 bg-slate-950 px-2 py-1 rounded-md border border-slate-800">
+                  {cert.date}
+                </span>
+              )}
+            </div>
+
+            <h4 className="text-lg font-bold text-slate-200 mb-1 leading-tight group-hover:text-blue-400 transition-colors">
+              {cert.title}
+            </h4>
+            <p className="text-xs font-semibold text-slate-400 mb-4 flex items-center gap-1.5 uppercase tracking-wider">
+              <ShieldCheck size={12} className="text-emerald-500" /> {cert.issuer}
+            </p>
+
+            <div className="mt-auto pt-5 border-t border-slate-800/50">
+              {cert.link ? (
+                <a 
+                  href={cert.link} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1.5 w-fit"
+                >
+                  Verify Credential <ExternalLink size={12} />
+                </a>
+              ) : (
+                <span className="text-[10px] text-slate-500 italic">Credential ID available upon request</span>
+              )}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}

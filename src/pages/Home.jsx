@@ -10,6 +10,7 @@ import JourneySelector from '../sections/home/JourneySelector';
 import QuickStats from '../sections/home/QuickStats';
 import SkillsOverview from '../sections/home/SkillsOverview';
 import CareerTimeline from '../sections/home/CareerTimeline';
+import Certifications from '../sections/home/Certifications';
 
 export default function Home() {
   // FUTURE: Tanggalin ang "//" kung may modal ka na
@@ -21,7 +22,8 @@ export default function Home() {
     profile_image_url: null,
     quick_stats: [],
     core_skills: [],
-    career_timeline: []
+    career_timeline: [],
+    certifications: []
   });
 
   // Fetch live CMS data on load
@@ -38,7 +40,8 @@ export default function Home() {
             profile_image_url: data.hero_photo,
             quick_stats: data.quick_stats || [],
             core_skills: data.core_skills || [],
-            career_timeline: data.career_timeline || []
+            career_timeline: data.career_timeline || [],
+            certifications: data.certifications || []
           }));
         }
       } catch (error) {
@@ -59,6 +62,7 @@ export default function Home() {
         <QuickStats homeData={homeData} />
         <SkillsOverview homeData={homeData} />
         <CareerTimeline homeData={homeData} />
+        <Certifications homeData={homeData} />
         <JourneySelector homeData={homeData} />
       </div>
     </div>
