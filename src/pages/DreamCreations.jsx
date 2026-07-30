@@ -261,7 +261,7 @@ export default function DreamCreations() {
     target: processContainerRef,
     offset: ["start start", "end end"]
   });
-  const processX = useTransform(processScrollYProgress, [0, 1], ["0%", "calc(-100% + 100vw)"]);
+  const processX = useTransform(processScrollYProgress, [0, 1], ["0%", "calc(-100% + 100vw - 4rem)"]);
 
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
@@ -440,11 +440,17 @@ export default function DreamCreations() {
     let animationId;
     const container = feedbackScrollRef.current;
     if (!container || reviews.length === 0) return;
+
+    // Start in the middle so it can immediately scroll backwards seamlessly
+    if (container.scrollLeft === 0) {
+      container.scrollLeft = container.scrollWidth / 2;
+    }
+
     const scroll = () => {
       if (!isFeedbackPaused && !isFeedbackDragging.current) {
-        container.scrollLeft += 1; // FIX: Scroll forwards steadily
-        if (container.scrollLeft >= container.scrollWidth / 2) {
-          container.scrollLeft = 0; // FIX: Reset perfectly when halfway through duplicate list
+        container.scrollLeft -= 1; // FIX: Scroll towards the RIGHT (opposite of Our Dreamers)
+        if (container.scrollLeft <= 0) {
+          container.scrollLeft += container.scrollWidth / 2; // Reset jump for seamless backward loop
         }
       }
       animationId = requestAnimationFrame(scroll);
@@ -834,19 +840,19 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= CREATIVE PROCESS ================= */}
-      <section ref={processContainerRef} className="w-full relative z-10 border-t border-white/10 h-[300vh] bg-transparent">
-        <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden py-20">
+      {/* ================= CREATIVE PROCESS (FIXED SCROLL-JACKING) ================= */}
+      <section ref={processContainerRef} className="w-full relative z-10 border-t border-white/10 h-[500vh] bg-transparent">
+        <div className="sticky top-0 h-[100vh] flex flex-col justify-start pt-24 md:pt-32 overflow-hidden">
           <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
             <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
             <p className="text-base text-white/70 mt-4 max-w-2xl">Journey through our structured, transparent workflow.</p>
           </div>
           
-          <motion.div style={{ x: processX }} className="flex gap-4 px-6 md:px-12 w-max pb-8">
+          <motion.div style={{ x: processX }} className="flex items-center gap-4 px-6 md:px-12 w-max pb-8">
             {creativeProcess.map((item, index) => (
               <React.Fragment key={item.step}>
-                <div className="shrink-0 w-64 snap-center p-6 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group shadow-lg select-none">
+                <div className="shrink-0 w-64 p-6 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group shadow-lg select-none">
                   <div className="w-10 h-10 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-sm font-black mb-4 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all shadow-[0_0_15px_rgba(16,149,210,0.3)] pointer-events-none">{item.step}</div>
                   <h4 className="text-base font-bold text-white mb-2 leading-tight group-hover:text-[#1095d2] transition-colors pointer-events-none">{item.title}</h4>
                   <p className="text-xs text-white/50 leading-snug pointer-events-none">{item.desc}</p>
