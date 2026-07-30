@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Activity, Brain, Briefcase, Camera, Cat, ChefHat, 
-  ChevronDown, ChevronUp, Code, Crosshair, Crown, 
+  ChevronDown, ChevronUp, Crosshair, Crown, 
   Flag, Gamepad2, Gem, Glasses, Headphones, Leaf, 
   MapPin, MessageCircleQuestion, Mic, Moon, Mountain, 
   Music, Palette, PenTool, Plane, Play, Radio, 
-  Rocket, Shirt, Swords, Target, Telescope, 
-  Timer, Trophy, Tv, Utensils, Volume2, XCircle 
+  Shirt, Swords, Target, Telescope, 
+  Trophy, Tv, Utensils, Volume2, Skull 
 } from 'lucide-react';
 
 export default function BeyondTheCode() {
@@ -141,14 +141,14 @@ export default function BeyondTheCode() {
                   </h4>
                   <ul className="space-y-4 text-sm text-slate-300">
                     <li className="flex items-center gap-2"><Play size={16} className="text-red-400"/> Slam Dunk</li>
-                    <li className="flex items-center gap-2 text-base">👒 One Piece</li>
+                    <li className="flex items-center gap-2"><Skull size={16} className="text-red-400"/> One Piece 🏴‍☠️</li>
                   </ul>
                 </div>
 
                 {/* 8. Chess */}
                 <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-emerald-500/50 transition-colors shadow-lg md:col-span-3">
                   <h4 className="text-white font-bold mb-4 flex items-center gap-2 border-b border-slate-800 pb-2">
-                    <Swords className="text-slate-300" size={18} /> Chess
+                    <Swords className="text-slate-300" size={18} /> Chess ♟️
                   </h4>
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <p className="italic font-medium text-emerald-400">"Let's check whose brain is above!"</p>
@@ -166,39 +166,20 @@ export default function BeyondTheCode() {
 
               </div>
 
-              {/* 9. The Playful Career Trajectory (At the bottom) */}
+              {/* 9. The Playful "Did you know" (At the bottom) */}
               <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-indigo-500/10 via-slate-900 to-purple-500/10 border border-indigo-500/30 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[80px] pointer-events-none" />
-                <h4 className="text-sm font-mono font-bold text-indigo-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-                  <MessageCircleQuestion size={18} /> Fun Fact: Career Trajectory
+                <h4 className="text-sm font-mono font-bold text-indigo-400 uppercase tracking-widest mb-4 flex items-center gap-2 relative z-10">
+                  <MessageCircleQuestion size={18} /> Fun Fact
                 </h4>
                 
-                <div className="space-y-4 font-mono text-sm md:text-base">
-                  <div className="flex items-center gap-3 text-slate-400">
-                    <XCircle className="text-red-400 shrink-0" size={20} />
-                    <span className="line-through opacity-70">Philippine Scout Ranger</span>
-                    <span className="text-xs font-bold text-red-400/80 uppercase ml-auto">(Failed)</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 text-slate-400">
-                    <XCircle className="text-red-400 shrink-0" size={20} />
-                    <span className="line-through opacity-70">5-Star Cruise Chef</span>
-                    <span className="text-xs font-bold text-red-400/80 uppercase ml-auto">(Failed)</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 text-slate-400">
-                    <XCircle className="text-red-400 shrink-0" size={20} />
-                    <span className="line-through opacity-70">Professional White Hat Hacker</span>
-                    <span className="text-xs font-bold text-red-400/80 uppercase ml-auto">(Failed)</span>
-                  </div>
-
-                  <div className="flex items-center gap-3 text-white bg-indigo-500/20 border border-indigo-500/30 p-3 rounded-xl mt-6 relative shadow-lg">
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-400 rounded-l-xl animate-pulse" />
-                    <Timer className="text-indigo-400 shrink-0" size={20} />
-                    <span className="font-bold tracking-wide">Chief Technology Officer (CTO)</span>
-                    <span className="text-xs font-black text-indigo-300 uppercase ml-auto animate-pulse">(Loading...)</span>
-                  </div>
-                </div>
+                <p className="text-sm md:text-base text-slate-300 leading-relaxed font-medium relative z-10">
+                  Did you know my childhood dream was actually Military scout ranger, 5 star cruise chef, professional white hat hacker?
+                  <br /><br />
+                  <span className="text-indigo-300 font-bold text-lg block mt-2">
+                    Now my highest dream is Chief Technology Officer. 🚀
+                  </span>
+                </p>
               </div>
 
             </div>
