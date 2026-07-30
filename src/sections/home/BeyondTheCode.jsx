@@ -2,13 +2,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Brain, Target, Camera, Music, Cat, Crosshair, 
-  Tv, Shirt, Gamepad2, Swords, Plane, MapPin, 
-  ChefHat, Code, Rocket, Volume2, Mic, Palette, 
-  Trophy, Moon, MessageCircleQuestion, Globe, 
-  ChevronDown, ChevronUp, Flag, Crown, 
-  Telescope, PenTool, Radio, Headphones, Activity, 
-  Mountain, Leaf, Glasses, Briefcase, Gem, XCircle, Timer, Star, Play
+  Activity, Brain, Briefcase, Camera, Cat, ChefHat, 
+  ChevronDown, ChevronUp, Code, Crosshair, Crown, 
+  Flag, Gamepad2, Gem, Glasses, Headphones, Leaf, 
+  MapPin, MessageCircleQuestion, Mic, Moon, Mountain, 
+  Music, Palette, PenTool, Plane, Play, Radio, 
+  Rocket, Shirt, Swords, Target, Telescope, 
+  Timer, Trophy, Tv, Utensils, Volume2, XCircle 
 } from 'lucide-react';
 
 export default function BeyondTheCode() {
@@ -88,9 +88,9 @@ export default function BeyondTheCode() {
                     <Palette className="text-pink-400" size={18} /> Arts, Audio & Visuals
                   </h4>
                   <div className="grid grid-cols-2 gap-4 text-sm text-slate-300">
-                    <div className="flex items-center gap-2"><Music size={14} className="text-pink-400/70"/> Listening to Music</div>
+                    <div className="flex items-center gap-2"><Headphones size={14} className="text-pink-400/70"/> Listening to Music</div>
                     <div className="flex items-center gap-2"><Volume2 size={14} className="text-pink-400/70"/> Playing Guitar</div>
-                    <div className="flex items-center gap-2"><Headphones size={14} className="text-pink-400/70"/> Piano</div>
+                    <div className="flex items-center gap-2"><Music size={14} className="text-pink-400/70"/> Piano</div>
                     <div className="flex items-center gap-2"><Mic size={14} className="text-pink-400/70"/> Singing</div>
                     <div className="flex items-center gap-2"><Radio size={14} className="text-pink-400/70"/> Hiphop Culture</div>
                     <div className="flex items-center gap-2"><Activity size={14} className="text-pink-400/70"/> Former Hiphop Dancer</div>
