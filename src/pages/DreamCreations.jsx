@@ -739,7 +739,7 @@ export default function DreamCreations() {
                <div className="absolute inset-0 bg-gradient-to-tr from-[#1095d2]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                {founderPhoto ? ( <img src={founderPhoto} alt="Jefferson Gonzales" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" /> ) : ( <div className="w-32 h-32 rounded-full border border-[#1095d2]/50 bg-black/50 flex items-center justify-center text-4xl font-bold text-white shadow-[0_0_30px_rgba(16,149,210,0.3)] z-10 group-hover:scale-105 transition-transform duration-500">JG</div> )}
                <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 z-10">
-                 <p className="text-[#1095d2] text-xs font-bold uppercase tracking-wider mb-1">Owner& Team Manager</p>
+                 <p className="text-[#1095d2] text-xs font-bold uppercase tracking-wider mb-1">Owner & Team Manager</p>
                  <h4 className="text-white font-bold text-lg">Jefferson Gonzales</h4>
                </div>
             </div>
