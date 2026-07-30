@@ -49,9 +49,6 @@ const featuredClients = [
   { id: 6, name: "Corporate B2B", industry: "Consulting & Finance", icon: <Briefcase size={32} /> },
 ];
 
-// =========================================================================
-// CENTRALIZED CATEGORY DATA (FRONTEND WITH ICONS)
-// =========================================================================
 const creationsCategories = [
   { 
     id: 1, 
@@ -255,19 +252,19 @@ export default function DreamCreations() {
   const teamScrollRef = useRef(null);
   const flipBookRef = useRef(null); 
 
-  // Added Refs and variables for the horizontal scroll pinning of Creative Process
+  // Refs for the horizontal scroll pinning of Creative Process
   const processContainerRef = useRef(null);
   const { scrollYProgress: processScrollYProgress } = useScroll({
     target: processContainerRef,
     offset: ["start start", "end end"]
   });
-  const processX = useTransform(processScrollYProgress, [0, 1], ["0%", "calc(-100% + 100vw - 4rem)"]);
+  // Transform horizontal translation based on vertical scroll
+  const processX = useTransform(processScrollYProgress, [0, 1], ["0%", "calc(-100% + 100vw)"]);
 
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
   const [projects, setProjects] = useState([]); 
 
-  // PANSAMANTALANG HARDCODED REVIEW PARA HINDI MAWALA KAHIT BLOCKED ANG SUPABASE API
   const [reviews, setReviews] = useState([
     {
       id: "temp-mr-king",
@@ -278,7 +275,6 @@ export default function DreamCreations() {
       feedback: "Designs is very impressive and unique.",
       face_image_url: "/images/King.jpg"
     },
-
     {
       id: "temp-memorialize-client",
       client_name: "Memorialize Client",
@@ -308,17 +304,16 @@ export default function DreamCreations() {
 
   const [previewImage, setPreviewImage] = useState(null);
   const isAnyModalOpen = activePortfolioSubtitle || isPhotographyOpen || activeCreationPopup || previewImage || isFlipbookOpen;
+  
   useMobileBack(isAnyModalOpen, () => {
-  setActiveCreationPopup(null);
-  setActivePortfolioSubtitle(null);
-  setPreviewImage(null);
-  setIsPhotographyOpen(false);
-  setIsFlipbookOpen(false);
-});
+    setActiveCreationPopup(null);
+    setActivePortfolioSubtitle(null);
+    setPreviewImage(null);
+    setIsPhotographyOpen(false);
+    setIsFlipbookOpen(false);
+  });
 
-  // SCROLL LOCK FIX FOR ALL MODALS
   useEffect(() => {
-    const isAnyModalOpen = activePortfolioSubtitle || isPhotographyOpen || activeCreationPopup || previewImage || isFlipbookOpen;
     if (isAnyModalOpen) {
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
@@ -330,9 +325,8 @@ export default function DreamCreations() {
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
     };
-  }, [activePortfolioSubtitle, isPhotographyOpen, activeCreationPopup, previewImage, isFlipbookOpen]);
+  }, [isAnyModalOpen]);
 
-  // ZOOM STATES & LOGIC
   const [zoomScale, setZoomScale] = useState(1);
   const initialPinchDist = useRef(null);
   useEffect(() => { setZoomScale(1); }, [previewImage]);
@@ -396,15 +390,21 @@ export default function DreamCreations() {
   const clientsStartX = useRef(0);
   const clientsScrollLeftPos = useRef(0);
 
+  // AUTO SCROLL OUR VALUED DREAMERS (RIGHTWARDS)
   useEffect(() => {
     let animationId;
     const container = clientsScrollRef.current;
     if (!container || clientsList.length === 0) return;
+
+    if (container.scrollLeft === 0) {
+      container.scrollLeft = container.scrollWidth / 2;
+    }
+
     const scroll = () => {
       if (!isClientsPaused && !isClientsDragging.current) {
-        container.scrollLeft += 1; 
-        if (container.scrollLeft >= container.scrollWidth / 2) {
-          container.scrollLeft = 0;
+        container.scrollLeft -= 1; // SCROLL Pakanan (Right)
+        if (container.scrollLeft <= 0) {
+          container.scrollLeft += container.scrollWidth / 2;
         }
       }
       animationId = requestAnimationFrame(scroll);
@@ -436,21 +436,17 @@ export default function DreamCreations() {
   const feedbackStartX = useRef(0);
   const feedbackScrollLeftPos = useRef(0);
 
+  // AUTO SCROLL CLIENT FEEDBACK (LEFTWARDS)
   useEffect(() => {
     let animationId;
     const container = feedbackScrollRef.current;
     if (!container || reviews.length === 0) return;
 
-    // Start in the middle so it can immediately scroll backwards seamlessly
-    if (container.scrollLeft === 0) {
-      container.scrollLeft = container.scrollWidth / 2;
-    }
-
     const scroll = () => {
       if (!isFeedbackPaused && !isFeedbackDragging.current) {
-        container.scrollLeft -= 1; // FIX: Scroll towards the RIGHT (opposite of Our Dreamers)
-        if (container.scrollLeft <= 0) {
-          container.scrollLeft += container.scrollWidth / 2; // Reset jump for seamless backward loop
+        container.scrollLeft += 1; // SCROLL Pakaliwa (Left)
+        if (container.scrollLeft >= container.scrollWidth / 2) {
+          container.scrollLeft = 0; 
         }
       }
       animationId = requestAnimationFrame(scroll);
@@ -574,7 +570,6 @@ export default function DreamCreations() {
         setProjects(projectData || []);
 
         const { data: reviewData } = await supabase.from('client_reviews').select('*').order('created_at', { ascending: false });
-        // REVIEWS SAFEGUARD: Papalitan lang ang data kung naging successful ang API call mula sa Supabase
         if (reviewData && reviewData.length > 0) {
           setReviews(reviewData);
         }
@@ -601,7 +596,6 @@ export default function DreamCreations() {
     setActivePortfolioSubtitle(subtitle);
   };
 
-  // SCROLL DIRECTLY TO COVER FIRST (HINDI AGAD SA LOOB)
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
     setActivePortfolioSubtitle(null); 
@@ -840,9 +834,9 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= CREATIVE PROCESS (FIXED SCROLL-JACKING) ================= */}
-      <section ref={processContainerRef} className="w-full relative z-10 border-t border-white/10 h-[500vh] bg-transparent">
-        <div className="sticky top-0 h-[100vh] flex flex-col justify-start pt-24 md:pt-32 overflow-hidden">
+      {/* ================= CREATIVE PROCESS (FIXED SCROLL-JACKING & SLOWED DOWN) ================= */}
+      <section ref={processContainerRef} className="w-full relative z-10 border-t border-white/10 h-[400vh] bg-transparent">
+        <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
           <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
             <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
