@@ -17,24 +17,27 @@ export default function BeyondTheCode() {
   return (
     <section className="max-w-7xl mx-auto px-6 relative z-10 py-10 border-t border-slate-800/50 mt-10">
       
-      {/* Playful Reveal Button - Vibrant Amber/Rose/Fuchsia Gradient */}
       {/* Playful Reveal Button & Subtext */}
+      <div className="w-full text-left mb-8">
+        <h3 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
+          Beyond the Technical Side...
+        </h3>
+      </div>
       <div className="flex flex-col items-center justify-center relative gap-3">
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          {/* PAALALA: I-paste mo rito sa className yung napili mong Option na kulay sa itaas! */}
-          className="relative flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-green-500 to-lime-500 hover:from-emerald-500 hover:via-green-400 hover:to-lime-400 text-white transition-all shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:shadow-[0_0_30px_rgba(34,197,94,0.6)] group cursor-pointer overflow-hidden transform hover:-translate-y-1"
+          className="relative flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-rose-500 to-fuchsia-500 hover:from-amber-400 hover:via-rose-400 hover:to-fuchsia-400 text-white transition-all shadow-[0_0_20px_rgba(244,63,94,0.4)] hover:shadow-[0_0_30px_rgba(244,63,94,0.6)] group cursor-pointer overflow-hidden transform hover:-translate-y-1"
         >
           <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
           <span className="font-mono text-sm font-black tracking-widest uppercase relative z-10 flex items-center gap-2 drop-shadow-md">
-            Decrypt personal logs 👀
+            r U Curious?? 👀
           </span>
           {isOpen ? <ChevronUp size={18} className="relative z-10 drop-shadow-md" /> : <ChevronDown size={18} className="relative z-10 drop-shadow-md" />}
         </button>
         
         {/* Small subtext below the button */}
         <span className="text-[10px] sm:text-xs text-slate-500 font-mono italic tracking-wide">
-          *click if you're curious and want to know me personally*
+          *Just for Fun, you may click for some random facts/personal information about me*
         </span>
       </div>
 
