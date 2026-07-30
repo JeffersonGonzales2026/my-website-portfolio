@@ -764,8 +764,11 @@ export default function DreamCreations() {
       </section>
 
       {/* ================= CREATIVE PROCESS (GSAP PINNED SCROLL) ================= */}
-      <section ref={processSectionRef} className="w-full relative z-10 border-t border-white/10 bg-transparent overflow-hidden">
-        <div className="h-screen flex flex-col justify-center">
+      {/* Pinalitan natin ang bg-transparent ng bg-[#050508] para hindi tumagos, at tinaasan ang z-index */}
+      <section ref={processSectionRef} className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mb-20">
+        
+        {/* DITO MO I-ADJUST ANG SPACE: Palitan ang pb-24 (padding-bottom) kung gusto mo pa ng mas malaking space sa baba ng steps */}
+        <div className="h-screen flex flex-col justify-center pt-16 md:pt-24 pb-24">
           <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
             <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
