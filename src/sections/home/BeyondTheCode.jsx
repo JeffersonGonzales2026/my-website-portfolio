@@ -36,7 +36,7 @@ export default function BeyondTheCode() {
         </button>
         
         {/* Small subtext below the button */}
-        <span className="text-[10px] sm:text-xs text-slate-500 font-mono italic tracking-wide">
+        <span className="text-[10px] sm:text-xs text-slate-500 font-mono italic tracking-wide text-center">
           *Just for Fun, you may click for some random facts/personal information about me*
         </span>
       </div>
