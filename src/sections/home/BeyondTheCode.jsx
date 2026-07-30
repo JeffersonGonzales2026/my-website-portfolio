@@ -59,7 +59,7 @@ export default function BeyondTheCode() {
                 {/* 2. Brain Specs */}
                 <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/50 transition-colors shadow-lg">
                   <h4 className="text-white font-bold mb-4 flex items-center gap-2 border-b border-slate-800 pb-2">
-                    <Brain className="text-purple-400" size={18} /> Brain Specs
+                    <Brain className="text-purple-400" size={18} /> Brain Specs & Personality
                   </h4>
                   <ul className="space-y-3 text-sm text-slate-300 font-mono">
                     <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-purple-400"/> MBTI: INFJ</li>
