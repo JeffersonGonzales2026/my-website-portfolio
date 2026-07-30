@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate } from 'framer-motion';
 import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useMobileBack } from '../hooks/useMobileBack';
 
 // ================= CUSTOM ANIMATED COUNTER =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -182,6 +183,8 @@ const extractImageDeep = (item) => {
 };
 
 export default function AiDeveloper() {
+  // FUTURE: Tanggalin ang "//" kung may modal ka na
+  // useMobileBack(isMyModalOpen, () => setIsMyModalOpen(false));
   const containerRef = useRef(null);
 
   const [stats, setStats] = useState(defaultDeveloperStats);

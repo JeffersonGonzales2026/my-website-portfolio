@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring,
 import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, PictureInPicture, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
+import { useMobileBack } from '../hooks/useMobileBack';
 
 const AnimatedNumber = ({ value, suffix }) => {
   const ref = useRef(null);
@@ -299,6 +300,14 @@ export default function DreamCreations() {
   const [activeFlipbookConfig, setActiveFlipbookConfig] = useState({ prefix: 'page-', totalPages: 91, extension: 'jpg' });
 
   const [previewImage, setPreviewImage] = useState(null);
+  const isAnyModalOpen = activePortfolioSubtitle || isPhotographyOpen || activeCreationPopup || previewImage || isFlipbookOpen;
+  useMobileBack(isAnyModalOpen, () => {
+  setActiveCreationPopup(null);
+  setActivePortfolioSubtitle(null);
+  setPreviewImage(null);
+  setIsPhotographyOpen(false);
+  setIsFlipbookOpen(false);
+});
 
   // SCROLL LOCK FIX FOR ALL MODALS
   useEffect(() => {

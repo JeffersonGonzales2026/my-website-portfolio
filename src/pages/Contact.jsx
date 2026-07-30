@@ -6,6 +6,7 @@ import {
   Download, FileText, Globe
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useMobileBack } from '../hooks/useMobileBack';
 
 // Map textual platform IDs safely back to your exact beautiful custom inline SVGs
 const iconMap = {
@@ -74,6 +75,7 @@ export default function Contact() {
   // ================= NEW: CMS RESUMES & DROPDOWN STATE =================
   const [cmsResumes, setCmsResumes] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  useMobileBack(isDropdownOpen, () => setIsDropdownOpen(false));
 
   // Fetch only Document Links (Resume & Portfolio) from live cloud database instance
   useEffect(() => {

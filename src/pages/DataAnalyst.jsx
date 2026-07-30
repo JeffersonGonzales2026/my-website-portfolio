@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
 import { BarChart3, PieChart, Database, FileSpreadsheet, Settings, Cpu, LineChart, Table, CheckCircle2, ArrowRight, ArrowUp, Briefcase, FileText, LayoutDashboard, BrainCircuit, Code2, Quote, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useMobileBack } from '../hooks/useMobileBack';
 
 // ================= CUSTOM ANIMATED COUNTER COMPONENT (FIXED FOR REACT) =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -145,6 +146,8 @@ const defaultShowcaseData = {
 };
 
 export default function DataAnalyst() {
+  // FUTURE: Tanggalin ang "//" kung may modal ka na
+  // useMobileBack(isMyModalOpen, () => setIsMyModalOpen(false));
   const [activeTab, setActiveTab] = useState('dashboards');
   const containerRef = useRef(null);
 

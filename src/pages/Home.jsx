@@ -1,6 +1,7 @@
 // src/pages/Home.jsx
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { useMobileBack } from '../hooks/useMobileBack';
 
 // Import your modular sections
 import Hero from '../sections/home/Hero';
@@ -11,6 +12,8 @@ import SkillsOverview from '../sections/home/SkillsOverview';
 import CareerTimeline from '../sections/home/CareerTimeline';
 
 export default function Home() {
+  // FUTURE: Tanggalin ang "//" kung may modal ka na
+  // useMobileBack(isMyModalOpen, () => setIsMyModalOpen(false));
   const [homeData, setHomeData] = useState({
     hero_title: 'Jefferson Gonzales',
     hero_subtitle: 'Data Analyst & AI Developer',
