@@ -1,6 +1,6 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
+import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity, useScroll } from 'framer-motion';
 import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, PictureInPicture, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
@@ -252,9 +252,16 @@ const isVideo = (url) => {
 
 export default function DreamCreations() {
   const containerRef = useRef(null);
-  const processScrollRef = useRef(null); 
   const teamScrollRef = useRef(null);
   const flipBookRef = useRef(null); 
+
+  // Added Refs and variables for the horizontal scroll pinning of Creative Process
+  const processContainerRef = useRef(null);
+  const { scrollYProgress: processScrollYProgress } = useScroll({
+    target: processContainerRef,
+    offset: ["start start", "end end"]
+  });
+  const processX = useTransform(processScrollYProgress, [0, 1], ["0%", "calc(-100% + 100vw)"]);
 
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
@@ -383,24 +390,6 @@ export default function DreamCreations() {
     }
   };
 
-  const isProcessDragging = useRef(false);
-  const processStartX = useRef(0);
-  const processScrollLeftPos = useRef(0);
-  const processDragHandlers = {
-    onMouseDown: (e) => {
-      isProcessDragging.current = true;
-      processStartX.current = e.pageX - processScrollRef.current.offsetLeft;
-      processScrollLeftPos.current = processScrollRef.current.scrollLeft;
-    },
-    onMouseLeave: () => { isProcessDragging.current = false; },
-    onMouseUp: () => { isProcessDragging.current = false; },
-    onMouseMove: (e) => {
-      if (!isProcessDragging.current) return;
-      e.preventDefault();
-      processScrollRef.current.scrollLeft = processScrollLeftPos.current - (e.pageX - processScrollRef.current.offsetLeft - processStartX.current) * 2;
-    }
-  };
-
   const clientsScrollRef = useRef(null);
   const [isClientsPaused, setIsClientsPaused] = useState(false);
   const isClientsDragging = useRef(false);
@@ -414,7 +403,9 @@ export default function DreamCreations() {
     const scroll = () => {
       if (!isClientsPaused && !isClientsDragging.current) {
         container.scrollLeft += 1; 
-        if (container.scrollLeft <= 0) container.scrollLeft += container.scrollWidth / 2;
+        if (container.scrollLeft >= container.scrollWidth / 2) {
+          container.scrollLeft = 0;
+        }
       }
       animationId = requestAnimationFrame(scroll);
     };
@@ -451,8 +442,10 @@ export default function DreamCreations() {
     if (!container || reviews.length === 0) return;
     const scroll = () => {
       if (!isFeedbackPaused && !isFeedbackDragging.current) {
-        container.scrollLeft -= 1; 
-        if (container.scrollLeft >= container.scrollWidth / 2) container.scrollLeft -= container.scrollWidth / 2;
+        container.scrollLeft += 1; // FIX: Scroll forwards steadily
+        if (container.scrollLeft >= container.scrollWidth / 2) {
+          container.scrollLeft = 0; // FIX: Reset perfectly when halfway through duplicate list
+        }
       }
       animationId = requestAnimationFrame(scroll);
     };
@@ -842,25 +835,30 @@ export default function DreamCreations() {
       </section>
 
       {/* ================= CREATIVE PROCESS ================= */}
-      <section className="w-full py-20 z-10 relative border-t border-white/10">
-        <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left">
-          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
-          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-          <p className="text-base text-white/70 mt-4 max-w-2xl">Journey through our structured, transparent workflow.</p>
-        </div>
-        <div ref={processScrollRef} {...processDragHandlers} className="flex overflow-x-auto gap-4 px-6 md:px-12 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth cursor-grab active:cursor-grabbing">
-          {creativeProcess.map((item, index) => (
-            <React.Fragment key={item.step}>
-              <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: index * 0.05 }} className="shrink-0 w-64 snap-center p-6 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group shadow-lg select-none">
-                <div className="w-10 h-10 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-sm font-black mb-4 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all shadow-[0_0_15px_rgba(16,149,210,0.3)] pointer-events-none">{item.step}</div>
-                <h4 className="text-base font-bold text-white mb-2 leading-tight group-hover:text-[#1095d2] transition-colors pointer-events-none">{item.title}</h4>
-                <p className="text-xs text-white/50 leading-snug pointer-events-none">{item.desc}</p>
-              </motion.div>
-              {index < creativeProcess.length - 1 && (
-                <div className="shrink-0 text-[#1095d2]/30 flex items-center justify-center px-2 pointer-events-none"><motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}><ArrowRight size={24} /></motion.div></div>
-              )}
-            </React.Fragment>
-          ))}
+      <section ref={processContainerRef} className="w-full relative z-10 border-t border-white/10 h-[300vh] bg-transparent">
+        <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden py-20">
+          <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
+            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
+            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+            <p className="text-base text-white/70 mt-4 max-w-2xl">Journey through our structured, transparent workflow.</p>
+          </div>
+          
+          <motion.div style={{ x: processX }} className="flex gap-4 px-6 md:px-12 w-max pb-8">
+            {creativeProcess.map((item, index) => (
+              <React.Fragment key={item.step}>
+                <div className="shrink-0 w-64 snap-center p-6 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group shadow-lg select-none">
+                  <div className="w-10 h-10 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-sm font-black mb-4 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all shadow-[0_0_15px_rgba(16,149,210,0.3)] pointer-events-none">{item.step}</div>
+                  <h4 className="text-base font-bold text-white mb-2 leading-tight group-hover:text-[#1095d2] transition-colors pointer-events-none">{item.title}</h4>
+                  <p className="text-xs text-white/50 leading-snug pointer-events-none">{item.desc}</p>
+                </div>
+                {index < creativeProcess.length - 1 && (
+                  <div className="shrink-0 text-[#1095d2]/30 flex items-center justify-center px-2 pointer-events-none">
+                    <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}><ArrowRight size={24} /></motion.div>
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </motion.div>
         </div>
       </section>
 
