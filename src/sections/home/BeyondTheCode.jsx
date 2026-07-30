@@ -8,7 +8,7 @@ import {
   Trophy, Moon, MessageCircleQuestion, Globe, 
   ChevronDown, ChevronUp, Dribbble, Flag, Crown, 
   Telescope, PenTool, Radio, Headphones, Activity, 
-  Mountain, Leaf, Glasses, Briefcase, Gem, XCircle, Timer
+  Mountain, Leaf, Glasses, Briefcase, Gem, XCircle, Timer, Star
 } from 'lucide-react';
 
 export default function BeyondTheCode() {
@@ -88,9 +88,9 @@ export default function BeyondTheCode() {
                     <Palette className="text-pink-400" size={18} /> Arts, Audio & Visuals
                   </h4>
                   <div className="grid grid-cols-2 gap-4 text-sm text-slate-300">
-                    <div className="flex items-center gap-2"><Music size={14} className="text-pink-400/70"/> Listening to Music</div>
+                    <div className="flex items-center gap-2"><Headphones size={14} className="text-pink-400/70"/> Listening to Music</div>
                     <div className="flex items-center gap-2"><Volume2 size={14} className="text-pink-400/70"/> Playing Guitar</div>
-                    <div className="flex items-center gap-2"><Headphones size={14} className="text-pink-400/70"/> Piano</div>
+                    <div className="flex items-center gap-2"><Music size={14} className="text-pink-400/70"/> Piano</div>
                     <div className="flex items-center gap-2"><Mic size={14} className="text-pink-400/70"/> Singing</div>
                     <div className="flex items-center gap-2"><Radio size={14} className="text-pink-400/70"/> Hiphop Culture</div>
                     <div className="flex items-center gap-2"><Activity size={14} className="text-pink-400/70"/> Former Hiphop Dancer</div>
@@ -166,7 +166,7 @@ export default function BeyondTheCode() {
 
               </div>
 
-              {/* 9. The Playful "Did you know" (At the bottom) */}
+              {/* 9. The Playful Career Trajectory (At the bottom) */}
               <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-indigo-500/10 via-slate-900 to-purple-500/10 border border-indigo-500/30 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[80px] pointer-events-none" />
                 <h4 className="text-sm font-mono font-bold text-indigo-400 uppercase tracking-widest mb-6 flex items-center gap-2">
