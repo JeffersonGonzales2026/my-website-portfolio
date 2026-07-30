@@ -6,9 +6,9 @@ import {
   Tv, Shirt, Gamepad2, Swords, Plane, MapPin, 
   ChefHat, Code, Rocket, Volume2, Mic, Palette, 
   Trophy, Moon, MessageCircleQuestion, Globe, 
-  ChevronDown, ChevronUp, Dribbble, Flag, Crown, 
+  ChevronDown, ChevronUp, Flag, Crown, 
   Telescope, PenTool, Radio, Headphones, Activity, 
-  Mountain, Leaf, Glasses, Briefcase, Gem, XCircle, Timer, Star
+  Mountain, Leaf, Glasses, Briefcase, Gem, XCircle, Timer, Star, Play
 } from 'lucide-react';
 
 export default function BeyondTheCode() {
@@ -75,7 +75,7 @@ export default function BeyondTheCode() {
                     <Gamepad2 className="text-orange-400" size={18} /> Ball is Life
                   </h4>
                   <ul className="space-y-3 text-sm text-slate-300">
-                    <li className="flex items-center gap-2"><Dribbble size={14} className="text-orange-400/70"/> Playing Basketball</li>
+                    <li className="flex items-center gap-2"><Activity size={14} className="text-orange-400/70"/> Playing Basketball</li>
                     <li className="flex items-center gap-2"><Flag size={14} className="text-orange-400/70"/> Gilas Pilipinas 🇵🇭</li>
                     <li className="flex items-center gap-2"><Trophy size={14} className="text-orange-400/70"/> San Antonio Spurs</li>
                     <li className="flex items-center gap-2"><Crown size={14} className="text-orange-400/70"/> Kobe Bryant 🐐</li>
@@ -88,9 +88,9 @@ export default function BeyondTheCode() {
                     <Palette className="text-pink-400" size={18} /> Arts, Audio & Visuals
                   </h4>
                   <div className="grid grid-cols-2 gap-4 text-sm text-slate-300">
-                    <div className="flex items-center gap-2"><Headphones size={14} className="text-pink-400/70"/> Listening to Music</div>
+                    <div className="flex items-center gap-2"><Music size={14} className="text-pink-400/70"/> Listening to Music</div>
                     <div className="flex items-center gap-2"><Volume2 size={14} className="text-pink-400/70"/> Playing Guitar</div>
-                    <div className="flex items-center gap-2"><Music size={14} className="text-pink-400/70"/> Piano</div>
+                    <div className="flex items-center gap-2"><Headphones size={14} className="text-pink-400/70"/> Piano</div>
                     <div className="flex items-center gap-2"><Mic size={14} className="text-pink-400/70"/> Singing</div>
                     <div className="flex items-center gap-2"><Radio size={14} className="text-pink-400/70"/> Hiphop Culture</div>
                     <div className="flex items-center gap-2"><Activity size={14} className="text-pink-400/70"/> Former Hiphop Dancer</div>
@@ -140,7 +140,7 @@ export default function BeyondTheCode() {
                     <Tv className="text-red-400" size={18} /> Screen Time
                   </h4>
                   <ul className="space-y-4 text-sm text-slate-300">
-                    <li className="flex items-center gap-2"><Dribbble size={16} className="text-red-400"/> Slam Dunk</li>
+                    <li className="flex items-center gap-2"><Play size={16} className="text-red-400"/> Slam Dunk</li>
                     <li className="flex items-center gap-2 text-base">👒 One Piece</li>
                   </ul>
                 </div>
