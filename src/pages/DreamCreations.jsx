@@ -764,10 +764,7 @@ export default function DreamCreations() {
       </section>
 
       {/* ================= CREATIVE PROCESS (GSAP PINNED SCROLL) ================= */}
-      {/* Pinalitan natin ang bg-transparent ng bg-[#050508] para hindi tumagos, at tinaasan ang z-index */}
       <section ref={processSectionRef} className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mb-[1475px] md:mb-[1125px]">
-        
-        {/* DITO MO I-ADJUST ANG SPACE: Palitan ang pb-24 (padding-bottom) kung gusto mo pa ng mas malaking space sa baba ng steps */}
         <div className="h-screen flex flex-col justify-center pt-16 md:pt-24 pb-24">
           <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
             <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
@@ -775,6 +772,7 @@ export default function DreamCreations() {
             <p className="text-base text-white/70 mt-4 max-w-2xl">Journey through our structured, transparent workflow.</p>
           </div>
           
+          {/* GSAP will animate this div to the left */}
           <div ref={processTrackRef} className="flex items-center gap-4 px-6 md:px-12 w-max pb-8 flex-nowrap">
             {creativeProcess.map((item, index) => (
               <React.Fragment key={item.step}>
