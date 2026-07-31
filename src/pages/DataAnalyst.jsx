@@ -108,6 +108,31 @@ export default function DataAnalyst() {
   const [roadmap, setRoadmap] = useState(defaultAnalyticsRoadmap);
   const [pageResume, setPageResume] = useState(null);
 
+  // ================= DYNAMIC CATEGORIZATION LOGIC =================
+  const groupResponsibilities = (resps) => {
+    const groups = {
+      "Data Processing & Integrity": [],
+      "Reporting & Dashboards": [],
+      "Technical & Automation": [],
+      "Strategy & Collaboration": []
+    };
+
+    resps.forEach(r => {
+      const lower = r.toLowerCase();
+      if (lower.includes('clean') || lower.includes('valid') || lower.includes('reconcil') || lower.includes('accur')) {
+        groups["Data Processing & Integrity"].push(r);
+      } else if (lower.includes('report') || lower.includes('dashboard')) {
+        groups["Reporting & Dashboards"].push(r);
+      } else if (lower.includes('query') || lower.includes('odbc') || lower.includes('automat') || lower.includes('ai')) {
+        groups["Technical & Automation"].push(r);
+      } else {
+        groups["Strategy & Collaboration"].push(r);
+      }
+    });
+
+    return Object.entries(groups).filter(([_, items]) => items.length > 0);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -221,7 +246,6 @@ export default function DataAnalyst() {
   return (
     <div ref={containerRef} className="flex flex-col min-h-screen bg-[#020617] text-slate-200 overflow-x-hidden relative selection:bg-emerald-500/30 selection:text-emerald-200">
       
-      {/* Backgrounds */}
       <div className="fixed inset-0 z-0 pointer-events-none opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-lime-600/10 rounded-full blur-[150px] pointer-events-none z-0" />
@@ -258,7 +282,7 @@ export default function DataAnalyst() {
         </motion.div>
       </section>
 
-      {/* ================= 2. PROFESSIONAL SUMMARY & ROLE (DENSE GRID FOR RESPONSIBILITIES) ================= */}
+      {/* ================= 2. PROFESSIONAL SUMMARY & ROLE (CATEGORIZED GROUPS) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20">
         <div className="max-w-7xl mx-auto">
             
@@ -275,7 +299,7 @@ export default function DataAnalyst() {
 
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="w-full flex justify-center mt-12">
             {roles.map((role) => (
-              <motion.div key={role.id} whileHover={{ scale: 1.015, borderColor: 'rgba(16, 185, 129, 0.4)' }} transition={{ duration: 0.3 }}
+              <motion.div key={role.id} whileHover={{ scale: 1.01, borderColor: 'rgba(16, 185, 129, 0.4)' }} transition={{ duration: 0.3 }}
                 className="w-full max-w-4xl p-6 md:p-10 rounded-3xl bg-[#0f172a] border border-slate-800 shadow-2xl relative overflow-hidden group transition-colors">
                 
                 <div className="absolute inset-0 bg-emerald-600/0 group-hover:bg-emerald-600/5 transition-colors duration-500 rounded-3xl z-0"/>
@@ -302,12 +326,19 @@ export default function DataAnalyst() {
                       Core Responsibilities
                     </h5>
                     
-                    {/* ALTERNATIVE A: Dense Grid Format for Responsibilities */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-y-3 gap-x-4 bg-slate-800/20 p-5 rounded-2xl border border-slate-700/50">
-                      {role.responsibilities.map((item, i) => (
-                        <div key={i} className="flex items-start gap-2">
-                          <span className="text-emerald-500 text-xs mt-0.5">▹</span>
-                          <span className="text-xs md:text-sm text-slate-300 leading-tight">{item}</span>
+                    {/* ALTERNATIVE B: Categorized Grouping */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {groupResponsibilities(role.responsibilities).map(([groupName, items], idx) => (
+                        <div key={idx} className="bg-slate-800/20 p-5 rounded-2xl border border-slate-700/50 hover:bg-slate-800/40 transition-colors">
+                          <h6 className="text-emerald-400 text-[10px] uppercase tracking-widest font-bold mb-3 border-b border-slate-700 pb-2">{groupName}</h6>
+                          <ul className="space-y-2">
+                            {items.map((item, i) => (
+                              <li key={i} className="flex items-start gap-2">
+                                <span className="text-slate-500 text-xs mt-0.5">▹</span>
+                                <span className="text-xs md:text-sm text-slate-300 leading-tight">{item}</span>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
                       ))}
                     </div>
@@ -334,7 +365,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= 3. TECHNICAL COMPETENCIES (OPTION 2: MASONRY LAYOUT) ================= */}
+      {/* ================= 3. TECHNICAL COMPETENCIES (OPTION 3: BENTO BOX GRID) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -342,28 +373,44 @@ export default function DataAnalyst() {
             <div className="w-16 h-1 bg-emerald-500 rounded-full mx-auto" />
           </div>
 
-          {/* CSS Columns (Masonry effect). No awkward vertical gaps! */}
-          <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-min">
             {techSkills.map((section, index) => {
               const IconComponent = section.icon || FileText;
+              
+              // Bento Box Layout Configuration
+              let spanClass = "col-span-1";
+              let innerGrid = "grid-cols-1";
+              let bgStyle = "bg-slate-900/40";
+              
+              if (index === 0) { 
+                spanClass = "md:col-span-2 lg:col-span-2 lg:row-span-2"; 
+                innerGrid = "grid-cols-1 sm:grid-cols-2"; 
+                bgStyle = "bg-gradient-to-br from-slate-900/80 to-slate-900/30"; 
+              } else if (index === 1 || index === 4) { 
+                spanClass = "md:col-span-2 lg:col-span-2"; 
+                innerGrid = "grid-cols-1 sm:grid-cols-2"; 
+              }
+
               return (
                 <motion.div key={index} 
                   initial={{ opacity: 0, y: 20 }} 
                   whileInView={{ opacity: 1, y: 0 }} 
                   viewport={{ once: true }} 
                   transition={{ delay: index * 0.05 }}
-                  className="break-inside-avoid p-6 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-emerald-500/50 transition-colors group mb-6 inline-block w-full">
+                  className={`p-6 md:p-8 rounded-[2rem] border border-slate-800 hover:border-emerald-500/50 transition-colors group ${spanClass} ${bgStyle}`}>
                   
-                  <h4 className="text-lg font-bold text-white mb-4 flex items-center gap-2 group-hover:text-emerald-400 transition-colors">
-                    <IconComponent size={20} className="text-emerald-400 shrink-0" />
+                  <h4 className="text-lg font-bold text-white mb-6 flex items-center gap-3 group-hover:text-emerald-400 transition-colors">
+                    <div className="p-2.5 rounded-xl bg-slate-800/80 group-hover:bg-emerald-500/20 transition-colors">
+                      <IconComponent size={20} className="text-emerald-400 shrink-0" />
+                    </div>
                     {section.category}
                   </h4>
                   
-                  <ul className="space-y-2">
+                  <ul className={`grid ${innerGrid} gap-y-3 gap-x-6`}>
                     {section.skills.map((skill, i) => (
-                      <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 shrink-0 mt-1.5" />
-                        <span className={skill.includes('Learning') || skill.includes('Future') ? 'italic text-slate-500' : 'text-slate-300'}>{skill}</span>
+                      <li key={i} className="text-sm text-slate-400 flex items-start gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 shrink-0 mt-1.5 group-hover:bg-emerald-400 transition-colors" />
+                        <span className={`leading-snug ${skill.includes('Learning') || skill.includes('Future') ? 'italic text-slate-500' : 'text-slate-300'}`}>{skill}</span>
                       </li>
                     ))}
                   </ul>
