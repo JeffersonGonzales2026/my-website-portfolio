@@ -69,7 +69,7 @@ export default function Hero({ homeData }) {
     subText: "#94a3b8", // Kulay ng paragraph sa ilalim
     nameText: "#ffffff", // Kulay ng "Jefferson Gonzales"
     roleText: "#ffffff", // Kulay ng "Owner & Team Manager" etc.
-    iconSilver: "#ffffff", // Kulay ng maliliit na 3D icons sa picture
+    iconSilver: "#94a3b8", // Kulay ng maliliit na 3D icons sa picture
   };
 
   return (
