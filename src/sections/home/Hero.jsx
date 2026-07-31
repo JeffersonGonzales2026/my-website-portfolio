@@ -44,12 +44,12 @@ export default function Hero({ homeData }) {
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
               Designing Creativity.<br />
               Analyzing Data.<br />
-              Build Future with AI.
+              Building with AI.
             </h1>
           </div>
 
           <div className="h-8 flex items-center">
-            <p className="text-lg md:text-xl font-medium text-slate-400">
+            <p className="text-base md:text-lg font-medium text-slate-400">
               I'm <span className="text-white font-bold">Jefferson Gonzales</span>, your specialized{' '}
               <span className="text-white transition-all duration-500 font-mono font-bold pb-0.5">
                 {titles[currentTitleIndex]}
