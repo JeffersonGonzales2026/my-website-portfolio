@@ -633,11 +633,6 @@ export default function DreamCreations() {
           <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
             <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.</p>
           </div>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <button onClick={() => scrollToSection('founder-bio')} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:border-[#1095d2]/50 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md cursor-pointer relative z-20"><Info size={16} /> About Dream Creations</button>
-            <button onClick={() => scrollToSection('creations-grid')} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:border-[#1095d2]/50 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md cursor-pointer relative z-20"><LayoutGrid size={16} /> Our Creations</button>
-            <button onClick={() => window.location.href = '/contact'} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#1095d2] hover:bg-[#0c7ab0] text-white text-sm font-semibold transition-all shadow-lg shadow-[#1095d2]/20 cursor-pointer relative z-20"><Mail size={16} /> Contact Us</button>
-          </div>
         </motion.div>
       </section>
 
