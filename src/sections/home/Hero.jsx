@@ -64,9 +64,9 @@ export default function Hero({ homeData }) {
      PALITAN ANG MGA KULAY DITO (HEX CODES)
   ========================================= */
   const colors = {
-    headlineBase: "#515151", // Darker silver para sa base ng title
+    headlineBase: "#767676", // Darker silver para sa base ng title
     headlineShine: "#ffffff", // Kislap ng title
-    subText: "#515151", // Kulay ng paragraph sa ilalim
+    subText: "#767676", // Kulay ng paragraph sa ilalim
     nameText: "#ffffff", // Kulay ng "Jefferson Gonzales"
     roleText: "#ffffff", // Kulay ng "Owner & Team Manager" etc.
     iconSilver: "#c0c0c0", // Kulay ng maliliit na 3D icons sa picture
