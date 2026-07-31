@@ -246,6 +246,7 @@ export default function DataAnalyst() {
   return (
     <div ref={containerRef} className="flex flex-col min-h-screen bg-[#020617] text-slate-200 overflow-x-hidden relative selection:bg-emerald-500/30 selection:text-emerald-200">
       
+      {/* Backgrounds */}
       <div className="fixed inset-0 z-0 pointer-events-none opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-lime-600/10 rounded-full blur-[150px] pointer-events-none z-0" />
@@ -305,18 +306,20 @@ export default function DataAnalyst() {
                 <div className="absolute inset-0 bg-emerald-600/0 group-hover:bg-emerald-600/5 transition-colors duration-500 rounded-3xl z-0"/>
                 
                 <div className="relative z-10">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center mb-8 gap-5">
+                  
+                  {/* MOBILE & PC FIX: Always flex-row, side-by-side logo and text */}
+                  <div className="flex flex-row items-center mb-8 gap-4 md:gap-5">
                     <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-slate-800 border border-slate-700 rounded-2xl flex items-center justify-center p-2 shadow-lg group-hover:border-emerald-500/30 transition-colors">
                       {role.customImage ? ( <img src={role.customImage} alt={role.company} className="w-full h-full object-contain" /> ) : ( <Briefcase size={32} className="text-emerald-500/50" /> )}
                     </div>
                     <div>
-                      <div className="mb-2">
-                        <span className="px-3 py-1 rounded-full bg-emerald-400 text-slate-950 text-[11px] font-black uppercase tracking-wider shadow-[0_0_10px_rgba(52,211,153,0.4)]">
+                      <div className="mb-1 md:mb-2">
+                        <span className="px-2 md:px-3 py-1 rounded-full bg-emerald-400 text-slate-950 text-[10px] md:text-[11px] font-black uppercase tracking-wider shadow-[0_0_10px_rgba(52,211,153,0.4)]">
                           {role.statusBadge}
                         </span>
                       </div>
-                      <h4 className="text-2xl md:text-3xl font-black text-white">{role.title}</h4>
-                      <p className="text-lime-400 font-semibold">{role.company}</p>
+                      <h4 className="text-xl sm:text-2xl md:text-3xl font-black text-white leading-tight">{role.title}</h4>
+                      <p className="text-sm md:text-base text-lime-400 font-semibold">{role.company}</p>
                     </div>
                   </div>
 
@@ -326,7 +329,7 @@ export default function DataAnalyst() {
                       Core Responsibilities
                     </h5>
                     
-                    {/* ALTERNATIVE B: Categorized Grouping */}
+                    {/* CATEGORIZED GROUPING (Alternative B) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {groupResponsibilities(role.responsibilities).map(([groupName, items], idx) => (
                         <div key={idx} className="bg-slate-800/20 p-5 rounded-2xl border border-slate-700/50 hover:bg-slate-800/40 transition-colors">
@@ -365,7 +368,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= 3. TECHNICAL COMPETENCIES (OPTION 3: BENTO BOX GRID) ================= */}
+      {/* ================= 3. TECHNICAL COMPETENCIES (OPTION 2: MASONRY LAYOUT) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -373,44 +376,28 @@ export default function DataAnalyst() {
             <div className="w-16 h-1 bg-emerald-500 rounded-full mx-auto" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-min">
+          {/* CSS Columns (Masonry effect). Prevents awkward vertical gaps */}
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
             {techSkills.map((section, index) => {
               const IconComponent = section.icon || FileText;
-              
-              // Bento Box Layout Configuration
-              let spanClass = "col-span-1";
-              let innerGrid = "grid-cols-1";
-              let bgStyle = "bg-slate-900/40";
-              
-              if (index === 0) { 
-                spanClass = "md:col-span-2 lg:col-span-2 lg:row-span-2"; 
-                innerGrid = "grid-cols-1 sm:grid-cols-2"; 
-                bgStyle = "bg-gradient-to-br from-slate-900/80 to-slate-900/30"; 
-              } else if (index === 1 || index === 4) { 
-                spanClass = "md:col-span-2 lg:col-span-2"; 
-                innerGrid = "grid-cols-1 sm:grid-cols-2"; 
-              }
-
               return (
                 <motion.div key={index} 
                   initial={{ opacity: 0, y: 20 }} 
                   whileInView={{ opacity: 1, y: 0 }} 
                   viewport={{ once: true }} 
                   transition={{ delay: index * 0.05 }}
-                  className={`p-6 md:p-8 rounded-[2rem] border border-slate-800 hover:border-emerald-500/50 transition-colors group ${spanClass} ${bgStyle}`}>
+                  className="break-inside-avoid p-6 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-emerald-500/50 transition-colors group mb-6 inline-block w-full">
                   
-                  <h4 className="text-lg font-bold text-white mb-6 flex items-center gap-3 group-hover:text-emerald-400 transition-colors">
-                    <div className="p-2.5 rounded-xl bg-slate-800/80 group-hover:bg-emerald-500/20 transition-colors">
-                      <IconComponent size={20} className="text-emerald-400 shrink-0" />
-                    </div>
+                  <h4 className="text-lg font-bold text-white mb-4 flex items-center gap-2 group-hover:text-emerald-400 transition-colors">
+                    <IconComponent size={20} className="text-emerald-400 shrink-0" />
                     {section.category}
                   </h4>
                   
-                  <ul className={`grid ${innerGrid} gap-y-3 gap-x-6`}>
+                  <ul className="space-y-2">
                     {section.skills.map((skill, i) => (
-                      <li key={i} className="text-sm text-slate-400 flex items-start gap-3">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 shrink-0 mt-1.5 group-hover:bg-emerald-400 transition-colors" />
-                        <span className={`leading-snug ${skill.includes('Learning') || skill.includes('Future') ? 'italic text-slate-500' : 'text-slate-300'}`}>{skill}</span>
+                      <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 shrink-0 mt-1.5" />
+                        <span className={skill.includes('Learning') || skill.includes('Future') ? 'italic text-slate-500' : 'text-slate-300'}>{skill}</span>
                       </li>
                     ))}
                   </ul>
