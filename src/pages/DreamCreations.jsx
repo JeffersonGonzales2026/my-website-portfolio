@@ -629,7 +629,12 @@ export default function DreamCreations() {
           </motion.div>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="max-w-4xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl border border-transparent z-10">
-          <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">Let's make your <span className="text-[#1095d2]">dream</span> a reality.</h2>
+          <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
+            Let's make your{' '}
+            {/* Ito ang magpapababa sa "dream" sa PC (md:block) pero itatago sa mobile (hidden) */}
+            <br className="hidden md:block" />
+            <span className="text-[#1095d2]">dream</span> a reality.
+          </h2>
           <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
             <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.</p>
           </div>
