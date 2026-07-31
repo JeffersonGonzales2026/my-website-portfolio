@@ -88,12 +88,6 @@ const defaultToolsTechnologies = [
   { category: "AI Assistance", tools: [{ name: "ChatGPT", imageSrc: "/images/chatgpt.png" }, { name: "Claude", imageSrc: "/images/claude.png" }, { name: "Gemini", imageSrc: "/images/gemini.png" }, { name: "GitHub Copilot", imageSrc: "/images/copilot.png" }] }
 ];
 
-const defaultAnalyticsRoadmap = [
-  "Power BI", "SQL", "Python", "Pandas", "NumPy", "Data Visualization", "Machine Learning", 
-  "Artificial Intelligence", "Predictive Analytics", "Data Engineering Fundamentals", 
-  "Cloud Analytics", "Microsoft Fabric", "Azure Data Services", "Business Intelligence Platforms", "Enterprise Reporting Systems"
-];
-
 const defaultShowcaseData = { dashboards: [], reports: [], automations: [], caseStudies: [], projects: [] };
 
 export default function DataAnalyst() {
@@ -105,7 +99,6 @@ export default function DataAnalyst() {
   const [techSkills, setTechSkills] = useState(defaultTechnicalSkills);
   const [showcase, setShowcase] = useState(defaultShowcaseData);
   const [ecosystem, setEcosystem] = useState(defaultToolsTechnologies);
-  const [roadmap, setRoadmap] = useState(defaultAnalyticsRoadmap);
   const [pageResume, setPageResume] = useState(null);
 
   // ================= DYNAMIC CATEGORIZATION LOGIC =================
@@ -208,8 +201,6 @@ export default function DataAnalyst() {
             setEcosystem(formattedEcosystem);
           }
 
-          if (Array.isArray(data.future_roadmap) && data.future_roadmap.length > 0) setRoadmap(data.future_roadmap);
-
           const formattedDashboards = Array.isArray(data.portfolio_dashboards) ? data.portfolio_dashboards.map(d => ({
             ...d, kpis: typeof d.kpis === 'string' ? d.kpis.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(d.kpis) ? d.kpis : [])
           })) : [];
@@ -246,6 +237,7 @@ export default function DataAnalyst() {
   return (
     <div ref={containerRef} className="flex flex-col min-h-screen bg-[#020617] text-slate-200 overflow-x-hidden relative selection:bg-emerald-500/30 selection:text-emerald-200">
       
+      {/* Backgrounds */}
       <div className="fixed inset-0 z-0 pointer-events-none opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-lime-600/10 rounded-full blur-[150px] pointer-events-none z-0" />
@@ -306,6 +298,7 @@ export default function DataAnalyst() {
                 
                 <div className="relative z-10">
                   
+                  {/* ALIGNED HEADER: Logo side-by-side on mobile and PC */}
                   <div className="flex flex-row items-center mb-8 gap-4 md:gap-5">
                     <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-slate-800 border border-slate-700 rounded-2xl flex items-center justify-center p-2 shadow-lg group-hover:border-emerald-500/30 transition-colors">
                       {role.customImage ? ( <img src={role.customImage} alt={role.company} className="w-full h-full object-contain" /> ) : ( <Briefcase size={32} className="text-emerald-500/50" /> )}
@@ -327,6 +320,7 @@ export default function DataAnalyst() {
                       Core Responsibilities
                     </h5>
                     
+                    {/* CATEGORIZED GROUPING (Alternative B) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {groupResponsibilities(role.responsibilities).map(([groupName, items], idx) => (
                         <div key={idx} className="bg-slate-800/20 p-5 rounded-2xl border border-slate-700/50 hover:bg-slate-800/40 transition-colors">
@@ -365,7 +359,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= 3. TECHNICAL COMPETENCIES (OPTION 2: MASONRY LAYOUT) ================= */}
+      {/* ================= 3. TECHNICAL COMPETENCIES (MASONRY LAYOUT) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -545,7 +539,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= SOFTWARE ECOSYSTEM (UPDATED: 3-COLUMN PC GRID) ================= */}
+      {/* ================= SOFTWARE ECOSYSTEM (3-COLUMN PC GRID) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -593,30 +587,27 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= FUTURE ANALYTICS ROADMAP (UPDATED: WRITTEN/DYNAMIC FORMAT) ================= */}
+      {/* ================= FUTURE ANALYTICS ROADMAP (WRITTEN FORMAT) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="mb-10">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
             <h3 className="text-2xl font-black text-white mb-4 flex items-center justify-center gap-3">
               <ArrowRight className="text-lime-500" /> Future Analytics Roadmap
             </h3>
             <div className="w-12 h-[1px] bg-zinc-800 mx-auto mt-2" />
           </div>
           
-          <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto font-medium">
-            My continuous learning journey is focused on expanding my expertise and discovering new ways to drive value through data. Moving forward, my roadmap includes exploring and mastering{' '}
-            {roadmap.map((item, i) => {
-              const isLast = i === roadmap.length - 1;
-              const isSecondToLast = i === roadmap.length - 2;
-              
-              return (
-                <React.Fragment key={i}>
-                  <span className="text-emerald-400 font-bold whitespace-nowrap">{item}</span>
-                  {isSecondToLast ? ', and ' : isLast ? '.' : ', '}
-                </React.Fragment>
-              );
-            })}
-          </p>
+          <div className="space-y-6 text-base md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto font-medium text-left md:text-center">
+            <p>
+              My continuous learning journey is focused on evolving from operational reporting to advanced analytics and robust data engineering. Currently, I am deepening my foundational knowledge in <span className="text-emerald-400 font-bold">SQL</span> (including CTEs and Window Functions) and <span className="text-emerald-400 font-bold">Python</span> (utilizing libraries like Pandas and NumPy) for complex data manipulation. To elevate my business intelligence capabilities, I am actively exploring <span className="text-emerald-400 font-bold">Power BI</span> and <span className="text-emerald-400 font-bold">Tableau</span> to build dynamic, executive-ready dashboards.
+            </p>
+            <p>
+              Looking further ahead, my roadmap bridges the gap between analytics and engineering. I aim to master modern data pipelines by learning <span className="text-emerald-400 font-bold">ETL/ELT workflows</span>, <span className="text-emerald-400 font-bold">REST APIs</span>, and tools like <span className="text-emerald-400 font-bold">dbt</span> and <span className="text-emerald-400 font-bold">Apache Airflow</span>, eventually scaling these solutions on cloud platforms like <span className="text-emerald-400 font-bold">Azure</span> or <span className="text-emerald-400 font-bold">AWS</span>. 
+            </p>
+            <p>
+              Ultimately, I plan to integrate <span className="text-emerald-400 font-bold">Applied Statistics</span> and <span className="text-emerald-400 font-bold">AI-Assisted Analytics</span>—such as LLM fundamentals and Retrieval-Augmented Generation (RAG)—into my workflow. This will empower me to not just report on past performance, but to forecast future trends and engineer highly scalable, intelligent data solutions.
+            </p>
+          </div>
         </div>
       </section>
 
