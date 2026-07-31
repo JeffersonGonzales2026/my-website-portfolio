@@ -94,7 +94,7 @@ export default function Hero({ homeData }) {
             <motion.h1 
               animate={{ backgroundPosition: ['200% center', '-200% center'] }}
               transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-              className="text-[40px] md:text-4xl lg:text-[55px] font-black tracking-tight leading-[1.15] text-transparent bg-clip-text bg-[length:300%_auto]"
+              className="text-[30px] md:text-4xl lg:text-[55px] font-black tracking-tight leading-[1.15] text-transparent bg-clip-text bg-[length:300%_auto]"
               style={{ 
                 backgroundImage: `linear-gradient(110deg, ${colors.headlineBase} 46%, ${colors.headlineShine} 49%, ${colors.headlineShine} 51%, ${colors.headlineBase} 54%)` 
               }}
