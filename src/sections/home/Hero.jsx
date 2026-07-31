@@ -1,7 +1,7 @@
 // src/sections/home/Hero.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Palette, BarChart2, Code, ArrowRight, Sparkles, Database, Cpu } from 'lucide-react';
+import { Palette, BarChart2, Code, ArrowRight, Sparkles, Database, Cpu, Layers } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
 
 export default function Hero({ homeData }) {
@@ -81,11 +81,11 @@ export default function Hero({ homeData }) {
           animate="visible"
         >
           <motion.div variants={itemVariants} className="space-y-2">
-            {/* Single Wave Silver Gradient with Slanted Shine - Mabagal (12s duration) */}
+            {/* Pinalaki ang Headline: text-4xl sm:text-5xl md:text-6xl */}
             <motion.h1 
               animate={{ backgroundPosition: ['200% center', '-200% center'] }}
               transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-              className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight text-transparent bg-clip-text bg-[length:300%_auto]"
+              className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[1.1] text-transparent bg-clip-text bg-[length:300%_auto]"
               style={{ backgroundImage: 'linear-gradient(110deg, #64748b 10%, #ffffff 40%, #cbd5e1 50%, #ffffff 60%, #64748b 90%)' }}
             >
               Designing Creativity.<br />
@@ -117,54 +117,55 @@ export default function Hero({ homeData }) {
             business, analytics, automation, and software engineering to solve real-world problems.
           </motion.p>
 
-          {/* Buttons with Entrance Animation */}
+          {/* Buttons with Entrance Animation & Original Colors Restored */}
           <motion.div variants={itemVariants} className="pt-4 flex flex-col sm:flex-row flex-wrap gap-4">
             
-            {/* BUTTON 1 */}
+            {/* BUTTON 1: Dream Creations (Blue) */}
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
               <button 
                 onClick={() => navigate('/dream-creations')}
-                className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-slate-500/40 text-slate-200 font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto"
+                className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#1095d2]/40 text-[#1095d2] font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto"
               >
-                <Palette size={18} className="text-slate-400 group-hover:text-white transition-colors" />
+                <Palette size={18} />
                 Dream Creations
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform text-slate-500" />
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </motion.div>
 
-            {/* BUTTON 2 */}
+            {/* BUTTON 2: Data Analyst (Green) */}
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }}>
               <button 
                 onClick={() => navigate('/data-analyst')}
-                className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-slate-500/40 text-slate-200 font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto"
+                className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#5bc96d]/40 text-[#5bc96d] font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto"
               >
-                <Database size={18} className="text-slate-400 group-hover:text-white transition-colors" />
+                <Database size={18} />
                 Data Analyst
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform text-slate-500" />
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </motion.div>
 
-            {/* BUTTON 3 */}
+            {/* BUTTON 3: AI Developer (Purple) */}
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
               <button 
                 onClick={() => navigate('/ai-developer')}
-                className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-slate-500/40 text-slate-200 font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto"
+                className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#a855f7]/40 text-[#a855f7] font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto"
               >
-                <Code size={18} className="text-slate-400 group-hover:text-white transition-colors" />
+                <Code size={18} />
                 AI Developer
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform text-slate-500" />
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </motion.div>
 
           </motion.div>
         </motion.div>
 
-        {/* ================= RIGHT COLUMN (3D Portrait & Hidden Behind Icons) ================= */}
+        {/* ================= RIGHT COLUMN (3D Portrait & Popping Icons) ================= */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-          className="lg:col-span-5 flex justify-center items-center relative perspective-[1000px] order-1 lg:order-2 mb-8 lg:mb-0 touch-none"
+          // -mt-6 lg:-mt-12 removes the extra space above the picture
+          className="lg:col-span-5 flex justify-center items-center relative perspective-[1000px] order-1 lg:order-2 mb-8 lg:mb-0 -mt-6 lg:-mt-12 touch-none"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleInteractionLeave}
           onTouchMove={handleTouchMove}
@@ -184,8 +185,8 @@ export default function Hero({ homeData }) {
                 className="w-full h-full object-cover object-top pointer-events-none drop-shadow-2xl relative z-10"
                 style={{ 
                   transform: 'translateZ(0px)', 
-                  WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)', 
-                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)' 
+                  WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)', 
+                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)' 
                 }}
               />
             ) : (
@@ -193,103 +194,87 @@ export default function Hero({ homeData }) {
                 className="w-full h-full bg-zinc-900 flex items-center justify-center relative z-10" 
                 style={{ 
                   transform: 'translateZ(0px)',
-                  WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)',
-                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)'
+                  WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)',
+                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)'
                 }}
               >
                  <span className="text-4xl md:text-5xl font-bold text-white tracking-widest font-mono">JG</span>
               </div>
             )}
 
-            {/* --- MINIMAL SILVER 3D ICONS (Nakatago sa likod, umaangat pataas + floating) --- */}
-
-            {/* Icon 1: Palette (Design) - Back Left */}
+            {/* --- MINIMAL 3D SILVER ICONS (Pop-up from bottom, behind the image) --- */}
+            
+            {/* Icon 1: Palette */}
             <motion.div 
               style={{ x: useTransform(smoothX, [-0.5, 0.5], [20, -20]), y: useTransform(smoothY, [-0.5, 0.5], [15, -15]), translateZ: -80 }}
               className="absolute top-[25%] left-[-2%] md:left-[-8%]"
             >
-              <motion.div
-                initial={{ scale: 0, opacity: 0, y: 30 }}
-                animate={{ scale: 1, opacity: 0.65, y: [-4, 4, -4] }}
-                transition={{ 
-                  scale: { delay: 0.3, type: 'spring', damping: 12 }, 
-                  opacity: { delay: 0.3 }, 
-                  y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.8 } 
-                }}
-              >
-                <Palette size={18} className="text-slate-300 drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
+              {/* Outer Div handles the entrance pop-up */}
+              <motion.div initial={{ y: 120, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.4, duration: 1.2, delay: 0.4 }}>
+                {/* Inner Div handles the continuous floating */}
+                <motion.div animate={{ y: [-5, 5, -5] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
+                  <Palette size={20} className="text-slate-300 drop-shadow-[0_8px_8px_rgba(255,255,255,0.25)]" style={{ transform: 'perspective(200px) rotateX(15deg) rotateY(-15deg)' }} />
+                </motion.div>
               </motion.div>
             </motion.div>
 
-            {/* Icon 2: Database (Data Analytics) - Back Right */}
+            {/* Icon 2: Database */}
             <motion.div 
               style={{ x: useTransform(smoothX, [-0.5, 0.5], [-20, 20]), y: useTransform(smoothY, [-0.5, 0.5], [10, -10]), translateZ: -90 }}
-              className="absolute top-[40%] right-[-2%] md:right-[-10%]"
+              className="absolute top-[40%] right-[0%] md:right-[-6%]"
             >
-              <motion.div
-                initial={{ scale: 0, opacity: 0, y: 40 }}
-                animate={{ scale: 1, opacity: 0.6, y: [4, -4, 4] }}
-                transition={{ 
-                  scale: { delay: 0.45, type: 'spring', damping: 12 }, 
-                  opacity: { delay: 0.45 }, 
-                  y: { duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 } 
-                }}
-              >
-                <Database size={16} className="text-slate-300 drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
+              <motion.div initial={{ y: 150, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.4, duration: 1.2, delay: 0.6 }}>
+                <motion.div animate={{ y: [4, -4, 4] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}>
+                  <Database size={18} className="text-slate-300 drop-shadow-[0_8px_8px_rgba(255,255,255,0.25)]" style={{ transform: 'perspective(200px) rotateX(-15deg) rotateY(15deg)' }} />
+                </motion.div>
               </motion.div>
             </motion.div>
 
-            {/* Icon 3: Code (AI Dev) - Back Bottom Left */}
+            {/* Icon 3: Code */}
             <motion.div 
               style={{ x: useTransform(smoothX, [-0.5, 0.5], [25, -25]), y: useTransform(smoothY, [-0.5, 0.5], [-15, 15]), translateZ: -70 }}
               className="absolute bottom-[25%] left-[8%] md:left-[2%]"
             >
-              <motion.div
-                initial={{ scale: 0, opacity: 0, y: 35 }}
-                animate={{ scale: 1, opacity: 0.65, y: [-5, 5, -5] }}
-                transition={{ 
-                  scale: { delay: 0.4, type: 'spring', damping: 12 }, 
-                  opacity: { delay: 0.4 }, 
-                  y: { duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.9 } 
-                }}
-              >
-                <Code size={20} className="text-slate-300 drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
+              <motion.div initial={{ y: 100, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.4, duration: 1.2, delay: 0.5 }}>
+                <motion.div animate={{ y: [-4, 4, -4] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}>
+                  <Code size={22} className="text-slate-300 drop-shadow-[0_8px_8px_rgba(255,255,255,0.25)]" style={{ transform: 'perspective(200px) rotateX(10deg) rotateY(-20deg)' }} />
+                </motion.div>
               </motion.div>
             </motion.div>
 
-            {/* Icon 4: CPU (Automation) - Back Bottom Right */}
+            {/* Icon 4: CPU */}
             <motion.div 
               style={{ x: useTransform(smoothX, [-0.5, 0.5], [-25, 25]), y: useTransform(smoothY, [-0.5, 0.5], [-20, 20]), translateZ: -85 }}
-              className="absolute bottom-[18%] right-[5%] md:right-[-2%]"
+              className="absolute bottom-[20%] right-[5%] md:right-[-2%]"
             >
-              <motion.div
-                initial={{ scale: 0, opacity: 0, y: 45 }}
-                animate={{ scale: 1, opacity: 0.6, y: [5, -5, 5] }}
-                transition={{ 
-                  scale: { delay: 0.55, type: 'spring', damping: 12 }, 
-                  opacity: { delay: 0.55 }, 
-                  y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1.2 } 
-                }}
-              >
-                <Cpu size={18} className="text-slate-300 drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
+              <motion.div initial={{ y: 130, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.4, duration: 1.2, delay: 0.7 }}>
+                <motion.div animate={{ y: [5, -5, 5] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}>
+                  <Cpu size={20} className="text-slate-300 drop-shadow-[0_8px_8px_rgba(255,255,255,0.25)]" style={{ transform: 'perspective(200px) rotateX(-20deg) rotateY(10deg)' }} />
+                </motion.div>
               </motion.div>
             </motion.div>
 
-            {/* Icon 5: Sparkles - Back Top Center */}
+            {/* Icon 5: Sparkles */}
             <motion.div 
               style={{ x: useTransform(smoothX, [-0.5, 0.5], [15, -15]), y: useTransform(smoothY, [-0.5, 0.5], [25, -25]), translateZ: -75 }}
               className="absolute top-[15%] left-[25%]"
             >
-              <motion.div
-                initial={{ scale: 0, opacity: 0, y: 25 }}
-                animate={{ scale: 1, opacity: 0.7, y: [-3, 3, -3] }}
-                transition={{ 
-                  scale: { delay: 0.25, type: 'spring', damping: 12 }, 
-                  opacity: { delay: 0.25 }, 
-                  y: { duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.7 } 
-                }}
-              >
-                <Sparkles size={14} className="text-slate-300 drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
+              <motion.div initial={{ y: 140, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.4, duration: 1.2, delay: 0.35 }}>
+                <motion.div animate={{ y: [-3, 3, -3] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>
+                  <Sparkles size={16} className="text-slate-300 drop-shadow-[0_8px_8px_rgba(255,255,255,0.25)]" style={{ transform: 'perspective(200px) rotateZ(15deg)' }} />
+                </motion.div>
+              </motion.div>
+            </motion.div>
+
+            {/* Icon 6: Layers */}
+            <motion.div 
+              style={{ x: useTransform(smoothX, [-0.5, 0.5], [-15, 15]), y: useTransform(smoothY, [-0.5, 0.5], [20, -20]), translateZ: -80 }}
+              className="absolute top-[25%] right-[15%]"
+            >
+              <motion.div initial={{ y: 160, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.4, duration: 1.2, delay: 0.55 }}>
+                <motion.div animate={{ y: [3, -3, 3] }} transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}>
+                  <Layers size={18} className="text-slate-300 drop-shadow-[0_8px_8px_rgba(255,255,255,0.25)]" style={{ transform: 'perspective(200px) rotateX(15deg) rotateY(15deg)' }} />
+                </motion.div>
               </motion.div>
             </motion.div>
 
