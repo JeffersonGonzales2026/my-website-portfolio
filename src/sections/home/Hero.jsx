@@ -1,7 +1,7 @@
 // src/sections/home/Hero.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Palette, BarChart2, Code, ArrowRight, Sparkles, Database, Cpu } from 'lucide-react';
+import { Palette, BarChart2, Code, ArrowRight, Sparkles, Database, Cpu, Layers } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
 
 export default function Hero({ homeData }) {
@@ -25,7 +25,6 @@ export default function Hero({ homeData }) {
     return () => clearInterval(interval);
   }, [titles.length]);
 
-  // --- Staggered Entrance Animations ---
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
@@ -36,7 +35,6 @@ export default function Hero({ homeData }) {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
   };
 
-  // --- 3D Mouse & Touch Tracking Logic ---
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -62,10 +60,21 @@ export default function Hero({ homeData }) {
     mouseY.set(0);
   };
 
+  /* =========================================
+     PALITAN ANG MGA KULAY DITO (HEX CODES)
+  ========================================= */
+  const colors = {
+    headlineBase: "#94a3b8", // Darker silver para sa base ng title
+    headlineShine: "#ffffff", // Kislap ng title
+    subText: "#94a3b8", // Kulay ng "A multidisciplinary technology..."
+    nameText: "#ffffff", // Kulay ng "Jefferson Gonzales"
+    roleText: "#ffffff", // Kulay ng "Owner & Team Manager" etc.
+    iconSilver: "#c0c0c0", // Kulay ng maliliit na 3D icons sa picture
+  };
+
   return (
     <section className="relative min-h-[85vh] flex items-center justify-center py-12 px-6 overflow-hidden">
       
-      {/* Background Glows */}
       <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-10 pointer-events-none">
         <div className="w-[700px] h-[500px] bg-slate-500 rounded-full blur-[160px] absolute -top-40 -left-20" />
         <div className="w-[600px] h-[600px] bg-zinc-600 rounded-full blur-[180px] absolute -bottom-40 -right-20" />
@@ -81,12 +90,15 @@ export default function Hero({ homeData }) {
           animate="visible"
         >
           <motion.div variants={itemVariants} className="space-y-2">
-            {/* Binawasan ang text size at pinanipis/pinabagal ang silver shine (15s duration) */}
+            {/* Binawasan ang laki ng text (text-4xl md:text-[46px]) */}
             <motion.h1 
               animate={{ backgroundPosition: ['200% center', '-200% center'] }}
               transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-              className="text-4xl sm:text-5xl md:text-[52px] font-black tracking-tight leading-[1.1] text-transparent bg-clip-text bg-[length:300%_auto]"
-              style={{ backgroundImage: 'linear-gradient(110deg, #94a3b8 46%, #ffffff 49%, #ffffff 51%, #94a3b8 54%)' }}
+              className="text-4xl md:text-[46px] font-black tracking-tight leading-[1.1] text-transparent bg-clip-text bg-[length:300%_auto]"
+              style={{ 
+                // Madali mong mapapalitan ang hex codes ng gradient na ito
+                backgroundImage: `linear-gradient(110deg, ${colors.headlineBase} 46%, ${colors.headlineShine} 49%, ${colors.headlineShine} 51%, ${colors.headlineBase} 54%)` 
+              }}
             >
               Designing Creativity.<br />
               Analyzing Data.<br />
@@ -95,8 +107,8 @@ export default function Hero({ homeData }) {
           </motion.div>
 
           <motion.div variants={itemVariants}>
-            <p className="text-[17px] md:text-[19px] font-medium text-slate-400 leading-relaxed md:leading-normal">
-              I'm <span className="text-white font-bold">Jefferson Gonzales</span>, your specialized{' '}
+            <p className="text-[17px] md:text-[19px] font-medium leading-relaxed md:leading-normal" style={{ color: colors.subText }}>
+              I'm <span className="font-bold" style={{ color: colors.nameText }}>Jefferson Gonzales</span>, your specialized{' '}
               <AnimatePresence mode="wait">
                 <motion.span
                   key={currentTitleIndex}
@@ -104,7 +116,8 @@ export default function Hero({ homeData }) {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.5 }}
-                  className="text-white font-mono font-bold inline-block"
+                  className="font-mono font-bold inline-block"
+                  style={{ color: colors.roleText }}
                 >
                   {titles[currentTitleIndex]}
                 </motion.span>
@@ -112,54 +125,41 @@ export default function Hero({ homeData }) {
             </p>
           </motion.div>
 
-          <motion.p variants={itemVariants} className="text-base text-slate-400 max-w-xl leading-relaxed">
+          <motion.p variants={itemVariants} className="text-base max-w-xl leading-relaxed" style={{ color: colors.subText }}>
             A multidisciplinary technology professional passionate about combining creativity, 
             business, analytics, automation, and software engineering to solve real-world problems.
           </motion.p>
 
-          {/* Buttons with Smooth Zoom (1-by-1) Animation */}
           <motion.div variants={itemVariants} className="pt-4 flex flex-col sm:flex-row flex-wrap gap-4">
             
-            {/* BUTTON 1: Dream Creations */}
-            <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}>
-              <button 
-                onClick={() => navigate('/dream-creations')}
-                className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#1095d2]/40 text-[#1095d2] font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto"
-              >
+            {/* BUTTON 1 */}
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}>
+              <button onClick={() => navigate('/dream-creations')} className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#1095d2]/40 text-[#1095d2] font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto">
                 <Palette size={18} className="text-[#1095d2] group-hover:text-white transition-colors" />
-                Dream Creations
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                Dream Creations <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </motion.div>
 
-            {/* BUTTON 2: Data Analyst */}
-            <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}>
-              <button 
-                onClick={() => navigate('/data-analyst')}
-                className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#5bc96d]/40 text-[#5bc96d] font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto"
-              >
+            {/* BUTTON 2 */}
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}>
+              <button onClick={() => navigate('/data-analyst')} className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#5bc96d]/40 text-[#5bc96d] font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto">
                 <Database size={18} className="text-[#5bc96d] group-hover:text-white transition-colors" />
-                Data Analyst
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                Data Analyst <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </motion.div>
 
-            {/* BUTTON 3: AI Developer */}
-            <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, ease: "easeOut", delay: 0.6 }}>
-              <button 
-                onClick={() => navigate('/ai-developer')}
-                className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#a855f7]/40 text-[#a855f7] font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto"
-              >
+            {/* BUTTON 3 */}
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, ease: "easeOut", delay: 0.6 }}>
+              <button onClick={() => navigate('/ai-developer')} className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#a855f7]/40 text-[#a855f7] font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto">
                 <Code size={18} className="text-[#a855f7] group-hover:text-white transition-colors" />
-                AI Developer
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                AI Developer <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </motion.div>
 
           </motion.div>
         </motion.div>
 
-        {/* ================= RIGHT COLUMN (3D Portrait & Mapped Icons) ================= */}
+        {/* ================= RIGHT COLUMN (3D Portrait) ================= */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -170,14 +170,10 @@ export default function Hero({ homeData }) {
           onTouchMove={handleTouchMove}
           onTouchEnd={handleInteractionLeave}
         >
-          {/* Main 3D Container */}
-          <motion.div 
-            style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
-            className="w-[75%] sm:w-[60%] lg:w-full max-w-[420px] aspect-[4/5] relative flex items-end justify-center cursor-default"
-          >
+          <motion.div style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }} className="w-[75%] sm:w-[60%] lg:w-full max-w-[420px] aspect-[4/5] relative flex items-end justify-center cursor-default">
             
-            {/* The Portrait Image (Anchored at Z=0) */}
-            {homeData?.profile_image_url ? (
+            {/* Tinanggal ang "JG" fallback. Kapag walang image, hindi ito magpapakita at hindi magpa-flash. */}
+            {homeData?.profile_image_url && (
               <img 
                 src={homeData.profile_image_url} 
                 alt="Jefferson Gonzales" 
@@ -188,77 +184,60 @@ export default function Hero({ homeData }) {
                   maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)' 
                 }}
               />
-            ) : (
-              <div 
-                className="w-full h-full bg-zinc-900 flex items-center justify-center relative z-10" 
-                style={{ 
-                  transform: 'translateZ(0px)',
-                  WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)',
-                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)'
-                }}
-              >
-                 <span className="text-4xl md:text-5xl font-bold text-white tracking-widest font-mono">JG</span>
-              </div>
             )}
 
-            {/* --- ICONS POPPING UP FROM BEHIND (Mapped exactly to image_65a1e6.jpg) --- */}
+            {/* --- 6 MINIMAL SILVER ICONS POPPING UP FROM VERY LOW BEHIND --- */}
             
-            {/* Arrow 1: Palette (Left Shoulder area) */}
-            <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [20, -20]), y: useTransform(smoothY, [-0.5, 0.5], [15, -15]), translateZ: -80 }}
-              className="absolute top-[45%] left-[-5%] md:left-[-12%]"
-            >
-              <motion.div initial={{ y: 80, opacity: 0, scale: 0.5 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.4, duration: 1.2, delay: 0.5 }}>
+            {/* 1. Far Left (Outside Shoulder) */}
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [20, -20]), y: useTransform(smoothY, [-0.5, 0.5], [15, -15]), translateZ: -80 }} className="absolute top-[55%] left-[-10%]">
+              <motion.div initial={{ y: 100, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.3, duration: 1.5, delay: 0.4 }}>
                 <motion.div animate={{ y: [-4, 4, -4] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
-                  <Palette size={20} className="text-slate-300 drop-shadow-[0_4px_8px_rgba(255,255,255,0.2)]" style={{ transform: 'perspective(200px) rotateX(15deg) rotateY(-15deg)' }} />
+                  <Palette size={16} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(15deg) rotateY(-15deg)' }} />
                 </motion.div>
               </motion.div>
             </motion.div>
 
-            {/* Arrow 2: Code (Bottom Left area) */}
-            <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [25, -25]), y: useTransform(smoothY, [-0.5, 0.5], [-15, 15]), translateZ: -70 }}
-              className="absolute top-[65%] left-[5%] md:left-[-2%]"
-            >
-              <motion.div initial={{ y: 100, opacity: 0, scale: 0.5 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.4, duration: 1.2, delay: 0.65 }}>
+            {/* 2. Left Middle (Near Neck) */}
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [25, -25]), y: useTransform(smoothY, [-0.5, 0.5], [-15, 15]), translateZ: -70 }} className="absolute top-[40%] left-[8%]">
+              <motion.div initial={{ y: 100, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.3, duration: 1.5, delay: 0.55 }}>
                 <motion.div animate={{ y: [-3, 3, -3] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}>
-                  <Code size={22} className="text-slate-300 drop-shadow-[0_4px_8px_rgba(255,255,255,0.2)]" style={{ transform: 'perspective(200px) rotateX(10deg) rotateY(-20deg)' }} />
+                  <Code size={16} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(10deg) rotateY(-20deg)' }} />
                 </motion.div>
               </motion.div>
             </motion.div>
 
-            {/* Arrow 3: Sparkles (Top Left near hat area) */}
-            <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [15, -15]), y: useTransform(smoothY, [-0.5, 0.5], [25, -25]), translateZ: -75 }}
-              className="absolute top-[18%] left-[18%] md:left-[15%]"
-            >
-              <motion.div initial={{ y: 60, opacity: 0, scale: 0.5 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.4, duration: 1.2, delay: 0.4 }}>
+            {/* 3. Top Left (Above Hat) */}
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [15, -15]), y: useTransform(smoothY, [-0.5, 0.5], [25, -25]), translateZ: -75 }} className="absolute top-[20%] left-[20%]">
+              <motion.div initial={{ y: 80, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.3, duration: 1.5, delay: 0.45 }}>
                 <motion.div animate={{ y: [-2, 2, -2] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>
-                  <Sparkles size={16} className="text-slate-300 drop-shadow-[0_4px_8px_rgba(255,255,255,0.2)]" style={{ transform: 'perspective(200px) rotateZ(15deg)' }} />
+                  <Sparkles size={14} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateZ(15deg)' }} />
                 </motion.div>
               </motion.div>
             </motion.div>
 
-            {/* Arrow 4: Database (Right Shoulder area) */}
-            <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [-20, 20]), y: useTransform(smoothY, [-0.5, 0.5], [10, -10]), translateZ: -90 }}
-              className="absolute top-[42%] right-[-2%] md:right-[-8%]"
-            >
-              <motion.div initial={{ y: 90, opacity: 0, scale: 0.5 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.4, duration: 1.2, delay: 0.55 }}>
+            {/* 4. Top Right (Above Tassel) */}
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [-15, 15]), y: useTransform(smoothY, [-0.5, 0.5], [20, -20]), translateZ: -80 }} className="absolute top-[25%] right-[15%]">
+              <motion.div initial={{ y: 80, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.3, duration: 1.5, delay: 0.6 }}>
+                <motion.div animate={{ y: [3, -3, 3] }} transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}>
+                  <Layers size={14} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(15deg) rotateY(15deg)' }} />
+                </motion.div>
+              </motion.div>
+            </motion.div>
+
+            {/* 5. Right Middle (Near Neck) */}
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [-20, 20]), y: useTransform(smoothY, [-0.5, 0.5], [10, -10]), translateZ: -90 }} className="absolute top-[45%] right-[5%]">
+              <motion.div initial={{ y: 100, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.3, duration: 1.5, delay: 0.5 }}>
                 <motion.div animate={{ y: [4, -4, 4] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}>
-                  <Database size={18} className="text-slate-300 drop-shadow-[0_4px_8px_rgba(255,255,255,0.2)]" style={{ transform: 'perspective(200px) rotateX(-15deg) rotateY(15deg)' }} />
+                  <Database size={16} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(-15deg) rotateY(15deg)' }} />
                 </motion.div>
               </motion.div>
             </motion.div>
 
-            {/* Arrow 5: CPU (Bottom Right area) */}
-            <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [-25, 25]), y: useTransform(smoothY, [-0.5, 0.5], [-20, 20]), translateZ: -85 }}
-              className="absolute top-[65%] right-[-10%] md:right-[-18%]"
-            >
-              <motion.div initial={{ y: 110, opacity: 0, scale: 0.5 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.4, duration: 1.2, delay: 0.7 }}>
+            {/* 6. Far Right (Outside Shoulder) */}
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [-25, 25]), y: useTransform(smoothY, [-0.5, 0.5], [-20, 20]), translateZ: -85 }} className="absolute top-[60%] right-[-10%]">
+              <motion.div initial={{ y: 100, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.3, duration: 1.5, delay: 0.7 }}>
                 <motion.div animate={{ y: [5, -5, 5] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}>
-                  <Cpu size={20} className="text-slate-300 drop-shadow-[0_4px_8px_rgba(255,255,255,0.2)]" style={{ transform: 'perspective(200px) rotateX(-20deg) rotateY(10deg)' }} />
+                  <Cpu size={16} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(-20deg) rotateY(10deg)' }} />
                 </motion.div>
               </motion.div>
             </motion.div>
