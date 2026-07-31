@@ -20,7 +20,7 @@ export default function BeyondTheCode() {
       {/* Playful Reveal Button & Subtext */}
       <div className="w-full text-left mb-8">
         <h3 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
-          Beyond the Technical Side...
+          Beyond Technical Side...
         </h3>
       </div>
       <div className="flex flex-col items-center justify-center relative gap-3">
@@ -30,7 +30,7 @@ export default function BeyondTheCode() {
         >
           <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
           <span className="font-mono text-sm font-black tracking-widest uppercase relative z-10 flex items-center gap-2 drop-shadow-md">
-            r U Curious?? 👀
+            Curious?? 👀
           </span>
           {isOpen ? <ChevronUp size={18} className="relative z-10 drop-shadow-md" /> : <ChevronDown size={18} className="relative z-10 drop-shadow-md" />}
         </button>
