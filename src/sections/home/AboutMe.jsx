@@ -8,24 +8,25 @@ export default function AboutMe() {
     <section className="max-w-7xl mx-auto px-6 py-24 relative overflow-hidden">
       
       {/* 
-        Aesthetic Image Blended into Background 
-        (Walang borders, nakapatong ang fades para matunaw sa background) 
+        Abstract Dark Geometry Background
+        (No humans, purely structural and futuristic. Seamlessly faded into the background) 
       */}
-      <div className="absolute top-0 left-0 w-full lg:w-[60%] h-full -z-10 opacity-30 pointer-events-none">
+      <div className="absolute top-0 left-0 w-full lg:w-[65%] h-full -z-10 opacity-40 pointer-events-none">
         <img 
-          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop" 
-          alt="Professional Workspace" 
+          src="https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=1200&auto=format&fit=crop" 
+          alt="Abstract Dark Geometry" 
           className="w-full h-full object-cover grayscale mix-blend-luminosity"
         />
-        {/* Gradients para mawala ang hard edges / box look */}
+        {/* Gradients para matunaw ang image sa dark background ng website mo */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#050508]/80 to-[#050508]" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-[#050508]" />
-        <div className="absolute inset-0 bg-gradient-to-l from-[#050508] via-transparent to-transparent opacity-80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050508] via-transparent to-transparent opacity-80" />
+        <div className="absolute inset-0 bg-gradient-to-l from-[#050508] via-transparent to-transparent opacity-60" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
         
-        {/* Left Aspect: Professional Text Nakapatong sa Background */}
+        {/* Left Aspect: Professional Text Overlaying the Geometric Background */}
         <div className="lg:col-span-5 space-y-6 py-10 lg:py-20">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -40,7 +41,7 @@ export default function AboutMe() {
             </div>
             
             {/* Clean, Professional Typography without Glitch Effect */}
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight drop-shadow-md">
               My Story
             </h2>
             
