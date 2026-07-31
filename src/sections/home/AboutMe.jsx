@@ -1,14 +1,35 @@
 // src/sections/home/AboutMe.jsx
 import React from 'react';
-import { Sparkles, Palette, BarChart2, Code } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function AboutMe() {
+  const timelineData = [
+    {
+      year: "2014 – Present",
+      title: "Visual Design & Creative Direction",
+      dotColor: "bg-[#1095d2]",
+      glowColor: "rgba(16,149,210,0.5)",
+    },
+    {
+      year: "2021 – Present",
+      title: "Data Analytics & Automation",
+      dotColor: "bg-[#5bc96d]",
+      glowColor: "rgba(91,201,109,0.5)",
+    },
+    {
+      year: "2024 – Beyond",
+      title: "Software Engineering & Applied AI",
+      dotColor: "bg-[#a855f7]",
+      glowColor: "rgba(168,85,247,0.5)",
+    }
+  ];
+
   return (
     <section className="max-w-7xl mx-auto px-6 py-20 relative">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         
-        {/* Left Aspect: Section Header & Visual Pillars */}
+        {/* Left Aspect: Section Header & Minimalist Timeline */}
         <div className="lg:col-span-4 space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-mono tracking-wider uppercase">
             <Sparkles size={12} />
@@ -17,67 +38,55 @@ export default function AboutMe() {
           <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
             My Story
           </h2>
-          <p className="text-sm leading-relaxed font-mono text-slate-500">
+          <p className="text-sm text-slate-500 leading-relaxed font-mono">
             // Bridging creativity, data, and code to engineer business solutions.
           </p>
 
-          {/* Visual Career DNA / Pillars */}
-          <div className="pt-8 flex flex-col gap-3 relative">
+          {/* Minimalist Vertical Timeline (The Journey Line) */}
+          <div className="pt-10 pb-4 relative">
             
-            {/* Subtle background glow */}
-            <div className="absolute -left-10 top-1/2 -translate-y-1/2 w-32 h-48 bg-[#1095d2]/10 blur-[80px] rounded-full pointer-events-none" />
+            {/* Background Track Line */}
+            <div className="absolute left-[3px] top-12 bottom-4 w-px bg-white/10" />
 
-            {/* Pillar 1: Design */}
+            {/* Animated Gradient Line */}
             <motion.div 
-              initial={{ opacity: 0, x: -20 }} 
-              whileInView={{ opacity: 1, x: 0 }} 
-              viewport={{ once: true }} 
-              transition={{ duration: 0.5, delay: 0.1 }} 
-              className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#1095d2]/30 hover:bg-[#1095d2]/[0.05] transition-all group"
-            >
-              <div className="w-10 h-10 rounded-full bg-[#1095d2]/10 flex items-center justify-center text-[#1095d2] shrink-0 group-hover:scale-110 transition-transform">
-                <Palette size={18} />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-white mb-0.5 group-hover:text-[#1095d2] transition-colors">Creative Origins</h4>
-                <p className="text-[11px] text-slate-500 font-mono uppercase tracking-wider">10+ Years Visual Design</p>
-              </div>
-            </motion.div>
+              initial={{ height: 0 }}
+              whileInView={{ height: "calc(100% - 4rem)" }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 1.5, ease: "easeInOut" }}
+              className="absolute left-[3px] top-12 w-px bg-gradient-to-b from-[#1095d2] via-[#5bc96d] to-[#a855f7] origin-top"
+            />
 
-            {/* Pillar 2: Data */}
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }} 
-              whileInView={{ opacity: 1, x: 0 }} 
-              viewport={{ once: true }} 
-              transition={{ duration: 0.5, delay: 0.2 }} 
-              className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#5bc96d]/30 hover:bg-[#5bc96d]/[0.05] transition-all group"
-            >
-              <div className="w-10 h-10 rounded-full bg-[#5bc96d]/10 flex items-center justify-center text-[#5bc96d] shrink-0 group-hover:scale-110 transition-transform">
-                <BarChart2 size={18} />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-white mb-0.5 group-hover:text-[#5bc96d] transition-colors">Analytical Shift</h4>
-                <p className="text-[11px] text-slate-500 font-mono uppercase tracking-wider">Data & Automation</p>
-              </div>
-            </motion.div>
-
-            {/* Pillar 3: AI / Code */}
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }} 
-              whileInView={{ opacity: 1, x: 0 }} 
-              viewport={{ once: true }} 
-              transition={{ duration: 0.5, delay: 0.3 }} 
-              className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#a855f7]/30 hover:bg-[#a855f7]/[0.05] transition-all group"
-            >
-              <div className="w-10 h-10 rounded-full bg-[#a855f7]/10 flex items-center justify-center text-[#a855f7] shrink-0 group-hover:scale-110 transition-transform">
-                <Code size={18} />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-white mb-0.5 group-hover:text-[#a855f7] transition-colors">The Next Frontier</h4>
-                <p className="text-[11px] text-slate-500 font-mono uppercase tracking-wider">AI & Software Eng.</p>
-              </div>
-            </motion.div>
-
+            <div className="space-y-10">
+              {timelineData.map((item, index) => (
+                <div key={index} className="relative pl-8 group">
+                  {/* Glowing Dot */}
+                  <motion.div 
+                    initial={{ scale: 0, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.4 + 0.2, type: "spring" }}
+                    className={`absolute left-[1px] top-1.5 w-1.5 h-1.5 rounded-full ${item.dotColor} z-10`}
+                    style={{ boxShadow: `0 0 10px ${item.glowColor}` }}
+                  />
+                  
+                  {/* Timeline Content */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.4 + 0.3, duration: 0.5 }}
+                  >
+                    <span className="text-[10px] font-mono tracking-widest text-slate-500 uppercase block mb-1">
+                      {item.year}
+                    </span>
+                    <h4 className="text-sm font-bold text-slate-300 group-hover:text-white transition-colors">
+                      {item.title}
+                    </h4>
+                  </motion.div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
