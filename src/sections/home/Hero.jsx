@@ -84,7 +84,7 @@ export default function Hero({ homeData }) {
         
         {/* ================= LEFT COLUMN ================= */}
         <motion.div 
-          className="lg:col-span-7 space-y-6 text-left order-2 lg:order-1"
+          className="lg:col-span-7 space-y-6 text-left order-2 lg:order-1 -mt-10 lg:-mt-[60px]"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
