@@ -12,7 +12,7 @@ export default function Hero({ homeData }) {
     "Data Analyst",
     "Automation Specialist",
     "AI Asst. Full-Stack Dev",
-    "Aspiring AI Prompt Engr.",
+    "Asp. Generative AI Engr.",
   ];
 
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
@@ -44,7 +44,7 @@ export default function Hero({ homeData }) {
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
               Designing Creativity.<br />
               Analyzing Data.<br />
-              Building Future w AI.
+              Build Future with AI.
             </h1>
           </div>
 
