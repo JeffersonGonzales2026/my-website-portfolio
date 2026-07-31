@@ -246,7 +246,6 @@ export default function DataAnalyst() {
   return (
     <div ref={containerRef} className="flex flex-col min-h-screen bg-[#020617] text-slate-200 overflow-x-hidden relative selection:bg-emerald-500/30 selection:text-emerald-200">
       
-      {/* Backgrounds */}
       <div className="fixed inset-0 z-0 pointer-events-none opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-lime-600/10 rounded-full blur-[150px] pointer-events-none z-0" />
@@ -307,7 +306,6 @@ export default function DataAnalyst() {
                 
                 <div className="relative z-10">
                   
-                  {/* MOBILE & PC FIX: Always flex-row, side-by-side logo and text */}
                   <div className="flex flex-row items-center mb-8 gap-4 md:gap-5">
                     <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-slate-800 border border-slate-700 rounded-2xl flex items-center justify-center p-2 shadow-lg group-hover:border-emerald-500/30 transition-colors">
                       {role.customImage ? ( <img src={role.customImage} alt={role.company} className="w-full h-full object-contain" /> ) : ( <Briefcase size={32} className="text-emerald-500/50" /> )}
@@ -329,7 +327,6 @@ export default function DataAnalyst() {
                       Core Responsibilities
                     </h5>
                     
-                    {/* CATEGORIZED GROUPING (Alternative B) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {groupResponsibilities(role.responsibilities).map(([groupName, items], idx) => (
                         <div key={idx} className="bg-slate-800/20 p-5 rounded-2xl border border-slate-700/50 hover:bg-slate-800/40 transition-colors">
@@ -376,7 +373,6 @@ export default function DataAnalyst() {
             <div className="w-16 h-1 bg-emerald-500 rounded-full mx-auto" />
           </div>
 
-          {/* CSS Columns (Masonry effect). Prevents awkward vertical gaps */}
           <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
             {techSkills.map((section, index) => {
               const IconComponent = section.icon || FileText;
@@ -549,7 +545,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= SOFTWARE ECOSYSTEM ================= */}
+      {/* ================= SOFTWARE ECOSYSTEM (UPDATED: 3-COLUMN PC GRID) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -557,13 +553,13 @@ export default function DataAnalyst() {
             <div className="w-12 h-1 bg-emerald-500 rounded-full mx-auto" />
           </div>
           
-          <div className="space-y-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16">
             {ecosystem.map((cat, idx) => (
-              <div key={idx} className="relative">
-                <h4 className="text-[11px] text-emerald-400 font-bold uppercase tracking-widest mb-6 text-center border-b border-slate-800/60 pb-3 max-w-sm mx-auto">
+              <div key={idx} className="relative flex flex-col items-center">
+                <h4 className="text-[11px] text-emerald-400 font-bold uppercase tracking-widest mb-6 text-center border-b border-slate-800/60 pb-3 w-full max-w-[200px]">
                   {cat.category}
                 </h4>
-                <div className="flex flex-wrap justify-center gap-4 md:gap-8">
+                <div className="flex flex-wrap justify-center gap-4">
                   {cat.tools.map((tool, i) => (
                     <motion.div
                       key={i}
@@ -571,21 +567,21 @@ export default function DataAnalyst() {
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.4, delay: i * 0.05 }}
-                      className="flex flex-col items-center gap-3 w-24 sm:w-28 group"
+                      className="flex flex-col items-center gap-3 w-20 sm:w-24 group"
                     >
-                      <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-slate-800 bg-slate-900/50 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 overflow-hidden hover:border-emerald-500/40 relative">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center border border-slate-800 bg-slate-900/50 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 overflow-hidden hover:border-emerald-500/40 relative">
                         <img 
                           src={tool.customImage} 
                           alt={tool.name} 
-                          className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10" 
+                          className="w-8 h-8 sm:w-10 sm:h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10" 
                           onError={(e) => { 
                               e.target.style.display = 'none'; 
                               e.target.nextSibling.style.display = 'block'; 
                           }}
                         />
-                        <Settings size={24} className="text-slate-600 hidden absolute inset-0 m-auto z-0" />
+                        <Settings size={20} className="text-slate-600 hidden absolute inset-0 m-auto z-0" />
                       </div>
-                      <span className="text-[10px] md:text-xs text-center font-semibold text-slate-400 group-hover:text-emerald-300 transition-colors">
+                      <span className="text-[10px] text-center font-semibold text-slate-400 group-hover:text-emerald-300 transition-colors leading-tight">
                         {tool.name}
                       </span>
                     </motion.div>
@@ -597,22 +593,30 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= FUTURE ANALYTICS ROADMAP ================= */}
+      {/* ================= FUTURE ANALYTICS ROADMAP (UPDATED: WRITTEN/DYNAMIC FORMAT) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="mb-10">
             <h3 className="text-2xl font-black text-white mb-4 flex items-center justify-center gap-3">
               <ArrowRight className="text-lime-500" /> Future Analytics Roadmap
             </h3>
             <div className="w-12 h-[1px] bg-zinc-800 mx-auto mt-2" />
           </div>
-          <div className="flex flex-wrap gap-2 justify-center">
-             {roadmap.map((item, i) => (
-               <span key={i} className="px-3 py-1.5 bg-slate-900 border border-slate-800 text-slate-400 text-xs rounded-lg hover:border-emerald-500/50 hover:text-emerald-300 transition-colors cursor-default">
-                 {item}
-               </span>
-             ))}
-          </div>
+          
+          <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto font-medium">
+            My continuous learning journey is focused on expanding my expertise and discovering new ways to drive value through data. Moving forward, my roadmap includes exploring and mastering{' '}
+            {roadmap.map((item, i) => {
+              const isLast = i === roadmap.length - 1;
+              const isSecondToLast = i === roadmap.length - 2;
+              
+              return (
+                <React.Fragment key={i}>
+                  <span className="text-emerald-400 font-bold whitespace-nowrap">{item}</span>
+                  {isSecondToLast ? ', and ' : isLast ? '.' : ', '}
+                </React.Fragment>
+              );
+            })}
+          </p>
         </div>
       </section>
 
