@@ -193,7 +193,7 @@ export default function Hero({ homeData }) {
             */}
 
             {/* 1. Left Arrow (Far Left, Mid-height) */}
-            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [20, -20]), y: useTransform(smoothY, [-0.5, 0.5], [15, -15]), translateZ: -80 }} className="absolute top-[40%] left-[5%]">
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [20, -20]), y: useTransform(smoothY, [-0.5, 0.5], [15, -15]), translateZ: -80 }} className="absolute top-[45%] left-[5%]">
               <motion.div initial={{ x: 220, y: 50, opacity: 0, scale: 0 }} animate={{ x: 0, y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.35, duration: 1.5, delay: 0.4 }}>
                 <motion.div animate={{ y: [-3, 3, -3] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
                   <Palette size={12} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(15deg) rotateY(-15deg)' }} />
@@ -211,7 +211,7 @@ export default function Hero({ homeData }) {
             </motion.div>
 
             {/* 3. Top Left Arrow (Above hat/ear) */}
-            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [15, -15]), y: useTransform(smoothY, [-0.5, 0.5], [25, -25]), translateZ: -75 }} className="absolute top-[25%] left-[20%]">
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [15, -15]), y: useTransform(smoothY, [-0.5, 0.5], [25, -25]), translateZ: -75 }} className="absolute top-[25%] left-[-5%]">
               <motion.div initial={{ x: 120, y: 180, opacity: 0, scale: 0 }} animate={{ x: 0, y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.35, duration: 1.5, delay: 0.45 }}>
                 <motion.div animate={{ y: [-3, 3, -3] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}>
                   <Sparkles size={12} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateZ(15deg)' }} />
