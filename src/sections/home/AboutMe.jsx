@@ -4,36 +4,15 @@ import { Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function AboutMe() {
-  const timelineData = [
-    {
-      year: "2014 – Present",
-      title: "Visual Design & Creative Direction",
-      dotColor: "bg-[#1095d2]",
-      glowColor: "rgba(16,149,210,0.5)",
-    },
-    {
-      year: "2021 – Present",
-      title: "Data Analytics & Automation",
-      dotColor: "bg-[#5bc96d]",
-      glowColor: "rgba(91,201,109,0.5)",
-    },
-    {
-      year: "2024 – Beyond",
-      title: "Software Engineering & Applied AI",
-      dotColor: "bg-[#a855f7]",
-      glowColor: "rgba(168,85,247,0.5)",
-    }
-  ];
-
   return (
     <section className="max-w-7xl mx-auto px-6 py-20 relative">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         
-        {/* Left Aspect: Glitch Header & Minimalist Timeline */}
-        <div className="lg:col-span-4 space-y-6">
+        {/* Left Aspect: Glitch Header & Aesthetic Image */}
+        <div className="lg:col-span-4 flex flex-col">
           
-          {/* Option 6: The Cyber-Narrative Glitch Header (From your image) */}
-          <div className="space-y-4">
+          {/* Option 6: The Cyber-Narrative Glitch Header */}
+          <div className="space-y-4 mb-10">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/10 text-slate-400 text-[11px] font-mono tracking-widest uppercase">
               <Sparkles size={14} className="text-slate-500" />
               My Narrative
@@ -49,52 +28,28 @@ export default function AboutMe() {
             </p>
           </div>
 
-          {/* Option 1: Minimalist Vertical Timeline */}
-          <div className="pt-8 pb-4 relative">
-            
-            {/* Background Track Line */}
-            <div className="absolute left-[3px] top-10 bottom-4 w-px bg-white/5" />
-
-            {/* Animated Gradient Line */}
-            <motion.div 
-              initial={{ height: 0 }}
-              whileInView={{ height: "calc(100% - 2.5rem)" }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 1.5, ease: "easeInOut" }}
-              className="absolute left-[3px] top-10 w-px bg-gradient-to-b from-[#1095d2] via-[#5bc96d] to-[#a855f7] origin-top"
+          {/* Option 5: A Single, Tasteful Aesthetic Image */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="relative w-full max-w-[320px] aspect-[4/5] rounded-3xl overflow-hidden border border-white/10 group shadow-2xl"
+          >
+            {/* 
+              TIPS: Palitan ang src link na ito ng sarili mong image URL! 
+              Maganda kung black & white or dark picture ng workspace mo, camera, o ikaw mismo. 
+            */}
+            <img 
+              src="https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?q=80&w=800&auto=format&fit=crop" 
+              alt="My Workspace" 
+              className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-in-out"
             />
-
-            <div className="space-y-10">
-              {timelineData.map((item, index) => (
-                <div key={index} className="relative pl-8 group">
-                  {/* Glowing Dot */}
-                  <motion.div 
-                    initial={{ scale: 0, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.4 + 0.2, type: "spring" }}
-                    className={`absolute left-[1px] top-1.5 w-1.5 h-1.5 rounded-full ${item.dotColor} z-10`}
-                    style={{ boxShadow: `0 0 12px ${item.glowColor}` }}
-                  />
-                  
-                  {/* Timeline Content */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.4 + 0.3, duration: 0.5 }}
-                  >
-                    <span className="text-[10px] font-mono tracking-widest text-slate-500 uppercase block mb-1">
-                      {item.year}
-                    </span>
-                    <h4 className="text-sm font-bold text-slate-300 group-hover:text-white transition-colors">
-                      {item.title}
-                    </h4>
-                  </motion.div>
-                </div>
-              ))}
-            </div>
-          </div>
+            
+            {/* Subtle overlay gradients para mas smooth ang transition at blend sa background */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-90" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#1095d2]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 mix-blend-overlay" />
+          </motion.div>
 
         </div>
 
