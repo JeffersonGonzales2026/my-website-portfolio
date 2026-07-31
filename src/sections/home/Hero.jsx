@@ -1,7 +1,7 @@
 // src/sections/home/Hero.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Palette, BarChart2, Code, ArrowRight, Sparkles } from 'lucide-react';
+import { Palette, BarChart2, Code, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
 
 export default function Hero({ homeData }) {
@@ -28,10 +28,7 @@ export default function Hero({ homeData }) {
   // Framer Motion Variants for staggered entrances
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15, delayChildren: 0.2 },
-    },
+    visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } },
   };
 
   const itemVariants = {
@@ -39,21 +36,18 @@ export default function Hero({ homeData }) {
     visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
   };
 
-  // --- 3D Mouse Tracking Logic ---
+  // --- 3D Mouse Tracking Logic for Portrait ---
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  // Smooth out the mouse values
   const smoothX = useSpring(mouseX, { damping: 20, stiffness: 100, mass: 0.5 });
   const smoothY = useSpring(mouseY, { damping: 20, stiffness: 100, mass: 0.5 });
 
-  // Map mouse position to rotation degrees (tilt effect)
-  const rotateX = useTransform(smoothY, [-0.5, 0.5], [12, -12]);
-  const rotateY = useTransform(smoothX, [-0.5, 0.5], [-12, 12]);
+  const rotateX = useTransform(smoothY, [-0.5, 0.5], [15, -15]);
+  const rotateY = useTransform(smoothX, [-0.5, 0.5], [-15, 15]);
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    // Calculate mouse position relative to the center of the container (-0.5 to 0.5)
     const xPct = (e.clientX - rect.left) / rect.width - 0.5;
     const yPct = (e.clientY - rect.top) / rect.height - 0.5;
     mouseX.set(xPct);
@@ -66,51 +60,78 @@ export default function Hero({ homeData }) {
   };
 
   return (
-    <section className="relative min-h-[85vh] flex items-center justify-center py-12 px-6 overflow-hidden">
+    <section className="relative min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 overflow-hidden">
       
       {/* Subtle Animated Background Glows */}
       <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-20 pointer-events-none">
         <motion.div 
-          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
+          animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.4, 0.2] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="w-[700px] h-[500px] bg-slate-500 rounded-full blur-[160px] absolute -top-40 -left-20" 
+          className="w-[300px] md:w-[700px] h-[300px] md:h-[500px] bg-slate-500 rounded-full blur-[100px] md:blur-[160px] absolute -top-20 -left-10 md:-top-40 md:-left-20" 
         />
         <motion.div 
-          animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
+          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.3, 0.1] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="w-[600px] h-[600px] bg-zinc-800 rounded-full blur-[180px] absolute -bottom-40 -right-20" 
+          className="w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-zinc-800 rounded-full blur-[120px] md:blur-[180px] absolute -bottom-20 -right-10 md:-bottom-40 md:-right-20" 
         />
       </div>
 
-      <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+      <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-12 items-center relative z-10 pt-10 md:pt-0">
         
-        {/* ================= LEFT COLUMN ================= */}
+        {/* ================= LEFT COLUMN (Typography & Text) ================= */}
         <motion.div 
-          className="lg:col-span-7 space-y-8 text-left"
+          className="lg:col-span-7 space-y-8 text-left order-2 lg:order-1"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          <motion.div variants={itemVariants} className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-[#1095d2] animate-pulse" />
-              <p className="text-xs font-semibold tracking-widest uppercase text-slate-300 font-mono">
-                Welcome!
-              </p>
-            </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-[1.1]">
-              Designing Creativity.<br />
-              Analyzing Data.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 to-zinc-500">
-                Building with AI.
+          {/* Main Headline with Descriptive Elements */}
+          <div className="space-y-6">
+            
+            {/* Pillar 1 */}
+            <motion.div variants={itemVariants} className="flex flex-col">
+              <span className="text-[11px] md:text-xs font-semibold tracking-widest uppercase text-slate-400 font-mono mb-1 md:mb-2">
+                // UI & Visual Communication
               </span>
-            </h1>
-          </motion.div>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white leading-none">
+                Designing Creativity.
+              </h1>
+            </motion.div>
 
-          <motion.div variants={itemVariants} className="h-10 flex items-center">
-            <p className="text-[17px] md:text-[19px] font-medium text-slate-400 flex flex-wrap items-center gap-2">
+            {/* Pillar 2 */}
+            <motion.div variants={itemVariants} className="flex flex-col">
+              <span className="text-[11px] md:text-xs font-semibold tracking-widest uppercase text-slate-400 font-mono mb-1 md:mb-2">
+                // Insights & Strategy
+              </span>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white leading-none">
+                Analyzing Data.
+              </h1>
+            </motion.div>
+
+            {/* Pillar 3 */}
+            <motion.div variants={itemVariants} className="flex flex-col">
+              <span className="text-[11px] md:text-xs font-semibold tracking-widest uppercase text-slate-400 font-mono mb-1 md:mb-2">
+                // Automation & Systems
+              </span>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-none">
+                {/* Silver Shining Animated Gradient */}
+                <motion.span 
+                  animate={{ backgroundPosition: ['200% center', '-200% center'] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                  className="text-transparent bg-clip-text bg-[length:200%_auto]"
+                  style={{ backgroundImage: 'linear-gradient(to right, #94a3b8, #ffffff, #cbd5e1, #94a3b8, #ffffff)' }}
+                >
+                  Building with AI.
+                </motion.span>
+              </h1>
+            </motion.div>
+
+          </div>
+
+          <motion.div variants={itemVariants} className="h-14 sm:h-10 flex items-center">
+            <p className="text-base md:text-[19px] font-medium text-slate-400 flex flex-wrap items-center gap-2 leading-tight md:leading-normal">
               I'm <span className="text-white font-bold">Jefferson Gonzales</span>, your specialized 
-              <span className="relative h-8 overflow-hidden inline-flex items-center min-w-[200px]">
+              <span className="relative h-8 overflow-hidden inline-flex items-center min-w-[220px]">
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={currentTitleIndex}
@@ -127,88 +148,70 @@ export default function Hero({ homeData }) {
             </p>
           </motion.div>
 
-          <motion.p variants={itemVariants} className="text-base md:text-lg text-slate-400 max-w-xl leading-relaxed">
+          <motion.p variants={itemVariants} className="text-sm md:text-base text-slate-400 max-w-xl leading-relaxed">
             A multidisciplinary technology professional passionate about combining creativity, 
             business, analytics, automation, and software engineering to solve real-world problems.
           </motion.p>
 
-          <motion.div variants={itemVariants} className="pt-2 flex flex-col sm:flex-row flex-wrap gap-4">
+          <motion.div variants={itemVariants} className="pt-2 flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4">
             <motion.button 
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/dream-creations')}
-              className="group flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-[#1095d2]/50 text-[#1095d2] font-medium transition-colors shadow-lg cursor-pointer"
+              className="group flex items-center justify-center gap-2 px-5 py-3 md:px-6 md:py-3.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-[#1095d2]/50 text-[#1095d2] text-sm md:text-base font-medium transition-colors shadow-lg w-full sm:w-auto"
             >
               <Palette size={18} /> Dream Creations <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </motion.button>
 
             <motion.button 
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/data-analyst')}
-              className="group flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-[#5bc96d]/50 text-[#5bc96d] font-medium transition-colors shadow-lg cursor-pointer"
+              className="group flex items-center justify-center gap-2 px-5 py-3 md:px-6 md:py-3.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-[#5bc96d]/50 text-[#5bc96d] text-sm md:text-base font-medium transition-colors shadow-lg w-full sm:w-auto"
             >
               <BarChart2 size={18} /> Data Analyst <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </motion.button>
 
             <motion.button 
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/ai-developer')}
-              className="group flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-[#a855f7]/50 text-[#a855f7] font-medium transition-colors shadow-lg cursor-pointer"
+              className="group flex items-center justify-center gap-2 px-5 py-3 md:px-6 md:py-3.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-[#a855f7]/50 text-[#a855f7] text-sm md:text-base font-medium transition-colors shadow-lg w-full sm:w-auto"
             >
               <Code size={18} /> AI Developer <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </motion.button>
           </motion.div>
         </motion.div>
 
-        {/* ================= RIGHT COLUMN (Interactive 3D Portrait) ================= */}
+        {/* ================= RIGHT COLUMN (Clean 3D Portrait) ================= */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-          className="lg:col-span-5 flex justify-center relative perspective-[1000px]"
+          className="lg:col-span-5 flex justify-center items-center relative perspective-[1000px] order-1 lg:order-2 mb-8 lg:mb-0"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
-          {/* Main 3D Interactive Container */}
+          {/* Main 3D Interactive Container - Removed all floating boxes */}
           <motion.div 
             style={{ rotateX, rotateY }}
-            className="w-full max-w-[450px] aspect-[4/5] relative flex items-end justify-center transform-style-3d cursor-default"
+            className="w-[75%] sm:w-[60%] lg:w-full max-w-[450px] aspect-[4/5] relative flex items-end justify-center transform-style-3d cursor-default"
           >
-            {/* The Portrait Image (Faded at the bottom to blend seamlessly) */}
             {homeData?.profile_image_url ? (
               <img 
                 src={homeData.profile_image_url} 
                 alt="Portrait" 
                 className="w-full h-full object-cover object-top pointer-events-none drop-shadow-2xl"
-                // This mask makes the bottom of the image dissolve into the background perfectly
-                style={{ WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%)', maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%)' }}
+                style={{ 
+                  WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)', 
+                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)' 
+                }}
               />
             ) : (
-              <div className="w-full h-full bg-zinc-900 flex items-center justify-center" style={{ WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%)' }}>
-                 <span className="text-5xl font-bold text-white tracking-widest font-mono">JG</span>
+              <div 
+                className="w-full h-full bg-zinc-900 flex items-center justify-center" 
+                style={{ 
+                  WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)',
+                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)'
+                }}
+              >
+                 <span className="text-4xl md:text-5xl font-bold text-white tracking-widest font-mono">JG</span>
               </div>
             )}
-
-            {/* Floating Element 1: Top Left (Moves in opposite direction to mouse for depth) */}
-            <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [20, -20]), y: useTransform(smoothY, [-0.5, 0.5], [20, -20]) }}
-              className="absolute top-10 -left-6 px-4 py-2 bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl flex items-center gap-3 shadow-2xl"
-            >
-              <Sparkles size={16} className="text-yellow-500" />
-              <div className="text-left">
-                <p className="text-[10px] text-slate-400 font-mono">Status</p>
-                <p className="text-xs font-bold text-white">System Active</p>
-              </div>
-            </motion.div>
-
-            {/* Floating Element 2: Bottom Right (Code snippet accent) */}
-            <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [-30, 30]), y: useTransform(smoothY, [-0.5, 0.5], [-30, 30]), translateZ: 50 }}
-              className="absolute bottom-20 -right-4 px-4 py-3 bg-[#050508]/80 border border-white/5 backdrop-blur-xl rounded-xl shadow-2xl hidden sm:block"
-            >
-               <div className="font-mono text-[10px] text-zinc-400 leading-tight">
-                  <span className="text-purple-400">const</span> <span className="text-blue-400">dev</span> = &#123;<br />
-                  &nbsp;&nbsp;focus: <span className="text-green-400">'AI & Code'</span><br />
-                  &#125;;
-               </div>
-            </motion.div>
-
           </motion.div>
         </motion.div>
 
