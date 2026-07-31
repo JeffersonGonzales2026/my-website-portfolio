@@ -341,11 +341,6 @@ export default function AiDeveloper() {
         {/* ================= 59. HERO SECTION ================= */}
         <section className="relative pt-44 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center">
           <div className="max-w-5xl mx-auto text-center relative">
-            
-            <motion.div variants={fadeSlideUp} initial="hidden" animate="visible"
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold mb-8 backdrop-blur-md">
-              <Terminal size={14} /> AI-Assisted Full-Stack Engineering
-            </motion.div>
 
             <motion.h1 variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}
               className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8 leading-tight">
