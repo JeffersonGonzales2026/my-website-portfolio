@@ -202,7 +202,7 @@ export default function Hero({ homeData }) {
             </motion.div>
 
             {/* 2. Middle Left Arrow (Higher up, near ear) */}
-            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [25, -25]), y: useTransform(smoothY, [-0.5, 0.5], [-15, 15]), translateZ: -70 }} className="absolute top-[40%] left-[1%]">
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [25, -25]), y: useTransform(smoothY, [-0.5, 0.5], [-15, 15]), translateZ: -70 }} className="absolute top-[40%] left-[20%]">
               <motion.div initial={{ x: 160, y: 120, opacity: 0, scale: 0 }} animate={{ x: 0, y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.35, duration: 1.5, delay: 0.55 }}>
                 <motion.div animate={{ y: [-2, 2, -2] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}>
                   <Code size={14} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(10deg) rotateY(-20deg)' }} />
