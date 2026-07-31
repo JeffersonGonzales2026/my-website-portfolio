@@ -36,12 +36,6 @@ export default function Hero({ homeData }) {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
   };
 
-  // Button pop-in animations
-  const buttonVariants = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.5, type: 'spring', bounce: 0.4 } },
-  };
-
   // --- 3D Mouse & Touch Tracking Logic ---
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -49,8 +43,8 @@ export default function Hero({ homeData }) {
   const smoothX = useSpring(mouseX, { damping: 20, stiffness: 100, mass: 0.5 });
   const smoothY = useSpring(mouseY, { damping: 20, stiffness: 100, mass: 0.5 });
 
-  const rotateX = useTransform(smoothY, [-0.5, 0.5], [12, -12]);
-  const rotateY = useTransform(smoothX, [-0.5, 0.5], [-12, 12]);
+  const rotateX = useTransform(smoothY, [-0.5, 0.5], [10, -10]);
+  const rotateY = useTransform(smoothX, [-0.5, 0.5], [-10, 10]);
 
   const handleInteractionMove = (clientX, clientY, currentTarget) => {
     const rect = currentTarget.getBoundingClientRect();
@@ -69,7 +63,7 @@ export default function Hero({ homeData }) {
   };
 
   return (
-    <section className="relative min-h-[85vh] flex items-center justify-center py-12 px-6">
+    <section className="relative min-h-[85vh] flex items-center justify-center py-12 px-6 overflow-hidden">
       
       {/* Background Glows */}
       <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-10 pointer-events-none">
@@ -87,10 +81,10 @@ export default function Hero({ homeData }) {
           animate="visible"
         >
           <motion.div variants={itemVariants} className="space-y-2">
-            {/* Single Wave Silver Gradient with Slanted Shine (110deg) - NO italic */}
+            {/* Single Wave Silver Gradient with Slanted Shine - Mabagal (12s duration) */}
             <motion.h1 
               animate={{ backgroundPosition: ['200% center', '-200% center'] }}
-              transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
+              transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
               className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight text-transparent bg-clip-text bg-[length:300%_auto]"
               style={{ backgroundImage: 'linear-gradient(110deg, #64748b 10%, #ffffff 40%, #cbd5e1 50%, #ffffff 60%, #64748b 90%)' }}
             >
@@ -101,13 +95,11 @@ export default function Hero({ homeData }) {
           </motion.div>
 
           <motion.div variants={itemVariants}>
-            {/* Wrapped naturally, removed absolute/whitespace-nowrap so long text doesn't cut off */}
             <p className="text-[17px] md:text-[19px] font-medium text-slate-400 leading-relaxed md:leading-normal">
               I'm <span className="text-white font-bold">Jefferson Gonzales</span>, your specialized{' '}
               <AnimatePresence mode="wait">
                 <motion.span
                   key={currentTitleIndex}
-                  // Fade effect only (walang paakyat)
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -125,49 +117,49 @@ export default function Hero({ homeData }) {
             business, analytics, automation, and software engineering to solve real-world problems.
           </motion.p>
 
+          {/* Buttons with Entrance Animation */}
           <motion.div variants={itemVariants} className="pt-4 flex flex-col sm:flex-row flex-wrap gap-4">
+            
             {/* BUTTON 1 */}
-            <motion.button 
-              variants={buttonVariants}
-              whileHover={{ scale: 1.03 }} 
-              whileTap={{ scale: 0.97 }} 
-              onClick={() => navigate('/dream-creations')}
-              className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#1095d2]/40 text-[#1095d2] font-medium transition-colors shadow-lg cursor-pointer"
-            >
-              <Palette size={18} />
-              Dream Creations
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </motion.button>
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
+              <button 
+                onClick={() => navigate('/dream-creations')}
+                className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-slate-500/40 text-slate-200 font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto"
+              >
+                <Palette size={18} className="text-slate-400 group-hover:text-white transition-colors" />
+                Dream Creations
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform text-slate-500" />
+              </button>
+            </motion.div>
 
             {/* BUTTON 2 */}
-            <motion.button 
-              variants={buttonVariants}
-              whileHover={{ scale: 1.03 }} 
-              whileTap={{ scale: 0.97 }} 
-              onClick={() => navigate('/data-analyst')}
-              className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#5bc96d]/40 text-[#5bc96d] font-medium transition-colors shadow-lg cursor-pointer"
-            >
-              <Database size={18} />
-              Data Analyst
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </motion.button>
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }}>
+              <button 
+                onClick={() => navigate('/data-analyst')}
+                className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-slate-500/40 text-slate-200 font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto"
+              >
+                <Database size={18} className="text-slate-400 group-hover:text-white transition-colors" />
+                Data Analyst
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform text-slate-500" />
+              </button>
+            </motion.div>
 
             {/* BUTTON 3 */}
-            <motion.button 
-              variants={buttonVariants}
-              whileHover={{ scale: 1.03 }} 
-              whileTap={{ scale: 0.97 }} 
-              onClick={() => navigate('/ai-developer')}
-              className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#a855f7]/40 text-[#a855f7] font-medium transition-colors shadow-lg cursor-pointer"
-            >
-              <Code size={18} />
-              AI Developer
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </motion.button>
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
+              <button 
+                onClick={() => navigate('/ai-developer')}
+                className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-slate-500/40 text-slate-200 font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto"
+              >
+                <Code size={18} className="text-slate-400 group-hover:text-white transition-colors" />
+                AI Developer
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform text-slate-500" />
+              </button>
+            </motion.div>
+
           </motion.div>
         </motion.div>
 
-        {/* ================= RIGHT COLUMN (3D Portrait & Floating Minimal Icons) ================= */}
+        {/* ================= RIGHT COLUMN (3D Portrait & Hidden Behind Icons) ================= */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -178,7 +170,7 @@ export default function Hero({ homeData }) {
           onTouchMove={handleTouchMove}
           onTouchEnd={handleInteractionLeave}
         >
-          {/* Main 3D Container (preserve-3d is required for Z-depth of icons) */}
+          {/* Main 3D Container */}
           <motion.div 
             style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
             className="w-[75%] sm:w-[60%] lg:w-full max-w-[420px] aspect-[4/5] relative flex items-end justify-center cursor-default"
@@ -209,75 +201,95 @@ export default function Hero({ homeData }) {
               </div>
             )}
 
-            {/* --- MINIMAL ICONS (Popping up from behind & constantly floating) --- */}
+            {/* --- MINIMAL SILVER 3D ICONS (Nakatago sa likod, umaangat pataas + floating) --- */}
 
             {/* Icon 1: Palette (Design) - Back Left */}
             <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [30, -30]), y: useTransform(smoothY, [-0.5, 0.5], [20, -20]), translateZ: -50 }}
-              className="absolute top-[20%] left-[-2%] md:left-[-10%]"
+              style={{ x: useTransform(smoothX, [-0.5, 0.5], [20, -20]), y: useTransform(smoothY, [-0.5, 0.5], [15, -15]), translateZ: -80 }}
+              className="absolute top-[25%] left-[-2%] md:left-[-8%]"
             >
               <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 0.6, y: [-4, 4, -4] }}
-                transition={{ scale: { delay: 0.5, type: 'spring' }, opacity: { delay: 0.5 }, y: { duration: 4, repeat: Infinity, ease: "easeInOut" } }}
+                initial={{ scale: 0, opacity: 0, y: 30 }}
+                animate={{ scale: 1, opacity: 0.65, y: [-4, 4, -4] }}
+                transition={{ 
+                  scale: { delay: 0.3, type: 'spring', damping: 12 }, 
+                  opacity: { delay: 0.3 }, 
+                  y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.8 } 
+                }}
               >
-                <Palette size={22} className="text-[#1095d2]" />
+                <Palette size={18} className="text-slate-300 drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
               </motion.div>
             </motion.div>
 
             {/* Icon 2: Database (Data Analytics) - Back Right */}
             <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [-30, 30]), y: useTransform(smoothY, [-0.5, 0.5], [10, -10]), translateZ: -60 }}
-              className="absolute top-[35%] right-[-5%] md:right-[-12%]"
+              style={{ x: useTransform(smoothX, [-0.5, 0.5], [-20, 20]), y: useTransform(smoothY, [-0.5, 0.5], [10, -10]), translateZ: -90 }}
+              className="absolute top-[40%] right-[-2%] md:right-[-10%]"
             >
               <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 0.5, y: [4, -4, 4] }}
-                transition={{ scale: { delay: 0.7, type: 'spring' }, opacity: { delay: 0.7 }, y: { duration: 3.5, repeat: Infinity, ease: "easeInOut" } }}
+                initial={{ scale: 0, opacity: 0, y: 40 }}
+                animate={{ scale: 1, opacity: 0.6, y: [4, -4, 4] }}
+                transition={{ 
+                  scale: { delay: 0.45, type: 'spring', damping: 12 }, 
+                  opacity: { delay: 0.45 }, 
+                  y: { duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 } 
+                }}
               >
-                <Database size={20} className="text-[#5bc96d]" />
+                <Database size={16} className="text-slate-300 drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
               </motion.div>
             </motion.div>
 
             {/* Icon 3: Code (AI Dev) - Back Bottom Left */}
             <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [40, -40]), y: useTransform(smoothY, [-0.5, 0.5], [-20, 20]), translateZ: -40 }}
-              className="absolute bottom-[25%] left-[5%] md:left-[-5%]"
+              style={{ x: useTransform(smoothX, [-0.5, 0.5], [25, -25]), y: useTransform(smoothY, [-0.5, 0.5], [-15, 15]), translateZ: -70 }}
+              className="absolute bottom-[25%] left-[8%] md:left-[2%]"
             >
               <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 0.6, y: [-5, 5, -5] }}
-                transition={{ scale: { delay: 0.6, type: 'spring' }, opacity: { delay: 0.6 }, y: { duration: 4.5, repeat: Infinity, ease: "easeInOut" } }}
+                initial={{ scale: 0, opacity: 0, y: 35 }}
+                animate={{ scale: 1, opacity: 0.65, y: [-5, 5, -5] }}
+                transition={{ 
+                  scale: { delay: 0.4, type: 'spring', damping: 12 }, 
+                  opacity: { delay: 0.4 }, 
+                  y: { duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.9 } 
+                }}
               >
-                <Code size={24} className="text-[#a855f7]" />
+                <Code size={20} className="text-slate-300 drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
               </motion.div>
             </motion.div>
 
-            {/* Icon 4: CPU (Automation/Systems) - Back Bottom Right */}
+            {/* Icon 4: CPU (Automation) - Back Bottom Right */}
             <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [-40, 40]), y: useTransform(smoothY, [-0.5, 0.5], [-30, 30]), translateZ: -45 }}
-              className="absolute bottom-[15%] right-[0%] md:right-[-8%]"
+              style={{ x: useTransform(smoothX, [-0.5, 0.5], [-25, 25]), y: useTransform(smoothY, [-0.5, 0.5], [-20, 20]), translateZ: -85 }}
+              className="absolute bottom-[18%] right-[5%] md:right-[-2%]"
             >
               <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 0.5, y: [5, -5, 5] }}
-                transition={{ scale: { delay: 0.8, type: 'spring' }, opacity: { delay: 0.8 }, y: { duration: 5, repeat: Infinity, ease: "easeInOut" } }}
+                initial={{ scale: 0, opacity: 0, y: 45 }}
+                animate={{ scale: 1, opacity: 0.6, y: [5, -5, 5] }}
+                transition={{ 
+                  scale: { delay: 0.55, type: 'spring', damping: 12 }, 
+                  opacity: { delay: 0.55 }, 
+                  y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1.2 } 
+                }}
               >
-                <Cpu size={22} className="text-rose-400" />
+                <Cpu size={18} className="text-slate-300 drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
               </motion.div>
             </motion.div>
 
-            {/* Icon 5: Sparkles - (Pushed slightly in front to give layer contrast) */}
+            {/* Icon 5: Sparkles - Back Top Center */}
             <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [50, -50]), y: useTransform(smoothY, [-0.5, 0.5], [-15, 15]), translateZ: 30 }}
-              className="absolute top-[10%] left-[15%]"
+              style={{ x: useTransform(smoothX, [-0.5, 0.5], [15, -15]), y: useTransform(smoothY, [-0.5, 0.5], [25, -25]), translateZ: -75 }}
+              className="absolute top-[15%] left-[25%]"
             >
               <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 0.8, y: [-3, 3, -3] }}
-                transition={{ scale: { delay: 0.9, type: 'spring' }, opacity: { delay: 0.9 }, y: { duration: 3, repeat: Infinity, ease: "easeInOut" } }}
+                initial={{ scale: 0, opacity: 0, y: 25 }}
+                animate={{ scale: 1, opacity: 0.7, y: [-3, 3, -3] }}
+                transition={{ 
+                  scale: { delay: 0.25, type: 'spring', damping: 12 }, 
+                  opacity: { delay: 0.25 }, 
+                  y: { duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.7 } 
+                }}
               >
-                <Sparkles size={16} className="text-yellow-400" />
+                <Sparkles size={14} className="text-slate-300 drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
               </motion.div>
             </motion.div>
 
