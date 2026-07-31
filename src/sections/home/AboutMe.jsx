@@ -8,26 +8,24 @@ export default function AboutMe() {
     <section className="max-w-7xl mx-auto px-6 py-24 relative overflow-hidden">
       
       {/* 
-        BACKGROUND IMAGE: Dark, Moody Laptop Aesthetic 
-        (Seamlessly blended into the dark background) 
+        Aesthetic Image Blended into Background 
+        (Walang borders, nakapatong ang fades para matunaw sa background) 
       */}
-      <div className="absolute top-0 left-0 w-full lg:w-[65%] h-full z-0 pointer-events-none">
+      <div className="absolute top-0 left-0 w-full lg:w-[60%] h-full -z-10 opacity-30 pointer-events-none">
         <img 
-          // Replace this URL with your actual local image path if you have it (e.g., "/image_67e3dd.png")
-          src="https://images.unsplash.com/photo-1618424181497-157f25b6ce5e?q=80&w=1200&auto=format&fit=crop" 
-          alt="Dark Laptop Keyboard" 
-          className="w-full h-full object-cover grayscale opacity-25"
+          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop" 
+          alt="Professional Workspace" 
+          className="w-full h-full object-cover grayscale mix-blend-luminosity"
         />
-        {/* Gradients para matunaw ang image sa dark background ng website mo */}
+        {/* Gradients para mawala ang hard edges / box look */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#050508]/80 to-[#050508]" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-[#050508]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#050508] via-transparent to-transparent opacity-80" />
-        <div className="absolute inset-0 bg-gradient-to-l from-[#050508]/50 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-l from-[#050508] via-transparent to-transparent opacity-80" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
         
-        {/* Left Aspect: Clean text floating over the background image */}
+        {/* Left Aspect: Professional Text Nakapatong sa Background */}
         <div className="lg:col-span-5 space-y-6 py-10 lg:py-20">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -36,17 +34,17 @@ export default function AboutMe() {
             transition={{ duration: 0.6 }}
             className="space-y-5"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/10 text-slate-400 text-[11px] font-mono tracking-widest uppercase backdrop-blur-sm shadow-sm">
-              <Sparkles size={14} className="text-slate-500" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-mono tracking-widest uppercase backdrop-blur-md">
+              <Sparkles size={14} className="text-slate-400" />
               My Narrative
             </div>
             
-            {/* SIMPLE FONT: Removed glitch effect, back to clean, bold, and professional */}
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight drop-shadow-lg">
+            {/* Clean, Professional Typography without Glitch Effect */}
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight">
               My Story
             </h2>
             
-            <p className="text-sm md:text-base leading-relaxed font-mono text-slate-400 max-w-[90%]">
+            <p className="text-base leading-relaxed font-mono text-slate-400">
               // Bridging creativity, data, and code to engineer business solutions.
             </p>
           </motion.div>
