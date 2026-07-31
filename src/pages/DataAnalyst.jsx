@@ -5,7 +5,7 @@ import { BarChart3, PieChart, Database, FileSpreadsheet, Settings, Cpu, LineChar
 import { supabase } from '../lib/supabase';
 import { useMobileBack } from '../hooks/useMobileBack';
 
-// ================= CUSTOM ANIMATED COUNTER COMPONENT (FIXED FOR REACT) =================
+// ================= CUSTOM ANIMATED COUNTER COMPONENT =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
@@ -17,7 +17,6 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
         duration: 2,
         ease: "easeOut",
         onUpdate(val) {
-          // Using React state prevents the 'removeChild' crash!
           setCount(Math.floor(val));
         }
       });
@@ -116,38 +115,16 @@ const defaultAnalyticsRoadmap = [
   "Cloud Analytics", "Microsoft Fabric", "Azure Data Services", "Business Intelligence Platforms", "Enterprise Reporting Systems"
 ];
 
+// ================= EMPTIED LOCAL DATA FOR PORTFOLIO (PENDING STATE) =================
 const defaultShowcaseData = {
-  dashboards: [{
-    id: 1, name: "Executive Sales Dashboard", purpose: "Track monthly recurring revenue and sales team performance.", industry: "Corporate B2B", department: "Sales & Operations",
-    description: "A comprehensive overview of top-level sales metrics with drill-down capabilities.", software: "Excel, Power Query", tech: "ODBC, Dynamic Arrays",
-    date: "August 2024", status: "Deployed", kpis: ["MRR", "Churn Rate", "Customer Acquisition Cost"], impact: "Reduced reporting time by 4 hours weekly.",
-    thumbnail: "/images/dashboard-thumb.jpg"
-  }],
-  reports: [{
-    id: 1, title: "Q3 Operational Efficiency Report", context: "Management required visibility into processing bottlenecks.", objective: "Identify and resolve workflow delays.",
-    audience: "C-Level Executives", frequency: "Quarterly", source: "Internal CRM (ODBC)", format: "PDF / Interactive Excel", viz: "Funnel Charts, Bar Graphs",
-    findings: "Data entry errors accounted for 40% of delays.", recommendations: "Implement automated data validation rules.", impact: "Improved turnaround time by 15%.", tools: "Excel, Power Query"
-  }],
-  automations: [{
-    id: 1, name: "Automated Reconciliation Script", problem: "Manual matching of 5,000+ records took 2 days.", currentProcess: "VLOOKUPs and manual color coding.",
-    painPoints: "High error rate, time-consuming.", objectives: "Reduce reconciliation to under 1 hour.", steps: "1. Extract 2. Clean 3. Auto-Match 4. Flag Discrepancies",
-    tech: "Advanced Excel, Power Query", ai: "ChatGPT (Formula optimization)", timeSaved: "14 hours/month", errorReduction: "99%", productivity: "Increased by 300%",
-  }],
-  caseStudies: [{
-    id: 1, problem: "Inconsistent lead tracking resulting in lost sales.", background: "Real estate firm utilizing scattered Google Sheets.", objectives: "Centralize and standardize lead data.",
-    collection: "Exported from 5 disparate sources.", cleaning: "Standardized date formats and removed duplicates.", analysis: "Identified peak lead conversion times.",
-    visualization: "Conversion heatmaps.", insights: "Leads contacted within 1 hour converted 4x higher.", recommendations: "Set up instant lead alert automation.", impact: "25% increase in total sales volume.", lessons: "Data governance must start at the point of entry."
-  }],
-  projects: [{
-    id: 1, name: "Healthcare Patient Flow Analysis", industry: "Healthcare", overview: "Analyzing patient wait times across departments.", problem: "Patients waiting >2 hours for consultations.",
-    objectives: "Map patient flow to identify staffing shortages.", tools: "Excel, SQL (Learning)", tech: "Data Modeling", role: "Data Analyst Intern",
-    challenges: "Missing timestamps in legacy system.", solution: "Interpolated missing data based on department averages.", results: "Highlighting peak hours allowed for optimized staff scheduling.", status: "Completed"
-  }]
+  dashboards: [],
+  reports: [],
+  automations: [],
+  caseStudies: [],
+  projects: []
 };
 
 export default function DataAnalyst() {
-  // FUTURE: Tanggalin ang "//" kung may modal ka na
-  // useMobileBack(isMyModalOpen, () => setIsMyModalOpen(false));
   const [activeTab, setActiveTab] = useState('dashboards');
   const containerRef = useRef(null);
 
@@ -162,7 +139,7 @@ export default function DataAnalyst() {
   // ================= DYNAMIC RESUME STATE =================
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= FETCH CMS DATA (BULLETPROOF PARSER) =================
+  // ================= FETCH CMS DATA =================
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -181,7 +158,6 @@ export default function DataAnalyst() {
           
           if (Array.isArray(data.experience_roles) && data.experience_roles.length > 0) {
             const formattedRoles = data.experience_roles.map(r => {
-              // BRUTE FORCE IMAGE DETECTOR FOR ROLES
               let imgUrl = null;
               if (r.logo_url) imgUrl = r.logo_url;
               else if (r.image_url) imgUrl = r.image_url;
@@ -248,7 +224,6 @@ export default function DataAnalyst() {
                     }
                   }
 
-                  // Default Fallback
                   if (!imgUrl && tool.imageSrc) {
                     imgUrl = tool.imageSrc;
                   }
@@ -264,7 +239,6 @@ export default function DataAnalyst() {
             setRoadmap(data.future_roadmap);
           }
 
-          // Handle 5-Tab Showcase Logic safely
           const formattedDashboards = Array.isArray(data.portfolio_dashboards) ? data.portfolio_dashboards.map(d => ({
             ...d,
             kpis: typeof d.kpis === 'string' ? d.kpis.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(d.kpis) ? d.kpis : [])
@@ -279,17 +253,15 @@ export default function DataAnalyst() {
           });
         }
         
-        // ================= FETCH PAGE-SPECIFIC RESUME =================
         const { data: allResumes, error: resumeError } = await supabase
           .from('portfolio_resumes')
           .select('*');
         
         if (allResumes && !resumeError && allResumes.length > 0) {
-          // Look for the Data Analyst resume based on the title you typed in the CMS
           const analystResume = allResumes.find(res => 
             res.title.toLowerCase().includes('data') || 
             res.title.toLowerCase().includes('analyst')
-          ) || allResumes[0]; // Fallback to the first resume if name doesn't match perfectly
+          ) || allResumes[0]; 
           
           setPageResume(analystResume);
         }
@@ -308,6 +280,13 @@ export default function DataAnalyst() {
       targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
+
+  const EmptyState = () => (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full py-16 flex flex-col items-center justify-center text-slate-500 font-mono text-sm border border-dashed border-slate-700 bg-slate-900/30 rounded-2xl col-span-full">
+      <Database size={32} className="mb-4 opacity-40 text-emerald-500" />
+      <p className="text-center px-4 max-w-md">Case Studies Pending. Real-world project data is currently being prepared and validated for showcase.</p>
+    </motion.div>
+  );
 
   return (
     <div ref={containerRef} className="flex flex-col min-h-screen bg-[#020617] text-slate-200 overflow-x-hidden relative selection:bg-emerald-500/30 selection:text-emerald-200">
@@ -331,7 +310,6 @@ export default function DataAnalyst() {
             <p>As a Data Analyst Intern, I continuously learn how data can improve operations, increase efficiency, and support strategic business decisions.</p>
           </div>
 
-          {/* Quick Statistics Grid with Animated Counters */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {stats.map((stat, idx) => (
               <motion.div key={idx} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4, delay: 0.2 + (idx * 0.1) }}
@@ -344,74 +322,80 @@ export default function DataAnalyst() {
         </motion.div>
       </section>
 
-      {/* ================= PROFESSIONAL SUMMARY & HORIZONTAL SWIPEABLE ROLES ================= */}
+      {/* ================= PROFESSIONAL SUMMARY & ROLES (STACKED LAYOUT) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
-            {/* Professional Summary */}
-            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="lg:col-span-5 space-y-6">
-              <h3 className="text-2xl md:text-3xl font-bold text-white">Professional Summary</h3>
-              <div className="w-12 h-1 bg-emerald-500 rounded-full" />
-              <div className="text-slate-400 space-y-4 text-sm leading-relaxed">
-                <p>Jefferson Gonzales is currently a Data Analyst Intern at S.P. Madrid, where he applies analytical thinking to support business operations.</p>
-                <p>His responsibilities include collecting, organizing, cleaning, validating, and analyzing operational data before transforming it into reports and dashboards that help stakeholders make informed decisions.</p>
-                <p>Drawing from his background in graphic design, Jefferson also focuses on presenting analytical findings in clear, visually engaging, and user-friendly formats.</p>
-                <p>Beyond reporting, he is actively exploring workflow automation, business intelligence, and AI-assisted analytics to reduce repetitive work and improve organizational efficiency.</p>
-              </div>
-            </motion.div>
+          {/* 1. Professional Summary (Top Block) */}
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} 
+            className="max-w-3xl mx-auto text-center mb-16 space-y-6">
+            <h3 className="text-2xl md:text-4xl font-black text-white">Professional Summary</h3>
+            <div className="w-16 h-1 bg-emerald-500 rounded-full mx-auto" />
+            <div className="text-slate-300 space-y-5 text-sm md:text-[15px] leading-relaxed tracking-wide text-left mt-8">
+              <p>Jefferson Gonzales is currently a Data Analyst Intern at S.P. Madrid, where he applies analytical thinking to support business operations.</p>
+              <p>His responsibilities include collecting, organizing, cleaning, validating, and analyzing operational data before transforming it into reports and dashboards that help stakeholders make informed decisions.</p>
+              <p>Drawing from his background in graphic design, Jefferson also focuses on presenting analytical findings in clear, visually engaging, and user-friendly formats.</p>
+              <p>Beyond reporting, he is actively exploring workflow automation, business intelligence, and AI-assisted analytics to reduce repetitive work and improve organizational efficiency.</p>
+            </div>
+          </motion.div>
 
-            {/* Horizontally Swipeable Experience Tracks Container */}
-            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="lg:col-span-7 w-full overflow-hidden">
-              <div className="flex overflow-x-auto gap-6 pb-4 hide-scrollbar snap-x snap-mandatory scroll-smooth">
-                {roles.map((role) => (
-                  <div key={role.id} className="shrink-0 w-full snap-center p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl relative overflow-hidden group hover:border-emerald-500/30 transition-colors">
+          {/* 2. Horizontally Swipeable Experience Cards (Bottom Block) */}
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="w-full overflow-hidden mt-12">
+            {/* Kung iisa lang ang role, mag-cecenter ito. Kung marami, magiging swipeable left-to-right. */}
+            <div className={`flex overflow-x-auto gap-6 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth ${roles.length === 1 ? 'justify-center' : 'justify-start'}`}>
+              {roles.map((role) => (
+                <div key={role.id} className="shrink-0 w-[90vw] md:w-[850px] snap-center p-6 md:p-10 rounded-3xl bg-[#0f172a] border border-slate-800 shadow-2xl relative overflow-hidden group hover:border-emerald-500/30 transition-colors">
+                  
+                  <div className="relative z-10">
                     
-                    <div className="relative z-10">
-                      <div className="flex justify-between items-start mb-8 gap-4">
-                        <div>
-                          <div className="flex items-center gap-3 mb-3">
-                            <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
-                              {role.statusBadge}
-                            </span>
-                          </div>
-                          <h4 className="text-2xl font-black text-white">{role.title}</h4>
-                          <p className="text-lime-400 font-semibold">{role.company}</p>
-                        </div>
-                        
-                        <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center p-2 shadow-lg group-hover:border-emerald-500/30 transition-colors">
-                          {role.customImage ? (
-                            <img src={role.customImage} alt={role.company} className="w-full h-full object-contain" />
-                          ) : (
-                            <Briefcase size={32} className="text-emerald-500/50" />
-                          )}
-                        </div>
+                    {/* Header: Logo on the left */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center mb-8 gap-5">
+                      <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-slate-800 border border-slate-700 rounded-2xl flex items-center justify-center p-2 shadow-lg group-hover:border-emerald-500/30 transition-colors">
+                        {role.customImage ? (
+                          <img src={role.customImage} alt={role.company} className="w-full h-full object-contain" />
+                        ) : (
+                          <Briefcase size={32} className="text-emerald-500/50" />
+                        )}
                       </div>
-
-                      <h5 className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-4">Core Responsibilities</h5>
-                      <div className="flex flex-wrap gap-2 mb-8">
-                        {role.responsibilities.map((item, i) => (
-                          <span key={i} className="px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700 text-xs text-slate-300">
-                            {item}
+                      <div>
+                        <div className="mb-2">
+                          <span className="px-3 py-1 rounded-full bg-emerald-400 text-slate-950 text-[11px] font-black uppercase tracking-wider shadow-[0_0_10px_rgba(52,211,153,0.4)]">
+                            {role.statusBadge}
                           </span>
-                        ))}
+                        </div>
+                        <h4 className="text-2xl md:text-3xl font-black text-white">{role.title}</h4>
+                        <p className="text-lime-400 font-semibold">{role.company}</p>
                       </div>
+                    </div>
 
-                      <h5 className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-4">Professional Impact</h5>
-                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <h5 className="text-[11px] text-slate-500 uppercase tracking-widest font-bold mb-3">Core Responsibilities</h5>
+                    <div className="flex flex-wrap gap-2 mb-8">
+                      {role.responsibilities.map((item, i) => (
+                        <span key={i} className="px-3 py-1.5 rounded-lg bg-slate-800/40 border border-slate-700/50 text-xs text-slate-300 hover:bg-slate-700 hover:text-white transition-colors cursor-default">
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+
+                    <h5 className="text-[11px] text-slate-500 uppercase tracking-widest font-bold mb-3">Professional Impact</h5>
+                    {/* Impact nested in a subtle container for depth */}
+                    <div className="bg-slate-800/30 p-5 md:p-6 rounded-2xl border border-slate-700/50">
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4">
                         {role.impact.map((item, i) => (
                           <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                            <CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" /> <span>{item}</span>
+                            <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" /> 
+                            <span className="leading-snug">{item}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
+                    
                   </div>
-                ))}
-              </div>
-            </motion.div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
 
-          </div>
         </div>
       </section>
 
@@ -458,7 +442,6 @@ export default function DataAnalyst() {
             <p className="text-slate-400 max-w-2xl mx-auto text-sm">A structured showcase of dashboards, reporting, automations, and analytical case studies.</p>
           </div>
 
-          {/* Navigation Tabs */}
           <div className="flex flex-wrap justify-center gap-2 mb-12">
             {['dashboards', 'reports', 'automations', 'caseStudies', 'projects'].map((tab) => (
               <button key={tab} onClick={() => setActiveTab(tab)}
@@ -468,12 +451,11 @@ export default function DataAnalyst() {
             ))}
           </div>
 
-          {/* Showcase Content Area */}
           <div className="min-h-[400px]">
             <AnimatePresence mode="wait">
               {activeTab === 'dashboards' && (
                 <motion.div key="dashboards" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {showcase.dashboards?.map(item => (
+                  {showcase.dashboards?.length > 0 ? showcase.dashboards.map(item => (
                     <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden flex flex-col group hover:border-emerald-500/50 transition-colors">
                       <div className="h-48 bg-slate-800 relative flex items-center justify-center overflow-hidden">
                          <LayoutDashboard size={40} className="text-slate-700 group-hover:text-emerald-500/20 transition-colors" />
@@ -493,13 +475,13 @@ export default function DataAnalyst() {
                         </div>
                       </div>
                     </div>
-                  ))}
+                  )) : <EmptyState />}
                 </motion.div>
               )}
 
               {activeTab === 'reports' && (
                 <motion.div key="reports" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {showcase.reports?.map(item => (
+                  {showcase.reports?.length > 0 ? showcase.reports.map(item => (
                     <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-emerald-500/50 transition-colors">
                       <div className="flex justify-between items-start mb-4">
                         <div className="w-12 h-12 rounded-xl bg-lime-500/10 flex items-center justify-center text-lime-400"><FileSpreadsheet size={24} /></div>
@@ -514,13 +496,13 @@ export default function DataAnalyst() {
                       </div>
                       <button className="w-full py-2 rounded-lg bg-slate-800 text-white text-xs font-bold hover:bg-emerald-600 transition-colors">Preview Report</button>
                     </div>
-                  ))}
+                  )) : <EmptyState />}
                 </motion.div>
               )}
 
               {activeTab === 'automations' && (
                 <motion.div key="automations" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 gap-8">
-                  {showcase.automations?.map(item => (
+                  {showcase.automations?.length > 0 ? showcase.automations.map(item => (
                     <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 lg:p-8 flex flex-col md:flex-row gap-8 hover:border-emerald-500/50 transition-colors group">
                       <div className="md:w-1/3 border-r border-slate-800 pr-6">
                         <Cpu size={32} className="text-emerald-400 mb-4" />
@@ -549,13 +531,13 @@ export default function DataAnalyst() {
                         </div>
                       </div>
                     </div>
-                  ))}
+                  )) : <EmptyState />}
                 </motion.div>
               )}
 
               {activeTab === 'caseStudies' && (
                 <motion.div key="caseStudies" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 gap-6">
-                   {showcase.caseStudies?.map(item => (
+                   {showcase.caseStudies?.length > 0 ? showcase.caseStudies.map(item => (
                      <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-emerald-500/50 transition-colors">
                         <div className="flex items-center gap-3 mb-4">
                            <BrainCircuit className="text-emerald-400" size={24}/>
@@ -568,13 +550,13 @@ export default function DataAnalyst() {
                           <div className="p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/20"><span className="text-emerald-400 font-bold block mb-1">Business Impact:</span><span className="text-emerald-100">{item.impact}</span></div>
                         </div>
                       </div>
-                   ))}
+                   )) : <EmptyState />}
                 </motion.div>
               )}
 
               {activeTab === 'projects' && (
                 <motion.div key="projects" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                   {showcase.projects?.map(item => (
+                   {showcase.projects?.length > 0 ? showcase.projects.map(item => (
                      <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 flex flex-col hover:border-emerald-500/50 transition-colors group">
                         <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider mb-2">{item.industry}</span>
                         <h4 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">{item.name}</h4>
@@ -584,7 +566,7 @@ export default function DataAnalyst() {
                            <div className="flex gap-2"><span className="px-2 py-1 bg-slate-800 text-[10px] text-emerald-400 border border-emerald-500/20 rounded">{item.tools}</span></div>
                         </div>
                      </div>
-                   ))}
+                   )) : <EmptyState />}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -592,7 +574,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= 52. SOFTWARE ECOSYSTEM (WITH LOGOS) ================= */}
+      {/* ================= SOFTWARE ECOSYSTEM (WITH LOGOS) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -659,7 +641,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= 54. ANALYTICS PHILOSOPHY ================= */}
+      {/* ================= ANALYTICS PHILOSOPHY ================= */}
       <section className="py-24 px-6 relative z-10 border-t border-slate-800/50 text-center">
         <div className="max-w-4xl mx-auto">
            <Quote size={40} className="text-emerald-500/30 mx-auto mb-6" />
@@ -699,7 +681,7 @@ export default function DataAnalyst() {
         </section>
       )}
 
-      {/* ================= 56. TRANSITION TO THE NEXT JOURNEY ================= */}
+      {/* ================= TRANSITION TO THE NEXT JOURNEY ================= */}
       <section className="w-full relative border-t border-slate-800 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
         
         {/* Aesthetic Shift Gradient */}
