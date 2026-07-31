@@ -63,24 +63,22 @@ export default function Hero({ homeData }) {
 
       <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
         
-        {/* Left Column Structure (Reverted to your original sizings and layout) */}
+        {/* ================= LEFT COLUMN ================= */}
         <div className="lg:col-span-7 space-y-6 text-left order-2 lg:order-1">
           <div className="space-y-2">
-            <p className="text-sm font-semibold tracking-widest uppercase text-slate-400 font-mono">
-              Welcome!
-            </p>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
+            
+            {/* Single Wave Silver Gradient + Slanted (Italic) Text */}
+            <motion.h1 
+              animate={{ backgroundPosition: ['200% center', '-200% center'] }}
+              transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
+              className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight text-transparent bg-clip-text bg-[length:300%_auto] italic pr-4"
+              style={{ backgroundImage: 'linear-gradient(to right, #64748b 0%, #ffffff 30%, #e2e8f0 50%, #ffffff 70%, #64748b 100%)' }}
+            >
               Designing Creativity.<br />
               Analyzing Data.<br />
-              <motion.span 
-                animate={{ backgroundPosition: ['200% center', '-200% center'] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-                className="text-transparent bg-clip-text bg-[length:200%_auto]"
-                style={{ backgroundImage: 'linear-gradient(to right, #94a3b8, #ffffff, #cbd5e1, #94a3b8, #ffffff)' }}
-              >
-                Building with AI.
-              </motion.span>
-            </h1>
+              Building with AI.
+            </motion.h1>
+
           </div>
 
           <div className="h-8 flex items-center">
@@ -94,7 +92,7 @@ export default function Hero({ homeData }) {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: -20, opacity: 0 }}
                     transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="text-white transition-all duration-500 font-mono font-bold pb-0.5 absolute left-0 whitespace-nowrap"
+                    className="text-white transition-all duration-500 font-mono font-bold pb-0.5 absolute left-0 whitespace-nowrap not-italic"
                   >
                     {titles[currentTitleIndex]}
                   </motion.span>
@@ -138,7 +136,7 @@ export default function Hero({ homeData }) {
           </div>
         </div>
 
-        {/* Right Column Structure (3D Portrait with Minimal Icons) */}
+        {/* ================= RIGHT COLUMN (3D Portrait & Floating Icons) ================= */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -149,26 +147,32 @@ export default function Hero({ homeData }) {
           onTouchMove={handleTouchMove}
           onTouchEnd={handleInteractionLeave}
         >
-          {/* Main 3D Interactive Container */}
+          {/* Main 3D Interactive Container - preserve-3d is crucial for depth */}
           <motion.div 
-            style={{ rotateX, rotateY }}
-            className="w-[75%] sm:w-[60%] lg:w-full max-w-[420px] aspect-[4/5] relative flex items-end justify-center transform-style-3d cursor-default"
+            style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
+            className="w-[75%] sm:w-[60%] lg:w-full max-w-[420px] aspect-[4/5] relative flex items-end justify-center cursor-default"
           >
-            {/* The Portrait Image */}
+            
+            {/* 
+              The Portrait Image 
+              Tip: Use a transparent PNG here so the icons can go behind you!
+            */}
             {homeData?.profile_image_url ? (
               <img 
                 src={homeData.profile_image_url} 
                 alt="Jefferson Gonzales" 
-                className="w-full h-full object-cover object-top pointer-events-none drop-shadow-2xl"
+                className="w-full h-full object-cover object-top pointer-events-none drop-shadow-2xl relative z-10"
                 style={{ 
+                  transform: 'translateZ(0px)', // Anchor point
                   WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)', 
                   maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)' 
                 }}
               />
             ) : (
               <div 
-                className="w-full h-full bg-zinc-900 flex items-center justify-center" 
+                className="w-full h-full bg-zinc-900 flex items-center justify-center relative z-10" 
                 style={{ 
+                  transform: 'translateZ(0px)',
                   WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)',
                   maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)'
                 }}
@@ -177,28 +181,37 @@ export default function Hero({ homeData }) {
               </div>
             )}
 
-            {/* Minimal Icon 1: Design Palette */}
+            {/* 
+              Floating Icon 1: Design Palette
+              translateZ: -60 (This pushes it BEHIND your picture) 
+            */}
             <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [20, -20]), y: useTransform(smoothY, [-0.5, 0.5], [20, -20]), translateZ: 30 }}
-              className="absolute top-[20%] left-[5%] md:-left-[5%] p-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md shadow-xl flex items-center justify-center"
+              style={{ x: useTransform(smoothX, [-0.5, 0.5], [50, -50]), y: useTransform(smoothY, [-0.5, 0.5], [30, -30]), translateZ: -60 }}
+              className="absolute top-[20%] left-[-5%] md:left-[-15%] p-2 flex items-center justify-center opacity-80"
             >
-              <Palette size={18} className="text-[#1095d2]" />
+              <Palette size={48} className="text-[#1095d2] drop-shadow-[0_0_15px_rgba(16,149,210,0.5)]" />
             </motion.div>
 
-            {/* Minimal Icon 2: Sparkles / AI */}
+            {/* 
+              Floating Icon 2: Sparkles / AI
+              translateZ: 70 (This pushes it IN FRONT of your picture) 
+            */}
             <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [30, -30]), y: useTransform(smoothY, [-0.5, 0.5], [-20, 20]), translateZ: 50 }}
-              className="absolute top-[10%] right-[15%] p-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md shadow-xl flex items-center justify-center"
+              style={{ x: useTransform(smoothX, [-0.5, 0.5], [60, -60]), y: useTransform(smoothY, [-0.5, 0.5], [-40, 40]), translateZ: 70 }}
+              className="absolute top-[10%] right-[5%] p-2 flex items-center justify-center"
             >
-              <Sparkles size={14} className="text-yellow-500" />
+              <Sparkles size={32} className="text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]" />
             </motion.div>
 
-            {/* Minimal Icon 3: Code / Dev */}
+            {/* 
+              Floating Icon 3: Code / Dev
+              translateZ: -40 (This pushes it BEHIND your picture) 
+            */}
             <motion.div 
-              style={{ x: useTransform(smoothX, [-0.5, 0.5], [-25, 25]), y: useTransform(smoothY, [-0.5, 0.5], [-25, 25]), translateZ: 40 }}
-              className="absolute bottom-[35%] right-[0%] md:-right-[5%] p-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md shadow-xl flex items-center justify-center"
+              style={{ x: useTransform(smoothX, [-0.5, 0.5], [-50, 50]), y: useTransform(smoothY, [-0.5, 0.5], [-30, 30]), translateZ: -40 }}
+              className="absolute bottom-[35%] right-[-10%] md:right-[-20%] p-2 flex items-center justify-center opacity-80"
             >
-              <Code size={18} className="text-[#a855f7]" />
+              <Code size={56} className="text-[#a855f7] drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
             </motion.div>
 
           </motion.div>
