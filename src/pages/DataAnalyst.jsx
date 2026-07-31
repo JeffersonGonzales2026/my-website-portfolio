@@ -323,9 +323,6 @@ export default function DataAnalyst() {
       {/* ================= HERO SECTION ================= */}
       <section className="relative pt-40 pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center z-10">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-5xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
-            <LineChart size={14} /> Data Analyst Portfolio
-          </div>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
             Transforming Data into <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-lime-300">Business Decisions.</span>
           </h1>
