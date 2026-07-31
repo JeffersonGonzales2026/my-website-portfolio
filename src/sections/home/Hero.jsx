@@ -11,8 +11,8 @@ export default function Hero({ homeData }) {
     "Owner & Team Manager",
     "Data Analyst",
     "Automation Specialist",
-    "AI Asst. Full-Stack Dev",
-    "Aspiring Generative AI Engr.",
+    "AI Assisted Full-Stack Developer",
+    "Aspiring Generative AI Engineer",
   ];
 
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
