@@ -229,7 +229,7 @@ export default function Hero({ homeData }) {
             </motion.div>
 
             {/* 5. Middle Right Arrow (Near neck/shoulder) */}
-            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [-20, 20]), y: useTransform(smoothY, [-0.5, 0.5], [10, -10]), translateZ: -90 }} className="absolute top-[25%] right-[7%]">
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [-20, 20]), y: useTransform(smoothY, [-0.5, 0.5], [10, -10]), translateZ: -90 }} className="absolute top-[35%] right-[7%]">
               <motion.div initial={{ x: -160, y: 120, opacity: 0, scale: 0 }} animate={{ x: 0, y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.35, duration: 1.5, delay: 0.5 }}>
                 <motion.div animate={{ y: [2, -2, 2] }} transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}>
                   <Database size={12} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(-15deg) rotateY(15deg)' }} />
@@ -238,7 +238,7 @@ export default function Hero({ homeData }) {
             </motion.div>
 
             {/* 6. Right Arrow (Far Right, Mid-height) */}
-            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [-25, 25]), y: useTransform(smoothY, [-0.5, 0.5], [-20, 20]), translateZ: -85 }} className="absolute top-[40%] right-[-10%]">
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [-25, 25]), y: useTransform(smoothY, [-0.5, 0.5], [-20, 20]), translateZ: -85 }} className="absolute top-[30%] right-[-10%]">
               <motion.div initial={{ x: -220, y: 50, opacity: 0, scale: 0 }} animate={{ x: 0, y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.35, duration: 1.5, delay: 0.7 }}>
                 <motion.div animate={{ y: [4, -4, 4] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}>
                   <Cpu size={14} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(-20deg) rotateY(10deg)' }} />
