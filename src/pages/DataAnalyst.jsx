@@ -7,7 +7,7 @@ import {
   BrainCircuit, Code2, Quote, Download, ListChecks, TrendingUp, Network, Sigma 
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-// import { useMobileBack } from '../hooks/useMobileBack'; // Uncomment if using custom hook
+// import { useMobileBack } from '../hooks/useMobileBack';
 
 // ================= CUSTOM ANIMATED COUNTER COMPONENT =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -82,39 +82,10 @@ const defaultToolsTechnologies = [
       { name: "Microsoft PowerPoint", imageSrc: "/images/powerpoint.png" }
     ] 
   },
-  { 
-    category: "Data Analysis", 
-    tools: [
-      { name: "Power Query", imageSrc: "/images/powerquery.png" },
-      { name: "Power BI", imageSrc: "/images/powerbi.png" },
-      { name: "ODBC", imageSrc: "/images/odbc.png" }
-    ] 
-  },
-  { 
-    category: "Databases", 
-    tools: [
-      { name: "Supabase", imageSrc: "/images/supabase.png" },
-      { name: "SQL", imageSrc: "/images/sql.png" },
-      { name: "PostgreSQL", imageSrc: "/images/postgresql.png" }
-    ] 
-  },
-  { 
-    category: "Programming", 
-    tools: [
-      { name: "Python", imageSrc: "/images/python.png" },
-      { name: "JavaScript", imageSrc: "/images/javascript.png" },
-      { name: "React", imageSrc: "/images/react.png" }
-    ] 
-  },
-  { 
-    category: "AI Assistance", 
-    tools: [
-      { name: "ChatGPT", imageSrc: "/images/chatgpt.png" },
-      { name: "Claude", imageSrc: "/images/claude.png" },
-      { name: "Gemini", imageSrc: "/images/gemini.png" },
-      { name: "GitHub Copilot", imageSrc: "/images/copilot.png" }
-    ] 
-  }
+  { category: "Data Analysis", tools: [{ name: "Power Query", imageSrc: "/images/powerquery.png" }, { name: "Power BI", imageSrc: "/images/powerbi.png" }, { name: "ODBC", imageSrc: "/images/odbc.png" }] },
+  { category: "Databases", tools: [{ name: "Supabase", imageSrc: "/images/supabase.png" }, { name: "SQL", imageSrc: "/images/sql.png" }, { name: "PostgreSQL", imageSrc: "/images/postgresql.png" }] },
+  { category: "Programming", tools: [{ name: "Python", imageSrc: "/images/python.png" }, { name: "JavaScript", imageSrc: "/images/javascript.png" }, { name: "React", imageSrc: "/images/react.png" }] },
+  { category: "AI Assistance", tools: [{ name: "ChatGPT", imageSrc: "/images/chatgpt.png" }, { name: "Claude", imageSrc: "/images/claude.png" }, { name: "Gemini", imageSrc: "/images/gemini.png" }, { name: "GitHub Copilot", imageSrc: "/images/copilot.png" }] }
 ];
 
 const defaultAnalyticsRoadmap = [
@@ -123,17 +94,10 @@ const defaultAnalyticsRoadmap = [
   "Cloud Analytics", "Microsoft Fabric", "Azure Data Services", "Business Intelligence Platforms", "Enterprise Reporting Systems"
 ];
 
-const defaultShowcaseData = {
-  dashboards: [],
-  reports: [],
-  automations: [],
-  caseStudies: [],
-  projects: []
-};
+const defaultShowcaseData = { dashboards: [], reports: [], automations: [], caseStudies: [], projects: [] };
 
 export default function DataAnalyst() {
   const [activeTab, setActiveTab] = useState('dashboards');
-  const [activeTechTab, setActiveTechTab] = useState(0); // Para sa bagong Technical Competencies Option A
   const containerRef = useRef(null);
 
   const [stats, setStats] = useState(defaultQuickStats);
@@ -147,12 +111,7 @@ export default function DataAnalyst() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data, error } = await supabase
-          .from('data_analyst')
-          .select('*')
-          .eq('id', 1)
-          .single();
-
+        const { data, error } = await supabase.from('data_analyst').select('*').eq('id', 1).single();
         if (error && error.code !== 'PGRST116') throw error;
 
         if (data) {
@@ -166,16 +125,13 @@ export default function DataAnalyst() {
               else if (r.image) imgUrl = r.image;
               else if (r.logo) imgUrl = r.logo;
               else if (r.company_logo) imgUrl = r.company_logo;
-              
               if (!imgUrl) {
                 for (const key in r) {
                   if (typeof r[key] === 'string' && (r[key].startsWith('http') || r[key].includes('supabase.co'))) {
-                    imgUrl = r[key];
-                    break;
+                    imgUrl = r[key]; break;
                   }
                 }
               }
-              
               return {
                 ...r,
                 customImage: imgUrl,
@@ -190,8 +146,7 @@ export default function DataAnalyst() {
             const formattedSkills = data.technical_competencies.map((c, index) => {
               const defaultIcon = defaultTechnicalSkills[index]?.icon || FileText;
               return {
-                ...c,
-                icon: defaultIcon,
+                ...c, icon: defaultIcon,
                 skills: typeof c.skills === 'string' ? c.skills.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(c.skills) ? c.skills : [])
               }
             });
@@ -209,12 +164,9 @@ export default function DataAnalyst() {
                 tools: parsedTools.map(tool => {
                   let imgUrl = null;
                   if (typeof tool === 'object' && tool !== null) {
-                    if (tool.logo_url) imgUrl = tool.logo_url;
-                    else if (tool.image_url) imgUrl = tool.image_url;
-                    else if (tool.image) imgUrl = tool.image;
-                    else if (tool.logo) imgUrl = tool.logo;
-                    else if (tool.icon_url) imgUrl = tool.icon_url;
-                    else if (typeof tool.icon === 'string' && tool.icon.includes('http')) imgUrl = tool.icon;
+                    if (tool.logo_url) imgUrl = tool.logo_url; else if (tool.image_url) imgUrl = tool.image_url;
+                    else if (tool.image) imgUrl = tool.image; else if (tool.logo) imgUrl = tool.logo;
+                    else if (tool.icon_url) imgUrl = tool.icon_url; else if (typeof tool.icon === 'string' && tool.icon.includes('http')) imgUrl = tool.icon;
                     if (!imgUrl) {
                       for (const key in tool) {
                         if (typeof tool[key] === 'string' && (tool[key].startsWith('http') || tool[key].includes('supabase.co'))) {
@@ -234,8 +186,7 @@ export default function DataAnalyst() {
           if (Array.isArray(data.future_roadmap) && data.future_roadmap.length > 0) setRoadmap(data.future_roadmap);
 
           const formattedDashboards = Array.isArray(data.portfolio_dashboards) ? data.portfolio_dashboards.map(d => ({
-            ...d,
-            kpis: typeof d.kpis === 'string' ? d.kpis.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(d.kpis) ? d.kpis : [])
+            ...d, kpis: typeof d.kpis === 'string' ? d.kpis.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(d.kpis) ? d.kpis : [])
           })) : [];
 
           setShowcase({
@@ -275,11 +226,10 @@ export default function DataAnalyst() {
       <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-lime-600/10 rounded-full blur-[150px] pointer-events-none z-0" />
 
-      {/* ================= 1. HERO SECTION (UPDATED MOBILE HEADLINE) ================= */}
+      {/* ================= 1. HERO SECTION ================= */}
       <section className="relative pt-40 pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center z-10">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-5xl mx-auto text-center">
           
-          {/* Headline Fix: Sakto 3 Rows lang sa mobile, 2 Rows sa PC */}
           <h1 className="text-[38px] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
             Transforming Data <br className="md:hidden" />
             <span className="hidden md:inline">into </span>
@@ -308,7 +258,7 @@ export default function DataAnalyst() {
         </motion.div>
       </section>
 
-      {/* ================= 2. PROFESSIONAL SUMMARY & ROLE (MOBILE SWIPEABLE TAGS) ================= */}
+      {/* ================= 2. PROFESSIONAL SUMMARY & ROLE (DENSE GRID FOR RESPONSIBILITIES) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20">
         <div className="max-w-7xl mx-auto">
             
@@ -346,20 +296,19 @@ export default function DataAnalyst() {
                     </div>
                   </div>
 
-                  <div className="mb-8">
+                  <div className="mb-10">
                     <h5 className="text-[11px] text-slate-500 uppercase tracking-widest font-bold mb-4 flex items-center gap-2">
                       <ListChecks size={14} className="text-emerald-500" />
                       Core Responsibilities
                     </h5>
                     
-                    {/* UPDATED: Swipeable Horizontal on Mobile, Wrap on Desktop */}
-                    <div className="flex flex-nowrap md:flex-wrap gap-2 overflow-x-auto md:overflow-visible hide-scrollbar pb-3 md:pb-0 snap-x snap-mandatory">
+                    {/* ALTERNATIVE A: Dense Grid Format for Responsibilities */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-y-3 gap-x-4 bg-slate-800/20 p-5 rounded-2xl border border-slate-700/50">
                       {role.responsibilities.map((item, i) => (
-                        <span 
-                          key={i} 
-                          className="px-3 py-1.5 rounded-lg bg-slate-800/40 border border-slate-700/50 text-xs text-slate-300 hover:bg-slate-700 hover:text-white transition-colors cursor-default shrink-0 snap-start whitespace-nowrap">
-                          {item}
-                        </span>
+                        <div key={i} className="flex items-start gap-2">
+                          <span className="text-emerald-500 text-xs mt-0.5">▹</span>
+                          <span className="text-xs md:text-sm text-slate-300 leading-tight">{item}</span>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -385,7 +334,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= 3. TECHNICAL COMPETENCIES (OPTION A: INTERACTIVE VERTICAL TABS) ================= */}
+      {/* ================= 3. TECHNICAL COMPETENCIES (OPTION 2: MASONRY LAYOUT) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -393,69 +342,34 @@ export default function DataAnalyst() {
             <div className="w-16 h-1 bg-emerald-500 rounded-full mx-auto" />
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
-            
-            {/* LEFT SIDE: Category Menu */}
-            <div className="w-full lg:w-1/3 flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible hide-scrollbar gap-2 pb-4 lg:pb-0 snap-x lg:snap-none">
-              {techSkills.map((section, index) => {
-                const Icon = section.icon || FileText;
-                const isActive = activeTechTab === index;
-                
-                return (
-                  <motion.button
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.05 }}
-                    onClick={() => setActiveTechTab(index)}
-                    className={`flex items-center gap-3 px-5 py-4 rounded-xl text-left transition-all shrink-0 snap-start lg:shrink lg:w-full border ${isActive ? 'bg-emerald-500/10 border-emerald-500/30 text-white shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'bg-transparent border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`}
-                  >
-                    <Icon size={20} className={isActive ? 'text-emerald-400' : 'text-slate-500'} />
-                    <span className="font-bold text-sm whitespace-nowrap lg:whitespace-normal">{section.category}</span>
-                    <ArrowRight size={16} className={`ml-auto hidden lg:block transition-all duration-300 ${isActive ? 'opacity-100 text-emerald-500 translate-x-0' : 'opacity-0 -translate-x-2'}`} />
-                  </motion.button>
-                );
-              })}
-            </div>
-
-            {/* RIGHT SIDE: Skill Details (Animated Output) */}
-            <div className="w-full lg:w-2/3 min-h-[350px]">
-              <AnimatePresence mode="wait">
-                {techSkills[activeTechTab] && (
-                  <motion.div
-                    key={activeTechTab}
-                    initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    exit={{ opacity: 0, y: -10, filter: 'blur(5px)' }}
-                    transition={{ duration: 0.3 }}
-                    className="p-8 md:p-10 rounded-3xl bg-slate-900/40 border border-slate-800 shadow-2xl relative overflow-hidden"
-                  >
-                    {/* Subtle Glow inside the active card */}
-                    <div className="absolute -top-10 -right-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
-                    
-                    <div className="relative z-10">
-                      <h4 className="text-2xl font-black text-white mb-8 flex items-center gap-3">
-                        {techSkills[activeTechTab].icon && React.createElement(techSkills[activeTechTab].icon, { size: 28, className: "text-emerald-400" })}
-                        {techSkills[activeTechTab].category}
-                      </h4>
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
-                        {techSkills[activeTechTab].skills.map((skill, i) => (
-                          <div key={i} className="flex items-start gap-3">
-                            <CheckCircle2 size={18} className="text-emerald-500/80 shrink-0 mt-0.5" />
-                            <span className={`text-sm ${skill.includes('Learning') || skill.includes('Future') ? 'italic text-slate-500' : 'text-slate-300 font-medium'}`}>
-                              {skill}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
+          {/* CSS Columns (Masonry effect). No awkward vertical gaps! */}
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+            {techSkills.map((section, index) => {
+              const IconComponent = section.icon || FileText;
+              return (
+                <motion.div key={index} 
+                  initial={{ opacity: 0, y: 20 }} 
+                  whileInView={{ opacity: 1, y: 0 }} 
+                  viewport={{ once: true }} 
+                  transition={{ delay: index * 0.05 }}
+                  className="break-inside-avoid p-6 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-emerald-500/50 transition-colors group mb-6 inline-block w-full">
+                  
+                  <h4 className="text-lg font-bold text-white mb-4 flex items-center gap-2 group-hover:text-emerald-400 transition-colors">
+                    <IconComponent size={20} className="text-emerald-400 shrink-0" />
+                    {section.category}
+                  </h4>
+                  
+                  <ul className="space-y-2">
+                    {section.skills.map((skill, i) => (
+                      <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 shrink-0 mt-1.5" />
+                        <span className={skill.includes('Learning') || skill.includes('Future') ? 'italic text-slate-500' : 'text-slate-300'}>{skill}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
