@@ -7,41 +7,68 @@ export default function AboutMe() {
   return (
     <section className="max-w-7xl mx-auto px-6 py-24 relative overflow-hidden">
       
-      {/* 4. Abstract Dark Geometry Background (Fixed Visibility) */}
-      <div className="absolute top-0 left-0 w-full lg:w-[65%] h-full z-0 pointer-events-none">
-        <img 
-          src="https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=1200&auto=format&fit=crop" 
-          alt="Abstract Dark Geometry" 
-          className="w-full h-full object-cover opacity-50"
-        />
-        {/* Adjusted gradients para lumitaw pa rin ang litrato habang natutunaw sa gilid */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#050508]/60 to-[#050508]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-[#050508]" />
-        <div className="absolute inset-0 bg-gradient-to-l from-[#050508]/80 via-transparent to-transparent" />
+      {/* ================= BACKGROUND: Matte & Silver Tech Atmosphere ================= */}
+      <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-start">
+        {/* Silver Ambient Glow */}
+        <div className="absolute left-[-10%] top-[-10%] w-[600px] h-[600px] bg-slate-400/10 blur-[150px] rounded-full" />
+        {/* Subtle Futuristic Grid */}
+        <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#cbd5e1_1px,transparent_1px),linear-gradient(to_bottom,#cbd5e1_1px,transparent_1px)] bg-[size:32px_32px]" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
         
-        <div className="lg:col-span-5 space-y-6 py-10 lg:py-20">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="space-y-5">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-mono tracking-widest uppercase backdrop-blur-md">
-              <Sparkles size={14} className="text-slate-400" />
-              My Narrative
+        {/* ================= LEFT: Glassmorphism Matte Silver Panel ================= */}
+        <div className="lg:col-span-5 relative group">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            // Matte Glassmorphism Container
+            className="relative z-10 p-10 lg:p-12 rounded-3xl bg-zinc-950/40 backdrop-blur-2xl border border-slate-400/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] overflow-hidden"
+          >
+            {/* Interactive Silver Gleam Effect (Appears on Hover) */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-slate-300/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            
+            <div className="space-y-6 relative z-10">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/40 border border-slate-500/30 text-slate-300 text-xs font-mono tracking-widest uppercase shadow-inner">
+                <Sparkles size={14} className="text-slate-400" />
+                My Narrative
+              </div>
+              
+              {/* Metallic Text Gradient */}
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-300 to-slate-500 tracking-tight pb-2">
+                My Story
+              </h2>
+
+              {/* Minimalist Separator */}
+              <div className="w-12 h-1 bg-slate-600/50 rounded-full" />
+              
+              <p className="text-sm md:text-base leading-relaxed font-mono text-slate-400">
+                // Bridging creativity, data, and code to engineer business solutions.
+              </p>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight drop-shadow-md">
-              My Story
-            </h2>
-            <p className="text-base leading-relaxed font-mono text-slate-400">
-              // Bridging creativity, data, and code to engineer business solutions.
-            </p>
           </motion.div>
         </div>
 
-        <div className="lg:col-span-7 space-y-6 text-slate-400 text-base md:text-lg leading-relaxed lg:pl-10 relative z-10">
-          <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }}>
-            Technology has always fascinated me—not simply because of what it can do, but because of the <span className="text-white font-semibold">problems it can solve.</span> My professional journey started in graphic design, where I discovered the power of visual communication to influence businesses and connect with audiences. Over the years, I worked with startups, corporations, entrepreneurs, and international clients.
+        {/* ================= RIGHT: Narrative Text Block ================= */}
+        <div className="lg:col-span-7 space-y-6 text-slate-400 text-base md:text-lg leading-relaxed lg:pl-6 relative z-10">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            Technology has always fascinated me—not simply because of what it can do, 
+            but because of the <span className="text-slate-200 font-semibold">problems it can solve.</span> My professional journey started in graphic design, where I discovered the power of visual communication to influence businesses and connect with audiences. Over the years, I worked with startups, corporations, entrepreneurs, and international clients.
           </motion.p>
-          <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3 }}>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
             As I gained experience, I became increasingly interested in understanding how businesses operate behind the scenes. This curiosity led me into entrepreneurship, project management, and eventually data analytics. Today, I continue expanding my knowledge into software engineering, using artificial intelligence responsibly as a productivity and learning partner while building real applications that address genuine business challenges.
           </motion.p>
         </div>
