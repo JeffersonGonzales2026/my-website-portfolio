@@ -66,7 +66,7 @@ export default function Hero({ homeData }) {
   const colors = {
     headlineBase: "#94a3b8", // Darker silver para sa base ng title
     headlineShine: "#ffffff", // Kislap ng title
-    subText: "#94a3b8", // Kulay ng "A multidisciplinary technology..."
+    subText: "#94a3b8", // Kulay ng paragraph sa ilalim
     nameText: "#ffffff", // Kulay ng "Jefferson Gonzales"
     roleText: "#ffffff", // Kulay ng "Owner & Team Manager" etc.
     iconSilver: "#c0c0c0", // Kulay ng maliliit na 3D icons sa picture
@@ -90,13 +90,12 @@ export default function Hero({ homeData }) {
           animate="visible"
         >
           <motion.div variants={itemVariants} className="space-y-2">
-            {/* Binawasan ang laki ng text (text-4xl md:text-[46px]) */}
+            {/* Pinaliit pa ang text size: text-3xl md:text-4xl lg:text-[42px] */}
             <motion.h1 
               animate={{ backgroundPosition: ['200% center', '-200% center'] }}
               transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-              className="text-4xl md:text-[46px] font-black tracking-tight leading-[1.1] text-transparent bg-clip-text bg-[length:300%_auto]"
+              className="text-3xl md:text-4xl lg:text-[42px] font-black tracking-tight leading-[1.15] text-transparent bg-clip-text bg-[length:300%_auto]"
               style={{ 
-                // Madali mong mapapalitan ang hex codes ng gradient na ito
                 backgroundImage: `linear-gradient(110deg, ${colors.headlineBase} 46%, ${colors.headlineShine} 49%, ${colors.headlineShine} 51%, ${colors.headlineBase} 54%)` 
               }}
             >
@@ -107,7 +106,7 @@ export default function Hero({ homeData }) {
           </motion.div>
 
           <motion.div variants={itemVariants}>
-            <p className="text-[17px] md:text-[19px] font-medium leading-relaxed md:leading-normal" style={{ color: colors.subText }}>
+            <p className="text-[16px] md:text-[18px] font-medium leading-relaxed md:leading-normal" style={{ color: colors.subText }}>
               I'm <span className="font-bold" style={{ color: colors.nameText }}>Jefferson Gonzales</span>, your specialized{' '}
               <AnimatePresence mode="wait">
                 <motion.span
@@ -125,7 +124,7 @@ export default function Hero({ homeData }) {
             </p>
           </motion.div>
 
-          <motion.p variants={itemVariants} className="text-base max-w-xl leading-relaxed" style={{ color: colors.subText }}>
+          <motion.p variants={itemVariants} className="text-[15px] max-w-xl leading-relaxed" style={{ color: colors.subText }}>
             A multidisciplinary technology professional passionate about combining creativity, 
             business, analytics, automation, and software engineering to solve real-world problems.
           </motion.p>
@@ -134,7 +133,7 @@ export default function Hero({ homeData }) {
             
             {/* BUTTON 1 */}
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}>
-              <button onClick={() => navigate('/dream-creations')} className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#1095d2]/40 text-[#1095d2] font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto">
+              <button onClick={() => navigate('/dream-creations')} className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#1095d2]/40 text-[#1095d2] text-sm md:text-base font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto">
                 <Palette size={18} className="text-[#1095d2] group-hover:text-white transition-colors" />
                 Dream Creations <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </button>
@@ -142,7 +141,7 @@ export default function Hero({ homeData }) {
 
             {/* BUTTON 2 */}
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}>
-              <button onClick={() => navigate('/data-analyst')} className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#5bc96d]/40 text-[#5bc96d] font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto">
+              <button onClick={() => navigate('/data-analyst')} className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#5bc96d]/40 text-[#5bc96d] text-sm md:text-base font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto">
                 <Database size={18} className="text-[#5bc96d] group-hover:text-white transition-colors" />
                 Data Analyst <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </button>
@@ -150,7 +149,7 @@ export default function Hero({ homeData }) {
 
             {/* BUTTON 3 */}
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, ease: "easeOut", delay: 0.6 }}>
-              <button onClick={() => navigate('/ai-developer')} className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#a855f7]/40 text-[#a855f7] font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto">
+              <button onClick={() => navigate('/ai-developer')} className="group flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 hover:border-[#a855f7]/40 text-[#a855f7] text-sm md:text-base font-medium transition-all shadow-lg cursor-pointer w-full sm:w-auto">
                 <Code size={18} className="text-[#a855f7] group-hover:text-white transition-colors" />
                 AI Developer <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </button>
@@ -172,7 +171,6 @@ export default function Hero({ homeData }) {
         >
           <motion.div style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }} className="w-[75%] sm:w-[60%] lg:w-full max-w-[420px] aspect-[4/5] relative flex items-end justify-center cursor-default">
             
-            {/* Tinanggal ang "JG" fallback. Kapag walang image, hindi ito magpapakita at hindi magpa-flash. */}
             {homeData?.profile_image_url && (
               <img 
                 src={homeData.profile_image_url} 
@@ -186,58 +184,64 @@ export default function Hero({ homeData }) {
               />
             )}
 
-            {/* --- 6 MINIMAL SILVER ICONS POPPING UP FROM VERY LOW BEHIND --- */}
-            
-            {/* 1. Far Left (Outside Shoulder) */}
+            {/* --- 6 ICONS EXPLODING FROM CENTER CHEST (Based on red arrows) --- */}
+            {/* 
+                Explanation: 
+                x: 180, y: 150 refers to the initial offset (pixels from their final position). 
+                Since they are placed around the image, giving them an initial positive/negative 
+                X and Y pushes them to start exactly at the V-neck/chest center.
+            */}
+
+            {/* 1. Left Arrow (Far Left, Mid-height) */}
             <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [20, -20]), y: useTransform(smoothY, [-0.5, 0.5], [15, -15]), translateZ: -80 }} className="absolute top-[55%] left-[-10%]">
-              <motion.div initial={{ y: 100, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.3, duration: 1.5, delay: 0.4 }}>
-                <motion.div animate={{ y: [-4, 4, -4] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
-                  <Palette size={16} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(15deg) rotateY(-15deg)' }} />
+              <motion.div initial={{ x: 220, y: 50, opacity: 0, scale: 0 }} animate={{ x: 0, y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.35, duration: 1.5, delay: 0.4 }}>
+                <motion.div animate={{ y: [-3, 3, -3] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
+                  <Palette size={12} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(15deg) rotateY(-15deg)' }} />
                 </motion.div>
               </motion.div>
             </motion.div>
 
-            {/* 2. Left Middle (Near Neck) */}
-            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [25, -25]), y: useTransform(smoothY, [-0.5, 0.5], [-15, 15]), translateZ: -70 }} className="absolute top-[40%] left-[8%]">
-              <motion.div initial={{ y: 100, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.3, duration: 1.5, delay: 0.55 }}>
-                <motion.div animate={{ y: [-3, 3, -3] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}>
-                  <Code size={16} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(10deg) rotateY(-20deg)' }} />
+            {/* 2. Middle Left Arrow (Higher up, near ear) */}
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [25, -25]), y: useTransform(smoothY, [-0.5, 0.5], [-15, 15]), translateZ: -70 }} className="absolute top-[40%] left-[5%]">
+              <motion.div initial={{ x: 160, y: 120, opacity: 0, scale: 0 }} animate={{ x: 0, y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.35, duration: 1.5, delay: 0.55 }}>
+                <motion.div animate={{ y: [-2, 2, -2] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}>
+                  <Code size={14} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(10deg) rotateY(-20deg)' }} />
                 </motion.div>
               </motion.div>
             </motion.div>
 
-            {/* 3. Top Left (Above Hat) */}
-            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [15, -15]), y: useTransform(smoothY, [-0.5, 0.5], [25, -25]), translateZ: -75 }} className="absolute top-[20%] left-[20%]">
-              <motion.div initial={{ y: 80, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.3, duration: 1.5, delay: 0.45 }}>
-                <motion.div animate={{ y: [-2, 2, -2] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>
-                  <Sparkles size={14} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateZ(15deg)' }} />
+            {/* 3. Top Left Arrow (Above hat/ear) */}
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [15, -15]), y: useTransform(smoothY, [-0.5, 0.5], [25, -25]), translateZ: -75 }} className="absolute top-[25%] left-[20%]">
+              <motion.div initial={{ x: 120, y: 180, opacity: 0, scale: 0 }} animate={{ x: 0, y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.35, duration: 1.5, delay: 0.45 }}>
+                <motion.div animate={{ y: [-3, 3, -3] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}>
+                  <Sparkles size={12} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateZ(15deg)' }} />
                 </motion.div>
               </motion.div>
             </motion.div>
 
-            {/* 4. Top Right (Above Tassel) */}
-            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [-15, 15]), y: useTransform(smoothY, [-0.5, 0.5], [20, -20]), translateZ: -80 }} className="absolute top-[25%] right-[15%]">
-              <motion.div initial={{ y: 80, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.3, duration: 1.5, delay: 0.6 }}>
+            {/* 4. Top Right Arrow (Above Tassel) */}
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [-15, 15]), y: useTransform(smoothY, [-0.5, 0.5], [20, -20]), translateZ: -80 }} className="absolute top-[28%] right-[12%]">
+              <motion.div initial={{ x: -120, y: 180, opacity: 0, scale: 0 }} animate={{ x: 0, y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.35, duration: 1.5, delay: 0.6 }}>
                 <motion.div animate={{ y: [3, -3, 3] }} transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}>
                   <Layers size={14} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(15deg) rotateY(15deg)' }} />
                 </motion.div>
               </motion.div>
             </motion.div>
 
-            {/* 5. Right Middle (Near Neck) */}
-            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [-20, 20]), y: useTransform(smoothY, [-0.5, 0.5], [10, -10]), translateZ: -90 }} className="absolute top-[45%] right-[5%]">
-              <motion.div initial={{ y: 100, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.3, duration: 1.5, delay: 0.5 }}>
-                <motion.div animate={{ y: [4, -4, 4] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}>
-                  <Database size={16} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(-15deg) rotateY(15deg)' }} />
+            {/* 5. Middle Right Arrow (Near neck/shoulder) */}
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [-20, 20]), y: useTransform(smoothY, [-0.5, 0.5], [10, -10]), translateZ: -90 }} className="absolute top-[45%] right-[2%]">
+              <motion.div initial={{ x: -160, y: 120, opacity: 0, scale: 0 }} animate={{ x: 0, y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.35, duration: 1.5, delay: 0.5 }}>
+                <motion.div animate={{ y: [2, -2, 2] }} transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}>
+                  <Database size={12} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(-15deg) rotateY(15deg)' }} />
                 </motion.div>
               </motion.div>
             </motion.div>
 
-            {/* 6. Far Right (Outside Shoulder) */}
-            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [-25, 25]), y: useTransform(smoothY, [-0.5, 0.5], [-20, 20]), translateZ: -85 }} className="absolute top-[60%] right-[-10%]">
-              <motion.div initial={{ y: 100, opacity: 0, scale: 0 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.3, duration: 1.5, delay: 0.7 }}>
-                <motion.div animate={{ y: [5, -5, 5] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}>
-                  <Cpu size={16} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(-20deg) rotateY(10deg)' }} />
+            {/* 6. Right Arrow (Far Right, Mid-height) */}
+            <motion.div style={{ x: useTransform(smoothX, [-0.5, 0.5], [-25, 25]), y: useTransform(smoothY, [-0.5, 0.5], [-20, 20]), translateZ: -85 }} className="absolute top-[58%] right-[-12%]">
+              <motion.div initial={{ x: -220, y: 50, opacity: 0, scale: 0 }} animate={{ x: 0, y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.35, duration: 1.5, delay: 0.7 }}>
+                <motion.div animate={{ y: [4, -4, 4] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}>
+                  <Cpu size={14} style={{ color: colors.iconSilver, transform: 'perspective(200px) rotateX(-20deg) rotateY(10deg)' }} />
                 </motion.div>
               </motion.div>
             </motion.div>
