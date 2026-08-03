@@ -1,7 +1,7 @@
 // src/pages/AiDeveloper.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate } from 'framer-motion';
-import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail, Download } from 'lucide-react';
+import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Palette, Briefcase, LineChart, Rocket } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useMobileBack } from '../hooks/useMobileBack';
 
@@ -37,11 +37,6 @@ const fadeSlideUp = {
 const cardPop = {
   hidden: { opacity: 0, scale: 0.8, rotateX: 15 },
   visible: { opacity: 1, scale: 1, rotateX: 0, transition: { duration: 0.5, type: "spring", stiffness: 100 } }
-};
-
-const timelineSlide = {
-  hidden: { opacity: 0, x: -40 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } }
 };
 
 const staggerContainer = {
@@ -183,8 +178,6 @@ const extractImageDeep = (item) => {
 };
 
 export default function AiDeveloper() {
-  // FUTURE: Tanggalin ang "//" kung may modal ka na
-  // useMobileBack(isMyModalOpen, () => setIsMyModalOpen(false));
   const containerRef = useRef(null);
 
   const [stats, setStats] = useState(defaultDeveloperStats);
@@ -338,7 +331,7 @@ export default function AiDeveloper() {
       {/* ================= PAGE CONTENT WRAPPER ================= */}
       <div className="relative z-10 overflow-x-hidden">
 
-        {/* ================= 59. HERO SECTION (ADJUSTED PADDING) ================= */}
+        {/* ================= 59. HERO SECTION ================= */}
         <section className="relative pt-30 md:pt-32 pb-16 md:pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center">
           <div className="max-w-5xl mx-auto text-center relative w-full">
 
@@ -346,21 +339,19 @@ export default function AiDeveloper() {
             <motion.h1 variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}
               className="text-[24px] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
               
-              {/* MOBILE ONLY (Forces exactly 3 lines with no wrapping issues) */}
               <span className="md:hidden block leading-[1.4]">
                 <span className="block whitespace-nowrap">Building the Future</span>
                 <span className="block whitespace-nowrap">with <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">Code, AI, &</span></span>
                 <span className="block whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">Continuous Learning.</span>
               </span>
 
-              {/* PC ONLY */}
               <span className="hidden md:block leading-tight">
                 Building the Future with <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">Code, AI, & Continuous Learning.</span>
               </span>
             </motion.h1>
 
-            {/* FIXED PARAGRAPH (Separated Blue Text & Adjusted Mobile Font) */}
+            {/* FIXED PARAGRAPH */}
             <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }}
               className="text-sm md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto mb-10 md:mb-12 space-y-5 md:space-y-6 px-2 md:px-0">
               <p>
@@ -371,7 +362,7 @@ export default function AiDeveloper() {
               </p>
             </motion.div>
 
-            {/* BUTTONS (Full width on Mobile) */}
+            {/* BUTTONS */}
             <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.4 }} 
               className="flex flex-col sm:flex-row justify-center gap-4 relative z-20 mb-16 w-full sm:w-auto px-4 sm:px-0">
               <button onClick={() => scrollToSection('current-projects')} className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-black text-sm hover:opacity-90 transition-opacity shadow-[0_0_25px_rgba(6,182,212,0.4)] cursor-pointer">
@@ -439,30 +430,76 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 62. DEVELOPMENT JOURNEY TIMELINE ================= */}
-        <section id="learning-timeline" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
-          <div className="max-w-4xl mx-auto">
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-              <h3 className="text-3xl font-black text-white mb-4">Development Journey Timeline</h3>
-              <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
+        {/* ================= 62. DEVELOPMENT JOURNEY TIMELINE (ZIG-ZAG OVERHAUL) ================= */}
+        <section id="learning-timeline" className="py-32 px-6 relative border-t border-slate-900/80 bg-black/20">
+          <div className="max-w-5xl mx-auto">
+            
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-24">
+              <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Journey</h3>
+              <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
             </motion.div>
 
-            <div className="relative border-l border-slate-800 ml-4 md:ml-32 space-y-12">
-              {timeline.map((item, idx) => (
-                <motion.div variants={timelineSlide} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} transition={{ delay: idx * 0.1 }} key={idx} className="relative pl-8 group">
-                  <div className="absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full bg-slate-900 group-hover:bg-cyan-400 transition-colors border border-cyan-500/50 z-20 shadow-[0_0_10px_rgba(6,182,212,0)] group-hover:shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
-                  
-                  <div className="md:absolute md:left-[-140px] md:top-0 md:w-32 md:text-right font-black text-sm text-slate-500 group-hover:text-cyan-400 transition-colors mb-2 md:mb-0">
-                    {item.year}
-                  </div>
+            <div className="relative">
+              {/* Glowing Center Line */}
+              <div className="absolute left-[28px] md:left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-cyan-500 via-purple-500 to-slate-900 md:-translate-x-1/2 opacity-40 shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
 
-                  <div className="p-5 rounded-xl bg-slate-950/60 border border-slate-900 group-hover:border-cyan-500/40 group-hover:bg-cyan-500/5 transition-all duration-300 shadow-lg backdrop-blur-sm">
-                    <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line group-hover:text-slate-200 transition-colors">
-                      {item.desc}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
+              {timeline.map((item, idx) => {
+                const isEven = idx % 2 === 0;
+                const text = (item.year + " " + item.desc).toLowerCase();
+                
+                // Dynamic Visual Logic based on Keywords
+                let Icon = CheckCircle2;
+                let glowClass = "border-slate-800 group-hover:border-cyan-500/50";
+                let yearColor = "text-cyan-400";
+                let iconColor = "text-cyan-400";
+                
+                if (text.includes("future")) {
+                  Icon = Rocket;
+                  glowClass = "border-purple-500/50 shadow-[0_0_30px_rgba(168,85,247,0.15)] group-hover:border-purple-400";
+                  yearColor = "text-purple-400";
+                  iconColor = "text-purple-400";
+                } else if (text.includes("current")) {
+                  Icon = Terminal;
+                  glowClass = "border-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.15)] group-hover:border-cyan-400";
+                } else if (text.includes("graphic")) {
+                  Icon = Palette;
+                } else if (text.includes("bachelor") || text.includes("bsit")) {
+                  Icon = GraduationCap;
+                } else if (text.includes("dream creations") || text.includes("freelance")) {
+                  Icon = Briefcase;
+                } else if (text.includes("data analyst")) {
+                  Icon = LineChart;
+                } else if (text.includes("milestone") || text.includes("portfolio")) {
+                  Icon = Layers;
+                }
+
+                return (
+                  <motion.div 
+                    variants={fadeSlideUp} 
+                    initial="hidden" 
+                    whileInView="visible" 
+                    viewport={{ once: true, margin: "-50px" }} 
+                    transition={{ delay: 0.1 }} 
+                    key={idx} 
+                    className={`relative flex flex-col md:flex-row items-center w-full mb-12 ${isEven ? 'md:flex-row-reverse' : ''} group`}
+                  >
+                    {/* Central Icon */}
+                    <div className={`absolute left-[28px] md:left-1/2 w-12 h-12 -translate-x-1/2 bg-[#02040a] border-2 ${glowClass.includes('purple') ? 'border-purple-500' : 'border-cyan-500'} rounded-full flex items-center justify-center z-20 shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-transform duration-300 group-hover:scale-110`}>
+                      <Icon size={20} className={iconColor} />
+                    </div>
+
+                    {/* Card Container */}
+                    <div className={`ml-[70px] md:ml-0 w-[calc(100%-70px)] md:w-[45%] ${isEven ? 'md:pl-12 md:text-left' : 'md:pr-12 md:text-right'}`}>
+                      <div className={`p-6 md:p-8 rounded-3xl bg-slate-950/60 border ${glowClass} backdrop-blur-md transition-all duration-300 group-hover:bg-slate-900/80`}>
+                        <span className={`${yearColor} font-black text-sm md:text-base tracking-widest mb-3 block uppercase drop-shadow-sm`}>{item.year}</span>
+                        <p className="text-sm md:text-base text-slate-400 leading-relaxed whitespace-pre-line group-hover:text-slate-200 transition-colors">
+                          {item.desc}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              })}
             </div>
           </div>
         </section>
