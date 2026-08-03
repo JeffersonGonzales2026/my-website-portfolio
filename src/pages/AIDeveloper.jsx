@@ -319,7 +319,7 @@ export default function AiDeveloper() {
             animation: 'pan-neural 25s linear infinite'
           }} />
 
-          {/* Hardware-Accelerated High-Speed Data Streams (Ito yung horizontal & vertical lines) */}
+          {/* Hardware-Accelerated High-Speed Data Streams */}
           <div className="absolute top-0 w-[2px] h-[150px] bg-gradient-to-b from-transparent via-cyan-400 to-transparent opacity-60 stream-y" style={{ left: '15%', animationDuration: '2.5s', animationDelay: '0s' }} />
           <div className="absolute top-0 w-[2px] h-[200px] bg-gradient-to-b from-transparent via-purple-500 to-transparent opacity-60 stream-y" style={{ left: '45%', animationDuration: '3s', animationDelay: '1.2s' }} />
           <div className="absolute top-0 w-[2px] h-[100px] bg-gradient-to-b from-transparent via-blue-400 to-transparent opacity-60 stream-y" style={{ left: '85%', animationDuration: '2s', animationDelay: '0.5s' }} />
@@ -342,22 +342,30 @@ export default function AiDeveloper() {
         <section className="relative pt-44 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center">
           <div className="max-w-5xl mx-auto text-center relative">
 
-            {/* FIXED MOBILE HEADLINE */}
+            {/* FIXED HEADLINE (3 Lines on Mobile, 2 on PC) */}
             <motion.h1 variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}
-              className="text-[34px] leading-[1.15] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
-              <span className="md:hidden">Building the Future <br/> with </span>
-              <span className="hidden md:inline">Building the Future with <br/></span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">
-                <span className="md:hidden">Code, AI, & <br/> Continuous Learning.</span>
-                <span className="hidden md:inline">Code, AI, & Continuous Learning.</span>
+              className="text-[28px] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
+              
+              {/* MOBILE ONLY (Forces exactly 3 lines with no wrapping issues) */}
+              <span className="md:hidden block leading-[1.25]">
+                <span className="block whitespace-nowrap">Building the Future</span>
+                <span className="block whitespace-nowrap">with <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">Code, AI, &</span></span>
+                <span className="block whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">Continuous Learning.</span>
+              </span>
+
+              {/* PC ONLY */}
+              <span className="hidden md:block leading-tight">
+                Building the Future with <br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">Code, AI, & Continuous Learning.</span>
               </span>
             </motion.h1>
 
+            {/* FIXED PARAGRAPH (Merged into one) */}
             <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }}
-              className="text-base md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto space-y-4 mb-12">
-              <p><strong>Software engineering is more than writing code.</strong> It is understanding problems, designing scalable solutions, collaborating with intelligent tools, and continuously improving through real-world experience.</p>
-              <p>As an aspiring AI-Assisted Full-Stack Developer, I am building practical applications while learning modern technologies, software architecture, automation, and best development practices.</p>
-              <p className="text-cyan-400/90 font-medium">This portfolio is my first flagship software engineering project—and the beginning of a much larger journey.</p>
+              className="text-base md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto mb-12">
+              <p>
+                <strong>Software engineering is more than writing code.</strong> It is understanding problems, designing scalable solutions, collaborating with intelligent tools, and continuously improving through real-world experience. As an aspiring AI-Assisted Full-Stack Developer, I am building practical applications while learning modern technologies, software architecture, automation, and best development practices. <span className="text-cyan-400/90 font-medium">This portfolio is my first flagship software engineering project—and the beginning of a much larger journey.</span>
+              </p>
             </motion.div>
 
             <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.4 }} className="flex flex-wrap justify-center gap-4 relative z-20 mb-16">
