@@ -130,6 +130,139 @@ const creationsCategories = [
 ];
 
 // =========================================================================
+// AI DEVELOPER FULL PIPELINE PRESET (AUTO-FILLS CMS)
+// =========================================================================
+const PRESET_PIPELINE_ARCHITECTURE = [
+  {
+    category: "Planning",
+    items: [
+      { name: "Notion (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" },
+      { name: "Jira (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jira/jira-original.svg" },
+      { name: "Trello (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/trello/trello-plain.svg" },
+      { name: "Miro (Learning)", imageSrc: "/images/miro.png" },
+      { name: "Whimsical (Learning)", imageSrc: "/images/whimsical.png" }
+    ]
+  },
+  {
+    category: "Requirements Analysis",
+    items: [
+      { name: "ChatGPT", imageSrc: "/images/chatgpt.png" },
+      { name: "Claude", imageSrc: "/images/claude.png" },
+      { name: "Kimi (Learning)", imageSrc: "/images/kimi.png" },
+      { name: "GitHub Issues", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
+      { name: "Notion (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" }
+    ]
+  },
+  {
+    category: "Architecture Design",
+    items: [
+      { name: "Excalidraw (Learning)", imageSrc: "/images/excalidraw.png" },
+      { name: "Draw.io (Learning)", imageSrc: "/images/drawio.png" },
+      { name: "Lucidchart (Learning)", imageSrc: "/images/lucidchart.png" },
+      { name: "Eraser.io (Learning)", imageSrc: "/images/eraser.png" }
+    ]
+  },
+  {
+    category: "UI/UX Design",
+    items: [
+      { name: "Figma (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg" },
+      { name: "Penpot (Learning)", imageSrc: "/images/penpot.png" },
+      { name: "ReactBits.dev", imageSrc: "" },
+      { name: "MotionSites.ai", imageSrc: "" },
+      { name: "OmniRoute", imageSrc: "" },
+      { name: "Lucide React", imageSrc: "" },
+      { name: "Glassmorphism", imageSrc: "" },
+      { name: "Bento Grid", imageSrc: "" },
+      { name: "Responsive Design", imageSrc: "" }
+    ]
+  },
+  {
+    category: "Frontend Development",
+    items: [
+      { name: "React", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" },
+      { name: "Vite", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vite/vite-original.svg" },
+      { name: "JavaScript (ES6+)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" },
+      { name: "HTML5", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" },
+      { name: "CSS3", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" },
+      { name: "Tailwind CSS", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" },
+      { name: "Framer Motion", imageSrc: "" },
+      { name: "GSAP", imageSrc: "" },
+      { name: "ScrollTrigger", imageSrc: "" },
+      { name: "React PageFlip", imageSrc: "" },
+      { name: "REST API Integration", imageSrc: "" }
+    ]
+  },
+  {
+    category: "Backend Development",
+    items: [
+      { name: "Node.js", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" },
+      { name: "Express.js", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg" },
+      { name: "REST API", imageSrc: "" },
+      { name: "JSON", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/json/json-original.svg" },
+      { name: "JWT Authentication (Learning)", imageSrc: "" },
+      { name: "Postman (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postman/postman-original.svg" },
+      { name: "Bruno (Learning)", imageSrc: "" }
+    ]
+  },
+  {
+    category: "Database Design",
+    items: [
+      { name: "PostgreSQL", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg" },
+      { name: "Supabase", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" },
+      { name: "Prisma ORM (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/prisma/prisma-original.svg" },
+      { name: "Drizzle ORM (Learning)", imageSrc: "" }
+    ]
+  },
+  {
+    category: "AI Integration",
+    items: [
+      { name: "OpenAI API (Learning)", imageSrc: "/images/openai.png" },
+      { name: "Claude API (Learning)", imageSrc: "/images/claude.png" },
+      { name: "Google AI Studio (Learning)", imageSrc: "/images/gemini.png" },
+      { name: "GitHub Copilot", imageSrc: "/images/copilot.png" },
+      { name: "Cursor (Learning)", imageSrc: "/images/cursor.png" },
+      { name: "LangChain (Learning)", imageSrc: "/images/langchain.png" },
+      { name: "Ollama (Learning)", imageSrc: "" },
+      { name: "Hugging Face (Learning)", imageSrc: "" },
+      { name: "n8n (Learning)", imageSrc: "/images/n8n.png" }
+    ]
+  },
+  {
+    category: "Testing & Debugging",
+    items: [
+      { name: "Chrome DevTools", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/chrome/chrome-original.svg" },
+      { name: "React Developer Tools", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" },
+      { name: "Postman (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postman/postman-original.svg" },
+      { name: "Bruno (Learning)", imageSrc: "" },
+      { name: "ESLint (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/eslint/eslint-original.svg" },
+      { name: "Prettier (Learning)", imageSrc: "" }
+    ]
+  },
+  {
+    category: "Deployment",
+    items: [
+      { name: "Git", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" },
+      { name: "GitHub", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
+      { name: "Vercel (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" },
+      { name: "Netlify (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/netlify/netlify-original.svg" },
+      { name: "Railway (Learning)", imageSrc: "" },
+      { name: "Render (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/render/render-original.svg" },
+      { name: "Cloudflare (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cloudflare/cloudflare-original.svg" }
+    ]
+  },
+  {
+    category: "Monitoring & Maintenance",
+    items: [
+      { name: "GitHub", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
+      { name: "Sentry (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/sentry/sentry-original.svg" },
+      { name: "Google Analytics (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/google/google-original.svg" },
+      { name: "Vercel Analytics (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" },
+      { name: "UptimeRobot (Learning)", imageSrc: "" }
+    ]
+  }
+];
+
+// =========================================================================
 // HELPER: Video Detection
 // =========================================================================
 const isVideoUrl = (url, type) => {
@@ -204,7 +337,8 @@ export default function AdminDashboard() {
   const [aiStats, setAiStats] = useState([]);
   const [aiTimeline, setAiTimeline] = useState([]);
   const [aiEcosystemState, setAiEcosystemState] = useState([]);
-  const [aiArchitecture, setAiArchitecture] = useState([]);
+  // UPDATED: Pre-load with the huge preset instead of empty array!
+  const [aiArchitecture, setAiArchitecture] = useState(PRESET_PIPELINE_ARCHITECTURE);
   const [aiShowcase, setAiShowcase] = useState([]);
   const [aiGithub, setAiGithub] = useState({});
 
@@ -257,7 +391,14 @@ export default function AdminDashboard() {
         setAiStats(aiDev.metrics_counters || []);
         setAiTimeline(aiDev.development_timeline || []);
         setAiEcosystemState(aiDev.ai_partners || []);
-        setAiArchitecture(aiDev.architecture_stack || []);
+        
+        // Ensure we load the new preset format if the db is empty or using old structure
+        if (Array.isArray(aiDev.architecture_stack) && aiDev.architecture_stack.length > 5) {
+          setAiArchitecture(aiDev.architecture_stack);
+        } else {
+          setAiArchitecture(PRESET_PIPELINE_ARCHITECTURE);
+        }
+        
         setAiShowcase(aiDev.engineering_showcase || []);
         setAiGithub(aiDev.github_sync || {});
       }
@@ -736,7 +877,6 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               </div>
-              {/* ================= WORKSPACE PANEL: CERTIFICATIONS ================= */}
               {/* ================= WORKSPACE PANEL: CERTIFICATIONS ================= */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
@@ -1351,26 +1491,31 @@ export default function AdminDashboard() {
                   <div key={catIdx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/10 space-y-2 relative pr-8">
                     <button onClick={() => handleRemoveArrayItem(aiArchitecture, setAiArchitecture, catIdx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                     <div className="flex justify-between items-center border-b border-slate-800 pb-1 mb-2">
-                      <input type="text" value={stack.category} onChange={(e) => handleUpdateArrayField(aiArchitecture, setAiArchitecture, catIdx, 'category', e.target.value)} className="bg-transparent text-xs font-mono font-bold text-cyan-400 outline-none" placeholder="Category" />
+                      <input type="text" value={stack.category} onChange={(e) => handleUpdateArrayField(aiArchitecture, setAiArchitecture, catIdx, 'category', e.target.value)} className="bg-transparent text-xs font-mono font-bold text-cyan-400 outline-none w-[200px]" placeholder="Category" />
                       <button onClick={() => {
                         const updated = [...aiArchitecture];
                         updated[catIdx].items.push({ name: "Linked Item", imageSrc: "" });
                         setAiArchitecture(updated);
                       }} className="text-[9px] font-mono text-zinc-500 hover:text-white cursor-pointer">+ ADD LAYER ITEM</button>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                       {stack.items?.map((tool, tIdx) => (
-                        <div key={tIdx} className="grid grid-cols-2 gap-1 bg-zinc-950 p-1.5 rounded-lg border border-zinc-900">
+                        <div key={tIdx} className="grid grid-cols-3 gap-1 bg-zinc-950 p-1.5 rounded-lg border border-zinc-900 relative">
                           <input type="text" value={tool.name} onChange={(e) => {
                             const updated = [...aiArchitecture];
                             updated[catIdx].items[tIdx].name = e.target.value;
                             setAiArchitecture(updated);
-                          }} className="bg-transparent text-xs text-white outline-none" placeholder="Item Name" />
+                          }} className="bg-transparent text-xs text-white outline-none w-full" placeholder="Item Name" />
                           <input type="text" value={tool.imageSrc} onChange={(e) => {
                             const updated = [...aiArchitecture];
                             updated[catIdx].items[tIdx].imageSrc = e.target.value;
                             setAiArchitecture(updated);
-                          }} className="bg-transparent text-xs text-zinc-600 font-mono outline-none" placeholder="Logo Asset URL" />
+                          }} className="bg-transparent text-xs text-zinc-600 font-mono outline-none col-span-2 w-full pr-4" placeholder="Logo Asset URL" />
+                          <button onClick={() => {
+                             const updated = [...aiArchitecture];
+                             updated[catIdx].items.splice(tIdx, 1);
+                             setAiArchitecture(updated);
+                          }} className="absolute right-1 top-1.5 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={12}/></button>
                         </div>
                       ))}
                     </div>

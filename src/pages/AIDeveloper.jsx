@@ -1,7 +1,7 @@
 // src/pages/AiDeveloper.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate } from 'framer-motion';
-import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ChevronRight, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Palette, Briefcase, LineChart, Rocket } from 'lucide-react';
+import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ChevronRight, ArrowDown, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Palette, Briefcase, LineChart, Rocket } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useMobileBack } from '../hooks/useMobileBack';
 
@@ -37,6 +37,11 @@ const fadeSlideUp = {
 const cardPop = {
   hidden: { opacity: 0, scale: 0.8, rotateX: 15 },
   visible: { opacity: 1, scale: 1, rotateX: 0, transition: { duration: 0.5, type: "spring", stiffness: 100 } }
+};
+
+const timelineSlide = {
+  hidden: { opacity: 0, x: -40 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } }
 };
 
 const staggerContainer = {
@@ -76,39 +81,141 @@ const defaultLearningTimeline = [
 const defaultAiEcosystem = [
   { name: "ChatGPT", role: "Primary planning, architecture, debugging, documentation, learning, and technical guidance.", imageSrc: "/images/chatgpt.png" },
   { name: "Claude", role: "Long-form documentation, reasoning, architecture planning, code reviews, and structured writing.", imageSrc: "/images/claude.png" },
-  { name: "Gemini", role: "Alternative implementation ideas, research, and cross-validation.", imageSrc: "/images/gemini.png" },
-  { name: "GitHub Copilot", role: "In-editor code completion, productivity, and developer assistance.", imageSrc: "/images/copilot.png" },
-  { name: "Amazon Q (Learning)", role: "Enterprise-focused AI development assistant.", imageSrc: "/images/amazonq.png" },
-  { name: "OpenClaw (Learning)", role: "Open-source AI workflow exploration.", imageSrc: "/images/openclaw.png" }
+  { name: "Cursor (Learning)", role: "The leading AI-native IDE. Essential for full-codebase awareness, multi-file refactoring, and rapid AI-assisted software engineering.", imageSrc: "/images/cursor.png" },
+  { name: "GitHub Copilot", role: "In-editor code completion, real-time code generation, and developer productivity.", imageSrc: "/images/copilot.png" },
+  { name: "LangChain / LangGraph (Learning)", role: "Modular framework for building complex, stateful LLM workflows, agents, and Retrieval-Augmented Generation (RAG) pipelines.", imageSrc: "/images/langchain.png" },
+  { name: "CrewAI (Learning)", role: "Multi-agent orchestration framework. Used for creating collaborative, role-based AI agents to solve complex backend problems.", imageSrc: "/images/crewai.png" },
+  { name: "Mastra (Learning)", role: "AI agent application framework tailored for TypeScript. Perfect for building custom production agents in modern web stacks.", imageSrc: "/images/mastra.png" },
+  { name: "v0 / Lovable (Learning)", role: "Generative UI AI tools. Instantly converts natural language prompts or designs into production-ready React components.", imageSrc: "/images/v0.png" }
 ];
 
+// UPDATED ARCHITECTURE MATRIX (PIPELINE FORMAT)
 const defaultTechStackData = [
   {
-    category: "Frontend",
+    category: "Planning",
     items: [
-      { name: "React", imageSrc: "/images/react.png" },
-      { name: "Vite", imageSrc: "/images/vite.png" },
-      { name: "Tailwind CSS", imageSrc: "/images/tailwind.png" },
-      { name: "JavaScript (ES6+)", imageSrc: "/images/javascript.png" },
-      { name: "HTML5/CSS3", imageSrc: "/images/html5.png" }
+      { name: "Notion (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" },
+      { name: "Jira (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jira/jira-original.svg" },
+      { name: "Trello (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/trello/trello-plain.svg" },
+      { name: "Miro (Learning)", imageSrc: "/images/miro.png" },
+      { name: "Whimsical (Learning)", imageSrc: "/images/whimsical.png" }
     ]
   },
   {
-    category: "Backend & Database (Learning Roadmap)",
+    category: "Requirements Analysis",
     items: [
-      { name: "Node.js", imageSrc: "/images/nodejs.png" },
-      { name: "Express.js", imageSrc: "/images/express.png" },
-      { name: "PostgreSQL", imageSrc: "/images/postgresql.png" },
-      { name: "Supabase", imageSrc: "/images/supabase.png" }
+      { name: "ChatGPT", imageSrc: "/images/chatgpt.png" },
+      { name: "Claude", imageSrc: "/images/claude.png" },
+      { name: "Kimi (Learning)", imageSrc: "/images/kimi.png" },
+      { name: "GitHub Issues", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
+      { name: "Notion (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" }
     ]
   },
   {
-    category: "Automation & Prototyping",
+    category: "Architecture Design",
     items: [
-      { name: "n8n", imageSrc: "/images/n8n.png" },
-      { name: "Replit", imageSrc: "/images/replit.png" },
-      { name: "Stitch", imageSrc: "/images/stitch.png" },
-      { name: "Git / GitHub", imageSrc: "/images/github-stack.png" }
+      { name: "Excalidraw (Learning)", imageSrc: "/images/excalidraw.png" },
+      { name: "Draw.io (Learning)", imageSrc: "/images/drawio.png" },
+      { name: "Lucidchart (Learning)", imageSrc: "/images/lucidchart.png" },
+      { name: "Eraser.io (Learning)", imageSrc: "/images/eraser.png" }
+    ]
+  },
+  {
+    category: "UI/UX Design",
+    items: [
+      { name: "Figma (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg" },
+      { name: "Penpot (Learning)", imageSrc: "/images/penpot.png" },
+      { name: "ReactBits.dev", imageSrc: "" },
+      { name: "MotionSites.ai", imageSrc: "" },
+      { name: "OmniRoute", imageSrc: "" },
+      { name: "Lucide React", imageSrc: "" },
+      { name: "Glassmorphism", imageSrc: "" },
+      { name: "Bento Grid", imageSrc: "" },
+      { name: "Responsive Design", imageSrc: "" }
+    ]
+  },
+  {
+    category: "Frontend Development",
+    items: [
+      { name: "React", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" },
+      { name: "Vite", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vite/vite-original.svg" },
+      { name: "JavaScript (ES6+)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" },
+      { name: "HTML5", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" },
+      { name: "CSS3", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" },
+      { name: "Tailwind CSS", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" },
+      { name: "Framer Motion", imageSrc: "" },
+      { name: "GSAP", imageSrc: "" },
+      { name: "ScrollTrigger", imageSrc: "" },
+      { name: "React PageFlip", imageSrc: "" },
+      { name: "REST API Integration", imageSrc: "" }
+    ]
+  },
+  {
+    category: "Backend Development",
+    items: [
+      { name: "Node.js", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" },
+      { name: "Express.js", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg" },
+      { name: "REST API", imageSrc: "" },
+      { name: "JSON", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/json/json-original.svg" },
+      { name: "JWT Authentication (Learning)", imageSrc: "" },
+      { name: "Postman (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postman/postman-original.svg" },
+      { name: "Bruno (Learning)", imageSrc: "" }
+    ]
+  },
+  {
+    category: "Database Design",
+    items: [
+      { name: "PostgreSQL", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg" },
+      { name: "Supabase", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" },
+      { name: "Prisma ORM (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/prisma/prisma-original.svg" },
+      { name: "Drizzle ORM (Learning)", imageSrc: "" }
+    ]
+  },
+  {
+    category: "AI Integration",
+    items: [
+      { name: "OpenAI API (Learning)", imageSrc: "/images/openai.png" },
+      { name: "Claude API (Learning)", imageSrc: "/images/claude.png" },
+      { name: "Google AI Studio (Learning)", imageSrc: "/images/gemini.png" },
+      { name: "GitHub Copilot", imageSrc: "/images/copilot.png" },
+      { name: "Cursor (Learning)", imageSrc: "/images/cursor.png" },
+      { name: "LangChain (Learning)", imageSrc: "/images/langchain.png" },
+      { name: "Ollama (Learning)", imageSrc: "" },
+      { name: "Hugging Face (Learning)", imageSrc: "" },
+      { name: "n8n (Learning)", imageSrc: "/images/n8n.png" }
+    ]
+  },
+  {
+    category: "Testing & Debugging",
+    items: [
+      { name: "Chrome DevTools", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/chrome/chrome-original.svg" },
+      { name: "React Developer Tools", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" },
+      { name: "Postman (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postman/postman-original.svg" },
+      { name: "Bruno (Learning)", imageSrc: "" },
+      { name: "ESLint (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/eslint/eslint-original.svg" },
+      { name: "Prettier (Learning)", imageSrc: "" }
+    ]
+  },
+  {
+    category: "Deployment",
+    items: [
+      { name: "Git", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" },
+      { name: "GitHub", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
+      { name: "Vercel (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" },
+      { name: "Netlify (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/netlify/netlify-original.svg" },
+      { name: "Railway (Learning)", imageSrc: "" },
+      { name: "Render (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/render/render-original.svg" },
+      { name: "Cloudflare (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cloudflare/cloudflare-original.svg" }
+    ]
+  },
+  {
+    category: "Monitoring & Maintenance",
+    items: [
+      { name: "GitHub", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
+      { name: "Sentry (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/sentry/sentry-original.svg" },
+      { name: "Google Analytics (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/google/google-original.svg" },
+      { name: "Vercel Analytics (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" },
+      { name: "UptimeRobot (Learning)", imageSrc: "" }
     ]
   }
 ];
@@ -210,9 +317,11 @@ export default function AiDeveloper() {
               return { ...ai, customImage: imgUrl };
             });
             setAiPartners(formattedPartners);
+          } else {
+            setAiPartners(defaultAiEcosystem); 
           }
           
-          if (Array.isArray(data.architecture_stack) && data.architecture_stack.length > 0) {
+          if (Array.isArray(data.architecture_stack) && data.architecture_stack.length > 5) {
             const formattedArchitecture = data.architecture_stack.map(stack => {
               let parsedTools = [];
               if (Array.isArray(stack.items)) {
@@ -240,6 +349,9 @@ export default function AiDeveloper() {
               };
             });
             setArchitecture(formattedArchitecture);
+          } else {
+             // Fallback to our new Pipeline matrix if empty or using old schema
+             setArchitecture(defaultTechStackData);
           }
           
           if (data.engineering_showcase?.length > 0) {
@@ -332,7 +444,7 @@ export default function AiDeveloper() {
       <div className="relative z-10 overflow-x-hidden">
 
         {/* ================= 59. HERO SECTION ================= */}
-        <section className="relative pt-30 md:pt-32 pb-16 md:pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center">
+        <section className="relative pt-24 md:pt-32 pb-16 md:pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center">
           <div className="max-w-5xl mx-auto text-center relative w-full">
 
             {/* FIXED MOBILE HEADLINE */}
@@ -430,7 +542,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 62. DEVELOPMENT JOURNEY TIMELINE (ZIG-ZAG OVERHAUL) ================= */}
+        {/* ================= 62. DEVELOPMENT JOURNEY TIMELINE (ZIG-ZAG) ================= */}
         <section id="learning-timeline" className="py-32 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-5xl mx-auto">
             
@@ -538,11 +650,11 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 65. AI ECOSYSTEM (WITH LOGOS) ================= */}
+        {/* ================= 65. AI ECOSYSTEM ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-              <h3 className="text-3xl font-black text-white mb-4">Current AI Ecosystem</h3>
+              <h3 className="text-3xl font-black text-white mb-4">AI Ecosystem & Future Integrations</h3>
               <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
             </motion.div>
 
@@ -557,7 +669,9 @@ export default function AiDeveloper() {
                       ) : null}
                       <Cpu size={20} className={`text-slate-700 absolute inset-0 m-auto z-0 ${ai.customImage ? 'hidden' : 'block'}`} />
                     </div>
-                    <h4 className="text-base font-bold text-white group-hover:text-purple-400 transition-colors">{ai.name}</h4>
+                    <h4 className={`text-base font-bold transition-colors ${ai.name.includes("Learning") ? "text-purple-300/80 group-hover:text-purple-300" : "text-white group-hover:text-purple-400"}`}>
+                      {ai.name}
+                    </h4>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed flex-grow group-hover:text-slate-300 transition-colors">{ai.role}</p>
                 </motion.div>
@@ -566,32 +680,65 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. TECH STACK (WITH LOGOS) ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-md">
-          <div className="max-w-7xl mx-auto">
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-              <h3 className="text-3xl font-black text-white mb-4">Development Architecture</h3>
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE (PIPELINE UI) ================= */}
+        <section className="py-32 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-md overflow-hidden">
+          <div className="max-w-5xl mx-auto">
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-24">
+              <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Architecture Pipeline</h3>
               <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
+              <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed">
+                A structured, top-to-bottom engineering workflow detailing every phase of my development process—from initial planning to post-deployment monitoring.
+              </p>
             </motion.div>
 
-            <div className="space-y-16">
+            <div className="relative">
+              {/* Vertical Glowing Pipeline Wire */}
+              <div className="absolute left-[39px] md:left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-cyan-500 via-blue-500 to-purple-500 md:-translate-x-1/2 opacity-30 shadow-[0_0_15px_rgba(6,182,212,0.5)] z-0" />
+
               {architecture.map((stack, idx) => (
-                <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} key={idx}>
-                  <h4 className="text-xs text-cyan-500 uppercase tracking-widest font-black mb-6 border-b border-slate-800 pb-2">{stack.category}</h4>
-                  <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {stack.items?.map((tool, i) => (
-                      <motion.div variants={cardPop} key={i} className="p-4 rounded-xl bg-slate-950/70 border border-slate-900 flex flex-col items-center justify-center text-center hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-300 group shadow-lg">
-                        <div className="w-14 h-14 rounded-xl border border-slate-800 bg-black flex items-center justify-center mb-3 relative overflow-hidden group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all">
-                          {tool.customImage ? (
-                            <img src={tool.customImage} alt={tool.name} className="w-8 h-8 object-contain opacity-60 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10"
-                                 onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
-                          ) : null}
-                          <Settings size={20} className={`text-slate-700 absolute inset-0 m-auto z-0 ${tool.customImage ? 'hidden' : 'block'}`} />
-                        </div>
-                        <span className="text-[11px] font-semibold text-slate-400 group-hover:text-cyan-400 transition-colors">{tool.name}</span>
-                      </motion.div>
-                    ))}
-                  </motion.div>
+                <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} key={idx} className="relative flex flex-col md:flex-row items-center w-full mb-16 group">
+                  
+                  {/* Pipeline Node Dot */}
+                  <div className="absolute left-[34px] md:left-1/2 top-0 w-3 h-3 bg-[#02040a] border-2 border-cyan-400 rounded-full md:-translate-x-1/2 z-20 shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
+
+                  {/* Downward Connector Arrow (Skipped on last item) */}
+                  {idx !== architecture.length - 1 && (
+                    <div className="absolute left-[30px] md:left-1/2 -bottom-10 w-5 h-5 md:-translate-x-1/2 z-20 text-cyan-500/50 flex items-center justify-center animate-bounce">
+                      <ArrowDown size={20} />
+                    </div>
+                  )}
+
+                  {/* Centered Workflow Card */}
+                  <div className="pl-20 md:pl-0 md:w-full z-10 w-full">
+                    <div className="p-6 md:p-8 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] group-hover:border-cyan-500/40 transition-colors relative overflow-hidden text-center md:mx-auto md:max-w-3xl">
+                      
+                      {/* Subtle Top Inner Gradient for the Box */}
+                      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-20 group-hover:opacity-50 transition-opacity" />
+                      
+                      <h4 className="text-base font-black text-cyan-400 uppercase tracking-widest mb-6">
+                        <span className="text-slate-600 mr-2">[{String(idx + 1).padStart(2, '0')}]</span> {stack.category}
+                      </h4>
+                      
+                      <div className="flex flex-wrap justify-center gap-3">
+                        {stack.items?.map((tool, i) => {
+                          const isLearning = tool.name.toLowerCase().includes('(learning)');
+                          const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
+                          
+                          return (
+                            <div key={i} className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${isLearning ? 'bg-purple-950/20 border-purple-900/50 text-purple-300' : 'bg-slate-900/50 border-slate-800 text-slate-200'} text-xs font-semibold hover:scale-105 transition-transform cursor-default`}>
+                              {tool.customImage ? (
+                                <img src={tool.customImage} alt={cleanName} className="w-4 h-4 object-contain" onError={(e) => e.target.style.display='none'} />
+                              ) : (
+                                <Settings size={12} className={isLearning ? 'text-purple-500' : 'text-cyan-500'} />
+                              )}
+                              {cleanName}
+                              {isLearning && <span className="text-[9px] bg-purple-500/20 border border-purple-500/30 text-purple-400 px-1.5 py-0.5 rounded uppercase tracking-wider">Learning</span>}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </div>
