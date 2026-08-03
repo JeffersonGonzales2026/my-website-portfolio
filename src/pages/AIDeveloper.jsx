@@ -339,14 +339,17 @@ export default function AiDeveloper() {
       <div className="relative z-10 overflow-x-hidden">
 
         {/* ================= 59. HERO SECTION ================= */}
-        <section className="relative pt-30 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center">
+        <section className="relative pt-44 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center">
           <div className="max-w-5xl mx-auto text-center relative">
 
+            {/* FIXED MOBILE HEADLINE */}
             <motion.h1 variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}
-              className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8 leading-tight">
-              Building the Future with <br/>
+              className="text-[34px] leading-[1.15] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
+              <span className="md:hidden">Building the Future <br/> with </span>
+              <span className="hidden md:inline">Building the Future with <br/></span>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">
-                Code, AI, & Continuous Learning.
+                <span className="md:hidden">Code, AI, & <br/> Continuous Learning.</span>
+                <span className="hidden md:inline">Code, AI, & Continuous Learning.</span>
               </span>
             </motion.h1>
 
