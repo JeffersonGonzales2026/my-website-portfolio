@@ -339,7 +339,7 @@ export default function AiDeveloper() {
       <div className="relative z-10 overflow-x-hidden">
 
         {/* ================= 59. HERO SECTION ================= */}
-        <section className="relative pt-44 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center">
+        <section className="relative pt-35 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center">
           <div className="max-w-5xl mx-auto text-center relative">
 
             <motion.h1 variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}
