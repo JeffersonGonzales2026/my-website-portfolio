@@ -160,30 +160,14 @@ export default function DreamCreations() {
   // ================= GSAP REFS =================
   const processSectionRef = useRef(null);
   const processTrackRef = useRef(null);
-  // ================= DYNAMIC MARGIN PARA SA CREATIVE PROCESS =================
-  const [processMargin, setProcessMargin] = useState('1125px');
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setProcessMargin('1475px'); // Exact sukat mo para sa Mobile Phone
-      } else {
-        setProcessMargin('1125px'); // Exact sukat mo para sa PC / Desktop
-      }
-    };
-
-    handleResize(); // I-run pagka-load ng page
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
   // PURE GSAP SCROLL-JACKING LOGIC
   useGSAP(() => {
     if (!processSectionRef.current || !processTrackRef.current) return;
 
-    // Computed scroll width minus window width so it stops exactly at the end
     const getScrollAmount = () => {
       let trackWidth = processTrackRef.current.scrollWidth;
-      return Math.max(0, trackWidth - window.innerWidth + 48); // 48 is for padding buffer
+      return Math.max(0, trackWidth - window.innerWidth + 48);
     };
 
     const tween = gsap.to(processTrackRef.current, {
@@ -193,12 +177,13 @@ export default function DreamCreations() {
 
     ScrollTrigger.create({
       trigger: processSectionRef.current,
-      start: "top top", // Pin when section hits the top of viewport
-      end: () => `+=${getScrollAmount() * 1.5}`, // Make scroll longer/slower
+      start: "top top", 
+      // Adjusted multiplier to 1 so it finishes right at the end of the items
+      end: () => `+=${getScrollAmount() * 1}`, 
       pin: true,
       animation: tween,
-      scrub: 1, // Smooth catch-up delay
-      invalidateOnRefresh: true, // Recalculate on screen resize
+      scrub: 1, 
+      invalidateOnRefresh: true, 
     });
 
     return () => {
@@ -257,6 +242,15 @@ export default function DreamCreations() {
     setIsPhotographyOpen(false);
     setIsFlipbookOpen(false);
   });
+
+  // ================= GSAP DOM REFRESHER =================
+  // Pinipilit si GSAP mag-recalculate kapag nagbago ang screen layout o nag-load ang CMS
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 800); 
+    return () => clearTimeout(timeoutId);
+  }, [projects, activePortfolioSubtitle, isPhotographyOpen, activeCreationPopup]);
 
   useEffect(() => {
     if (isAnyModalOpen) {
@@ -629,12 +623,7 @@ export default function DreamCreations() {
           </motion.div>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="max-w-4xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl border border-transparent z-10">
-          <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
-            Let's make your{' '}
-            {/* Ito ang magpapababa sa "dream" sa PC (md:block) pero itatago sa mobile (hidden) */}
-            <br className="hidden md:block" />
-            <span className="text-[#1095d2]">dream</span> a reality.
-          </h2>
+          <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">Let's make your{' '}<br className="hidden md:block" /><span className="text-[#1095d2]">dream</span> a reality.</h2>
           <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
             <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.</p>
           </div>
@@ -756,58 +745,6 @@ export default function DreamCreations() {
               </div>
             </motion.div>
           ))}
-        </div>
-      </section>
-
-      {/* ================= SOFTWARE EXPERTISE ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
-        <div className="mb-12 text-center md:text-left">
-          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Software Expertise</h3>
-          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-          <p className="text-base text-white/70 mt-4 max-w-2xl">Proficient across the industry's leading creative and management tools.</p>
-        </div>
-        <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6">
-          {softwareList.map((tool, index) => (
-            <motion.div key={tool.id} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: index * 0.05 }} className="flex flex-col items-center gap-3 w-24 sm:w-28 group">
-              <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-white/5 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 overflow-hidden bg-black/40 hover:border-[#1095d2]/40">
-                <img src={tool.imageSrc} alt={tool.name} className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <span className="text-[10px] md:text-xs text-center font-semibold text-white/60 group-hover:text-white transition-colors">{tool.name}</span>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* ================= CREATIVE PROCESS (GSAP PINNED SCROLL) ================= */}
-      {/* Dito natin isinalpak ang mb-1475 (mobile) at md:mb-1125 (PC) */}
-      <section 
-        ref={processSectionRef} 
-        className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mb-1450 md:mb-1140"
-      >
-        <div className="h-screen flex flex-col justify-center pt-16 md:pt-24 pb-24">
-          <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
-            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
-            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-            <p className="text-base text-white/70 mt-4 max-w-2xl">Journey through our structured, transparent workflow.</p>
-          </div>
-          
-          {/* GSAP will animate this div to the left */}
-          <div ref={processTrackRef} className="flex items-center gap-4 px-6 md:px-12 w-max pb-8 flex-nowrap">
-            {creativeProcess.map((item, index) => (
-              <React.Fragment key={item.step}>
-                <div className="shrink-0 w-64 p-6 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group shadow-lg select-none">
-                  <div className="w-10 h-10 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-sm font-black mb-4 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all shadow-[0_0_15px_rgba(16,149,210,0.3)] pointer-events-none">{item.step}</div>
-                  <h4 className="text-base font-bold text-white mb-2 leading-tight group-hover:text-[#1095d2] transition-colors pointer-events-none">{item.title}</h4>
-                  <p className="text-xs text-white/50 leading-snug pointer-events-none">{item.desc}</p>
-                </div>
-                {index < creativeProcess.length - 1 && (
-                  <div className="shrink-0 text-[#1095d2]/30 flex items-center justify-center px-2 pointer-events-none">
-                    <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}><ArrowRight size={24} /></motion.div>
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -970,8 +907,59 @@ export default function DreamCreations() {
         </motion.div>
       </section>
 
+      {/* ================= SOFTWARE EXPERTISE ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 mt-10">
+        <div className="mb-12 text-center md:text-left">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Software Expertise</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+          <p className="text-base text-white/70 mt-4 max-w-2xl">Proficient across the industry's leading creative and management tools.</p>
+        </div>
+        <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6">
+          {softwareList.map((tool, index) => (
+            <motion.div key={tool.id} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: index * 0.05 }} className="flex flex-col items-center gap-3 w-24 sm:w-28 group">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-white/5 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 overflow-hidden bg-black/40 hover:border-[#1095d2]/40">
+                <img src={tool.imageSrc} alt={tool.name} className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <span className="text-[10px] md:text-xs text-center font-semibold text-white/60 group-hover:text-white transition-colors">{tool.name}</span>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ================= CREATIVE PROCESS (GSAP PINNED SCROLL) ================= */}
+      <section 
+        ref={processSectionRef} 
+        className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mt-20 md:mt-32 mb-1450 md:mb-750"
+      >
+        <div className="h-screen flex flex-col justify-center pt-16 md:pt-24 pb-24">
+          <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
+            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
+            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+            <p className="text-base text-white/70 mt-4 max-w-2xl">Journey through our structured, transparent workflow.</p>
+          </div>
+          
+          {/* GSAP will animate this div to the left */}
+          <div ref={processTrackRef} className="flex items-center gap-4 px-6 md:px-12 w-max pb-8 flex-nowrap">
+            {creativeProcess.map((item, index) => (
+              <React.Fragment key={item.step}>
+                <div className="shrink-0 w-64 p-6 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group shadow-lg select-none">
+                  <div className="w-10 h-10 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-sm font-black mb-4 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all shadow-[0_0_15px_rgba(16,149,210,0.3)] pointer-events-none">{item.step}</div>
+                  <h4 className="text-base font-bold text-white mb-2 leading-tight group-hover:text-[#1095d2] transition-colors pointer-events-none">{item.title}</h4>
+                  <p className="text-xs text-white/50 leading-snug pointer-events-none">{item.desc}</p>
+                </div>
+                {index < creativeProcess.length - 1 && (
+                  <div className="shrink-0 text-[#1095d2]/30 flex items-center justify-center px-2 pointer-events-none">
+                    <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}><ArrowRight size={24} /></motion.div>
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ================= PRICING / PROJECT INVESTMENT ================= */}
-      <section className="max-w-4xl mx-auto w-full px-6 py-24 z-10 relative text-center mt-10">
+      <section className="max-w-4xl mx-auto w-full px-6 py-24 z-10 relative text-center mt-10 border-t border-white/10">
         <div className="mb-12"><h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Investment</h3><div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" /></div>
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="p-10 md:p-14 rounded-3xl border border-[#1095d2]/20 bg-gradient-to-b from-[#1095d2]/10 to-black/40 backdrop-blur-md relative overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-[#1095d2]/20 blur-[80px] -z-10 pointer-events-none" />
@@ -984,7 +972,7 @@ export default function DreamCreations() {
 
       {/* ================= PAGE RESUME DOWNLOAD ================= */}
       {pageResume && (
-        <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center">
+        <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center border-t border-white/10 mt-10">
           <motion.a href={pageResume.file_url || pageResume.pdf_url} target="_blank" rel="noopener noreferrer" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} whileHover={{ scale: 1.02 }} className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-[#1095d2]/20 to-black/40 border border-[#1095d2]/30 hover:border-[#1095d2] transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(16,149,210,0.15)] hover:shadow-[0_0_30px_rgba(16,149,210,0.3)]">
             <div className="w-12 h-12 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0"><Download size={20} /></div>
             <div className="text-left">

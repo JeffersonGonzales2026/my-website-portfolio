@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
 import { 
   BarChart3, PieChart, Database, FileSpreadsheet, Settings, Cpu, LineChart, 
-  Table, CheckCircle2, ArrowRight, ArrowUp, Briefcase, FileText, LayoutDashboard, 
+  Table, CheckCircle2, ArrowRight, ArrowUp, ArrowDown, Briefcase, FileText, LayoutDashboard, 
   BrainCircuit, Code2, Quote, Download, ListChecks, TrendingUp, Network, Sigma 
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -227,6 +227,13 @@ export default function DataAnalyst() {
     fetchData();
   }, []);
 
+  const scrollToSection = (id) => {
+    const targetElement = document.getElementById(id);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   const EmptyState = () => (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full py-16 flex flex-col items-center justify-center text-slate-500 font-mono text-sm border border-dashed border-slate-700 bg-slate-900/30 rounded-2xl col-span-full">
       <Database size={32} className="mb-4 opacity-40 text-emerald-500" />
@@ -257,9 +264,21 @@ export default function DataAnalyst() {
             </span>
           </h1>
 
-          <div className="text-base md:text-lg text-slate-400 leading-relaxed max-w-3xl mx-auto space-y-4 mb-12">
+          <div className="text-base md:text-lg text-slate-400 leading-relaxed max-w-3xl mx-auto space-y-4 mb-10">
             <p><strong>Data tells stories.</strong> I help organizations uncover those stories by transforming raw information into actionable insights through reporting, dashboards, automation, and analytical thinking.</p>
             <p>As a Data Analyst Intern, I continuously learn how data can improve operations, increase efficiency, and support strategic business decisions.</p>
+          </div>
+
+          {/* ADDED: Button directing to Analytics Portfolio */}
+          <div className="flex justify-center mb-12">
+            <button 
+              onClick={() => scrollToSection('analytics-portfolio')}
+              className="px-8 py-3.5 rounded-full bg-emerald-500 text-slate-950 font-bold text-sm hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:-translate-y-1 flex items-center gap-2 cursor-pointer relative z-20"
+            >
+              <LayoutDashboard size={18} />
+              View Analytics Portfolio
+              <ArrowDown size={16} className="ml-1" />
+            </button>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -398,8 +417,8 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= ANALYTICS PORTFOLIO ================= */}
-      <section className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20">
+      {/* ================= ANALYTICS PORTFOLIO (WITH ID FOR SCROLLING) ================= */}
+      <section id="analytics-portfolio" className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20 scroll-mt-24">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h3 className="text-2xl md:text-4xl font-black text-white mb-4">Analytics Portfolio</h3>
@@ -589,8 +608,8 @@ export default function DataAnalyst() {
 
       {/* ================= FUTURE ANALYTICS ROADMAP (WRITTEN FORMAT) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="mb-10">
             <h3 className="text-2xl font-black text-white mb-4 flex items-center justify-center gap-3">
               <ArrowRight className="text-lime-500" /> Future Analytics Roadmap
             </h3>
