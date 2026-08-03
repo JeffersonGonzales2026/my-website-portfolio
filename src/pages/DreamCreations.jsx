@@ -47,11 +47,6 @@ const BookPage = React.forwardRef((props, ref) => {
   );
 });
 
-// SAFE ID GENERATOR FOR SCROLLING
-const generateSafeId = (text) => {
-  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-};
-
 const featuredClients = [
   { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
   { id: 2, name: "Real Estate Partners", industry: "Property Development", icon: <Building2 size={32} /> },
@@ -538,33 +533,50 @@ export default function DreamCreations() {
     setActivePortfolioSubtitle(subtitle);
   };
 
-  // ================= SCROLL TO ELEMENT LOGIC WITH HIGHLIGHT =================
+  // ================= FIXED EXACT SCROLL WITH GLOW EFFECT =================
   const handleSubtitleModalClick = (subtitleName) => {
+    // 1. Force unlock screen scrolling immediately (since modal locks it)
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+
+    // 2. Close active popups
     setActiveCreationPopup(null);
     setActivePortfolioSubtitle(null); 
     
+    // 3. Find element and scroll exactly to it
     setTimeout(() => { 
-      const targetId = generateSafeId(subtitleName);
+      const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
       const targetElement = document.getElementById(targetId);
       
       if (targetElement) {
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Calculate precise offset so it's comfortably visible in the viewport
+        const yPosition = targetElement.getBoundingClientRect().top + window.scrollY - 150;
         
-        // Magdadagdag ng border glow sa mismong card na kinlick mo para makita mo agad
-        targetElement.style.boxShadow = "0 0 30px rgba(16,149,210,0.8)";
+        window.scrollTo({
+          top: yPosition,
+          behavior: 'smooth'
+        });
+        
+        // Add a visual glowing highlight to the specific card
+        targetElement.style.transition = "all 0.5s ease";
+        targetElement.style.boxShadow = "0 0 40px rgba(16,149,210,0.9)";
         targetElement.style.borderColor = "rgba(16,149,210,1)";
         targetElement.style.transform = "scale(1.03)";
+        targetElement.style.zIndex = "50";
         
+        // Remove highlight after 2 seconds
         setTimeout(() => {
           targetElement.style.boxShadow = "";
           targetElement.style.borderColor = "";
           targetElement.style.transform = "";
-        }, 1500);
+          targetElement.style.zIndex = "";
+        }, 2000);
 
       } else {
+        // Fallback kung sakaling wala
         scrollToSection('portfolio-directory');
       }
-    }, 450); 
+    }, 150); // Very snappy delay
   };
 
   const filteredProjects = activePortfolioSubtitle && activePortfolioSubtitle !== 'All Projects'
@@ -844,13 +856,16 @@ export default function DreamCreations() {
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {cat.items.map((subtitle, idx) => {
-                  const elementId = generateSafeId(subtitle);
+                  
+                  // ADDED: Exact ID generation that matches what we click
+                  const elementId = subtitle.toLowerCase().replace(/\s+/g, '-');
                   const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
                   const hasWork = !!latestProjectWithImage;
                   
                   if (!hasWork) {
                     return (
-                      <div key={idx} id={elementId} className="relative rounded-2xl border border-dashed border-white/10 bg-black/20 flex flex-col items-start justify-center p-5 text-left min-h-[100px] cursor-not-allowed transition-all duration-500">
+                      // ADDED id={elementId} HERE so empty cards can be scrolled to!
+                      <div key={idx} id={elementId} className="relative rounded-2xl border border-dashed border-white/10 bg-black/20 flex flex-col items-start justify-center p-5 text-left min-h-[100px] cursor-not-allowed">
                         <span className="text-[#1095d2]/80 text-[8px] font-mono font-bold uppercase tracking-widest mb-1.5 bg-[#1095d2]/10 px-2 py-0.5 rounded">Available • No Work Yet</span>
                         <h4 className="text-white/50 font-bold text-sm leading-tight">{subtitle}</h4>
                       </div>
