@@ -344,7 +344,7 @@ export default function AiDeveloper() {
 
             {/* FIXED HEADLINE (3 Lines on Mobile, 2 on PC) */}
             <motion.h1 variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}
-              className="text-[28px] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
+              className="text-[28px] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-6">
               
               {/* MOBILE ONLY (Forces exactly 3 lines with no wrapping issues) */}
               <span className="md:hidden block leading-[1.25]">
@@ -360,11 +360,14 @@ export default function AiDeveloper() {
               </span>
             </motion.h1>
 
-            {/* FIXED PARAGRAPH (Merged into one) */}
+            {/* FIXED PARAGRAPH (Separated Blue Text) */}
             <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }}
-              className="text-base md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto mb-12">
+              className="text-base md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto mb-10 space-y-6">
               <p>
-                <strong>Software engineering is more than writing code.</strong> It is understanding problems, designing scalable solutions, collaborating with intelligent tools, and continuously improving through real-world experience. As an aspiring AI-Assisted Full-Stack Developer, I am building practical applications while learning modern technologies, software architecture, automation, and best development practices. <span className="text-cyan-400/90 font-medium">This portfolio is my first flagship software engineering project—and the beginning of a much larger journey.</span>
+                <strong>Software engineering is more than writing code.</strong> It is understanding problems, designing scalable solutions, collaborating with intelligent tools, and continuously improving through real-world experience. As an aspiring AI-Assisted Full-Stack Developer, I am building practical applications while learning modern technologies, software architecture, automation, and best development practices.
+              </p>
+              <p className="text-cyan-400 font-medium">
+                This portfolio is my first flagship software engineering project—and the beginning of a much larger journey.
               </p>
             </motion.div>
 
