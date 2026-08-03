@@ -339,7 +339,7 @@ export default function AiDeveloper() {
       <div className="relative z-10 overflow-x-hidden">
 
         {/* ================= 59. HERO SECTION (ADJUSTED PADDING) ================= */}
-        <section className="relative pt-27 md:pt-32 pb-16 md:pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center">
+        <section className="relative pt-30 md:pt-32 pb-16 md:pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center">
           <div className="max-w-5xl mx-auto text-center relative w-full">
 
             {/* FIXED MOBILE HEADLINE */}
