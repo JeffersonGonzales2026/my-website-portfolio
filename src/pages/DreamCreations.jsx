@@ -47,6 +47,11 @@ const BookPage = React.forwardRef((props, ref) => {
   );
 });
 
+// SAFE ID GENERATOR FOR SCROLLING
+const generateSafeId = (text) => {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+};
+
 const featuredClients = [
   { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
   { id: 2, name: "Real Estate Partners", industry: "Property Development", icon: <Building2 size={32} /> },
@@ -178,7 +183,6 @@ export default function DreamCreations() {
     ScrollTrigger.create({
       trigger: processSectionRef.current,
       start: "top top", 
-      // Adjusted multiplier to 1 so it finishes right at the end of the items
       end: () => `+=${getScrollAmount() * 1}`, 
       pin: true,
       animation: tween,
@@ -244,7 +248,6 @@ export default function DreamCreations() {
   });
 
   // ================= GSAP DOM REFRESHER =================
-  // Pinipilit si GSAP mag-recalculate kapag nagbago ang screen layout o nag-load ang CMS
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       ScrollTrigger.refresh();
@@ -535,19 +538,33 @@ export default function DreamCreations() {
     setActivePortfolioSubtitle(subtitle);
   };
 
+  // ================= SCROLL TO ELEMENT LOGIC WITH HIGHLIGHT =================
   const handleSubtitleModalClick = (subtitleName) => {
     setActiveCreationPopup(null);
     setActivePortfolioSubtitle(null); 
     
     setTimeout(() => { 
-      const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
+      const targetId = generateSafeId(subtitleName);
       const targetElement = document.getElementById(targetId);
+      
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Magdadagdag ng border glow sa mismong card na kinlick mo para makita mo agad
+        targetElement.style.boxShadow = "0 0 30px rgba(16,149,210,0.8)";
+        targetElement.style.borderColor = "rgba(16,149,210,1)";
+        targetElement.style.transform = "scale(1.03)";
+        
+        setTimeout(() => {
+          targetElement.style.boxShadow = "";
+          targetElement.style.borderColor = "";
+          targetElement.style.transform = "";
+        }, 1500);
+
       } else {
         scrollToSection('portfolio-directory');
       }
-    }, 350); 
+    }, 450); 
   };
 
   const filteredProjects = activePortfolioSubtitle && activePortfolioSubtitle !== 'All Projects'
@@ -827,13 +844,13 @@ export default function DreamCreations() {
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {cat.items.map((subtitle, idx) => {
-                  
+                  const elementId = generateSafeId(subtitle);
                   const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
                   const hasWork = !!latestProjectWithImage;
                   
                   if (!hasWork) {
                     return (
-                      <div key={idx} className="relative rounded-2xl border border-dashed border-white/10 bg-black/20 flex flex-col items-start justify-center p-5 text-left min-h-[100px] cursor-not-allowed">
+                      <div key={idx} id={elementId} className="relative rounded-2xl border border-dashed border-white/10 bg-black/20 flex flex-col items-start justify-center p-5 text-left min-h-[100px] cursor-not-allowed transition-all duration-500">
                         <span className="text-[#1095d2]/80 text-[8px] font-mono font-bold uppercase tracking-widest mb-1.5 bg-[#1095d2]/10 px-2 py-0.5 rounded">Available • No Work Yet</span>
                         <h4 className="text-white/50 font-bold text-sm leading-tight">{subtitle}</h4>
                       </div>
@@ -842,7 +859,7 @@ export default function DreamCreations() {
 
                   const coverImage = latestProjectWithImage.featured_image_url;
                   return (
-                    <button key={idx} id={subtitle.toLowerCase().replace(/\s+/g, '-')} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
+                    <button key={idx} id={elementId} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
                       {isVideo(coverImage) ? (
                         <video key={coverImage} src={`${coverImage}#t=0.1`} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                       ) : (
@@ -929,7 +946,7 @@ export default function DreamCreations() {
       {/* ================= CREATIVE PROCESS (GSAP PINNED SCROLL) ================= */}
       <section 
         ref={processSectionRef} 
-        className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mt-20 md:mt-32 mb-970 md:mb-750"
+        className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mt-20 md:mt-32 mb-[1475px] md:mb-[1125px]"
       >
         <div className="h-screen flex flex-col justify-center pt-16 md:pt-24 pb-24">
           <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
