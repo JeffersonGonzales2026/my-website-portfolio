@@ -298,9 +298,6 @@ export default function AiDeveloper() {
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
   
-  // STATE PARA SA MOBILE ORBITAL (TAP-TO-REVEAL)
-  const [activeMobileNode, setActiveMobileNode] = useState(null);
-  
   // STATE PARA SA ARCHITECTURE PIPELINE FLOWCHART
   const [activeArchTab, setActiveArchTab] = useState(0);
 
@@ -407,13 +404,6 @@ export default function AiDeveloper() {
       }
     }
   };
-
-  // Helper variables for Orbital Layout distribution
-  const innerPartners = aiPartners.filter((_, i) => i % 2 === 0);
-  const outerPartners = aiPartners.filter((_, i) => i % 2 !== 0);
-
-  // Helper for Mobile Details HUD
-  const activeMobileDetails = aiPartners.find(ai => ai.name === activeMobileNode);
 
   return (
     <div ref={containerRef} className="flex flex-col min-h-screen text-slate-100 relative selection:bg-cyan-500/30 selection:text-cyan-200">
@@ -628,181 +618,36 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 65. AI ECOSYSTEM (ORBITAL GRID RESPONSIVE) ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20 overflow-hidden">
+        {/* ================= 65. AI ECOSYSTEM (GRID LAYOUT REVERTED) ================= */}
+        <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-10 md:mb-24 relative z-20">
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
               <h3 className="text-3xl font-black text-white mb-4">AI Ecosystem & Future Integrations</h3>
               <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
               <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed">
                 A dynamic network of artificial intelligence models, frameworks, and tools functioning harmoniously to enhance engineering productivity and system intelligence.
               </p>
-              <p className="md:hidden mt-2 text-[10px] text-cyan-400 font-mono tracking-widest opacity-70 animate-pulse">(Tap node to view details)</p>
             </motion.div>
 
-            {/* DESKTOP VIEW: ORBITAL SOLAR SYSTEM */}
-            <motion.div 
-               initial={{ opacity: 0, scale: 0.9 }}
-               whileInView={{ opacity: 1, scale: 1 }}
-               transition={{ duration: 1, ease: "easeOut" }}
-               viewport={{ once: true }}
-               className="hidden md:flex relative w-full h-[600px] items-center justify-center mt-10"
-            >
-               {/* Center Core */}
-               <div className="absolute z-30 w-24 h-24 rounded-full bg-[#02040a] border border-cyan-500 shadow-[0_0_40px_rgba(6,182,212,0.4)] flex flex-col items-center justify-center group cursor-default">
-                  <Cpu size={32} className="text-cyan-400 mb-1 group-hover:scale-110 transition-transform" />
-                  <span className="text-[9px] text-cyan-400 font-mono font-bold tracking-widest uppercase">CORE</span>
-               </div>
-               
-               {/* Pulsing Aura */}
-               <div className="absolute w-24 h-24 rounded-full bg-cyan-500/20 animate-ping z-20" />
-
-               {/* Inner Orbit Ring */}
-               <div className="absolute w-[320px] h-[320px] rounded-full border border-dashed border-cyan-500/30 z-10" />
-               {/* Outer Orbit Ring */}
-               <div className="absolute w-[560px] h-[560px] rounded-full border border-dashed border-purple-500/30 z-10" />
-
-               {/* Dynamic Nodes Mapping */}
-               {innerPartners.map((ai, idx) => {
-                  const angle = (idx / innerPartners.length) * 2 * Math.PI;
-                  const radius = 160; 
-                  const x = Math.cos(angle) * radius;
-                  const y = Math.sin(angle) * radius;
-                  
-                  return (
-                     <div key={`inner-${idx}`} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                         <div className="group flex flex-col items-center justify-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
-                            
-                            <div className="w-14 h-14 rounded-full bg-[#02040a] border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center group-hover:scale-110 group-hover:border-cyan-400 transition-all cursor-crosshair">
-                               {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-8 h-8 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={20} className="text-slate-400" />}
-                            </div>
-                            
-                            {/* Hover Card */}
-                            <div className="absolute top-16 w-48 p-3 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300 z-50 backdrop-blur-md text-center">
-                               <h4 className="text-sm font-bold text-white mb-1">{ai.name}</h4>
-                               <p className="text-[10px] text-slate-400 leading-tight">{ai.role}</p>
-                            </div>
-                         </div>
-                     </div>
-                  );
-               })}
-
-               {outerPartners.map((ai, idx) => {
-                  const angle = (idx / outerPartners.length) * 2 * Math.PI;
-                  const radius = 280; 
-                  const x = Math.cos(angle) * radius;
-                  const y = Math.sin(angle) * radius;
-                  
-                  return (
-                     <div key={`outer-${idx}`} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                         <div className="group flex flex-col items-center justify-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
-                            
-                            <div className="w-16 h-16 rounded-full bg-[#02040a] border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center group-hover:scale-110 group-hover:border-purple-400 transition-all cursor-crosshair">
-                               {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-8 h-8 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={20} className="text-slate-400" />}
-                            </div>
-                            
-                            {/* Hover Card */}
-                            <div className="absolute top-20 w-56 p-4 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300 z-50 backdrop-blur-md text-center">
-                               <h4 className="text-sm font-bold text-white mb-1">{ai.name}</h4>
-                               <p className="text-[10px] text-slate-400 leading-relaxed">{ai.role}</p>
-                            </div>
-                         </div>
-                     </div>
-                  );
-               })}
-
-               <style>{`
-                 @keyframes floating {
-                   0%, 100% { transform: translateY(0px) translateX(0px); }
-                   50% { transform: translateY(-8px) translateX(4px); }
-                 }
-               `}</style>
+            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {aiPartners.map((ai, idx) => (
+                <motion.div variants={cardPop} key={idx} className="p-6 rounded-2xl bg-slate-950/60 border border-slate-900 flex flex-col hover:border-purple-500/50 hover:bg-purple-500/5 transition-all group shadow-lg backdrop-blur-sm">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl border border-slate-800 bg-black flex items-center justify-center relative overflow-hidden shrink-0 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                      {ai.customImage ? (
+                        <img src={ai.customImage} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10" 
+                             onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                      ) : null}
+                      <Settings size={20} className={`text-slate-700 absolute inset-0 m-auto z-0 ${ai.customImage ? 'hidden' : 'block'}`} />
+                    </div>
+                    <h4 className={`text-base font-bold transition-colors ${ai.name.includes("Learning") ? "text-purple-300/80 group-hover:text-purple-300" : "text-white group-hover:text-purple-400"}`}>
+                      {ai.name}
+                    </h4>
+                  </div>
+                  <p className="text-xs text-slate-400 leading-relaxed flex-grow group-hover:text-slate-300 transition-colors">{ai.role}</p>
+                </motion.div>
+              ))}
             </motion.div>
-
-            {/* MOBILE VIEW: SCALED ORBITAL SYSTEM */}
-            <motion.div 
-               initial={{ opacity: 0, scale: 0.9 }}
-               whileInView={{ opacity: 1, scale: 1 }}
-               transition={{ duration: 1, ease: "easeOut" }}
-               viewport={{ once: true }}
-               className="flex md:hidden relative w-full h-[400px] items-center justify-center mt-6 overflow-visible"
-            >
-               {/* Center Core */}
-               <div className="absolute z-30 w-16 h-16 rounded-full bg-[#02040a] border border-cyan-500 shadow-[0_0_20px_rgba(6,182,212,0.4)] flex flex-col items-center justify-center group cursor-default">
-                  <Cpu size={24} className="text-cyan-400 mb-0.5 group-hover:scale-110 transition-transform" />
-                  <span className="text-[7px] text-cyan-400 font-mono font-bold tracking-widest uppercase">CORE</span>
-               </div>
-               
-               {/* Pulsing Aura */}
-               <div className="absolute w-16 h-16 rounded-full bg-cyan-500/20 animate-ping z-20" />
-
-               {/* Inner Orbit Ring */}
-               <div className="absolute w-[180px] h-[180px] rounded-full border border-dashed border-cyan-500/30 z-10" />
-               {/* Outer Orbit Ring */}
-               <div className="absolute w-[320px] h-[320px] rounded-full border border-dashed border-purple-500/30 z-10" />
-
-               {/* Dynamic Nodes Mapping for Mobile */}
-               {innerPartners.map((ai, idx) => {
-                  const angle = (idx / innerPartners.length) * 2 * Math.PI;
-                  const radius = 90; // Mobile Inner Radius
-                  const x = Math.cos(angle) * radius;
-                  const y = Math.sin(angle) * radius;
-                  
-                  const isActive = activeMobileNode === ai.name;
-                  
-                  return (
-                     <div key={`inner-mob-${idx}`} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                         <div className="flex flex-col items-center justify-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
-                            
-                            <div 
-                              onClick={() => setActiveMobileNode(isActive ? null : ai.name)}
-                              className={`w-10 h-10 rounded-full bg-[#02040a] border ${isActive ? 'border-cyan-400 scale-110' : 'border-slate-700'} shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center transition-all cursor-pointer`}
-                            >
-                               {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-6 h-6 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={14} className="text-slate-400" />}
-                            </div>
-                         </div>
-                     </div>
-                  );
-               })}
-
-               {outerPartners.map((ai, idx) => {
-                  const angle = (idx / outerPartners.length) * 2 * Math.PI;
-                  const radius = 160; // Mobile Outer Radius
-                  const x = Math.cos(angle) * radius;
-                  const y = Math.sin(angle) * radius;
-                  
-                  const isActive = activeMobileNode === ai.name;
-                  
-                  return (
-                     <div key={`outer-mob-${idx}`} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                         <div className="flex flex-col items-center justify-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
-                            
-                            <div 
-                              onClick={() => setActiveMobileNode(isActive ? null : ai.name)}
-                              className={`w-12 h-12 rounded-full bg-[#02040a] border ${isActive ? 'border-purple-400 scale-110' : 'border-slate-700'} shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center transition-all cursor-pointer`}
-                            >
-                               {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-7 h-7 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={16} className="text-slate-400" />}
-                            </div>
-                         </div>
-                     </div>
-                  );
-               })}
-            </motion.div>
-
-            {/* DEDICATED INFO HUD BOX FOR MOBILE (Below Orbital Map) */}
-            <div className="md:hidden mt-8 w-full max-w-sm mx-auto h-24 px-4 z-50 relative">
-                {activeMobileDetails ? (
-                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-4 rounded-xl bg-slate-900/90 border border-slate-700 shadow-[0_0_20px_rgba(0,0,0,0.5)] text-center backdrop-blur-md">
-                      <h4 className="text-sm font-bold text-white mb-1">{activeMobileDetails.name}</h4>
-                      <p className="text-[10px] text-slate-400 leading-tight">{activeMobileDetails.role}</p>
-                   </motion.div>
-                ) : (
-                   <div className="flex items-center justify-center h-full text-[10px] text-slate-500 font-mono tracking-widest uppercase animate-pulse border border-dashed border-slate-800 rounded-xl">
-                      -- Tap an AI Node to view details --
-                   </div>
-                )}
-            </div>
-
           </div>
         </section>
 
