@@ -581,7 +581,8 @@ export default function AiDeveloper() {
 
         {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW (CHAT UI OVERHAUL) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          {/* Changed items-start to items-center to fix the empty gap on the left */}
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-5 space-y-6">
               <h3 className="text-3xl font-black text-white">AI is a Partner, <br/>Not a Replacement.</h3>
@@ -682,18 +683,20 @@ export default function AiDeveloper() {
                   const y = Math.sin(angle) * radius;
                   
                   return (
-                     <div key={`inner-${idx}`} className="absolute z-40 group flex flex-col items-center justify-center animate-[floating_4s_ease-in-out_infinite]"
-                          style={{ transform: `translate(${x}px, ${y}px)`, animationDelay: `${idx * 0.5}s` }}>
-                          
-                          <div className="w-14 h-14 rounded-full bg-[#02040a] border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center group-hover:scale-110 group-hover:border-cyan-400 transition-all cursor-crosshair">
-                             {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-8 h-8 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={20} className="text-slate-400" />}
-                          </div>
-                          
-                          {/* Hover Card */}
-                          <div className="absolute top-16 w-48 p-3 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300 z-50 backdrop-blur-md text-center">
-                             <h4 className="text-sm font-bold text-white mb-1">{ai.name}</h4>
-                             <p className="text-[10px] text-slate-400 leading-tight">{ai.role}</p>
-                          </div>
+                     // Fixed: Translate Wrapper separate from Animating Node
+                     <div key={`inner-${idx}`} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                         <div className="group flex flex-col items-center justify-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
+                            
+                            <div className="w-14 h-14 rounded-full bg-[#02040a] border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center group-hover:scale-110 group-hover:border-cyan-400 transition-all cursor-crosshair">
+                               {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-8 h-8 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={20} className="text-slate-400" />}
+                            </div>
+                            
+                            {/* Hover Card */}
+                            <div className="absolute top-16 w-48 p-3 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300 z-50 backdrop-blur-md text-center">
+                               <h4 className="text-sm font-bold text-white mb-1">{ai.name}</h4>
+                               <p className="text-[10px] text-slate-400 leading-tight">{ai.role}</p>
+                            </div>
+                         </div>
                      </div>
                   );
                })}
@@ -705,21 +708,29 @@ export default function AiDeveloper() {
                   const y = Math.sin(angle) * radius;
                   
                   return (
-                     <div key={`outer-${idx}`} className="absolute z-40 group flex flex-col items-center justify-center animate-[floating_5s_ease-in-out_infinite]"
-                          style={{ transform: `translate(${x}px, ${y}px)`, animationDelay: `${idx * 0.7}s` }}>
-                          
-                          <div className="w-16 h-16 rounded-full bg-[#02040a] border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center group-hover:scale-110 group-hover:border-purple-400 transition-all cursor-crosshair">
-                             {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-8 h-8 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={20} className="text-slate-400" />}
-                          </div>
-                          
-                          {/* Hover Card */}
-                          <div className="absolute top-20 w-56 p-4 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300 z-50 backdrop-blur-md text-center">
-                             <h4 className="text-sm font-bold text-white mb-1">{ai.name}</h4>
-                             <p className="text-[10px] text-slate-400 leading-relaxed">{ai.role}</p>
-                          </div>
+                     <div key={`outer-${idx}`} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                         <div className="group flex flex-col items-center justify-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
+                            
+                            <div className="w-16 h-16 rounded-full bg-[#02040a] border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center group-hover:scale-110 group-hover:border-purple-400 transition-all cursor-crosshair">
+                               {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-8 h-8 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={20} className="text-slate-400" />}
+                            </div>
+                            
+                            {/* Hover Card */}
+                            <div className="absolute top-20 w-56 p-4 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300 z-50 backdrop-blur-md text-center">
+                               <h4 className="text-sm font-bold text-white mb-1">{ai.name}</h4>
+                               <p className="text-[10px] text-slate-400 leading-relaxed">{ai.role}</p>
+                            </div>
+                         </div>
                      </div>
                   );
                })}
+
+               <style>{`
+                 @keyframes floating {
+                   0%, 100% { transform: translateY(0px) translateX(0px); }
+                   50% { transform: translateY(-8px) translateX(4px); }
+                 }
+               `}</style>
             </motion.div>
 
             {/* MOBILE VIEW: SCALED ORBITAL SYSTEM */}
@@ -752,18 +763,19 @@ export default function AiDeveloper() {
                   const y = Math.sin(angle) * radius;
                   
                   return (
-                     <div key={`inner-mob-${idx}`} className="absolute z-40 group flex flex-col items-center justify-center animate-[floating_4s_ease-in-out_infinite]"
-                          style={{ transform: `translate(${x}px, ${y}px)`, animationDelay: `${idx * 0.5}s` }}>
-                          
-                          <div className="w-10 h-10 rounded-full bg-[#02040a] border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center group-hover:scale-110 group-hover:border-cyan-400 transition-all cursor-pointer">
-                             {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-6 h-6 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={14} className="text-slate-400" />}
-                          </div>
-                          
-                          {/* Mobile Tap Card (Tap acts as hover in iOS/Android) */}
-                          <div className="absolute top-12 w-32 p-2 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50 backdrop-blur-md text-center pointer-events-none">
-                             <h4 className="text-xs font-bold text-white mb-0.5">{ai.name}</h4>
-                             <p className="text-[9px] text-slate-400 leading-tight">{ai.role}</p>
-                          </div>
+                     <div key={`inner-mob-${idx}`} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                         <div className="group flex flex-col items-center justify-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
+                            
+                            <div className="w-10 h-10 rounded-full bg-[#02040a] border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center group-hover:scale-110 group-hover:border-cyan-400 transition-all cursor-pointer">
+                               {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-6 h-6 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={14} className="text-slate-400" />}
+                            </div>
+                            
+                            {/* Mobile Tap Card (Tap acts as hover in iOS/Android) */}
+                            <div className="absolute top-12 w-32 p-2 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50 backdrop-blur-md text-center pointer-events-none">
+                               <h4 className="text-xs font-bold text-white mb-0.5">{ai.name}</h4>
+                               <p className="text-[9px] text-slate-400 leading-tight">{ai.role}</p>
+                            </div>
+                         </div>
                      </div>
                   );
                })}
@@ -775,29 +787,24 @@ export default function AiDeveloper() {
                   const y = Math.sin(angle) * radius;
                   
                   return (
-                     <div key={`outer-mob-${idx}`} className="absolute z-40 group flex flex-col items-center justify-center animate-[floating_5s_ease-in-out_infinite]"
-                          style={{ transform: `translate(${x}px, ${y}px)`, animationDelay: `${idx * 0.7}s` }}>
-                          
-                          <div className="w-12 h-12 rounded-full bg-[#02040a] border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center group-hover:scale-110 group-hover:border-purple-400 transition-all cursor-pointer">
-                             {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-7 h-7 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={16} className="text-slate-400" />}
-                          </div>
-                          
-                          {/* Mobile Tap Card */}
-                          <div className="absolute top-14 w-36 p-2 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50 backdrop-blur-md text-center pointer-events-none">
-                             <h4 className="text-xs font-bold text-white mb-0.5">{ai.name}</h4>
-                             <p className="text-[9px] text-slate-400 leading-tight">{ai.role}</p>
-                          </div>
+                     <div key={`outer-mob-${idx}`} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                         <div className="group flex flex-col items-center justify-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
+                            
+                            <div className="w-12 h-12 rounded-full bg-[#02040a] border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center group-hover:scale-110 group-hover:border-purple-400 transition-all cursor-pointer">
+                               {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-7 h-7 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={16} className="text-slate-400" />}
+                            </div>
+                            
+                            {/* Mobile Tap Card */}
+                            <div className="absolute top-14 w-36 p-2 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50 backdrop-blur-md text-center pointer-events-none">
+                               <h4 className="text-xs font-bold text-white mb-0.5">{ai.name}</h4>
+                               <p className="text-[9px] text-slate-400 leading-tight">{ai.role}</p>
+                            </div>
+                         </div>
                      </div>
                   );
                })}
             </motion.div>
 
-            <style>{`
-              @keyframes floating {
-                0%, 100% { transform: translateY(0px) translateX(0px); }
-                50% { transform: translateY(-8px) translateX(4px); }
-              }
-            `}</style>
           </div>
         </section>
 
