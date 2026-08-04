@@ -1,7 +1,7 @@
 // src/pages/AiDeveloper.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from 'framer-motion';
-import { Cpu, Layers, ArrowUp, CheckCircle2, ArrowDown, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Sparkles } from 'lucide-react';
+import { Cpu, Layers, ArrowUp, CheckCircle2, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // ================= CUSTOM ANIMATED COUNTER =================
@@ -35,27 +35,27 @@ const WaveCard = ({ principle }) => {
     offset: ["center 100%", "center 0%"]
   });
 
-  // At 0.5 (element is at the exact center of viewport), apply the Violet Spotlight
   const scale = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.9, 1.1, 0.9]);
   const opacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.4, 1, 0.4]);
   const zIndex = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0, 10, 0]); 
   
+  // Base is Blue, fading to Purple
   const borderColor = useTransform(
     scrollYProgress, 
     [0.3, 0.5, 0.7], 
-    ['rgba(59, 130, 246, 0.1)', 'rgba(168, 85, 247, 1)', 'rgba(59, 130, 246, 0.1)'] 
+    ['rgba(59, 130, 246, 0.3)', 'rgba(168, 85, 247, 0.9)', 'rgba(59, 130, 246, 0.3)'] 
   );
   
   const backgroundColor = useTransform(
     scrollYProgress, 
     [0.3, 0.5, 0.7], 
-    ['rgba(2, 6, 23, 0.2)', 'rgba(88, 28, 135, 0.25)', 'rgba(2, 6, 23, 0.2)'] 
+    ['rgba(2, 6, 23, 0.4)', 'rgba(88, 28, 135, 0.3)', 'rgba(2, 6, 23, 0.4)'] 
   );
 
   const textColor = useTransform(
     scrollYProgress,
     [0.3, 0.5, 0.7],
-    ['#64748b', '#ffffff', '#64748b'] 
+    ['#94a3b8', '#ffffff', '#94a3b8'] 
   );
 
   const iconColor = useTransform(
@@ -64,10 +64,15 @@ const WaveCard = ({ principle }) => {
     ['#3b82f6', '#a855f7', '#3b82f6'] 
   );
 
+  // Gradient Overlay Fade: Blue remains constant, Purple fades in on top
   const boxShadow = useTransform(
     scrollYProgress,
     [0.3, 0.5, 0.7],
-    ['0px 0px 0px rgba(168, 85, 247, 0)', '0px 0px 30px rgba(168, 85, 247, 0.3)', '0px 0px 0px rgba(168, 85, 247, 0)']
+    [
+      '0px 0px 20px rgba(59, 130, 246, 0.15), 0px 0px 40px rgba(168, 85, 247, 0)', 
+      '0px 0px 20px rgba(59, 130, 246, 0.15), 0px 0px 60px rgba(168, 85, 247, 0.7)', 
+      '0px 0px 20px rgba(59, 130, 246, 0.15), 0px 0px 40px rgba(168, 85, 247, 0)'
+    ]
   );
 
   return (
@@ -133,7 +138,8 @@ const PRESET_PIPELINE_ARCHITECTURE = [
     category: "Planning",
     items: [
       { name: "Notion", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" },
-      { name: "Trello", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/trello/trello-plain.svg" }
+      { name: "Trello", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/trello/trello-plain.svg" },
+      { name: "Jira (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jira/jira-original.svg" }
     ]
   },
   {
@@ -142,16 +148,17 @@ const PRESET_PIPELINE_ARCHITECTURE = [
       { name: "ChatGPT", imageSrc: "/images/chatgpt.png" },
       { name: "Claude", imageSrc: "/images/claude.png" },
       { name: "GitHub Issues", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
-      { name: "Notion", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" }
+      { name: "Notion", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" },
+      { name: "Kimi (Learning)", imageSrc: "/images/kimi.png" }
     ]
   },
   {
-    category: "UI/UX Design",
+    category: "Architecture Design",
     items: [
-      { name: "Lucide React", imageSrc: "" },
-      { name: "Glassmorphism", imageSrc: "" },
-      { name: "Bento Grid", imageSrc: "" },
-      { name: "Responsive Design", imageSrc: "" }
+      { name: "Excalidraw (Learning)", imageSrc: "" },
+      { name: "Draw.io (Learning)", imageSrc: "" },
+      { name: "Lucidchart (Learning)", imageSrc: "" },
+      { name: "Eraser.io (Learning)", imageSrc: "" }
     ]
   },
   {
@@ -164,10 +171,7 @@ const PRESET_PIPELINE_ARCHITECTURE = [
       { name: "HTML5", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" },
       { name: "CSS3", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" },
       { name: "Framer Motion", imageSrc: "" },
-      { name: "GSAP", imageSrc: "" },
-      { name: "ScrollTrigger", imageSrc: "" },
-      { name: "React PageFlip", imageSrc: "" },
-      { name: "REST API Integration", imageSrc: "" }
+      { name: "GSAP", imageSrc: "" }
     ]
   },
   {
@@ -191,27 +195,11 @@ const PRESET_PIPELINE_ARCHITECTURE = [
     ]
   },
   {
-    category: "Testing & Debugging",
-    items: [
-      { name: "Chrome DevTools", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/chrome/chrome-original.svg" },
-      { name: "React Developer Tools", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" },
-      { name: "ESLint", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/eslint/eslint-original.svg" },
-      { name: "Prettier", imageSrc: "" }
-    ]
-  },
-  {
     category: "Deployment",
     items: [
       { name: "Git", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" },
       { name: "GitHub", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
       { name: "Vercel", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" }
-    ]
-  },
-  {
-    category: "Monitoring & Maintenance",
-    items: [
-      { name: "GitHub", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
-      { name: "Vercel Analytics", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" }
     ]
   }
 ];
@@ -312,8 +300,7 @@ export default function AiDeveloper() {
   });
 
   // Calculate the horizontal translation needed to keep the active node centered.
-  // We assume each node is 300px apart.
-  const trackSpacing = 300;
+  const trackSpacing = 250; // Responsive spacing mapping
   const totalTrackWidth = (architecture.length - 1) * trackSpacing;
   const xTransform = useTransform(archScrollY, [0, 1], ["0px", `-${totalTrackWidth}px`]);
   const lineWidthTransform = useTransform(archScrollY, [0, 1], ["0%", "100%"]);
@@ -664,10 +651,10 @@ export default function AiDeveloper() {
 
         {/* ================= 67. DEVELOPMENT ARCHITECTURE (AUTO-SCROLL HORIZONTAL FLOWCHART) ================= */}
         <section ref={archScrollRef} className="h-[400vh] relative bg-black/40 border-t border-slate-900">
-          <div className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden backdrop-blur-md">
+          <div className="sticky top-0 h-[100dvh] w-full flex flex-col justify-center items-center overflow-hidden backdrop-blur-md pt-20 pb-10">
             
-            {/* HEADER */}
-            <div className="text-center mb-4 px-6">
+            {/* HEADER - Constrained to prevent pushing content out */}
+            <div className="text-center px-4 shrink-0 w-full max-w-4xl mx-auto">
               <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Architecture Pipeline</h3>
               <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
               <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed">
@@ -676,10 +663,10 @@ export default function AiDeveloper() {
               <p className="md:hidden mt-2 text-[10px] text-purple-400 font-mono tracking-widest opacity-70 animate-pulse">(Scroll down to navigate timeline)</p>
             </div>
 
-            {/* HORIZONTAL TRACK */}
-            <div className="relative h-40 w-full mt-10">
+            {/* HORIZONTAL TRACK - Constrained height */}
+            <div className="relative h-24 md:h-32 w-full mt-6 md:mt-10 shrink-0">
               <div className="absolute inset-0 overflow-hidden w-full">
-                <motion.div style={{ x: xTransform }} className="absolute top-0 bottom-0 flex items-center px-[calc(50vw-16px)] gap-[300px]">
+                <motion.div style={{ x: xTransform }} className="absolute top-0 bottom-0 flex items-center px-[calc(50vw-16px)] gap-[250px] md:gap-[300px]">
                   
                   {/* The Static Background Line */}
                   <div className="absolute top-1/2 left-[calc(50vw-16px)] right-[calc(50vw-16px)] h-[2px] bg-slate-800 -translate-y-1/2 z-0" />
@@ -714,8 +701,8 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (Enlarged Icons) */}
-            <div className="max-w-4xl mx-auto px-6 mt-8 w-full">
+            {/* DYNAMIC CONTENT BOX (Enlarged Icons, Fully Responsive, No Cut-offs) */}
+            <div className="w-full max-w-4xl mx-auto px-4 md:px-6 shrink-0 flex-1 min-h-0 flex flex-col justify-start md:justify-center mt-2 pb-4">
               <AnimatePresence mode="wait">
                 {architecture[activeArchTab] && (
                   <motion.div
@@ -724,30 +711,41 @@ export default function AiDeveloper() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.3 }}
-                    className="p-8 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative overflow-hidden"
+                    className="w-full p-6 md:p-10 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative max-h-full overflow-y-auto hide-scrollbar"
                   >
                     {/* Subtle Glowing Top Border */}
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
 
-                    <h4 className="text-lg md:text-xl font-black text-purple-400 uppercase tracking-widest mb-8">
+                    <h4 className="text-base md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10">
                       <span className="text-slate-600 mr-2">[{String(activeArchTab + 1).padStart(2, '0')}]</span>
                       {architecture[activeArchTab].category} Stack
                     </h4>
                     
-                    <div className="flex flex-wrap justify-center gap-4 md:gap-6">
+                    <div className="flex flex-wrap justify-center gap-6 md:gap-10 pb-4">
                       {architecture[activeArchTab].items?.map((tool, i) => {
                         const isLearning = tool.name.toLowerCase().includes('(learning)');
                         const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
                         
                         return (
-                          <div key={i} className={`flex items-center gap-3 px-6 py-4 rounded-xl border ${isLearning ? 'bg-purple-950/20 border-purple-900/50 text-purple-300' : 'bg-slate-900/50 border-slate-800 text-slate-200'} text-sm font-semibold shadow-md`}>
-                            {tool.customImage ? (
-                              <img src={tool.customImage} alt={cleanName} className="w-8 h-8 object-contain" onError={(e) => e.target.style.display='none'} />
-                            ) : (
-                              <Settings size={20} className={isLearning ? 'text-purple-500' : 'text-slate-400'} />
-                            )}
-                            {cleanName}
-                            {isLearning && <span className="text-[10px] bg-purple-500/20 border border-purple-500/30 text-purple-400 px-2 py-0.5 rounded uppercase tracking-wider ml-1">Learning</span>}
+                          <div key={i} className="flex flex-col items-center gap-3 w-20 md:w-28 group">
+                            {/* App-like Large Icon Card */}
+                            <div className={`w-16 h-16 md:w-24 md:h-24 rounded-3xl flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-slate-900/60 border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
+                              {tool.customImage ? (
+                                <img src={tool.customImage} alt={cleanName} className="w-8 h-8 md:w-12 md:h-12 object-contain drop-shadow-md group-hover:scale-110 transition-transform" onError={(e) => e.target.style.display='none'} />
+                              ) : (
+                                <Settings className={`w-8 h-8 md:w-12 md:h-12 group-hover:scale-110 transition-transform ${isLearning ? 'text-purple-500' : 'text-cyan-500'}`} />
+                              )}
+                              
+                              {/* Overlay Learning Badge */}
+                              {isLearning && (
+                                <div className="absolute -bottom-2 md:-bottom-2.5 px-2 py-0.5 bg-purple-900 border border-purple-400 text-purple-200 text-[9px] md:text-[10px] rounded-full uppercase tracking-widest shadow-md whitespace-nowrap">
+                                  Learning
+                                </div>
+                              )}
+                            </div>
+                            <span className="text-xs md:text-sm font-semibold text-slate-300 text-center leading-tight mt-1">
+                              {cleanName}
+                            </span>
                           </div>
                         )
                       })}
