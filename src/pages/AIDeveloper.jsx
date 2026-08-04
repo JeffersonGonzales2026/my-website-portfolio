@@ -1,7 +1,7 @@
 // src/pages/AiDeveloper.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, useInView, animate } from 'framer-motion';
-import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Palette, Briefcase, LineChart, Rocket, Sparkles } from 'lucide-react';
+import { motion, useInView, animate, useScroll, useTransform } from 'framer-motion';
+import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ArrowDown, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Palette, Briefcase, LineChart, Rocket, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useMobileBack } from '../hooks/useMobileBack';
 
@@ -26,6 +26,64 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
   }, [value, inView, suffix]);
 
   return <span ref={ref} className="text-3xl md:text-4xl font-black text-white tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">0{suffix}</span>;
+};
+
+// ================= WAVE CARD COMPONENT (SCROLL-LINKED ANIMATION) =================
+const WaveCard = ({ principle }) => {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["center 100%", "center 0%"]
+  });
+
+  // At 0.5 (element is at the exact center of viewport), apply the Violet Spotlight
+  const scale = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.85, 1.15, 0.85]);
+  const opacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.3, 1, 0.3]);
+  
+  const borderColor = useTransform(
+    scrollYProgress, 
+    [0.3, 0.5, 0.7], 
+    ['rgba(59, 130, 246, 0.2)', 'rgba(168, 85, 247, 1)', 'rgba(59, 130, 246, 0.2)'] // Blue to Violet to Blue
+  );
+  
+  const backgroundColor = useTransform(
+    scrollYProgress, 
+    [0.3, 0.5, 0.7], 
+    ['rgba(2, 6, 23, 0.4)', 'rgba(88, 28, 135, 0.3)', 'rgba(2, 6, 23, 0.4)'] 
+  );
+
+  const textColor = useTransform(
+    scrollYProgress,
+    [0.3, 0.5, 0.7],
+    ['#94a3b8', '#ffffff', '#94a3b8'] // Slate-400 to White to Slate-400
+  );
+
+  const iconColor = useTransform(
+    scrollYProgress,
+    [0.3, 0.5, 0.7],
+    ['#3b82f6', '#a855f7', '#3b82f6'] // Blue-500 to Purple-500 to Blue-500
+  );
+
+  const boxShadow = useTransform(
+    scrollYProgress,
+    [0.3, 0.5, 0.7],
+    ['0px 0px 0px rgba(168, 85, 247, 0)', '0px 0px 40px rgba(168, 85, 247, 0.4)', '0px 0px 0px rgba(168, 85, 247, 0)']
+  );
+
+  return (
+    <motion.div 
+      ref={ref}
+      style={{ scale, opacity, borderColor, backgroundColor, boxShadow }}
+      className="p-5 md:p-6 rounded-2xl border flex items-center gap-5 backdrop-blur-md w-full max-w-lg mx-auto"
+    >
+      <motion.div style={{ color: iconColor }} className="shrink-0">
+        <CheckCircle2 size={28} style={{ filter: 'drop-shadow(0px 0px 8px currentColor)' }} />
+      </motion.div>
+      <motion.span style={{ color: textColor }} className="text-sm md:text-base font-bold tracking-wide">
+        {principle}
+      </motion.span>
+    </motion.div>
+  );
 };
 
 // ================= VARIED ANIMATION VARIANTS =================
@@ -492,14 +550,15 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 61. LEARNING PHILOSOPHY ================= */}
+        {/* ================= 61. LEARNING PHILOSOPHY (WAVE SCROLL FOCUS) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start relative">
               
-              <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-5 space-y-6">
+              {/* STICKY LEFT CONTENT */}
+              <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-5 space-y-6 sticky top-32 z-20">
                 <h3 className="text-3xl font-black text-white">Learning by Building.</h3>
-                <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
+                <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
                 <div className="text-slate-300 space-y-4 text-sm leading-relaxed">
                   <p>I believe the most effective way to learn software engineering is through practical application.</p>
                   <p>Rather than relying solely on tutorials or theoretical exercises, I build complete projects that challenge me to solve real problems, make architectural decisions, debug unexpected issues, and continuously improve my understanding.</p>
@@ -508,24 +567,16 @@ export default function AiDeveloper() {
                 </div>
               </motion.div>
 
-              <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-7">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {[
-                    "Build real projects.", "Understand the code.", "Learn continuously.", "Solve business problems.",
-                    "Write maintainable software.", "Design scalable systems.", "Use AI responsibly.", "Embrace debugging.",
-                    "Document everything.", "Improve every iteration."
-                  ].map((principle, idx) => (
-                    <motion.div key={idx} className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center gap-3 overflow-hidden shadow-lg hover:border-cyan-500/40 transition-colors group">
-                      <motion.div variants={{ hidden: { scale: 3, opacity: 0 }, visible: { scale: 1, opacity: 1, transition: { type: "spring", stiffness: 200, damping: 15 } } }}>
-                        <CheckCircle2 size={18} className="text-cyan-400 shrink-0 drop-shadow-[0_0_8px_rgba(6,182,212,0.6)] group-hover:scale-110 transition-transform" />
-                      </motion.div>
-                      <motion.div variants={{ hidden: { x: 40, y: -20, opacity: 0 }, visible: { x: 0, y: 0, opacity: 1, transition: { type: "spring", stiffness: 120, damping: 14 } } }}>
-                        <span className="text-sm text-slate-200 font-medium">{principle}</span>
-                      </motion.div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
+              {/* DYNAMIC SCROLL WAVE LIST */}
+              <div className="lg:col-span-7 flex flex-col gap-6 py-[20vh] relative z-10">
+                {[
+                  "Build real projects.", "Understand the code.", "Learn continuously.", "Solve business problems.",
+                  "Write maintainable software.", "Design scalable systems.", "Use AI responsibly.", "Embrace debugging.",
+                  "Document everything.", "Improve every iteration."
+                ].map((principle, idx) => (
+                  <WaveCard key={idx} principle={principle} />
+                ))}
+              </div>
 
             </div>
           </div>
@@ -607,6 +658,7 @@ export default function AiDeveloper() {
 
         {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW (CHAT UI OVERHAUL) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
+          {/* Changed items-start to items-center to fix the empty gap on the left */}
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-5 space-y-6">
