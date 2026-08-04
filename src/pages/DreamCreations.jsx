@@ -1,6 +1,6 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity, useScroll } from 'framer-motion';
+import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
 import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, PictureInPicture, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
@@ -62,7 +62,7 @@ const creationsCategories = [
   { id: 3, category: "Video Editing", icon: <Video size={14} />, items: ["Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", "Podcast Editing", "Testimonial Videos", "Tutorial Videos", "Video Thumbnails"] },
   { id: 4, category: "Motion Graphics", icon: <PictureInPicture size={14} />, items: ["Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"] },
   { id: 5, category: "Web Graphics", icon: <MousePointerClick size={14} />, items: ["Landing Page Graphics", "eCommerce Graphics", "Website Banners", "Hero Banners", "UI Graphics", "Icons", "Email Graphics", "WordPress Assets", "Blog Graphics", "Web Illustrations"] },
-  { id: 6, category: "Marketing & Corporate", icon: <Briefcase size={14} />, items: ["Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"] },
+  { id: 6, category: "Marketing & Corporate Graphics", icon: <Briefcase size={14} />, items: ["Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"] },
   { id: 7, category: "Marketing Materials", icon: <FileText size={14} />, items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations", "Posters", "Banners", "Sales Sheets", "Product Sheets"] },
   { id: 8, category: "Packaging Design", icon: <Box size={14} />, items: ["Packaging Graphics", "Product Labels", "Clothing Labels", "Box Packaging", "Bottle Labels", "Pouch Packaging", "Food Packaging", "Cosmetic Packaging"] },
   { id: 9, category: "Photo Editing", icon: <ImageIcon size={14} />, items: ["Photo Retouching", "Photo Restoration", "Background Removal", "Photo Manipulation", "Color Correction", "Product Photo Enhancement", "Watercolor Portraits"] },
@@ -157,29 +157,11 @@ export default function DreamCreations() {
   const teamScrollRef = useRef(null);
   const flipBookRef = useRef(null); 
 
-  // ================= SCROLL-LINKED MOON LOGIC =================
-  const heroCreationsWrapperRef = useRef(null);
-  
-  // This wrapper spans exactly 200vh (Hero + Creations).
-  const { scrollYProgress: heroScroll } = useScroll({
-    target: heroCreationsWrapperRef,
-    offset: ["start start", "end end"] 
-  });
-
-  // Scale shrinks smoothly as you scroll
-  const moonScale = useTransform(heroScroll, [0, 1], [0.85, 0.35]);
-  
-  // Y Position: Starts high up (-25vh) in the Hero, ends precisely at the dead center of the solar system (0vh)
-  const moonY = useTransform(heroScroll, [0, 1], ["-25vh", "0vh"]); 
-
-  // Split categories for Orbital Layout
-  const innerCategories = creationsCategories.slice(0, 4);
-  const outerCategories = creationsCategories.slice(4, 12);
-
-  // ================= GSAP REFS FOR CREATIVE PROCESS =================
+  // ================= GSAP REFS =================
   const processSectionRef = useRef(null);
   const processTrackRef = useRef(null);
 
+  // PURE GSAP SCROLL-JACKING LOGIC
   useGSAP(() => {
     if (!processSectionRef.current || !processTrackRef.current) return;
 
@@ -211,63 +193,6 @@ export default function DreamCreations() {
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
   const [projects, setProjects] = useState([]); 
-  const [randomModalPositions, setRandomModalPositions] = useState([]);
-
-  // DYNAMIC SIZING & STAGGERED RING POSITIONING (NO OVERLAPS)
-  useEffect(() => {
-    if (activeCreationPopup) {
-      const count = activeCreationPopup.items.length;
-      const colors = [
-        'bg-blue-600/90 border-blue-400 text-white', 
-        'bg-cyan-600/90 border-cyan-400 text-white', 
-        'bg-sky-600/90 border-sky-400 text-white',
-        'bg-blue-800/90 border-blue-500 text-blue-100'
-      ];
-      
-      const positions = activeCreationPopup.items.map((item, i) => {
-        // Dynamic Size based on text length to fit contents properly
-        const textLength = item.length;
-        const sizeClass = textLength > 20 ? 'w-[75px] h-[75px] sm:w-[95px] sm:h-[95px] md:w-[115px] md:h-[115px]'
-                        : textLength > 12 ? 'w-[65px] h-[65px] sm:w-[85px] sm:h-[85px] md:w-[100px] md:h-[100px]'
-                        : 'w-[55px] h-[55px] sm:w-[70px] sm:h-[70px] md:w-[85px] md:h-[85px]';
-
-        let radius = 0;
-        let angle = 0;
-
-        if (count > 6) {
-          // Staggered Rings Logic to guarantee ZERO overlaps
-          const isOuter = i % 2 !== 0;
-          const ringItemCount = isOuter ? Math.ceil(count / 2) : Math.floor(count / 2);
-          const ringIndex = Math.floor(i / 2);
-
-          // Spread out evenly across the ring
-          angle = (ringIndex / ringItemCount) * 2 * Math.PI;
-          
-          // Offset outer ring to sit in the "gaps" of the inner ring (zig-zag pattern)
-          if (isOuter) {
-            angle += (Math.PI / ringItemCount); 
-          }
-
-          // Strict restricted radius so they never spill outside the blue modal container
-          radius = isOuter ? 35 : 17; 
-        } else {
-          angle = (i / count) * 2 * Math.PI;
-          radius = 26; // Ideal radius for a single ring
-        }
-
-        // Extremely subtle randomness so it looks organic but mathematically safe
-        const finalRadius = radius + (Math.random() * 1.5);
-
-        return {
-          x: Math.cos(angle) * finalRadius,
-          y: Math.sin(angle) * finalRadius,
-          sizeClass: sizeClass,
-          colorClass: colors[Math.floor(Math.random() * colors.length)]
-        };
-      });
-      setRandomModalPositions(positions);
-    }
-  }, [activeCreationPopup]);
 
   const [reviews, setReviews] = useState([
     {
@@ -368,6 +293,15 @@ export default function DreamCreations() {
   const getFlipbookUrl = (pageIndex, prefix = 'page-', ext = 'jpg') => `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/${prefix}${pageIndex}.${ext}`;
 
   const [pageResume, setPageResume] = useState(null);
+  const [randomGlowIndex, setRandomGlowIndex] = useState(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * creationsCategories.length);
+      setRandomGlowIndex(randomIndex);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const isTeamDragging = useRef(false);
   const teamStartX = useRef(0);
@@ -393,6 +327,7 @@ export default function DreamCreations() {
   const clientsStartX = useRef(0);
   const clientsScrollLeftPos = useRef(0);
 
+  // AUTO SCROLL OUR VALUED DREAMERS (RIGHTWARDS)
   useEffect(() => {
     let animationId;
     const container = clientsScrollRef.current;
@@ -438,6 +373,7 @@ export default function DreamCreations() {
   const feedbackStartX = useRef(0);
   const feedbackScrollLeftPos = useRef(0);
 
+  // AUTO SCROLL CLIENT FEEDBACK (LEFTWARDS)
   useEffect(() => {
     let animationId;
     const container = feedbackScrollRef.current;
@@ -599,25 +535,36 @@ export default function DreamCreations() {
 
   // ================= FIXED EXACT SCROLL WITH GLOW EFFECT =================
   const handleSubtitleModalClick = (subtitleName) => {
+    // 1. Force unlock screen scrolling immediately (since modal locks it)
     document.body.style.overflow = '';
     document.documentElement.style.overflow = '';
+
+    // 2. Close active popups
     setActiveCreationPopup(null);
     setActivePortfolioSubtitle(null); 
     
+    // 3. Find element and scroll exactly to it
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
       const targetElement = document.getElementById(targetId);
       
       if (targetElement) {
+        // Calculate precise offset so it's comfortably visible in the viewport
         const yPosition = targetElement.getBoundingClientRect().top + window.scrollY - 150;
-        window.scrollTo({ top: yPosition, behavior: 'smooth' });
         
+        window.scrollTo({
+          top: yPosition,
+          behavior: 'smooth'
+        });
+        
+        // Add a visual glowing highlight to the specific card
         targetElement.style.transition = "all 0.5s ease";
         targetElement.style.boxShadow = "0 0 40px rgba(16,149,210,0.9)";
         targetElement.style.borderColor = "rgba(16,149,210,1)";
         targetElement.style.transform = "scale(1.03)";
         targetElement.style.zIndex = "50";
         
+        // Remove highlight after 2 seconds
         setTimeout(() => {
           targetElement.style.boxShadow = "";
           targetElement.style.borderColor = "";
@@ -626,9 +573,10 @@ export default function DreamCreations() {
         }, 2000);
 
       } else {
+        // Fallback kung sakaling wala
         scrollToSection('portfolio-directory');
       }
-    }, 150);
+    }, 150); // Very snappy delay
   };
 
   const filteredProjects = activePortfolioSubtitle && activePortfolioSubtitle !== 'All Projects'
@@ -682,18 +630,6 @@ export default function DreamCreations() {
         .animate-nightSkyCycle { animation: nightSkyCycle 25s ease-in-out infinite alternate; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Floating Animation for Planets and Moon */
-        @keyframes floating {
-          0%, 100% { transform: translateY(0px) translateX(0px); }
-          50% { transform: translateY(-10px) translateX(0px); }
-        }
-
-        /* Custom modal scrollbar */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(16,149,210,0.5); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(16,149,210,0.8); }
       `}</style>
 
       <div className="absolute inset-0 z-0 opacity-80 pointer-events-none">
@@ -707,157 +643,48 @@ export default function DreamCreations() {
         ))}
       </div>
 
-      {/* ================= UNIFIED SCROLL-LINKED HERO & CREATIONS ================= */}
-      {/* Absolute strict wrapper ensures DOM flow is completely unbroken */}
-      <div ref={heroCreationsWrapperRef} className="relative z-10 w-full">
-        
-        {/* STICKY MOON BACKGROUND LAYER (NO ROTATION, FOOLPROOF MATH) */}
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
-             <motion.div style={{ scale: moonScale, y: moonY }} className="absolute z-10">
-               {/* Entrance Animation Wrap */}
-               <motion.div initial={{ opacity: 0, y: -100 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, ease: "easeOut" }}>
-                 {/* Floating Up/Down Only */}
-                 <motion.img 
-                   src="/images/moon.png" 
-                   animate={{ y: [-15, 15, -15] }} 
-                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                   className="w-56 h-56 md:w-96 md:h-96 object-contain drop-shadow-[0_0_60px_rgba(16,149,210,0.8)]" 
-                 />
-               </motion.div>
-             </motion.div>
-          </div>
-        </div>
-
-        {/* 1. HERO SECTION (Box lowered further so it sits nicely on PC/Mobile) */}
-        <section className="relative h-screen flex flex-col justify-end items-center pb-[10vh] md:pb-[15vh] px-6 z-10 pointer-events-auto">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="w-full max-w-4xl backdrop-blur-sm p-8 rounded-3xl border border-white/5 bg-[#020617]/40 shadow-2xl text-center">
-             <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
-               Let's make your <br className="hidden md:block" />
-               <span className="text-[#1095d2] drop-shadow-[0_0_15px_rgba(16,149,210,0.5)]">dream</span> a reality.
-             </h2>
-             <p className="text-sm md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">
-               For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.
-             </p>
+      {/* ================= HERO SECTION ================= */}
+      <section className="relative pt-40 pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center text-center z-10">
+        <motion.div initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }} transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }} className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10" />
+        <motion.div initial={{ y: 150, scale: 0.5, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }} className="-mt-12 mb-16 relative" >
+          <motion.div animate={{ y: [-15, 15, -15], rotate: [-3, 3, -3] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
+            <img src="/images/moon.png" alt="Dream Creations Moon" className="w-40 h-40 object-contain drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]" />
           </motion.div>
-        </section>
-
-        <div id="creations-grid" className="scroll-mt-24" />
-
-        {/* 2. OUR CREATIONS (SOLAR SYSTEM - Absolutely perfectly aligned) */}
-        <section className="relative h-screen flex flex-col items-center justify-center z-10 w-full overflow-hidden pointer-events-auto pb-10">
-          
-          {/* TEXT PUSHED UP TO CREATE SPACE FROM ORBITS */}
-          <div className="absolute top-[8vh] md:top-[8vh] text-center w-full px-6 z-20">
-             <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
-             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
-             <p className="text-xs md:text-sm text-white/70 mt-4 max-w-xl mx-auto">
-               Explore our specialized creative categories. Tap a planet to view our specific offerings and jump directly to our past works.
-             </p>
+        </motion.div>
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="max-w-4xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl border border-transparent z-10">
+          <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">Let's make your{' '}<br className="hidden md:block" /><span className="text-[#1095d2]">dream</span> a reality.</h2>
+          <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
+            <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.</p>
           </div>
+        </motion.div>
+      </section>
 
-          {/* SOLAR SYSTEM PERFECTLY CENTERED WITH ZERO OFFSET */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            
-            {/* --- DESKTOP ORBITS (Wider Spacing) --- */}
-            <div className="hidden md:flex absolute inset-0 items-center justify-center">
-               <div className="absolute w-[340px] h-[340px] rounded-full border border-dashed border-[#1095d2]/40 pointer-events-none" />
-               <div className="absolute w-[600px] h-[600px] rounded-full border border-dashed border-[#1095d2]/20 pointer-events-none" />
-               
-               {/* Inner Planets */}
-               {innerCategories.map((cat, idx) => {
-                  const angle = (idx / innerCategories.length) * 2 * Math.PI;
-                  const radius = 170; 
-                  const x = Math.cos(angle) * radius;
-                  const y = Math.sin(angle) * radius;
-                  return (
-                      <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                         <div className="group flex flex-col items-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
-                             <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white hover:bg-[#1095d2] hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.8)] cursor-pointer pointer-events-auto">
-                                {cat.icon}
-                             </button>
-                             <span className="absolute top-20 text-[12px] text-white font-bold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full shadow-md pointer-events-none">
-                                {cat.category}
-                             </span>
-                         </div>
-                      </div>
-                  );
-               })}
+      <div id="creations-grid" className="scroll-mt-24" />
 
-               {/* Outer Planets */}
-               {outerCategories.map((cat, idx) => {
-                  const angle = (idx / outerCategories.length) * 2 * Math.PI;
-                  const radius = 300; 
-                  const x = Math.cos(angle) * radius;
-                  const y = Math.sin(angle) * radius;
-                  return (
-                      <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                         <div className="group flex flex-col items-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
-                             <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white hover:bg-[#1095d2] hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.8)] cursor-pointer pointer-events-auto">
-                                {cat.icon}
-                             </button>
-                             <span className="absolute top-20 text-[12px] text-white font-bold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full shadow-md pointer-events-none">
-                                {cat.category}
-                             </span>
-                         </div>
-                      </div>
-                  );
-               })}
-            </div>
-
-            {/* --- MOBILE ORBITS (Tighter radius to fit perfectly) --- */}
-            <div className="flex md:hidden absolute inset-0 items-center justify-center">
-               <div className="absolute w-[140px] h-[140px] rounded-full border border-dashed border-[#1095d2]/40 pointer-events-none" />
-               <div className="absolute w-[280px] h-[280px] rounded-full border border-dashed border-[#1095d2]/20 pointer-events-none" />
-               
-               {/* Inner Mobile Planets */}
-               {innerCategories.map((cat, idx) => {
-                  const angle = (idx / innerCategories.length) * 2 * Math.PI;
-                  const radius = 70; 
-                  const x = Math.cos(angle) * radius;
-                  const y = Math.sin(angle) * radius;
-                  return (
-                      <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                         <div className="flex flex-col items-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
-                             <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white active:bg-[#1095d2] active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.8)] cursor-pointer pointer-events-auto">
-                                {cat.icon}
-                             </button>
-                             <span className="absolute top-14 text-[9px] text-white font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full shadow-md pointer-events-none z-10">
-                                {cat.category}
-                             </span>
-                         </div>
-                      </div>
-                  );
-               })}
-
-               {/* Outer Mobile Planets */}
-               {outerCategories.map((cat, idx) => {
-                  const angle = (idx / outerCategories.length) * 2 * Math.PI;
-                  const radius = 140; 
-                  const x = Math.cos(angle) * radius;
-                  const y = Math.sin(angle) * radius;
-                  return (
-                      <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                         <div className="flex flex-col items-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
-                             <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white active:bg-[#1095d2] active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.8)] cursor-pointer pointer-events-auto">
-                                {cat.icon}
-                             </button>
-                             <span className="absolute top-14 text-[9px] text-white font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full shadow-md pointer-events-none z-10">
-                                {cat.category}
-                             </span>
-                         </div>
-                      </div>
-                  );
-               })}
-            </div>
-          </div>
-        </section>
-      </div>
+      {/* ================= CREATIONS SECTION ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
+        <div className="mb-12 text-center md:text-left">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+          <p className="text-base text-white/70 mt-4 max-w-2xl">Explore our specialized creative categories. Click any box to view our specific offerings and jump directly to our past works.</p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-0.0">
+          {creationsCategories.map((category, index) => {
+            const isGlowing = randomGlowIndex === index;
+            return (
+              <motion.button key={category.id} onClick={() => setActiveCreationPopup(category)} whileHover={{ scale: 1.05, borderColor: "rgba(16,149,210,1)", backgroundColor: "rgba(16,149,210,0.3)", boxShadow: "0 0 30px rgba(16,149,210,0.8)" }} className="p-2 h-20 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer relative z-20">
+                <div className={`transition-all duration-500 mb-1 ${isGlowing ? 'text-[#1095d2] scale-125 drop-shadow-[0_0_8px_rgba(16,149,210,0.8)]' : 'text-white/60 group-hover:text-[#1095d2] group-hover:scale-110'}`}>{category.icon}</div>
+                <h4 className={`text-[10px] font-bold transition-all duration-500 leading-tight px-1 ${isGlowing ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]' : 'text-white/90 group-hover:text-white'}`}>{category.category}</h4>
+              </motion.button>
+            );
+          })}
+        </div>
+      </section>
 
       <div id="founder-bio" className="scroll-mt-24" />
 
       {/* ================= MEET THE FOUNDER SECTION ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-10 md:py-20 z-10 relative border-t border-white/10">
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="flex justify-center mb-16">
           <img src={bannerUrl} alt="Dream Creations Brand Banner" className="w-full max-w-5xl h-auto drop-shadow-[0_0_30px_rgba(16,149,210,0.3)] rounded-3xl border border-white/5 bg-black/40 p-2 md:p-4" />
         </motion.div>
@@ -1030,13 +857,14 @@ export default function DreamCreations() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {cat.items.map((subtitle, idx) => {
                   
-                  // Exact ID generation that matches what we click
+                  // ADDED: Exact ID generation that matches what we click
                   const elementId = subtitle.toLowerCase().replace(/\s+/g, '-');
                   const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
                   const hasWork = !!latestProjectWithImage;
                   
                   if (!hasWork) {
                     return (
+                      // ADDED id={elementId} HERE so empty cards can be scrolled to!
                       <div key={idx} id={elementId} className="relative rounded-2xl border border-dashed border-white/10 bg-black/20 flex flex-col items-start justify-center p-5 text-left min-h-[100px] cursor-not-allowed">
                         <span className="text-[#1095d2]/80 text-[8px] font-mono font-bold uppercase tracking-widest mb-1.5 bg-[#1095d2]/10 px-2 py-0.5 rounded">Available • No Work Yet</span>
                         <h4 className="text-white/50 font-bold text-sm leading-tight">{subtitle}</h4>
@@ -1142,6 +970,7 @@ export default function DreamCreations() {
             <p className="text-base text-white/70 mt-4 max-w-2xl">Journey through our structured, transparent workflow.</p>
           </div>
           
+          {/* GSAP will animate this div to the left */}
           <div ref={processTrackRef} className="flex items-center gap-4 px-6 md:px-12 w-max pb-8 flex-nowrap">
             {creativeProcess.map((item, index) => (
               <React.Fragment key={item.step}>
@@ -1205,54 +1034,33 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= BLUE CIRCULAR MODAL WITH RANDOM SCATTERED SUBTITLES ================= */}
+      {/* ================= INTERACTIVE POP-UP MODAL (CREATIONS DIRECTORY MENU) ================= */}
       <AnimatePresence>
         {activeCreationPopup && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden pointer-events-auto">
-            
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setActiveCreationPopup(null)} className="absolute inset-0 bg-black/80 backdrop-blur-md cursor-pointer" />
-            
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.5 }} 
-              animate={{ opacity: 1, scale: 1 }} 
-              exit={{ opacity: 0, scale: 0.5 }} 
-              // INCREASED MAX WIDTH & HEIGHT FOR PC SPACING
-              className="relative w-[95vw] h-[95vw] max-w-[700px] max-h-[700px] bg-gradient-to-br from-blue-950 to-[#020617] rounded-full border-2 border-blue-400/50 shadow-[0_0_80px_rgba(59,130,246,0.6)] flex items-center justify-center"
-            >
-              <button onClick={() => setActiveCreationPopup(null)} className="absolute top-[8%] right-[15%] text-white/50 hover:text-white z-50 transition-colors cursor-pointer p-2 bg-blue-900/40 rounded-full border border-blue-400/30"><X size={20} /></button>
-
-              {/* Title pinned at the top inner part of the circle (pushed higher) */}
-              <div className="absolute top-[8%] left-0 w-full flex flex-col items-center text-center shrink-0 z-20 pointer-events-none">
-                 <div className="text-blue-300 mb-1 scale-125 drop-shadow-md">{activeCreationPopup.icon}</div>
-                 <h3 className="text-sm md:text-lg font-black text-white leading-tight uppercase tracking-wider drop-shadow-md">{activeCreationPopup.category}</h3>
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setActiveCreationPopup(null)} className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer" />
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-lg bg-[#0b1026] border border-[#1095d2]/30 rounded-3xl p-8 shadow-[0_0_50px_rgba(16,149,210,0.4)] overflow-hidden">
+              <button onClick={() => setActiveCreationPopup(null)} className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors cursor-pointer"><X size={24} /></button>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-xl bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center shrink-0">{activeCreationPopup.icon}</div>
+                <div>
+                  <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">{activeCreationPopup.category}</h3>
+                  <p className="text-xs md:text-sm text-white/60">Select a specific area to view works</p>
+                </div>
               </div>
-
-              {/* Randomized Bubbles constrained strictly within the circle */}
-              <div className="absolute inset-0 z-20 pointer-events-none mt-12 md:mt-16">
-                {randomModalPositions.map((pos, idx) => {
-                   const item = activeCreationPopup.items[idx];
-                   if (!item) return null;
-
-                   return (
-                     <motion.button 
-                        key={idx}
-                        whileHover={{ scale: 1.1, zIndex: 50, filter: "brightness(1.2)" }}
-                        onClick={() => handleSubtitleModalClick(item)}
-                        // Use Framer Motion's native x and y instead of CSS transform to stop hover jumping
-                        style={{ 
-                          left: `calc(50% + ${pos.x}%)`, 
-                          top: `calc(50% + ${pos.y}%)`, 
-                          x: "-50%", 
-                          y: "-50%" 
-                        }}
-                        className={`absolute rounded-full border ${pos.colorClass} text-white flex items-center justify-center text-center p-2 shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-colors cursor-pointer pointer-events-auto backdrop-blur-md ${pos.sizeClass} hover:shadow-[0_0_20px_rgba(59,130,246,0.8)]`}
-                     >
-                        <span className="text-[8px] sm:text-[9px] md:text-[11px] font-bold leading-tight break-words line-clamp-3 px-1">{item}</span>
-                     </motion.button>
-                   );
-                })}
-              </div>
-
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
+                {activeCreationPopup.items.map((item, idx) => (
+                  <li key={idx}>
+                    <button 
+                      onClick={() => handleSubtitleModalClick(item)}
+                      className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group cursor-pointer"
+                    >
+                      <span className="text-[#1095d2] group-hover:translate-x-1 transition-transform">▹</span>
+                      <span className="text-sm font-medium text-white/80 group-hover:text-white">{item}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </motion.div>
           </div>
         )}
@@ -1430,7 +1238,7 @@ export default function DreamCreations() {
                   const vUrl = p.video_url;
                   const iUrl = p.featured_image_url;
                   
-                  // ULTIMATE YOUTUBE SCANNER
+                  // ULTIMATE YOUTUBE SCANNER (Catches all formats including shorts, youtu.be, embed, watch?v)
                   let ytId = null;
                   if (vUrl && typeof vUrl === 'string') {
                     const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
@@ -1441,20 +1249,24 @@ export default function DreamCreations() {
                   }
 
                   if (ytId) {
+                    // Render YouTube embedded cinema player
                     return (
                       <motion.div key={`yt-${p.id}`} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.2 }} className="w-full max-w-5xl aspect-video relative z-10 pointer-events-auto shadow-[0_0_50px_rgba(0,0,0,0.8)] rounded-2xl overflow-hidden bg-black">
                         <iframe src={`https://www.youtube.com/embed/${ytId}?autoplay=1`} className="w-full h-full border-0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowFullScreen />
                       </motion.div>
                     );
                   } else if (vUrl && typeof vUrl === 'string' && isVideo(vUrl) && !vUrl.includes(',')) {
+                    // Render raw .mp4 from video_url
                     return (
                       <motion.video key={`vid-${p.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={vUrl} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing relative z-10 pointer-events-auto" autoPlay controls playsInline loop onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
                     );
                   } else if (iUrl && isVideo(iUrl)) {
+                    // Render raw .mp4 from featured_image_url
                     return (
                       <motion.video key={`vid-${p.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={iUrl} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing relative z-10 pointer-events-auto" autoPlay controls playsInline loop onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
                     );
                   } else {
+                    // Render standard Image
                     return (
                       <motion.img key={`img-${p.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={iUrl} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing select-none pointer-events-auto relative z-10" alt="Preview" onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
                     );
@@ -1462,6 +1274,41 @@ export default function DreamCreations() {
                 })()}
               </AnimatePresence>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= POLAROID PHOTOGRAPHY MODAL (UNIFIED SCATTERED LAYOUT) ================= */}
+      <AnimatePresence>
+        {isPhotographyOpen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.5 } }} className="fixed inset-0 z-[400] flex flex-col items-center justify-between bg-[#050508]/90 backdrop-blur-xl overflow-hidden pointer-events-auto">
+            <div className="absolute inset-0 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16, 149, 210, 0.15), transparent 70%)' }} />
+            <button onClick={() => setIsPhotographyOpen(false)} className="absolute top-6 right-6 md:top-8 md:right-8 z-[500] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 backdrop-blur-md pointer-events-auto"><X size={20} className="md:w-6 md:h-6" /></button>
+            <div className="absolute top-6 left-6 md:top-8 md:left-8 z-[500] pointer-events-auto">
+              <h2 className="text-xl md:text-3xl font-black text-white tracking-widest uppercase drop-shadow-md">Captured Dreams</h2>
+              <p className="text-[#1095d2] font-mono text-[10px] md:text-xs mt-0.5 drop-shadow-md">Select a polaroid to view full frame.</p>
+            </div>
+            <div className="absolute inset-0 w-full h-full flex items-center justify-center z-10 overflow-hidden pointer-events-none">
+              {photographyShots.map((shot, idx) => {
+                const mappedX = `${((shot.x || 0) / 100) * 45}vw`;
+                const mappedY = `${((shot.y || 0) / 50) * 45}vh`;
+                return (
+                  <motion.div key={shot.id || idx} drag dragConstraints={{ left: -1000, right: 1000, top: -1000, bottom: 1000 }} initial={{ opacity: 0, scale: 0.5, x: 0, y: 0, rotate: 0 }} animate={{ opacity: 1, scale: 1, x: mappedX, y: mappedY, rotate: shot.rot || 0 }} transition={{ type: "spring", damping: 20, stiffness: 100, delay: idx * 0.05 }} whileHover={{ scale: 1.15, rotate: 0, zIndex: 50, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9)" }} whileTap={{ scale: 1.15, zIndex: 50 }} className="absolute p-2 pb-8 md:p-3 md:pb-10 bg-[#f8f8f8] shadow-[0_15px_35px_rgba(0,0,0,0.6)] cursor-grab active:cursor-grabbing rounded-sm pointer-events-auto" onClick={() => setSelectedPhoto(shot.url)} style={{ zIndex: 10 + idx }}>
+                    <img src={shot.url} alt={shot.title || "Shot"} className="w-28 h-28 sm:w-48 sm:h-48 md:w-64 md:h-64 object-cover pointer-events-none filter contrast-[0.9] sepia-[0.2]" />
+                    <p className="absolute bottom-2 md:bottom-3 left-0 w-full text-center text-black/60 font-mono text-[9px] sm:text-[10px] md:text-xs font-bold pointer-events-none truncate px-2">{shot.title || "Captured Dream"}</p>
+                  </motion.div>
+                );
+              })}
+              {photographyShots.length === 0 && ( <div className="text-white/40 text-xs font-mono py-12 pointer-events-auto">No photography shots added yet.</div> )}
+            </div>
+            <AnimatePresence>
+              {selectedPhoto && (
+                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="absolute inset-0 z-[600] flex items-center justify-center bg-black/95 p-4 md:p-12 cursor-pointer backdrop-blur-md pointer-events-auto" onClick={() => setSelectedPhoto(null)}>
+                  <img src={selectedPhoto} alt="Selected Zoom" className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_40px_rgba(16,149,210,0.2)]" />
+                  <p className="absolute bottom-6 text-white/50 text-[10px] md:text-xs font-mono tracking-widest uppercase drop-shadow-md">Click anywhere to close</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
