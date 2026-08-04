@@ -168,10 +168,10 @@ export default function DreamCreations() {
     offset: ["start start", "end end"]
   });
   
-  // Maps the moon position from 130vh ABOVE the creations center down to exactly 0vh
+  // Maps the moon position from 145vh ABOVE the creations center down to exactly 0vh
   // Starts scale at 1.15 and shrinks to 0.4 at the solar system center
   const smoothProgress = useSpring(topScrollYProgress, { stiffness: 100, damping: 25, restDelta: 0.001 });
-  const moonY = useTransform(smoothProgress, [0, 1], ["-130vh", "0vh"]);
+  const moonY = useTransform(smoothProgress, [0, 1], ["-145vh", "0vh"]);
   const moonScale = useTransform(smoothProgress, [0, 1], [1.15, 0.4]);
 
   // PURE GSAP SCROLL-JACKING LOGIC
@@ -663,7 +663,7 @@ export default function DreamCreations() {
         <section className="relative min-h-[90vh] flex flex-col items-center justify-center text-center z-30 pt-48 pb-20 px-6">
           <motion.div initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }} transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }} className="absolute top-1/2 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10" />
           
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="max-w-4xl mx-auto backdrop-blur-sm bg-[#050508]/10 p-8 rounded-3xl border border-transparent shadow-[0_0_40px_rgba(0,0,0,0.3)] z-40 mt-32 md:mt-40 pointer-events-auto">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="max-w-4xl mx-auto backdrop-blur-sm bg-[#050508]/10 p-8 rounded-3xl border border-transparent shadow-[0_0_40px_rgba(0,0,0,0.3)] z-40 mt-48 md:mt-60 pointer-events-auto">
             <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">Let's make your{' '}<br className="hidden md:block" /><span className="text-[#1095d2]">dream</span> a reality.</h2>
             <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
               <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.</p>
@@ -675,10 +675,10 @@ export default function DreamCreations() {
 
         {/* CREATIONS SECTION (SOLAR SYSTEM LAYOUT) - Z-Index 10 ensures the moon slides perfectly behind the Hero Text */}
         <section className="min-h-screen w-full px-4 py-20 flex flex-col items-center justify-center z-10 relative border-t border-white/10">
-          <div className="mb-4 text-center pointer-events-auto">
-            <h3 className="text-3xl md:text-5xl font-black text-white mb-4">Our Creations</h3>
+          <div className="mb-4 text-center pointer-events-auto relative z-40">
+            <h3 className="text-3xl md:text-5xl font-black text-white mb-4 drop-shadow-2xl">Our Creations</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
-            <p className="text-sm md:text-base text-white/70 mt-4 max-w-2xl mx-auto px-6">Explore our specialized creative categories. Click any node to view our specific offerings and jump directly to our past works.</p>
+            <p className="text-sm md:text-base text-white/70 mt-4 max-w-2xl mx-auto px-6 drop-shadow-md">Explore our specialized creative categories. Click any node to view our specific offerings and jump directly to our past works.</p>
           </div>
           
           {/* Solar System Container */}
@@ -690,10 +690,10 @@ export default function DreamCreations() {
             {/* Inner Orbital Ring */}
             <div className="absolute inset-0 m-auto w-[55%] h-[55%] rounded-full border border-[#1095d2]/20 border-dashed animate-[spin_60s_linear_reverse_infinite] pointer-events-none" />
 
-            {/* THE MOON (Translates from exactly above the hero text down to exactly the center) */}
+            {/* THE MOON (Translates from exactly above the hero text down to exactly the center) - Lowered z-index ensures it goes behind planets */}
             <motion.div 
               style={{ y: moonY, scale: moonScale }} 
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center pointer-events-none"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 flex flex-col items-center pointer-events-none"
             >
               <motion.div animate={{ y: [-15, 15, -15], rotate: [-3, 3, -3] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
                 <img src="/images/moon.png" alt="Dream Creations Moon" className="w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]" />
