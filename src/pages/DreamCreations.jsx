@@ -161,12 +161,13 @@ export default function DreamCreations() {
   const heroCreationsWrapperRef = useRef(null);
   const { scrollYProgress: heroScroll } = useScroll({
     target: heroCreationsWrapperRef,
-    offset: ["start start", "end center"]
+    offset: ["start start", "end end"]
   });
 
-  // Scale shrinks from 1.5 down to 0.45, Y shifts down to center it in the solar system viewport
-  const moonScale = useTransform(heroScroll, [0, 0.4], [1.2, 0.45]);
-  const moonY = useTransform(heroScroll, [0, 0.4], ["0vh", "38vh"]); 
+  // Scale shrinks as you scroll down
+  const moonScale = useTransform(heroScroll, [0, 0.45], [1.1, 0.45]);
+  // Moon starts slightly high (-25vh) and centers (0vh) inside the sticky container
+  const moonY = useTransform(heroScroll, [0, 0.45], ["-25vh", "0vh"]); 
 
   // Split categories for Orbital Layout
   const innerCategories = creationsCategories.slice(0, 4);
@@ -658,23 +659,27 @@ export default function DreamCreations() {
       {/* ================= HERO & CREATIONS SOLAR SYSTEM WRAPPER ================= */}
       <div ref={heroCreationsWrapperRef} className="relative z-10 pb-20">
         
-        {/* STICKY MOON BACKGROUND LAYER */}
+        {/* STICKY MOON BACKGROUND LAYER (NO ROTATION, FLOATING ONLY) */}
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <div className="sticky top-0 h-[100vh] w-full flex flex-col items-center justify-start pt-[12vh] md:pt-[10vh]">
+          <div className="sticky top-0 h-[100vh] w-full flex flex-col items-center justify-center">
              <motion.div style={{ scale: moonScale, y: moonY }}>
-               <motion.img 
-                 src="/images/moon.png" 
-                 animate={{ rotate: 360 }} 
-                 transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
-                 className="w-48 h-48 md:w-80 md:h-80 object-contain drop-shadow-[0_0_60px_rgba(16,149,210,0.8)]" 
-               />
+               {/* Entrance Animation Wrap */}
+               <motion.div initial={{ opacity: 0, y: 150 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, ease: "easeOut" }}>
+                 {/* Floating Animation Wrap */}
+                 <motion.img 
+                   src="/images/moon.png" 
+                   animate={{ y: [-15, 15, -15] }} 
+                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                   className="w-56 h-56 md:w-96 md:h-96 object-contain drop-shadow-[0_0_60px_rgba(16,149,210,0.8)]" 
+                 />
+               </motion.div>
              </motion.div>
           </div>
         </div>
 
-        {/* 1. HERO SECTION */}
-        <section className="relative pt-[40vh] pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-start text-center z-10 pointer-events-auto">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="max-w-4xl mx-auto backdrop-blur-sm p-8 rounded-3xl border border-white/5 bg-[#020617]/40 shadow-2xl relative z-10">
+        {/* 1. HERO SECTION (Adjusted Spacing) */}
+        <section className="relative min-h-[100vh] flex flex-col items-center justify-start text-center z-10 pointer-events-auto pt-[45vh] md:pt-[50vh]">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="max-w-4xl mx-auto backdrop-blur-sm p-8 rounded-3xl border border-white/5 bg-[#020617]/40 shadow-2xl relative z-10">
              <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
                Let's make your <br className="hidden md:block" />
                <span className="text-[#1095d2] drop-shadow-[0_0_15px_rgba(16,149,210,0.5)]">dream</span> a reality.
@@ -697,24 +702,25 @@ export default function DreamCreations() {
              </p>
           </div>
 
-          {/* DESKTOP ORBITAL SYSTEM */}
-          <div className="hidden md:flex relative w-full max-w-5xl h-[600px] items-center justify-center">
+          {/* DESKTOP ORBITAL SYSTEM (Wider Spacing) */}
+          <div className="hidden md:flex relative w-full max-w-5xl h-[800px] items-center justify-center">
              {/* Rings */}
-             <div className="absolute w-[320px] h-[320px] rounded-full border border-dashed border-[#1095d2]/40" />
-             <div className="absolute w-[600px] h-[600px] rounded-full border border-dashed border-[#1095d2]/20" />
+             <div className="absolute w-[400px] h-[400px] rounded-full border border-dashed border-[#1095d2]/40" />
+             <div className="absolute w-[750px] h-[750px] rounded-full border border-dashed border-[#1095d2]/20" />
              
              {/* Inner Planets */}
              {innerCategories.map((cat, idx) => {
                 const angle = (idx / innerCategories.length) * 2 * Math.PI;
-                const x = Math.cos(angle) * 160;
-                const y = Math.sin(angle) * 160;
+                const radius = 200;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
                 return (
                     <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
                        <div className="group flex flex-col items-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
-                           <button onClick={() => setActiveCreationPopup(cat)} className="w-14 h-14 rounded-full bg-[#050508] border border-[#1095d2]/40 flex items-center justify-center text-[#1095d2] hover:bg-[#1095d2] hover:text-white hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.5)] cursor-pointer">
+                           <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.8)] cursor-pointer">
                               {cat.icon}
                            </button>
-                           <span className="absolute top-16 text-[10px] text-white/90 font-bold whitespace-nowrap bg-black/60 px-3 py-1 rounded-full border border-[#1095d2]/20 shadow-md">
+                           <span className="absolute top-20 text-[12px] text-white font-bold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full shadow-md">
                               {cat.category}
                            </span>
                        </div>
@@ -725,15 +731,16 @@ export default function DreamCreations() {
              {/* Outer Planets */}
              {outerCategories.map((cat, idx) => {
                 const angle = (idx / outerCategories.length) * 2 * Math.PI;
-                const x = Math.cos(angle) * 300;
-                const y = Math.sin(angle) * 300;
+                const radius = 375;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
                 return (
                     <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
                        <div className="group flex flex-col items-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
-                           <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#050508] border border-[#1095d2]/40 flex items-center justify-center text-[#1095d2] hover:bg-[#1095d2] hover:text-white hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.5)] cursor-pointer">
+                           <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.8)] cursor-pointer">
                               {cat.icon}
                            </button>
-                           <span className="absolute top-20 text-[11px] text-white/90 font-bold whitespace-nowrap bg-black/60 px-3 py-1 rounded-full border border-[#1095d2]/20 shadow-md">
+                           <span className="absolute top-20 text-[12px] text-white font-bold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full shadow-md">
                               {cat.category}
                            </span>
                        </div>
@@ -742,23 +749,25 @@ export default function DreamCreations() {
              })}
           </div>
 
-          {/* MOBILE ORBITAL SYSTEM */}
-          <div className="flex md:hidden relative w-full h-[450px] items-center justify-center">
-             <div className="absolute w-[200px] h-[200px] rounded-full border border-dashed border-[#1095d2]/40" />
-             <div className="absolute w-[360px] h-[360px] rounded-full border border-dashed border-[#1095d2]/20" />
+          {/* MOBILE ORBITAL SYSTEM (Compact & Fits in Screen) */}
+          <div className="flex md:hidden relative w-full h-[400px] items-center justify-center mt-6">
+             <div className="absolute w-[140px] h-[140px] rounded-full border border-dashed border-[#1095d2]/40" />
+             <div className="absolute w-[280px] h-[280px] rounded-full border border-dashed border-[#1095d2]/20" />
              
              {/* Inner Mobile Planets */}
              {innerCategories.map((cat, idx) => {
                 const angle = (idx / innerCategories.length) * 2 * Math.PI;
-                const x = Math.cos(angle) * 100;
-                const y = Math.sin(angle) * 100;
+                const radius = 70;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
                 return (
                     <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
                        <div className="flex flex-col items-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
-                           <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#050508] border border-[#1095d2]/40 flex items-center justify-center text-[#1095d2] active:bg-[#1095d2] active:text-white active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.5)] cursor-pointer">
+                           <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#1095d2] flex items-center justify-center text-white active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.8)] cursor-pointer">
                               {cat.icon}
                            </button>
-                           <span className="absolute top-14 text-[9px] text-white/90 font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full border border-[#1095d2]/20 shadow-md max-w-[80px] overflow-hidden text-ellipsis">
+                           {/* No truncation, full text visible */}
+                           <span className="absolute top-14 text-[9px] text-white font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full shadow-md">
                               {cat.category}
                            </span>
                        </div>
@@ -769,15 +778,17 @@ export default function DreamCreations() {
              {/* Outer Mobile Planets */}
              {outerCategories.map((cat, idx) => {
                 const angle = (idx / outerCategories.length) * 2 * Math.PI;
-                const x = Math.cos(angle) * 180;
-                const y = Math.sin(angle) * 180;
+                const radius = 140;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
                 return (
                     <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
                        <div className="flex flex-col items-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
-                           <button onClick={() => setActiveCreationPopup(cat)} className="w-14 h-14 rounded-full bg-[#050508] border border-[#1095d2]/40 flex items-center justify-center text-[#1095d2] active:bg-[#1095d2] active:text-white active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.5)] cursor-pointer">
+                           <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#1095d2] flex items-center justify-center text-white active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.8)] cursor-pointer">
                               {cat.icon}
                            </button>
-                           <span className="absolute top-16 text-[10px] text-white/90 font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full border border-[#1095d2]/20 shadow-md">
+                           {/* No truncation, full text visible */}
+                           <span className="absolute top-14 text-[9px] text-white font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full shadow-md">
                               {cat.category}
                            </span>
                        </div>
