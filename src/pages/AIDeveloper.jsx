@@ -1,7 +1,7 @@
 // src/pages/AiDeveloper.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate } from 'framer-motion';
-import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ArrowDown, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Palette, Briefcase, LineChart, Rocket, Sparkles } from 'lucide-react';
+import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Palette, Briefcase, LineChart, Rocket, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useMobileBack } from '../hooks/useMobileBack';
 
@@ -241,6 +241,7 @@ const extractImageDeep = (item) => {
 
 export default function AiDeveloper() {
   const containerRef = useRef(null);
+  const archScrollRef = useRef(null);
 
   const [stats, setStats] = useState(defaultDeveloperStats);
   const [timeline, setTimeline] = useState(defaultLearningTimeline);
@@ -253,6 +254,9 @@ export default function AiDeveloper() {
   
   // STATE PARA SA MOBILE ORBITAL (TAP-TO-REVEAL)
   const [activeMobileNode, setActiveMobileNode] = useState(null);
+  
+  // STATE PARA SA ARCHITECTURE PIPELINE FLOWCHART
+  const [activeArchTab, setActiveArchTab] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -347,9 +351,24 @@ export default function AiDeveloper() {
     }
   };
 
+  const handleArchTabClick = (idx) => {
+    setActiveArchTab(idx);
+    if (archScrollRef.current) {
+      const container = archScrollRef.current;
+      const node = container.children[idx];
+      if (node) {
+        const scrollLeft = node.offsetLeft - container.offsetWidth / 2 + node.offsetWidth / 2;
+        container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+      }
+    }
+  };
+
   // Helper variables for Orbital Layout distribution
   const innerPartners = aiPartners.filter((_, i) => i % 2 === 0);
   const outerPartners = aiPartners.filter((_, i) => i % 2 !== 0);
+
+  // Helper for Mobile Details HUD
+  const activeMobileDetails = aiPartners.find(ai => ai.name === activeMobileNode);
 
   return (
     <div ref={containerRef} className="flex flex-col min-h-screen text-slate-100 relative selection:bg-cyan-500/30 selection:text-cyan-200">
@@ -376,6 +395,10 @@ export default function AiDeveloper() {
         .stream-y { animation: data-stream-y linear infinite; will-change: transform; }
         .stream-x { animation: data-stream-x linear infinite; will-change: transform; }
         .ambient-glow { animation: ambient-pulse ease-in-out infinite; will-change: opacity, transform; }
+        
+        /* Utility to hide scrollbars elegantly */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
       {/* The STICKY Wrapper */}
@@ -584,7 +607,6 @@ export default function AiDeveloper() {
 
         {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW (CHAT UI OVERHAUL) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
-          {/* Changed items-start to items-center to fix the empty gap on the left */}
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-5 space-y-6">
@@ -777,12 +799,6 @@ export default function AiDeveloper() {
                             >
                                {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-6 h-6 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={14} className="text-slate-400" />}
                             </div>
-                            
-                            {/* Mobile Tap Card (Controlled by State) */}
-                            <div className={`absolute top-12 w-32 p-2 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl transition-opacity duration-300 z-50 backdrop-blur-md text-center pointer-events-none ${isActive ? 'opacity-100' : 'opacity-0'}`}>
-                               <h4 className="text-xs font-bold text-white mb-0.5">{ai.name}</h4>
-                               <p className="text-[9px] text-slate-400 leading-tight">{ai.role}</p>
-                            </div>
                          </div>
                      </div>
                   );
@@ -806,83 +822,118 @@ export default function AiDeveloper() {
                             >
                                {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-7 h-7 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={16} className="text-slate-400" />}
                             </div>
-                            
-                            {/* Mobile Tap Card */}
-                            <div className={`absolute top-14 w-36 p-2 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl transition-opacity duration-300 z-50 backdrop-blur-md text-center pointer-events-none ${isActive ? 'opacity-100' : 'opacity-0'}`}>
-                               <h4 className="text-xs font-bold text-white mb-0.5">{ai.name}</h4>
-                               <p className="text-[9px] text-slate-400 leading-tight">{ai.role}</p>
-                            </div>
                          </div>
                      </div>
                   );
                })}
             </motion.div>
 
+            {/* DEDICATED INFO HUD BOX FOR MOBILE (Below Orbital Map) */}
+            <div className="md:hidden mt-8 w-full max-w-sm mx-auto h-24 px-4 z-50 relative">
+                {activeMobileDetails ? (
+                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-4 rounded-xl bg-slate-900/90 border border-slate-700 shadow-[0_0_20px_rgba(0,0,0,0.5)] text-center backdrop-blur-md">
+                      <h4 className="text-sm font-bold text-white mb-1">{activeMobileDetails.name}</h4>
+                      <p className="text-[10px] text-slate-400 leading-tight">{activeMobileDetails.role}</p>
+                   </motion.div>
+                ) : (
+                   <div className="flex items-center justify-center h-full text-[10px] text-slate-500 font-mono tracking-widest uppercase animate-pulse border border-dashed border-slate-800 rounded-xl">
+                      -- Tap an AI Node to view details --
+                   </div>
+                )}
+            </div>
+
           </div>
         </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE (PIPELINE UI) ================= */}
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE (HORIZONTAL PIPELINE FLOWCHART) ================= */}
         <section className="py-32 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-md overflow-hidden">
-          <div className="max-w-5xl mx-auto">
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-24">
+          <div className="max-w-6xl mx-auto">
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
               <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Architecture Pipeline</h3>
               <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
               <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed">
-                A structured, top-to-bottom engineering workflow detailing every phase of my development process—from initial planning to post-deployment monitoring.
+                A structured, horizontal engineering flowchart detailing every phase of my development process—from initial planning to post-deployment monitoring.
               </p>
+              <p className="md:hidden mt-2 text-[10px] text-cyan-400 font-mono tracking-widest opacity-70 animate-pulse">(Swipe horizontally & tap node to view tools)</p>
             </motion.div>
 
-            <div className="relative">
-              {/* Vertical Glowing Pipeline Wire */}
-              <div className="absolute left-[39px] md:left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-cyan-500 via-blue-500 to-purple-500 md:-translate-x-1/2 opacity-30 shadow-[0_0_15px_rgba(6,182,212,0.5)] z-0" />
+            {/* HORIZONTAL SCROLLING TABS (FLOWCHART STYLE) */}
+            <div className="relative w-full max-w-5xl mx-auto mb-16">
+              <div 
+                ref={archScrollRef} 
+                className="flex overflow-x-auto hide-scrollbar snap-x snap-mandatory py-10 px-[calc(50vw-64px)] md:px-0 md:justify-center relative z-10" 
+                style={{ scrollBehavior: 'smooth' }}
+              >
+                {architecture.map((stack, idx) => {
+                  const isActive = activeArchTab === idx;
+                  const isPassed = idx <= activeArchTab;
 
-              {architecture.map((stack, idx) => (
-                <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} key={idx} className="relative flex flex-col md:flex-row items-center w-full mb-16 group">
-                  
-                  {/* Pipeline Node Dot */}
-                  <div className="absolute left-[34px] md:left-1/2 top-0 w-3 h-3 bg-[#02040a] border-2 border-cyan-400 rounded-full md:-translate-x-1/2 z-20 shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
+                  return (
+                    <div key={idx} onClick={() => handleArchTabClick(idx)} className="relative flex flex-col items-center shrink-0 w-32 cursor-pointer group snap-center">
+                      
+                      {/* Connected Line Flowing Effect (Shoots to the right) */}
+                      {idx !== architecture.length - 1 && (
+                        <div className="absolute top-4 left-1/2 w-full h-[2px] bg-slate-800 z-0">
+                          <div className={`h-full transition-all duration-700 ease-in-out ${activeArchTab > idx ? 'bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.8)] w-full' : 'w-0'}`} />
+                        </div>
+                      )}
 
-                  {/* Downward Connector Arrow (Skipped on last item) */}
-                  {idx !== architecture.length - 1 && (
-                    <div className="absolute left-[30px] md:left-1/2 -bottom-10 w-5 h-5 md:-translate-x-1/2 z-20 text-cyan-500/50 flex items-center justify-center animate-bounce">
-                      <ArrowDown size={20} />
-                    </div>
-                  )}
-
-                  {/* Centered Workflow Card */}
-                  <div className="pl-20 md:pl-0 md:w-full z-10 w-full">
-                    <div className="p-6 md:p-8 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] group-hover:border-cyan-500/40 transition-colors relative overflow-hidden text-center md:mx-auto md:max-w-3xl">
-                      
-                      {/* Subtle Top Inner Gradient for the Box */}
-                      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-20 group-hover:opacity-50 transition-opacity" />
-                      
-                      <h4 className="text-base font-black text-cyan-400 uppercase tracking-widest mb-6">
-                        <span className="text-slate-600 mr-2">[{String(idx + 1).padStart(2, '0')}]</span> {stack.category}
-                      </h4>
-                      
-                      <div className="flex flex-wrap justify-center gap-3">
-                        {stack.items?.map((tool, i) => {
-                          const isLearning = tool.name.toLowerCase().includes('(learning)');
-                          const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
-                          
-                          return (
-                            <div key={i} className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${isLearning ? 'bg-purple-950/20 border-purple-900/50 text-purple-300' : 'bg-slate-900/50 border-slate-800 text-slate-200'} text-xs font-semibold hover:scale-105 transition-transform cursor-default`}>
-                              {tool.customImage ? (
-                                <img src={tool.customImage} alt={cleanName} className="w-4 h-4 object-contain" onError={(e) => e.target.style.display='none'} />
-                              ) : (
-                                <Settings size={12} className={isLearning ? 'text-purple-500' : 'text-cyan-500'} />
-                              )}
-                              {cleanName}
-                              {isLearning && <span className="text-[9px] bg-purple-500/20 border border-purple-500/30 text-purple-400 px-1.5 py-0.5 rounded uppercase tracking-wider">Learning</span>}
-                            </div>
-                          )
-                        })}
+                      {/* Circle Node */}
+                      <div className={`relative z-10 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${isActive ? 'bg-[#02040a] border-cyan-400 scale-125 shadow-[0_0_15px_rgba(6,182,212,0.8)]' : isPassed ? 'bg-[#02040a] border-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.4)]' : 'bg-[#02040a] border-slate-700 group-hover:border-slate-500'}`}>
+                        {isActive && <div className="w-2 h-2 bg-cyan-400 rounded-full animate-ping" />}
+                        {isPassed && !isActive && <div className="w-2 h-2 bg-cyan-500 rounded-full" />}
                       </div>
+
+                      {/* Label Tab */}
+                      <span className={`absolute top-12 text-[10px] font-mono font-bold tracking-wider text-center w-32 transition-colors duration-300 ${isActive ? 'text-cyan-400' : isPassed ? 'text-slate-300' : 'text-slate-600 group-hover:text-slate-400'}`}>
+                        {stack.category}
+                      </span>
                     </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* DYNAMIC CONTENT BOX (SHOWS TOOLS FOR ACTIVE TAB) */}
+            <div className="max-w-4xl mx-auto px-4">
+              {architecture[activeArchTab] && (
+                <motion.div
+                  key={activeArchTab}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="p-8 md:p-10 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative overflow-hidden"
+                >
+                  {/* Subtle Glowing Top Border */}
+                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-40" />
+
+                  <h4 className="text-base md:text-lg font-black text-cyan-400 uppercase tracking-widest mb-8">
+                    <span className="text-slate-600 mr-2">[{String(activeArchTab + 1).padStart(2, '0')}]</span>
+                    {architecture[activeArchTab].category} Stack
+                  </h4>
+                  
+                  <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+                    {architecture[activeArchTab].items?.map((tool, i) => {
+                      const isLearning = tool.name.toLowerCase().includes('(learning)');
+                      const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
+                      
+                      return (
+                        <div key={i} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border ${isLearning ? 'bg-purple-950/20 border-purple-900/50 text-purple-300' : 'bg-slate-900/50 border-slate-800 text-slate-200'} text-xs font-semibold hover:-translate-y-1 transition-transform cursor-default shadow-md`}>
+                          {tool.customImage ? (
+                            <img src={tool.customImage} alt={cleanName} className="w-5 h-5 object-contain" onError={(e) => e.target.style.display='none'} />
+                          ) : (
+                            <Settings size={14} className={isLearning ? 'text-purple-500' : 'text-cyan-500'} />
+                          )}
+                          {cleanName}
+                          {isLearning && <span className="text-[9px] bg-purple-500/20 border border-purple-500/30 text-purple-400 px-1.5 py-0.5 rounded uppercase tracking-wider ml-1">Learning</span>}
+                        </div>
+                      )
+                    })}
                   </div>
                 </motion.div>
-              ))}
+              )}
             </div>
+
           </div>
         </section>
 
