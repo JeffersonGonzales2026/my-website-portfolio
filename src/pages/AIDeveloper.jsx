@@ -337,7 +337,7 @@ export default function AiDeveloper() {
 
             {/* FIXED MOBILE HEADLINE */}
             <motion.h1 variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}
-              className="text-[24px] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
+              className="text-[30px] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
               
               <span className="md:hidden block leading-[1.4]">
                 <span className="block whitespace-nowrap">Building the Future</span>
