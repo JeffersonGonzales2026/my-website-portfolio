@@ -1,15 +1,8 @@
 // src/pages/AiDeveloper.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, useInView, animate, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useInView, animate, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from 'framer-motion';
 import { Cpu, Layers, ArrowUp, CheckCircle2, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-
-// GSAP IMPORTS (Fixed and refined calculation)
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useGSAP } from '@gsap/react';
-
-gsap.registerPlugin(ScrollTrigger);
 
 // ================= CUSTOM ANIMATED COUNTER =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -43,43 +36,38 @@ const WaveCard = ({ principle }) => {
   });
 
   const scale = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.9, 1.1, 0.9]);
-  const opacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.5, 1, 0.5]);
+  const opacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.4, 1, 0.4]);
   const zIndex = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0, 10, 0]); 
   
-  // Violet Glow Fades IN smoothly OVER the Blue Base when centered
-  const violetOverlayOpacity = useTransform(scrollYProgress, [0.4, 0.5, 0.6], [0, 1, 0]);
-
-  const textColor = useTransform(
-    scrollYProgress,
-    [0.3, 0.5, 0.7],
-    ['#94a3b8', '#ffffff', '#94a3b8'] 
-  );
+  // VIOLET FADE OVERLAY: Starts at 0 (Invisible), Fades to 1 (Visible) when centered
+  const violetOverlayOpacity = useTransform(scrollYProgress, [0.35, 0.5, 0.65], [0, 1, 0]);
 
   return (
     <motion.div 
       ref={ref}
       style={{ scale, opacity, zIndex }}
-      // THE BASE BLUE CARD
-      className="relative p-4 md:p-5 rounded-2xl border border-blue-500/40 bg-blue-900/20 flex items-center gap-4 backdrop-blur-md w-full max-w-md mx-auto origin-center overflow-hidden shadow-[0_0_15px_rgba(59,130,246,0.15)]"
+      // THE BASE BLUE CARD (Hindi aalisin, papatungan lang)
+      className="relative p-4 md:p-5 rounded-2xl border-2 border-blue-500 bg-blue-900/40 flex items-center gap-4 backdrop-blur-md w-full max-w-md mx-auto origin-center overflow-hidden shadow-[0_0_20px_rgba(59,130,246,0.3)]"
     >
-      {/* VIOLET GLOW OVERLAY FADE (Pumapatong lang sa Blue) */}
+      {/* VIOLET GLOW OVERLAY FADE (Ito ang papatong sa Blue) */}
       <motion.div 
         style={{ opacity: violetOverlayOpacity }}
-        className="absolute inset-0 bg-gradient-to-r from-purple-900/70 to-violet-900/70 border-2 border-purple-400 rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.7)] z-0"
+        className="absolute inset-0 bg-purple-900/80 border-2 border-purple-400 rounded-2xl shadow-[0_0_40px_rgba(168,85,247,0.8)] z-0"
       />
 
       <div className="relative z-10 flex items-center gap-4 w-full">
         {/* ICON - Fades from Bright Blue to Purple */}
-        <div className="shrink-0 relative w-6 h-6">
-           <CheckCircle2 size={24} className="text-blue-400 absolute inset-0 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+        <div className="shrink-0 relative w-6 h-6 flex items-center justify-center">
+           <CheckCircle2 size={24} className="text-blue-300 absolute inset-0 drop-shadow-[0_0_8px_rgba(59,130,246,1)]" />
            <motion.div style={{ opacity: violetOverlayOpacity }} className="absolute inset-0">
-             <CheckCircle2 size={24} className="text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+             <CheckCircle2 size={24} className="text-purple-300 drop-shadow-[0_0_8px_rgba(168,85,247,1)]" />
            </motion.div>
         </div>
         
-        <motion.span style={{ color: textColor }} className="text-sm font-bold tracking-wide text-left relative z-10 drop-shadow-md">
+        {/* TEXT - Fades from Blue-tinted white to Pure white */}
+        <span className="text-sm font-bold tracking-wide text-white relative z-10 drop-shadow-md">
           {principle}
-        </motion.span>
+        </span>
       </div>
     </motion.div>
   );
@@ -295,55 +283,39 @@ export default function AiDeveloper() {
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= EXTREMELY STABLE GSAP SCROLL LOGIC =================
-  const archSectionRef = useRef(null);
-  const archTrackRef = useRef(null);
+  // ================= 100% BUG-FREE FRAMER MOTION ARCHITECTURE SCROLL =================
+  const archScrollRef = useRef(null);
   const [activeArchTab, setActiveArchTab] = useState(0);
-  const [archProgress, setArchProgress] = useState(0);
-  
-  // Track gap dynamically handles resize to prevent jumpy bugs
-  const [gapSize, setGapSize] = useState(400);
+  const [gapSize, setGapSize] = useState(300);
 
+  // Auto-adjust horizontal spacing based on screen size
   useEffect(() => {
-    const handleResize = () => setGapSize(window.innerWidth < 768 ? 300 : 400);
-    handleResize(); // Init on mount
+    const handleResize = () => setGapSize(window.innerWidth < 768 ? 200 : 350);
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  useGSAP(() => {
-    if (!archSectionRef.current || !archTrackRef.current || architecture.length <= 1) return;
+  // Track scroll position of the 400vh container
+  const { scrollYProgress: archScrollY } = useScroll({
+    target: archScrollRef,
+    offset: ["start start", "end end"]
+  });
 
-    // By explicitly calculating the distance, GSAP will NEVER fail or jump to the end prematurely
-    const getScrollAmount = () => (architecture.length - 1) * gapSize;
+  // Smoothly update Active Tab without skipping or disappearing
+  useMotionValueEvent(archScrollY, "change", (latest) => {
+    const maxIndex = architecture.length > 0 ? architecture.length - 1 : 0;
+    const currentIndex = Math.round(latest * maxIndex);
+    if (currentIndex >= 0 && currentIndex <= maxIndex && currentIndex !== activeArchTab) {
+       setActiveArchTab(currentIndex);
+    }
+  });
 
-    const tween = gsap.to(archTrackRef.current, {
-      x: () => -getScrollAmount(),
-      ease: "none"
-    });
-
-    ScrollTrigger.create({
-      trigger: archSectionRef.current,
-      start: "top top", 
-      end: () => `+=${getScrollAmount()}`, 
-      pin: true,
-      animation: tween,
-      scrub: 1, 
-      invalidateOnRefresh: true,
-      onUpdate: (self) => {
-        setArchProgress(self.progress);
-        const currentIndex = Math.round(self.progress * (architecture.length - 1));
-        if (currentIndex !== activeArchTab) {
-           setActiveArchTab(Math.min(currentIndex, architecture.length - 1));
-        }
-      }
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach(t => t.kill());
-    };
-  }, { scope: archSectionRef, dependencies: [architecture, gapSize] });
-
+  // Precise Math calculation for horizontal line movement
+  const maxItems = architecture.length > 0 ? architecture.length - 1 : 0;
+  const totalTrackWidth = maxItems * gapSize;
+  const xTransform = useTransform(archScrollY, [0, 1], ["0px", `-${totalTrackWidth}px`]);
+  const lineWidthTransform = useTransform(archScrollY, [0, 1], ["0%", "100%"]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -422,10 +394,6 @@ export default function AiDeveloper() {
           const aiResume = allResumes.find(res => res.title.toLowerCase().includes('ai') || res.title.toLowerCase().includes('developer') || res.title.toLowerCase().includes('engineer')) || allResumes[0]; 
           setPageResume(aiResume);
         }
-
-        // Force a scrolltrigger refresh after data loads to prevent bugs
-        setTimeout(() => ScrollTrigger.refresh(), 500);
-
       } catch (err) {
         console.error('Error fetching AI Developer CMS data:', err.message);
       }
@@ -692,9 +660,9 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE (GSAP AUTO-SCROLL HORIZONTAL FLOWCHART) ================= */}
-        <section ref={archSectionRef} className="w-full relative z-30 border-t border-slate-900 bg-black/40 overflow-hidden min-h-screen">
-          <div className="h-screen flex flex-col justify-center items-center backdrop-blur-md pt-20 pb-10">
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE (100% BUG-FREE FRAMER MOTION HORIZONTAL SCROLL) ================= */}
+        <section ref={archScrollRef} className="h-[400vh] relative bg-black/40 border-t border-slate-900">
+          <div className="sticky top-0 h-[100dvh] w-full flex flex-col justify-center items-center overflow-hidden backdrop-blur-md pt-24 pb-8 md:py-0">
             
             {/* HEADER */}
             <div className="text-center px-4 shrink-0 w-full max-w-4xl mx-auto md:mt-16">
@@ -706,43 +674,44 @@ export default function AiDeveloper() {
               <p className="md:hidden mt-4 text-[10px] text-purple-400 font-mono tracking-widest opacity-70 animate-pulse">(Scroll down to navigate timeline)</p>
             </div>
 
-            {/* GSAP HORIZONTAL TRACK */}
-            <div className="relative h-24 md:h-32 w-full mt-6 md:mt-10 shrink-0 overflow-hidden flex items-center">
-              
-              {/* TRACK CONTAINER THAT SCROLLS LEFT (Fully reliant on accurate getScrollAmount math) */}
-              <div ref={archTrackRef} className="flex items-center px-[50vw] flex-nowrap w-max relative" style={{ gap: `${gapSize}px` }}>
+            {/* FRAMER MOTION EXACT HORIZONTAL TRACK */}
+            <div className="relative h-20 md:h-28 w-full mt-6 md:mt-10 shrink-0 overflow-hidden">
+              {/* xTransform precisely shifts this container based on scroll */}
+              <motion.div style={{ x: xTransform }} className="absolute top-0 bottom-0 left-[50vw] flex items-center">
                   
                   {/* Background Line Container */}
-                  <div className="absolute top-1/2 left-[50vw] h-[2px] bg-slate-800 -translate-y-1/2 z-0" style={{ width: `${(architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
+                  <div className="absolute top-1/2 left-0 h-[2px] bg-slate-800 -translate-y-1/2 z-0" style={{ width: `${(architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
                   
-                  {/* Glowing Violet Line (Fills based on GSAP Progress) */}
-                  <div className="absolute top-1/2 left-[50vw] h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-0 transition-all duration-75 ease-linear" style={{ width: `${archProgress * (architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
+                  {/* Glowing Violet Line (Fills based on Scroll) */}
+                  <motion.div style={{ width: lineWidthTransform }} className="absolute top-1/2 left-0 h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-0 origin-left" />
 
+                  {/* Nodes positioned absolutely relative to left-[50vw] */}
                   {architecture.map((stack, idx) => {
                     const isActive = activeArchTab === idx;
                     const isPassed = activeArchTab >= idx;
 
                     return (
-                      <div key={idx} className="relative z-10 flex flex-col items-center shrink-0 w-8">
-                        {/* Square View Point (Box) */}
-                        <div className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 ${isActive ? 'bg-[#02040a] border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' : isPassed ? 'bg-[#02040a] border-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)]' : 'bg-[#02040a] border-slate-700'}`}>
+                      <div key={idx} className="absolute top-1/2 -translate-y-1/2 flex flex-col items-center w-48 -translate-x-24" style={{ left: `${idx * gapSize}px` }}>
+                        
+                        {/* BOX VIEW POINT */}
+                        <div className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] ${isActive ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' : isPassed ? 'border-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)]' : 'border-slate-700'}`}>
                           {/* Inner Blinking Box */}
                           {isActive && <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-purple-400 animate-ping" />}
                           {isPassed && !isActive && <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-purple-500" />}
                         </div>
 
                         {/* Label */}
-                        <span className={`absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 ${isActive ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : isPassed ? 'text-slate-300' : 'text-slate-600'}`}>
+                        <span className={`absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center transition-colors duration-300 ${isActive ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : isPassed ? 'text-slate-300' : 'text-slate-600'}`}>
                           {stack.category}
                         </span>
                       </div>
                     );
                   })}
-              </div>
+              </motion.div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (Enlarged Icons, Fully Responsive, No Cut-offs) */}
-            <div className="w-full max-w-5xl mx-auto px-4 md:px-6 shrink-0 flex-1 min-h-0 flex flex-col justify-start md:justify-center mt-2 md:mt-4 pb-4">
+            {/* DYNAMIC CONTENT BOX (Enlarged App-Style Icons) */}
+            <div className="w-full max-w-4xl mx-auto px-4 md:px-6 shrink-0 mt-4 md:mt-8 pb-4">
               <AnimatePresence mode="wait">
                 {architecture[activeArchTab] && (
                   <motion.div
@@ -751,8 +720,7 @@ export default function AiDeveloper() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.3 }}
-                    // Binago sa h-auto at inalis ang hide-scrollbar para eksakto sa content ang box
-                    className="w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative"
+                    className="w-full h-auto min-h-[250px] p-6 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative"
                   >
                     {/* Subtle Glowing Top Border */}
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
@@ -770,12 +738,12 @@ export default function AiDeveloper() {
                         
                         return (
                           <div key={i} className="flex flex-col items-center gap-3 w-20 md:w-28 group">
-                            {/* Larger App-like Icon Card */}
-                            <div className={`w-20 h-20 md:w-28 md:h-28 rounded-[1.2rem] md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
+                            {/* App-like Square Icon Box */}
+                            <div className={`w-16 h-16 md:w-24 md:h-24 rounded-[1.2rem] md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
                               {tool.customImage ? (
-                                <img src={tool.customImage} alt={cleanName} className="w-10 h-10 md:w-16 md:h-16 object-contain drop-shadow-md group-hover:scale-110 transition-transform" onError={(e) => e.target.style.display='none'} />
+                                <img src={tool.customImage} alt={cleanName} className="w-8 h-8 md:w-12 md:h-12 object-contain drop-shadow-md group-hover:scale-110 transition-transform" onError={(e) => e.target.style.display='none'} />
                               ) : (
-                                <Settings className={`w-10 h-10 md:w-16 md:h-16 group-hover:scale-110 transition-transform ${isLearning ? 'text-purple-500' : 'text-cyan-500'}`} />
+                                <Settings className={`w-8 h-8 md:w-12 md:h-12 group-hover:scale-110 transition-transform ${isLearning ? 'text-purple-500' : 'text-cyan-500'}`} />
                               )}
                               
                               {/* Overlay Learning Badge */}
