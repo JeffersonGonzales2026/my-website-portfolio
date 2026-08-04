@@ -250,6 +250,9 @@ export default function AiDeveloper() {
   const [showcase, setShowcase] = useState(defaultShowcaseProjects);
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
+  
+  // STATE PARA SA MOBILE ORBITAL (TAP-TO-REVEAL)
+  const [activeMobileNode, setActiveMobileNode] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -762,16 +765,21 @@ export default function AiDeveloper() {
                   const x = Math.cos(angle) * radius;
                   const y = Math.sin(angle) * radius;
                   
+                  const isActive = activeMobileNode === ai.name;
+                  
                   return (
                      <div key={`inner-mob-${idx}`} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                         <div className="group flex flex-col items-center justify-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
+                         <div className="flex flex-col items-center justify-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
                             
-                            <div className="w-10 h-10 rounded-full bg-[#02040a] border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center group-hover:scale-110 group-hover:border-cyan-400 transition-all cursor-pointer">
+                            <div 
+                              onClick={() => setActiveMobileNode(isActive ? null : ai.name)}
+                              className={`w-10 h-10 rounded-full bg-[#02040a] border ${isActive ? 'border-cyan-400 scale-110' : 'border-slate-700'} shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center transition-all cursor-pointer`}
+                            >
                                {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-6 h-6 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={14} className="text-slate-400" />}
                             </div>
                             
-                            {/* Mobile Tap Card (Tap acts as hover in iOS/Android) */}
-                            <div className="absolute top-12 w-32 p-2 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50 backdrop-blur-md text-center pointer-events-none">
+                            {/* Mobile Tap Card (Controlled by State) */}
+                            <div className={`absolute top-12 w-32 p-2 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl transition-opacity duration-300 z-50 backdrop-blur-md text-center pointer-events-none ${isActive ? 'opacity-100' : 'opacity-0'}`}>
                                <h4 className="text-xs font-bold text-white mb-0.5">{ai.name}</h4>
                                <p className="text-[9px] text-slate-400 leading-tight">{ai.role}</p>
                             </div>
@@ -786,16 +794,21 @@ export default function AiDeveloper() {
                   const x = Math.cos(angle) * radius;
                   const y = Math.sin(angle) * radius;
                   
+                  const isActive = activeMobileNode === ai.name;
+                  
                   return (
                      <div key={`outer-mob-${idx}`} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                         <div className="group flex flex-col items-center justify-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
+                         <div className="flex flex-col items-center justify-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
                             
-                            <div className="w-12 h-12 rounded-full bg-[#02040a] border border-slate-700 shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center group-hover:scale-110 group-hover:border-purple-400 transition-all cursor-pointer">
+                            <div 
+                              onClick={() => setActiveMobileNode(isActive ? null : ai.name)}
+                              className={`w-12 h-12 rounded-full bg-[#02040a] border ${isActive ? 'border-purple-400 scale-110' : 'border-slate-700'} shadow-[0_0_15px_rgba(0,0,0,0.8)] flex items-center justify-center transition-all cursor-pointer`}
+                            >
                                {ai.customImage ? <img src={ai.customImage} alt={ai.name} className="w-7 h-7 object-contain" onError={(e) => e.target.style.display='none'} /> : <Settings size={16} className="text-slate-400" />}
                             </div>
                             
                             {/* Mobile Tap Card */}
-                            <div className="absolute top-14 w-36 p-2 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50 backdrop-blur-md text-center pointer-events-none">
+                            <div className={`absolute top-14 w-36 p-2 rounded-xl bg-slate-950/95 border border-slate-800 shadow-2xl transition-opacity duration-300 z-50 backdrop-blur-md text-center pointer-events-none ${isActive ? 'opacity-100' : 'opacity-0'}`}>
                                <h4 className="text-xs font-bold text-white mb-0.5">{ai.name}</h4>
                                <p className="text-[9px] text-slate-400 leading-tight">{ai.role}</p>
                             </div>
