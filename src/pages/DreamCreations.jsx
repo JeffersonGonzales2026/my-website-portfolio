@@ -168,10 +168,10 @@ export default function DreamCreations() {
   });
 
   // Scale shrinks smoothly as you scroll
-  const moonScale = useTransform(heroScroll, [0, 1], [0.9, 0.45]);
+  const moonScale = useTransform(heroScroll, [0, 1], [0.85, 0.35]);
   
-  // Y Position: Starts high up (-25vh) in the Hero, ends at dead center (0vh) in the Solar System
-  const moonY = useTransform(heroScroll, [0, 1], ["-25vh", "0vh"]); 
+  // Y Position: Starts high up (-25vh) in the Hero, ends at slightly above dead center (2vh) in the Solar System
+  const moonY = useTransform(heroScroll, [0, 1], ["-25vh", "2vh"]); 
 
   // Split categories for Orbital Layout
   const innerCategories = creationsCategories.slice(0, 4);
@@ -226,10 +226,18 @@ export default function DreamCreations() {
       ];
       
       const positions = activeCreationPopup.items.map((_, i) => {
-        // Safe radius so bubbles never overflow the main circle container
         const angle = (i / count) * 2 * Math.PI;
-        // Random distance from center (between 15% and 25%)
-        const radius = 15 + Math.random() * 10; 
+        
+        // Fix overlap: Alternate the radius (inner and outer ring) if there are many items
+        let radius = 0;
+        if (count > 6) {
+          // Even indexes stay closer, odd indexes get pushed outward
+          radius = i % 2 === 0 ? 20 + Math.random() * 4 : 38 + Math.random() * 4;
+        } else {
+          // Normal radius for fewer items
+          radius = 28 + Math.random() * 6;
+        }
+
         return {
           x: Math.cos(angle) * radius,
           y: Math.sin(angle) * radius,
@@ -701,7 +709,7 @@ export default function DreamCreations() {
         </div>
 
         {/* 1. HERO SECTION (Box pushed to the bottom so Moon fits perfectly above it) */}
-        <section className="relative h-screen flex flex-col justify-end items-center pb-[12vh] md:pb-[15vh] px-6 z-10 pointer-events-auto">
+        <section className="relative h-screen flex flex-col justify-end items-center pb-[15vh] md:pb-[25vh] px-6 z-10 pointer-events-auto">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="w-full max-w-4xl backdrop-blur-sm p-8 rounded-3xl border border-white/5 bg-[#020617]/40 shadow-2xl text-center">
              <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
                Let's make your <br className="hidden md:block" />
@@ -730,13 +738,13 @@ export default function DreamCreations() {
             
             {/* --- DESKTOP ORBITS (Wider Spacing) --- */}
             <div className="hidden md:flex absolute inset-0 items-center justify-center">
-               <div className="absolute w-[440px] h-[440px] rounded-full border border-dashed border-[#1095d2]/40 pointer-events-none" />
-               <div className="absolute w-[800px] h-[800px] rounded-full border border-dashed border-[#1095d2]/20 pointer-events-none" />
+               <div className="absolute w-[340px] h-[340px] rounded-full border border-dashed border-[#1095d2]/40 pointer-events-none" />
+               <div className="absolute w-[600px] h-[600px] rounded-full border border-dashed border-[#1095d2]/20 pointer-events-none" />
                
                {/* Inner Planets */}
                {innerCategories.map((cat, idx) => {
                   const angle = (idx / innerCategories.length) * 2 * Math.PI;
-                  const radius = 220; 
+                  const radius = 170; 
                   const x = Math.cos(angle) * radius;
                   const y = Math.sin(angle) * radius;
                   return (
@@ -756,7 +764,7 @@ export default function DreamCreations() {
                {/* Outer Planets */}
                {outerCategories.map((cat, idx) => {
                   const angle = (idx / outerCategories.length) * 2 * Math.PI;
-                  const radius = 400; 
+                  const radius = 300; 
                   const x = Math.cos(angle) * radius;
                   const y = Math.sin(angle) * radius;
                   return (
@@ -1185,8 +1193,8 @@ export default function DreamCreations() {
               initial={{ opacity: 0, scale: 0.5 }} 
               animate={{ opacity: 1, scale: 1 }} 
               exit={{ opacity: 0, scale: 0.5 }} 
-              // SOLID DARK BLUE BACKGROUND
-              className="relative w-[95vw] h-[95vw] max-w-[600px] max-h-[600px] bg-gradient-to-br from-blue-950 to-[#020617] rounded-full border-2 border-blue-400/50 shadow-[0_0_80px_rgba(59,130,246,0.6)] flex items-center justify-center"
+              // INCREASED MAX WIDTH & HEIGHT FOR PC SPACING
+              className="relative w-[95vw] h-[95vw] max-w-[700px] max-h-[700px] bg-gradient-to-br from-blue-950 to-[#020617] rounded-full border-2 border-blue-400/50 shadow-[0_0_80px_rgba(59,130,246,0.6)] flex items-center justify-center"
             >
               <button onClick={() => setActiveCreationPopup(null)} className="absolute top-[8%] right-[15%] text-white/50 hover:text-white z-50 transition-colors cursor-pointer p-2 bg-blue-900/40 rounded-full border border-blue-400/30"><X size={20} /></button>
 
