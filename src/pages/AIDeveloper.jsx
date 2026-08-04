@@ -444,12 +444,6 @@ export default function AiDeveloper() {
         /* Utility to hide scrollbars elegantly */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Custom Sleek Scrollbar for Chat UI */
-        .chat-scroll::-webkit-scrollbar { width: 6px; }
-        .chat-scroll::-webkit-scrollbar-track { background: rgba(2, 6, 23, 0.4); border-radius: 10px; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.4); border-radius: 10px; }
-        .chat-scroll::-webkit-scrollbar-thumb:hover { background: rgba(168, 85, 247, 0.8); }
       `}</style>
 
       {/* The STICKY Wrapper */}
@@ -591,7 +585,7 @@ export default function AiDeveloper() {
 
             {/* AI CHAT UI INTERFACE */}
             <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
-              className="lg:col-span-7 h-[550px] overflow-y-auto pr-2 border border-slate-800 bg-slate-950/80 p-6 rounded-2xl chat-scroll relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+              className="lg:col-span-7 h-[550px] overflow-y-auto pr-2 border border-slate-800 bg-slate-950/80 p-6 rounded-2xl hide-scrollbar relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
               <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-[#02040a] to-transparent pointer-events-none z-10" />
               
               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-slate-800 pb-3"><Settings size={14} className="text-purple-400" /> AI Prompts Context Window</h4>
@@ -676,7 +670,6 @@ export default function AiDeveloper() {
                   const y = Math.sin(angle) * radius;
                   
                   return (
-                     // Fixed: Translate Wrapper separate from Animating Node
                      <div key={`inner-${idx}`} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
                          <div className="group flex flex-col items-center justify-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
                             
