@@ -4,7 +4,7 @@ import { motion, useInView, animate, useScroll, useTransform, AnimatePresence } 
 import { Cpu, Layers, ArrowUp, CheckCircle2, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-// GSAP IMPORTS (Same exact method from DreamCreations)
+// GSAP IMPORTS (Fixed and refined calculation)
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -43,21 +43,11 @@ const WaveCard = ({ principle }) => {
   });
 
   const scale = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.9, 1.1, 0.9]);
-  const opacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.4, 1, 0.4]);
+  const opacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.5, 1, 0.5]);
   const zIndex = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0, 10, 0]); 
   
-  // Directly mapping colors from Blue -> Violet -> Blue
-  const borderColor = useTransform(
-    scrollYProgress, 
-    [0.3, 0.5, 0.7], 
-    ['rgba(59, 130, 246, 0.3)', 'rgba(168, 85, 247, 1)', 'rgba(59, 130, 246, 0.3)'] 
-  );
-  
-  const backgroundColor = useTransform(
-    scrollYProgress, 
-    [0.3, 0.5, 0.7], 
-    ['rgba(30, 58, 138, 0.3)', 'rgba(88, 28, 135, 0.7)', 'rgba(30, 58, 138, 0.3)'] 
-  );
+  // Violet Glow Fades IN smoothly OVER the Blue Base when centered
+  const violetOverlayOpacity = useTransform(scrollYProgress, [0.4, 0.5, 0.6], [0, 1, 0]);
 
   const textColor = useTransform(
     scrollYProgress,
@@ -65,34 +55,32 @@ const WaveCard = ({ principle }) => {
     ['#94a3b8', '#ffffff', '#94a3b8'] 
   );
 
-  const iconColor = useTransform(
-    scrollYProgress,
-    [0.3, 0.5, 0.7],
-    ['#3b82f6', '#a855f7', '#3b82f6'] 
-  );
-
-  const boxShadow = useTransform(
-    scrollYProgress,
-    [0.3, 0.5, 0.7],
-    [
-      '0px 0px 15px rgba(59, 130, 246, 0.15)', 
-      '0px 0px 40px rgba(168, 85, 247, 0.8)', 
-      '0px 0px 15px rgba(59, 130, 246, 0.15)'
-    ]
-  );
-
   return (
     <motion.div 
       ref={ref}
-      style={{ scale, opacity, borderColor, backgroundColor, boxShadow, zIndex }}
-      className="p-4 md:p-5 rounded-2xl border flex items-center gap-4 backdrop-blur-md w-full max-w-md mx-auto relative origin-center"
+      style={{ scale, opacity, zIndex }}
+      // THE BASE BLUE CARD
+      className="relative p-4 md:p-5 rounded-2xl border border-blue-500/40 bg-blue-900/20 flex items-center gap-4 backdrop-blur-md w-full max-w-md mx-auto origin-center overflow-hidden shadow-[0_0_15px_rgba(59,130,246,0.15)]"
     >
-      <motion.div style={{ color: iconColor }} className="shrink-0">
-        <CheckCircle2 size={24} style={{ filter: 'drop-shadow(0px 0px 8px currentColor)' }} />
-      </motion.div>
-      <motion.span style={{ color: textColor }} className="text-sm font-bold tracking-wide text-left">
-        {principle}
-      </motion.span>
+      {/* VIOLET GLOW OVERLAY FADE (Pumapatong lang sa Blue) */}
+      <motion.div 
+        style={{ opacity: violetOverlayOpacity }}
+        className="absolute inset-0 bg-gradient-to-r from-purple-900/70 to-violet-900/70 border-2 border-purple-400 rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.7)] z-0"
+      />
+
+      <div className="relative z-10 flex items-center gap-4 w-full">
+        {/* ICON - Fades from Bright Blue to Purple */}
+        <div className="shrink-0 relative w-6 h-6">
+           <CheckCircle2 size={24} className="text-blue-400 absolute inset-0 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+           <motion.div style={{ opacity: violetOverlayOpacity }} className="absolute inset-0">
+             <CheckCircle2 size={24} className="text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+           </motion.div>
+        </div>
+        
+        <motion.span style={{ color: textColor }} className="text-sm font-bold tracking-wide text-left relative z-10 drop-shadow-md">
+          {principle}
+        </motion.span>
+      </div>
     </motion.div>
   );
 };
@@ -201,6 +189,15 @@ const PRESET_PIPELINE_ARCHITECTURE = [
     ]
   },
   {
+    category: "Testing & Debugging",
+    items: [
+      { name: "Chrome DevTools", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/chrome/chrome-original.svg" },
+      { name: "React Developer Tools", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" },
+      { name: "ESLint", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/eslint/eslint-original.svg" },
+      { name: "Prettier", imageSrc: "" }
+    ]
+  },
+  {
     category: "Deployment",
     items: [
       { name: "Git", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" },
@@ -298,20 +295,27 @@ export default function AiDeveloper() {
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= GSAP ARCHITECTURE SCROLL LOGIC =================
+  // ================= EXTREMELY STABLE GSAP SCROLL LOGIC =================
   const archSectionRef = useRef(null);
   const archTrackRef = useRef(null);
   const [activeArchTab, setActiveArchTab] = useState(0);
   const [archProgress, setArchProgress] = useState(0);
+  
+  // Track gap dynamically handles resize to prevent jumpy bugs
+  const [gapSize, setGapSize] = useState(400);
 
-  // Gamitin natin ang eksaktong logic mula sa DreamCreations
+  useEffect(() => {
+    const handleResize = () => setGapSize(window.innerWidth < 768 ? 300 : 400);
+    handleResize(); // Init on mount
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   useGSAP(() => {
-    if (!archSectionRef.current || !archTrackRef.current) return;
+    if (!archSectionRef.current || !archTrackRef.current || architecture.length <= 1) return;
 
-    const getScrollAmount = () => {
-      let trackWidth = archTrackRef.current.scrollWidth;
-      return Math.max(0, trackWidth - window.innerWidth);
-    };
+    // By explicitly calculating the distance, GSAP will NEVER fail or jump to the end prematurely
+    const getScrollAmount = () => (architecture.length - 1) * gapSize;
 
     const tween = gsap.to(archTrackRef.current, {
       x: () => -getScrollAmount(),
@@ -327,17 +331,18 @@ export default function AiDeveloper() {
       scrub: 1, 
       invalidateOnRefresh: true,
       onUpdate: (self) => {
-        // Calculate dynamic active tab and line progress
         setArchProgress(self.progress);
         const currentIndex = Math.round(self.progress * (architecture.length - 1));
-        setActiveArchTab(Math.min(currentIndex, architecture.length - 1));
+        if (currentIndex !== activeArchTab) {
+           setActiveArchTab(Math.min(currentIndex, architecture.length - 1));
+        }
       }
     });
 
     return () => {
       ScrollTrigger.getAll().forEach(t => t.kill());
     };
-  }, { scope: archSectionRef, dependencies: [architecture] });
+  }, { scope: archSectionRef, dependencies: [architecture, gapSize] });
 
 
   useEffect(() => {
@@ -417,6 +422,9 @@ export default function AiDeveloper() {
           const aiResume = allResumes.find(res => res.title.toLowerCase().includes('ai') || res.title.toLowerCase().includes('developer') || res.title.toLowerCase().includes('engineer')) || allResumes[0]; 
           setPageResume(aiResume);
         }
+
+        // Force a scrolltrigger refresh after data loads to prevent bugs
+        setTimeout(() => ScrollTrigger.refresh(), 500);
 
       } catch (err) {
         console.error('Error fetching AI Developer CMS data:', err.message);
@@ -560,7 +568,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 61. LEARNING PHILOSOPHY (CENTERED WAVE SCROLL) ================= */}
+        {/* ================= 61. LEARNING PHILOSOPHY (CENTERED WAVE SCROLL WITH BLUE/VIOLET FADE) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
             
@@ -576,7 +584,7 @@ export default function AiDeveloper() {
               </div>
             </motion.div>
 
-            {/* DYNAMIC SCROLL WAVE LIST (CENTERED & LESS SPACING) */}
+            {/* DYNAMIC SCROLL WAVE LIST */}
             <div className="w-full flex flex-col gap-3 py-10 relative z-10">
               {[
                 "Build real projects.", "Understand the code.", "Learn continuously.", "Solve business problems.",
@@ -688,8 +696,8 @@ export default function AiDeveloper() {
         <section ref={archSectionRef} className="w-full relative z-30 border-t border-slate-900 bg-black/40 overflow-hidden min-h-screen">
           <div className="h-screen flex flex-col justify-center items-center backdrop-blur-md pt-20 pb-10">
             
-            {/* HEADER - Pinapanatili sa itaas para hindi matulak */}
-            <div className="text-center px-4 shrink-0 w-full max-w-4xl mx-auto">
+            {/* HEADER */}
+            <div className="text-center px-4 shrink-0 w-full max-w-4xl mx-auto md:mt-16">
               <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Architecture Pipeline</h3>
               <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
               <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed hidden md:block">
@@ -701,14 +709,14 @@ export default function AiDeveloper() {
             {/* GSAP HORIZONTAL TRACK */}
             <div className="relative h-24 md:h-32 w-full mt-6 md:mt-10 shrink-0 overflow-hidden flex items-center">
               
-              {/* TRACK CONTAINER THAT SCROLLS LEFT */}
-              <div ref={archTrackRef} className="flex items-center gap-[268px] md:gap-[368px] px-[50vw] flex-nowrap w-max relative">
+              {/* TRACK CONTAINER THAT SCROLLS LEFT (Fully reliant on accurate getScrollAmount math) */}
+              <div ref={archTrackRef} className="flex items-center px-[50vw] flex-nowrap w-max relative" style={{ gap: `${gapSize}px` }}>
                   
                   {/* Background Line Container */}
-                  <div className="absolute top-1/2 left-[50vw] h-[2px] bg-slate-800 -translate-y-1/2 z-0" style={{ width: `${(architecture.length - 1) * (window.innerWidth < 768 ? 300 : 400)}px` }} />
+                  <div className="absolute top-1/2 left-[50vw] h-[2px] bg-slate-800 -translate-y-1/2 z-0" style={{ width: `${(architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
                   
                   {/* Glowing Violet Line (Fills based on GSAP Progress) */}
-                  <div className="absolute top-1/2 left-[50vw] h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-0 transition-all duration-100 ease-linear" style={{ width: `${archProgress * (architecture.length - 1) * (window.innerWidth < 768 ? 300 : 400)}px` }} />
+                  <div className="absolute top-1/2 left-[50vw] h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-0 transition-all duration-75 ease-linear" style={{ width: `${archProgress * (architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
 
                   {architecture.map((stack, idx) => {
                     const isActive = activeArchTab === idx;
