@@ -157,24 +157,21 @@ export default function DreamCreations() {
   const teamScrollRef = useRef(null);
   const flipBookRef = useRef(null); 
 
-  // ================= SCROLL-LINKED MOON ANIMATION LOGIC (UNIFIED HERO + CREATIONS) =================
+  // ================= SCROLL-LINKED MOON LOGIC (FOOLPROOF DOM FLOW) =================
   const heroCreationsWrapperRef = useRef(null);
   
-  // Track scroll exactly over the combined 150vh section (Mas maikli na space)
+  // This wrapper spans exactly 200vh (Hero + Creations).
+  // Scroll goes from 0 (top of wrapper) to 1 (bottom of wrapper hitting bottom of screen).
   const { scrollYProgress: heroScroll } = useScroll({
     target: heroCreationsWrapperRef,
     offset: ["start start", "end end"] 
   });
 
-  // Scale shrinks as you scroll down
-  const moonScale = useTransform(heroScroll, [0, 1], [1.0, 0.45]);
+  // Scale shrinks smoothly as you scroll
+  const moonScale = useTransform(heroScroll, [0, 1], [0.9, 0.45]);
   
-  // Naka-align ang Moon: Magsisimula nang mas mababa sa Hero (-10vh), tapos sa huli, sakto sa gitna (0vh)
-  const moonY = useTransform(heroScroll, [0, 1], ["-10vh", "0vh"]); 
-
-  // Fade Effects para ma-transition from Hero Text -> Solar System Orbits
-  const heroOpacity = useTransform(heroScroll, [0, 0.3], [1, 0]);
-  const creationsOpacity = useTransform(heroScroll, [0.4, 0.8], [0, 1]);
+  // Y Position: Starts high up (-25vh) in the Hero, ends at dead center (0vh) in the Solar System
+  const moonY = useTransform(heroScroll, [0, 1], ["-25vh", "0vh"]); 
 
   // Split categories for Orbital Layout
   const innerCategories = creationsCategories.slice(0, 4);
@@ -184,7 +181,6 @@ export default function DreamCreations() {
   const processSectionRef = useRef(null);
   const processTrackRef = useRef(null);
 
-  // PURE GSAP SCROLL-JACKING LOGIC
   useGSAP(() => {
     if (!processSectionRef.current || !processTrackRef.current) return;
 
@@ -222,14 +218,22 @@ export default function DreamCreations() {
   useEffect(() => {
     if (activeCreationPopup) {
       const count = activeCreationPopup.items.length;
+      const colors = [
+        'bg-blue-600/90 border-blue-400 text-white', 
+        'bg-cyan-600/90 border-cyan-400 text-white', 
+        'bg-sky-600/90 border-sky-400 text-white',
+        'bg-blue-800/90 border-blue-500 text-blue-100'
+      ];
+      
       const positions = activeCreationPopup.items.map((_, i) => {
-        // Distribute around the circle with a randomized distance to look "scattered"
+        // Safe radius so bubbles never overflow the main circle container
         const angle = (i / count) * 2 * Math.PI;
-        const radius = 18 + Math.random() * 12; // Between 18% to 30% from center (won't overflow)
+        // Random distance from center (between 15% and 25%)
+        const radius = 15 + Math.random() * 10; 
         return {
           x: Math.cos(angle) * radius,
           y: Math.sin(angle) * radius,
-          colorClass: ['bg-blue-600 border-blue-400', 'bg-cyan-600 border-cyan-400', 'bg-sky-600 border-sky-400'][Math.floor(Math.random() * 3)]
+          colorClass: colors[Math.floor(Math.random() * colors.length)]
         };
       });
       setRandomModalPositions(positions);
@@ -360,7 +364,6 @@ export default function DreamCreations() {
   const clientsStartX = useRef(0);
   const clientsScrollLeftPos = useRef(0);
 
-  // AUTO SCROLL OUR VALUED DREAMERS (RIGHTWARDS)
   useEffect(() => {
     let animationId;
     const container = clientsScrollRef.current;
@@ -406,7 +409,6 @@ export default function DreamCreations() {
   const feedbackStartX = useRef(0);
   const feedbackScrollLeftPos = useRef(0);
 
-  // AUTO SCROLL CLIENT FEEDBACK (LEFTWARDS)
   useEffect(() => {
     let animationId;
     const container = feedbackScrollRef.current;
@@ -568,36 +570,25 @@ export default function DreamCreations() {
 
   // ================= FIXED EXACT SCROLL WITH GLOW EFFECT =================
   const handleSubtitleModalClick = (subtitleName) => {
-    // 1. Force unlock screen scrolling immediately (since modal locks it)
     document.body.style.overflow = '';
     document.documentElement.style.overflow = '';
-
-    // 2. Close active popups
     setActiveCreationPopup(null);
     setActivePortfolioSubtitle(null); 
     
-    // 3. Find element and scroll exactly to it
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
       const targetElement = document.getElementById(targetId);
       
       if (targetElement) {
-        // Calculate precise offset so it's comfortably visible in the viewport
         const yPosition = targetElement.getBoundingClientRect().top + window.scrollY - 150;
+        window.scrollTo({ top: yPosition, behavior: 'smooth' });
         
-        window.scrollTo({
-          top: yPosition,
-          behavior: 'smooth'
-        });
-        
-        // Add a visual glowing highlight to the specific card
         targetElement.style.transition = "all 0.5s ease";
         targetElement.style.boxShadow = "0 0 40px rgba(16,149,210,0.9)";
         targetElement.style.borderColor = "rgba(16,149,210,1)";
         targetElement.style.transform = "scale(1.03)";
         targetElement.style.zIndex = "50";
         
-        // Remove highlight after 2 seconds
         setTimeout(() => {
           targetElement.style.boxShadow = "";
           targetElement.style.borderColor = "";
@@ -606,10 +597,9 @@ export default function DreamCreations() {
         }, 2000);
 
       } else {
-        // Fallback kung sakaling wala
         scrollToSection('portfolio-directory');
       }
-    }, 150); // Very snappy delay
+    }, 150);
   };
 
   const filteredProjects = activePortfolioSubtitle && activePortfolioSubtitle !== 'All Projects'
@@ -664,10 +654,10 @@ export default function DreamCreations() {
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Floating Animation */
+        /* Floating Animation for Planets and Moon */
         @keyframes floating {
           0%, 100% { transform: translateY(0px) translateX(0px); }
-          50% { transform: translateY(-8px) translateX(4px); }
+          50% { transform: translateY(-10px) translateX(0px); }
         }
 
         /* Custom modal scrollbar */
@@ -689,153 +679,153 @@ export default function DreamCreations() {
       </div>
 
       {/* ================= UNIFIED SCROLL-LINKED HERO & CREATIONS ================= */}
-      {/* 150vh forces a compact, fast transition between Hero and Solar System without huge spaces */}
-      <div ref={heroCreationsWrapperRef} className="relative z-10 h-[150vh] w-full">
+      {/* Absolute strict wrapper ensures DOM flow is completely unbroken */}
+      <div ref={heroCreationsWrapperRef} className="relative z-10 w-full">
         
-        {/* STICKY CONTAINER: Ensures Moon Centers Perfectly */}
-        <div className="sticky top-0 h-[100vh] w-full flex items-center justify-center overflow-hidden">
-           
-           {/* THE MOON (Floating up and down only, NO rotation) */}
-           <motion.div style={{ scale: moonScale, y: moonY }} className="absolute z-10 pointer-events-none">
-             {/* Entrance Drop Animation */}
-             <motion.div initial={{ opacity: 0, y: -100 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, ease: "easeOut" }}>
-               {/* Floating Animation */}
-               <motion.img 
-                 src="/images/moon.png" 
-                 animate={{ y: [-15, 15, -15] }} 
-                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                 className="w-56 h-56 md:w-96 md:h-96 object-contain drop-shadow-[0_0_60px_rgba(16,149,210,0.8)]" 
-               />
+        {/* STICKY MOON BACKGROUND LAYER (NO ROTATION, FOOLPROOF MATH) */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+             <motion.div style={{ scale: moonScale, y: moonY }} className="absolute z-10">
+               {/* Entrance Animation Wrap */}
+               <motion.div initial={{ opacity: 0, y: -100 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, ease: "easeOut" }}>
+                 {/* Floating Up/Down Only */}
+                 <motion.img 
+                   src="/images/moon.png" 
+                   animate={{ y: [-15, 15, -15] }} 
+                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                   className="w-56 h-56 md:w-96 md:h-96 object-contain drop-shadow-[0_0_60px_rgba(16,149,210,0.8)]" 
+                 />
+               </motion.div>
              </motion.div>
-           </motion.div>
-
-           {/* SOLAR SYSTEM PLANETS (Fades IN as you scroll) */}
-           <motion.div style={{ opacity: creationsOpacity }} className="absolute inset-0 items-center justify-center pointer-events-auto">
-              
-              {/* --- DESKTOP ORBITS --- */}
-              <div className="hidden md:flex absolute inset-0 items-center justify-center">
-                 <div className="absolute w-[440px] h-[440px] rounded-full border border-dashed border-[#1095d2]/40 pointer-events-none" />
-                 <div className="absolute w-[800px] h-[800px] rounded-full border border-dashed border-[#1095d2]/20 pointer-events-none" />
-                 
-                 {/* Inner Planets */}
-                 {innerCategories.map((cat, idx) => {
-                    const angle = (idx / innerCategories.length) * 2 * Math.PI;
-                    const radius = 220; // 440 diameter
-                    const x = Math.cos(angle) * radius;
-                    const y = Math.sin(angle) * radius;
-                    return (
-                        <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                           <div className="group flex flex-col items-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
-                               <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white hover:bg-[#1095d2] hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.8)] cursor-pointer">
-                                  {cat.icon}
-                               </button>
-                               <span className="absolute top-20 text-[12px] text-white font-bold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full shadow-md pointer-events-none">
-                                  {cat.category}
-                               </span>
-                           </div>
-                        </div>
-                    );
-                 })}
-
-                 {/* Outer Planets */}
-                 {outerCategories.map((cat, idx) => {
-                    const angle = (idx / outerCategories.length) * 2 * Math.PI;
-                    const radius = 400; // 800 diameter
-                    const x = Math.cos(angle) * radius;
-                    const y = Math.sin(angle) * radius;
-                    return (
-                        <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                           <div className="group flex flex-col items-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
-                               <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white hover:bg-[#1095d2] hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.8)] cursor-pointer">
-                                  {cat.icon}
-                               </button>
-                               <span className="absolute top-20 text-[12px] text-white font-bold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full shadow-md pointer-events-none">
-                                  {cat.category}
-                               </span>
-                           </div>
-                        </div>
-                    );
-                 })}
-              </div>
-
-              {/* --- MOBILE ORBITS --- */}
-              <div className="flex md:hidden absolute inset-0 items-center justify-center mt-[10vh]">
-                 {/* Shrink radius to perfectly fit mobile width without cut-offs */}
-                 <div className="absolute w-[140px] h-[140px] rounded-full border border-dashed border-[#1095d2]/40 pointer-events-none" />
-                 <div className="absolute w-[280px] h-[280px] rounded-full border border-dashed border-[#1095d2]/20 pointer-events-none" />
-                 
-                 {/* Inner Mobile Planets */}
-                 {innerCategories.map((cat, idx) => {
-                    const angle = (idx / innerCategories.length) * 2 * Math.PI;
-                    const radius = 70; // 140 diameter
-                    const x = Math.cos(angle) * radius;
-                    const y = Math.sin(angle) * radius;
-                    return (
-                        <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                           <div className="flex flex-col items-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
-                               <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.8)] cursor-pointer">
-                                  {cat.icon}
-                               </button>
-                               <span className="absolute top-14 text-[9px] text-white font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full shadow-md pointer-events-none z-10">
-                                  {cat.category}
-                               </span>
-                           </div>
-                        </div>
-                    );
-                 })}
-
-                 {/* Outer Mobile Planets */}
-                 {outerCategories.map((cat, idx) => {
-                    const angle = (idx / outerCategories.length) * 2 * Math.PI;
-                    const radius = 140; // 280 diameter
-                    const x = Math.cos(angle) * radius;
-                    const y = Math.sin(angle) * radius;
-                    return (
-                        <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                           <div className="flex flex-col items-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
-                               <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.8)] cursor-pointer">
-                                  {cat.icon}
-                               </button>
-                               <span className="absolute top-14 text-[9px] text-white font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full shadow-md pointer-events-none z-10">
-                                  {cat.category}
-                               </span>
-                           </div>
-                        </div>
-                    );
-                 })}
-              </div>
-
-           </motion.div>
-
-           {/* HERO TEXT (Fades OUT as you scroll) */}
-           <motion.div style={{ opacity: heroOpacity }} className="absolute top-[45vh] md:top-[50vh] w-full flex justify-center pointer-events-none z-20">
-              <div className="w-[90%] max-w-4xl backdrop-blur-sm p-6 md:p-8 rounded-3xl border border-white/5 bg-[#020617]/40 shadow-2xl pointer-events-auto text-center">
-                 <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-4 md:mb-8">
-                   Let's make your <br className="hidden md:block" />
-                   <span className="text-[#1095d2] drop-shadow-[0_0_15px_rgba(16,149,210,0.5)]">dream</span> a reality.
-                 </h2>
-                 <p className="text-sm md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">
-                   For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.
-                 </p>
-              </div>
-           </motion.div>
-
-           {/* CREATIONS HEADER TEXT (Fades IN as you scroll) */}
-           <motion.div style={{ opacity: creationsOpacity }} className="absolute top-[8vh] md:top-[12vh] w-full text-center z-20 pointer-events-none">
-              <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
-              <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
-              <p className="text-xs md:text-sm text-white/70 mt-4 max-w-xl mx-auto px-4">
-                Explore our specialized creative categories. Tap a planet to view our specific offerings and jump directly to our past works.
-              </p>
-           </motion.div>
-
+          </div>
         </div>
+
+        {/* 1. HERO SECTION (Box pushed to the bottom so Moon fits perfectly above it) */}
+        <section className="relative h-screen flex flex-col justify-end items-center pb-[12vh] md:pb-[15vh] px-6 z-10 pointer-events-auto">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="w-full max-w-4xl backdrop-blur-sm p-8 rounded-3xl border border-white/5 bg-[#020617]/40 shadow-2xl text-center">
+             <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
+               Let's make your <br className="hidden md:block" />
+               <span className="text-[#1095d2] drop-shadow-[0_0_15px_rgba(16,149,210,0.5)]">dream</span> a reality.
+             </h2>
+             <p className="text-sm md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">
+               For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.
+             </p>
+          </motion.div>
+        </section>
+
+        <div id="creations-grid" className="scroll-mt-24" />
+
+        {/* 2. OUR CREATIONS (SOLAR SYSTEM - Absolutely perfectly aligned) */}
+        <section className="relative h-screen flex flex-col items-center justify-center z-10 w-full overflow-hidden pointer-events-auto pb-10">
+          
+          <div className="absolute top-[10vh] md:top-[12vh] text-center w-full px-6">
+             <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
+             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
+             <p className="text-xs md:text-sm text-white/70 mt-4 max-w-xl mx-auto">
+               Explore our specialized creative categories. Tap a planet to view our specific offerings and jump directly to our past works.
+             </p>
+          </div>
+
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none mt-[10vh] md:mt-[5vh]">
+            
+            {/* --- DESKTOP ORBITS (Wider Spacing) --- */}
+            <div className="hidden md:flex absolute inset-0 items-center justify-center">
+               <div className="absolute w-[440px] h-[440px] rounded-full border border-dashed border-[#1095d2]/40 pointer-events-none" />
+               <div className="absolute w-[800px] h-[800px] rounded-full border border-dashed border-[#1095d2]/20 pointer-events-none" />
+               
+               {/* Inner Planets */}
+               {innerCategories.map((cat, idx) => {
+                  const angle = (idx / innerCategories.length) * 2 * Math.PI;
+                  const radius = 220; 
+                  const x = Math.cos(angle) * radius;
+                  const y = Math.sin(angle) * radius;
+                  return (
+                      <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                         <div className="group flex flex-col items-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
+                             <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white hover:bg-[#1095d2] hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.8)] cursor-pointer pointer-events-auto">
+                                {cat.icon}
+                             </button>
+                             <span className="absolute top-20 text-[12px] text-white font-bold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full shadow-md pointer-events-none">
+                                {cat.category}
+                             </span>
+                         </div>
+                      </div>
+                  );
+               })}
+
+               {/* Outer Planets */}
+               {outerCategories.map((cat, idx) => {
+                  const angle = (idx / outerCategories.length) * 2 * Math.PI;
+                  const radius = 400; 
+                  const x = Math.cos(angle) * radius;
+                  const y = Math.sin(angle) * radius;
+                  return (
+                      <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                         <div className="group flex flex-col items-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
+                             <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white hover:bg-[#1095d2] hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.8)] cursor-pointer pointer-events-auto">
+                                {cat.icon}
+                             </button>
+                             <span className="absolute top-20 text-[12px] text-white font-bold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full shadow-md pointer-events-none">
+                                {cat.category}
+                             </span>
+                         </div>
+                      </div>
+                  );
+               })}
+            </div>
+
+            {/* --- MOBILE ORBITS (Tighter radius to fit perfectly) --- */}
+            <div className="flex md:hidden absolute inset-0 items-center justify-center">
+               <div className="absolute w-[140px] h-[140px] rounded-full border border-dashed border-[#1095d2]/40 pointer-events-none" />
+               <div className="absolute w-[280px] h-[280px] rounded-full border border-dashed border-[#1095d2]/20 pointer-events-none" />
+               
+               {/* Inner Mobile Planets */}
+               {innerCategories.map((cat, idx) => {
+                  const angle = (idx / innerCategories.length) * 2 * Math.PI;
+                  const radius = 70; 
+                  const x = Math.cos(angle) * radius;
+                  const y = Math.sin(angle) * radius;
+                  return (
+                      <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                         <div className="flex flex-col items-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
+                             <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white active:bg-[#1095d2] active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.8)] cursor-pointer pointer-events-auto">
+                                {cat.icon}
+                             </button>
+                             <span className="absolute top-14 text-[9px] text-white font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full shadow-md pointer-events-none z-10">
+                                {cat.category}
+                             </span>
+                         </div>
+                      </div>
+                  );
+               })}
+
+               {/* Outer Mobile Planets */}
+               {outerCategories.map((cat, idx) => {
+                  const angle = (idx / outerCategories.length) * 2 * Math.PI;
+                  const radius = 140; 
+                  const x = Math.cos(angle) * radius;
+                  const y = Math.sin(angle) * radius;
+                  return (
+                      <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                         <div className="flex flex-col items-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
+                             <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white active:bg-[#1095d2] active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.8)] cursor-pointer pointer-events-auto">
+                                {cat.icon}
+                             </button>
+                             <span className="absolute top-14 text-[9px] text-white font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full shadow-md pointer-events-none z-10">
+                                {cat.category}
+                             </span>
+                         </div>
+                      </div>
+                  );
+               })}
+            </div>
+          </div>
+        </section>
       </div>
 
       <div id="founder-bio" className="scroll-mt-24" />
 
       {/* ================= MEET THE FOUNDER SECTION ================= */}
-      {/* Reduced top padding since transition from Solar System is very tight now */}
       <section className="max-w-7xl mx-auto w-full px-6 py-10 md:py-20 z-10 relative border-t border-white/10">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="flex justify-center mb-16">
           <img src={bannerUrl} alt="Dream Creations Brand Banner" className="w-full max-w-5xl h-auto drop-shadow-[0_0_30px_rgba(16,149,210,0.3)] rounded-3xl border border-white/5 bg-black/40 p-2 md:p-4" />
@@ -1201,7 +1191,7 @@ export default function DreamCreations() {
               <button onClick={() => setActiveCreationPopup(null)} className="absolute top-[8%] right-[15%] text-white/50 hover:text-white z-50 transition-colors cursor-pointer p-2 bg-blue-900/40 rounded-full border border-blue-400/30"><X size={20} /></button>
 
               {/* Title pinned at the top inner part of the circle */}
-              <div className="absolute top-[12%] md:top-[15%] left-0 w-full flex flex-col items-center text-center shrink-0 z-20 pointer-events-none">
+              <div className="absolute top-[15%] left-0 w-full flex flex-col items-center text-center shrink-0 z-20 pointer-events-none">
                  <div className="text-blue-300 mb-1 scale-125 drop-shadow-md">{activeCreationPopup.icon}</div>
                  <h3 className="text-sm md:text-lg font-black text-white leading-tight uppercase tracking-wider drop-shadow-md">{activeCreationPopup.category}</h3>
               </div>
