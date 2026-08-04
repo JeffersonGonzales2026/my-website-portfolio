@@ -3,7 +3,6 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate, useScroll, useTransform } from 'framer-motion';
 import { Cpu, Layers, ArrowUp, CheckCircle2, ArrowDown, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { useMobileBack } from '../hooks/useMobileBack';
 
 // ================= CUSTOM ANIMATED COUNTER =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -37,50 +36,50 @@ const WaveCard = ({ principle }) => {
   });
 
   // At 0.5 (element is at the exact center of viewport), apply the Violet Spotlight
-  const scale = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.85, 1.15, 0.85]);
-  const opacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.3, 1, 0.3]);
-  const zIndex = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0, 10, 0]); // Pop over other cards
+  const scale = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.9, 1.1, 0.9]);
+  const opacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.4, 1, 0.4]);
+  const zIndex = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0, 10, 0]); 
   
   const borderColor = useTransform(
     scrollYProgress, 
     [0.3, 0.5, 0.7], 
-    ['rgba(59, 130, 246, 0.2)', 'rgba(168, 85, 247, 1)', 'rgba(59, 130, 246, 0.2)'] // Blue to Violet to Blue
+    ['rgba(59, 130, 246, 0.1)', 'rgba(168, 85, 247, 1)', 'rgba(59, 130, 246, 0.1)'] 
   );
   
   const backgroundColor = useTransform(
     scrollYProgress, 
     [0.3, 0.5, 0.7], 
-    ['rgba(2, 6, 23, 0.4)', 'rgba(88, 28, 135, 0.3)', 'rgba(2, 6, 23, 0.4)'] 
+    ['rgba(2, 6, 23, 0.2)', 'rgba(88, 28, 135, 0.25)', 'rgba(2, 6, 23, 0.2)'] 
   );
 
   const textColor = useTransform(
     scrollYProgress,
     [0.3, 0.5, 0.7],
-    ['#94a3b8', '#ffffff', '#94a3b8'] // Slate-400 to White to Slate-400
+    ['#64748b', '#ffffff', '#64748b'] 
   );
 
   const iconColor = useTransform(
     scrollYProgress,
     [0.3, 0.5, 0.7],
-    ['#3b82f6', '#a855f7', '#3b82f6'] // Blue-500 to Purple-500 to Blue-500
+    ['#3b82f6', '#a855f7', '#3b82f6'] 
   );
 
   const boxShadow = useTransform(
     scrollYProgress,
     [0.3, 0.5, 0.7],
-    ['0px 0px 0px rgba(168, 85, 247, 0)', '0px 0px 40px rgba(168, 85, 247, 0.4)', '0px 0px 0px rgba(168, 85, 247, 0)']
+    ['0px 0px 0px rgba(168, 85, 247, 0)', '0px 0px 30px rgba(168, 85, 247, 0.3)', '0px 0px 0px rgba(168, 85, 247, 0)']
   );
 
   return (
     <motion.div 
       ref={ref}
       style={{ scale, opacity, borderColor, backgroundColor, boxShadow, zIndex }}
-      className="p-5 md:p-6 rounded-2xl border flex items-center gap-5 backdrop-blur-md w-full max-w-lg mx-auto relative origin-center"
+      className="p-4 md:p-5 rounded-2xl border flex items-center gap-4 backdrop-blur-md w-full max-w-md mx-auto relative origin-center"
     >
       <motion.div style={{ color: iconColor }} className="shrink-0">
-        <CheckCircle2 size={28} style={{ filter: 'drop-shadow(0px 0px 8px currentColor)' }} />
+        <CheckCircle2 size={24} style={{ filter: 'drop-shadow(0px 0px 8px currentColor)' }} />
       </motion.div>
-      <motion.span style={{ color: textColor }} className="text-sm md:text-base font-bold tracking-wide">
+      <motion.span style={{ color: textColor }} className="text-sm font-bold tracking-wide text-left">
         {principle}
       </motion.span>
     </motion.div>
@@ -119,17 +118,6 @@ const defaultDeveloperStats = [
   { label: "Dashboards Built", value: 20, suffix: "" },
   { label: "Hours Coding", value: 90, suffix: "+" },
   { label: "AI Prompts Optimized", value: 1000, suffix: "+" }
-];
-
-const defaultLearningTimeline = [
-  { year: "2014", desc: "Started career as Graphic Artist." },
-  { year: "2022", desc: "Began pursuing a Bachelor of Science in Information Technology." },
-  { year: "2024", desc: "Expanded into entrepreneurship, remote international freelance work, and team management through Dream Creations." },
-  { year: "2025", desc: "Deepened interest in technology through business process improvements and corporate creative work." },
-  { year: "2026", desc: "Started Data Analyst Internship at S.P. Madrid. Recognized the growing importance of automation, software development, and AI in modern business." },
-  { year: "2026 (Current)", desc: "Committed to learning modern web development. Started studying React, Vite, Tailwind CSS, Git, GitHub, JavaScript, Modern UI Architecture, Component Design, and Software Engineering." },
-  { year: "2026 (Milestone)", desc: "Built this Personal Portfolio as the first flagship software engineering project." },
-  { year: "Future Scope", desc: "AI Automation Platform, CRM System, Business Management Software, Analytics Platform, Mobile Applications, SaaS Products, Open Source Contributions, Teaching Software Engineering, and Technology Entrepreneurship." }
 ];
 
 const defaultAiEcosystem = [
@@ -249,7 +237,7 @@ const defaultShowcaseProjects = [
     meta: "Flagship Software v1",
     title: "Personal Portfolio Website",
     desc: "A premium, custom-architected portfolio platform built entirely from scratch to showcase graphic design archives, data analytics systems, and modular web software while serving as an active production codebase.",
-    tech: ["React", "Vite", "Tailwind", "CSS", "Git", "GitHub", "AntiGravity", "VS Code", "AI Assistant Workflow"],
+    tech: ["React", "Vite", "Tailwind", "CSS", "Git", "GitHub", "VS Code", "AI Assistant Workflow"],
     role: "AI-assisted Product Architect",
     actionText: "Inspect Source",
     link: "https://github.com"
@@ -303,7 +291,6 @@ export default function AiDeveloper() {
   const archScrollRef = useRef(null);
 
   const [stats, setStats] = useState(defaultDeveloperStats);
-  const [timeline, setTimeline] = useState(defaultLearningTimeline);
   const [aiPartners, setAiPartners] = useState(defaultAiEcosystem);
   const [architecture, setArchitecture] = useState(PRESET_PIPELINE_ARCHITECTURE);
   const [webExperiences, setWebExperiences] = useState(defaultWebExperiences);
@@ -326,7 +313,6 @@ export default function AiDeveloper() {
 
         if (data) {
           if (data.metrics_counters?.length > 0) setStats(data.metrics_counters);
-          if (data.development_timeline?.length > 0) setTimeline(data.development_timeline);
           
           if (Array.isArray(data.ai_partners) && data.ai_partners.length > 0) {
             const formattedPartners = data.ai_partners.map(ai => {
@@ -551,35 +537,33 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 61. LEARNING PHILOSOPHY (WAVE SCROLL FOCUS) ================= */}
+        {/* ================= 61. LEARNING PHILOSOPHY (CENTERED WAVE SCROLL) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start relative">
-              
-              {/* STICKY LEFT CONTENT */}
-              <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-5 space-y-6 sticky top-32 z-20">
-                <h3 className="text-3xl font-black text-white">Learning by Building.</h3>
-                <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
-                <div className="text-slate-300 space-y-4 text-sm leading-relaxed">
-                  <p>I believe the most effective way to learn software engineering is through practical application.</p>
-                  <p>Rather than relying solely on tutorials or theoretical exercises, I build complete projects that challenge me to solve real problems, make architectural decisions, debug unexpected issues, and continuously improve my understanding.</p>
-                  <p>Artificial Intelligence plays an important role in this process—not as a replacement for learning, but as a mentor, assistant, reviewer, and productivity tool.</p>
-                  <p>Every feature I build is an opportunity to deepen my understanding of software engineering principles while producing something meaningful.</p>
-                </div>
-              </motion.div>
-
-              {/* DYNAMIC SCROLL WAVE LIST */}
-              <div className="lg:col-span-7 flex flex-col gap-2 py-[40vh] relative z-10">
-                {[
-                  "Build real projects.", "Understand the code.", "Learn continuously.", "Solve business problems.",
-                  "Write maintainable software.", "Design scalable systems.", "Use AI responsibly.", "Embrace debugging.",
-                  "Document everything.", "Improve every iteration."
-                ].map((principle, idx) => (
-                  <WaveCard key={idx} principle={principle} />
-                ))}
+          <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
+            
+            {/* CENTERED TEXT CONTENT */}
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="space-y-6 mb-12 z-20">
+              <h3 className="text-3xl font-black text-white">Learning by Building.</h3>
+              <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
+              <div className="text-slate-300 space-y-4 text-sm leading-relaxed max-w-2xl mx-auto">
+                <p>I believe the most effective way to learn software engineering is through practical application.</p>
+                <p>Rather than relying solely on tutorials or theoretical exercises, I build complete projects that challenge me to solve real problems, make architectural decisions, debug unexpected issues, and continuously improve my understanding.</p>
+                <p>Artificial Intelligence plays an important role in this process—not as a replacement for learning, but as a mentor, assistant, reviewer, and productivity tool.</p>
+                <p>Every feature I build is an opportunity to deepen my understanding of software engineering principles while producing something meaningful.</p>
               </div>
+            </motion.div>
 
+            {/* DYNAMIC SCROLL WAVE LIST (CENTERED & LESS SPACING) */}
+            <div className="w-full flex flex-col gap-3 py-10 relative z-10">
+              {[
+                "Build real projects.", "Understand the code.", "Learn continuously.", "Solve business problems.",
+                "Write maintainable software.", "Design scalable systems.", "Use AI responsibly.", "Embrace debugging.",
+                "Document everything.", "Improve every iteration."
+              ].map((principle, idx) => (
+                <WaveCard key={idx} principle={principle} />
+              ))}
             </div>
+
           </div>
         </section>
 
