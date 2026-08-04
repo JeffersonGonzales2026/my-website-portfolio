@@ -170,8 +170,8 @@ export default function DreamCreations() {
   // Scale shrinks smoothly as you scroll
   const moonScale = useTransform(heroScroll, [0, 1], [0.85, 0.35]);
   
-  // Y Position: Starts high up (-25vh) in the Hero, ends at slightly above dead center (2vh) in the Solar System
-  const moonY = useTransform(heroScroll, [0, 1], ["-25vh", "2vh"]); 
+  // Y Position: Starts high up (-25vh) in the Hero, ends precisely at the center of the orbits (5vh)
+  const moonY = useTransform(heroScroll, [0, 1], ["-25vh", "5vh"]); 
 
   // Split categories for Orbital Layout
   const innerCategories = creationsCategories.slice(0, 4);
@@ -228,14 +228,14 @@ export default function DreamCreations() {
       const positions = activeCreationPopup.items.map((_, i) => {
         const angle = (i / count) * 2 * Math.PI;
         
-        // Fix overlap: Alternate the radius (inner and outer ring) if there are many items
+        // Strict alternating rings to prevent any overlaps on mobile
         let radius = 0;
         if (count > 6) {
-          // Even indexes stay closer, odd indexes get pushed outward
-          radius = i % 2 === 0 ? 20 + Math.random() * 4 : 38 + Math.random() * 4;
+          // Inner ring and Outer ring
+          radius = i % 2 === 0 ? 18 + Math.random() * 2 : 36 + Math.random() * 2;
         } else {
-          // Normal radius for fewer items
-          radius = 28 + Math.random() * 6;
+          // Standard ring for fewer items
+          radius = 26 + Math.random() * 4;
         }
 
         return {
@@ -1198,8 +1198,8 @@ export default function DreamCreations() {
             >
               <button onClick={() => setActiveCreationPopup(null)} className="absolute top-[8%] right-[15%] text-white/50 hover:text-white z-50 transition-colors cursor-pointer p-2 bg-blue-900/40 rounded-full border border-blue-400/30"><X size={20} /></button>
 
-              {/* Title pinned at the top inner part of the circle */}
-              <div className="absolute top-[15%] left-0 w-full flex flex-col items-center text-center shrink-0 z-20 pointer-events-none">
+              {/* Title pinned at the top inner part of the circle (pushed higher) */}
+              <div className="absolute top-[8%] left-0 w-full flex flex-col items-center text-center shrink-0 z-20 pointer-events-none">
                  <div className="text-blue-300 mb-1 scale-125 drop-shadow-md">{activeCreationPopup.icon}</div>
                  <h3 className="text-sm md:text-lg font-black text-white leading-tight uppercase tracking-wider drop-shadow-md">{activeCreationPopup.category}</h3>
               </div>
@@ -1215,11 +1215,16 @@ export default function DreamCreations() {
                         key={idx}
                         whileHover={{ scale: 1.15, zIndex: 50, filter: "brightness(1.2)" }}
                         onClick={() => handleSubtitleModalClick(item)}
-                        // Applying the random Math offset calculated from useEffect
-                        style={{ left: `calc(50% + ${pos.x}%)`, top: `calc(50% + ${pos.y}%)`, transform: 'translate(-50%, -50%)' }}
-                        className={`absolute rounded-full border ${pos.colorClass} text-white flex items-center justify-center text-center p-3 shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-all cursor-pointer pointer-events-auto backdrop-blur-md w-[80px] h-[80px] md:w-[100px] md:h-[100px] hover:shadow-[0_0_20px_rgba(59,130,246,0.8)]`}
+                        // Use Framer Motion's native x and y instead of CSS transform to stop hover jumping
+                        style={{ 
+                          left: `calc(50% + ${pos.x}%)`, 
+                          top: `calc(50% + ${pos.y}%)`, 
+                          x: "-50%", 
+                          y: "-50%" 
+                        }}
+                        className={`absolute rounded-full border ${pos.colorClass} text-white flex items-center justify-center text-center p-2 shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-colors cursor-pointer pointer-events-auto backdrop-blur-md w-[65px] h-[65px] sm:w-[80px] sm:h-[80px] md:w-[100px] md:h-[100px] hover:shadow-[0_0_20px_rgba(59,130,246,0.8)]`}
                      >
-                        <span className="text-[9px] md:text-[11px] font-bold leading-tight break-words line-clamp-3">{item}</span>
+                        <span className="text-[8px] sm:text-[9px] md:text-[11px] font-bold leading-tight break-words line-clamp-3">{item}</span>
                      </motion.button>
                    );
                 })}
