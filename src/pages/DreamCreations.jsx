@@ -712,15 +712,17 @@ export default function DreamCreations() {
                 <motion.div
                   key={category.id}
                   style={{ left: `${left}%`, top: `${top}%` }}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 md:gap-2 z-30 group cursor-pointer"
+                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 md:gap-1.5 z-30 group cursor-pointer"
                   onClick={() => setActiveCreationPopup(category)}
-                  whileHover={{ scale: 1.15, zIndex: 50 }}
+                  animate={{ y: [0, -6, 0], x: [0, 3, 0] }}
+                  transition={{ duration: 4 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
+                  whileHover={{ scale: 1.15, zIndex: 100 }}
                 >
-                  <div className={`w-12 h-12 md:w-16 md:h-16 rounded-full bg-[#050b14] border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 shadow-[0_0_15px_rgba(16,149,210,0.2)] group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]'}`}>
-                    <span className={`transition-colors ${isGlowing ? 'text-white' : 'text-[#1095d2] group-hover:text-white'}`}>{category.icon}</span>
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-[#050b14] border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 shadow-[0_0_15px_rgba(16,149,210,0.2)] group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]'}`}>
+                    <span className={`transition-colors [&>svg]:w-3 [&>svg]:h-3 sm:[&>svg]:w-4 sm:[&>svg]:h-4 md:[&>svg]:w-5 md:[&>svg]:h-5 ${isGlowing ? 'text-white' : 'text-[#1095d2] group-hover:text-white'}`}>{category.icon}</span>
                   </div>
-                  <div className={`px-2.5 py-1 md:px-4 md:py-1.5 rounded-full bg-[#050b14] border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_15px_rgba(16,149,210,0.4)]' : 'border-white/10 text-white/80 group-hover:border-[#1095d2]/50 group-hover:text-white'}`}>
-                    <span className="text-[9px] md:text-xs font-bold leading-none">{category.category}</span>
+                  <div className={`px-1.5 py-0.5 md:px-2 md:py-1 rounded-full bg-[#050b14] border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_15px_rgba(16,149,210,0.4)]' : 'border-white/10 text-white/80 group-hover:border-[#1095d2]/50 group-hover:text-white'}`}>
+                    <span className="text-[6px] sm:text-[7px] md:text-[9px] font-bold leading-none block">{category.category}</span>
                   </div>
                 </motion.div>
               );
@@ -740,15 +742,17 @@ export default function DreamCreations() {
                 <motion.div
                   key={category.id}
                   style={{ left: `${left}%`, top: `${top}%` }}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 md:gap-2 z-30 group cursor-pointer"
+                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 md:gap-1.5 z-30 group cursor-pointer"
                   onClick={() => setActiveCreationPopup(category)}
-                  whileHover={{ scale: 1.15, zIndex: 50 }}
+                  animate={{ y: [0, (index % 2 === 0 ? -7 : 7), 0], x: [0, (index % 2 !== 0 ? -3 : 3), 0] }}
+                  transition={{ duration: 5 + (index % 4), repeat: Infinity, ease: "easeInOut", delay: index * 0.15 }}
+                  whileHover={{ scale: 1.15, zIndex: 100 }}
                 >
-                  <div className={`w-12 h-12 md:w-16 md:h-16 rounded-full bg-[#050b14] border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 shadow-[0_0_15px_rgba(16,149,210,0.2)] group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]'}`}>
-                    <span className={`transition-colors ${isGlowing ? 'text-white' : 'text-[#1095d2] group-hover:text-white'}`}>{category.icon}</span>
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-[#050b14] border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 shadow-[0_0_15px_rgba(16,149,210,0.2)] group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]'}`}>
+                    <span className={`transition-colors [&>svg]:w-3 [&>svg]:h-3 sm:[&>svg]:w-4 sm:[&>svg]:h-4 md:[&>svg]:w-5 md:[&>svg]:h-5 ${isGlowing ? 'text-white' : 'text-[#1095d2] group-hover:text-white'}`}>{category.icon}</span>
                   </div>
-                  <div className={`px-2.5 py-1 md:px-4 md:py-1.5 rounded-full bg-[#050b14] border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_15px_rgba(16,149,210,0.4)]' : 'border-white/10 text-white/80 group-hover:border-[#1095d2]/50 group-hover:text-white'}`}>
-                    <span className="text-[9px] md:text-xs font-bold leading-none">{category.category}</span>
+                  <div className={`px-1.5 py-0.5 md:px-2 md:py-1 rounded-full bg-[#050b14] border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_15px_rgba(16,149,210,0.4)]' : 'border-white/10 text-white/80 group-hover:border-[#1095d2]/50 group-hover:text-white'}`}>
+                    <span className="text-[6px] sm:text-[7px] md:text-[9px] font-bold leading-none block">{category.category}</span>
                   </div>
                 </motion.div>
               );
