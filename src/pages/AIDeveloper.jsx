@@ -89,15 +89,12 @@ const defaultAiEcosystem = [
   { name: "v0 / Lovable (Learning)", role: "Generative UI AI tools. Instantly converts natural language prompts or designs into production-ready React components.", imageSrc: "/images/v0.png" }
 ];
 
-const defaultTechStackData = [
+const PRESET_PIPELINE_ARCHITECTURE = [
   {
     category: "Planning",
     items: [
-      { name: "Notion (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" },
-      { name: "Jira (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jira/jira-original.svg" },
-      { name: "Trello (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/trello/trello-plain.svg" },
-      { name: "Miro (Learning)", imageSrc: "/images/miro.png" },
-      { name: "Whimsical (Learning)", imageSrc: "/images/whimsical.png" }
+      { name: "Notion", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" },
+      { name: "Trello", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/trello/trello-plain.svg" }
     ]
   },
   {
@@ -105,28 +102,13 @@ const defaultTechStackData = [
     items: [
       { name: "ChatGPT", imageSrc: "/images/chatgpt.png" },
       { name: "Claude", imageSrc: "/images/claude.png" },
-      { name: "Kimi (Learning)", imageSrc: "/images/kimi.png" },
       { name: "GitHub Issues", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
-      { name: "Notion (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" }
-    ]
-  },
-  {
-    category: "Architecture Design",
-    items: [
-      { name: "Excalidraw (Learning)", imageSrc: "/images/excalidraw.png" },
-      { name: "Draw.io (Learning)", imageSrc: "/images/drawio.png" },
-      { name: "Lucidchart (Learning)", imageSrc: "/images/lucidchart.png" },
-      { name: "Eraser.io (Learning)", imageSrc: "/images/eraser.png" }
+      { name: "Notion", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" }
     ]
   },
   {
     category: "UI/UX Design",
     items: [
-      { name: "Figma (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg" },
-      { name: "Penpot (Learning)", imageSrc: "/images/penpot.png" },
-      { name: "ReactBits.dev", imageSrc: "" },
-      { name: "MotionSites.ai", imageSrc: "" },
-      { name: "OmniRoute", imageSrc: "" },
       { name: "Lucide React", imageSrc: "" },
       { name: "Glassmorphism", imageSrc: "" },
       { name: "Bento Grid", imageSrc: "" },
@@ -138,10 +120,10 @@ const defaultTechStackData = [
     items: [
       { name: "React", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" },
       { name: "Vite", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vite/vite-original.svg" },
+      { name: "Tailwind CSS", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" },
       { name: "JavaScript (ES6+)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" },
       { name: "HTML5", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" },
       { name: "CSS3", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" },
-      { name: "Tailwind CSS", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" },
       { name: "Framer Motion", imageSrc: "" },
       { name: "GSAP", imageSrc: "" },
       { name: "ScrollTrigger", imageSrc: "" },
@@ -153,35 +135,20 @@ const defaultTechStackData = [
     category: "Backend Development",
     items: [
       { name: "Node.js", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" },
-      { name: "Express.js", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg" },
-      { name: "REST API", imageSrc: "" },
-      { name: "JSON", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/json/json-original.svg" },
-      { name: "JWT Authentication (Learning)", imageSrc: "" },
-      { name: "Postman (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postman/postman-original.svg" },
-      { name: "Bruno (Learning)", imageSrc: "" }
+      { name: "JSON", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/json/json-original.svg" }
     ]
   },
   {
     category: "Database Design",
     items: [
       { name: "PostgreSQL", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg" },
-      { name: "Supabase", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" },
-      { name: "Prisma ORM (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/prisma/prisma-original.svg" },
-      { name: "Drizzle ORM (Learning)", imageSrc: "" }
+      { name: "Supabase", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" }
     ]
   },
   {
     category: "AI Integration",
     items: [
-      { name: "OpenAI API (Learning)", imageSrc: "/images/openai.png" },
-      { name: "Claude API (Learning)", imageSrc: "/images/claude.png" },
-      { name: "Google AI Studio (Learning)", imageSrc: "/images/gemini.png" },
-      { name: "GitHub Copilot", imageSrc: "/images/copilot.png" },
-      { name: "Cursor (Learning)", imageSrc: "/images/cursor.png" },
-      { name: "LangChain (Learning)", imageSrc: "/images/langchain.png" },
-      { name: "Ollama (Learning)", imageSrc: "" },
-      { name: "Hugging Face (Learning)", imageSrc: "" },
-      { name: "n8n (Learning)", imageSrc: "/images/n8n.png" }
+      { name: "GitHub Copilot", imageSrc: "/images/copilot.png" }
     ]
   },
   {
@@ -189,10 +156,8 @@ const defaultTechStackData = [
     items: [
       { name: "Chrome DevTools", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/chrome/chrome-original.svg" },
       { name: "React Developer Tools", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" },
-      { name: "Postman (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postman/postman-original.svg" },
-      { name: "Bruno (Learning)", imageSrc: "" },
-      { name: "ESLint (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/eslint/eslint-original.svg" },
-      { name: "Prettier (Learning)", imageSrc: "" }
+      { name: "ESLint", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/eslint/eslint-original.svg" },
+      { name: "Prettier", imageSrc: "" }
     ]
   },
   {
@@ -200,26 +165,17 @@ const defaultTechStackData = [
     items: [
       { name: "Git", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" },
       { name: "GitHub", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
-      { name: "Vercel (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" },
-      { name: "Netlify (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/netlify/netlify-original.svg" },
-      { name: "Railway (Learning)", imageSrc: "" },
-      { name: "Render (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/render/render-original.svg" },
-      { name: "Cloudflare (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cloudflare/cloudflare-original.svg" }
+      { name: "Vercel", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" }
     ]
   },
   {
     category: "Monitoring & Maintenance",
     items: [
       { name: "GitHub", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
-      { name: "Sentry (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/sentry/sentry-original.svg" },
-      { name: "Google Analytics (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/google/google-original.svg" },
-      { name: "Vercel Analytics (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" },
-      { name: "UptimeRobot (Learning)", imageSrc: "" }
+      { name: "Vercel Analytics", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" }
     ]
   }
 ];
-
-const PRESET_PIPELINE_ARCHITECTURE = defaultTechStackData;
 
 const defaultWebExperiences = [
   "Interactive UI",
@@ -469,8 +425,8 @@ export default function AiDeveloper() {
       {/* ================= PAGE CONTENT WRAPPER ================= */}
       <div className="relative z-10 overflow-x-hidden">
 
-        {/* ================= 59. HERO SECTION ================= */}
-        <section className="relative pt-24 md:pt-32 pb-16 md:pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center">
+        {/* ================= 59. HERO SECTION (LOWERED PADDING) ================= */}
+        <section className="relative pt-40 md:pt-48 pb-16 md:pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center">
           <div className="max-w-5xl mx-auto text-center relative w-full">
 
             {/* FIXED MOBILE HEADLINE */}
@@ -642,11 +598,11 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW ================= */}
+        {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW (CHAT UI OVERHAUL) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-6 space-y-6">
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-5 space-y-6">
               <h3 className="text-3xl font-black text-white">AI is a Partner, <br/>Not a Replacement.</h3>
               <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
               <div className="text-slate-300 space-y-4 text-sm leading-relaxed">
@@ -658,18 +614,45 @@ export default function AiDeveloper() {
               </div>
             </motion.div>
 
+            {/* AI CHAT UI INTERFACE */}
             <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
-              className="lg:col-span-6 h-[450px] overflow-y-auto pr-2 border border-slate-800 bg-slate-950/80 p-6 rounded-2xl hide-scrollbar relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+              className="lg:col-span-7 h-[550px] overflow-y-auto pr-2 border border-slate-800 bg-slate-950/80 p-6 rounded-2xl hide-scrollbar relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
               <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-[#02040a] to-transparent pointer-events-none z-10" />
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2"><Cpu size={14} className="text-purple-400" /> Interactive Prompts Workflow</h4>
-              <div className="space-y-3 relative border-l border-purple-500/30 ml-2">
-                {aiWorkflowSteps.map((step, idx) => (
-                  <div key={idx} className="flex items-center gap-3 pl-4 relative group cursor-default">
-                    <div className="absolute left-[-4.5px] top-2 w-2 h-2 rounded-full bg-slate-800 group-hover:bg-purple-400 transition-colors shadow-[0_0_10px_rgba(168,85,247,0)] group-hover:shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
-                    <span className="text-xs font-mono text-slate-600 group-hover:text-purple-400 transition-colors">[{idx+1}]</span>
-                    <span className="text-sm font-semibold text-slate-400 group-hover:text-white transition-colors">{step}</span>
+              
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-slate-800 pb-3"><Settings size={14} className="text-purple-400" /> AI Prompts Context Window</h4>
+              
+              {/* USER PROMPT MESSAGE */}
+              <div className="flex gap-3 mb-8 w-full max-w-[90%] ml-auto justify-end">
+                <div className="bg-slate-800/80 border border-slate-700 p-4 rounded-2xl rounded-tr-none text-sm text-slate-200 shadow-md">
+                  <span className="block text-[10px] text-cyan-400 font-mono mb-1">User Prompt</span>
+                  Build a scalable, production-ready web application from scratch. What is your standard AI-assisted engineering workflow?
+                </div>
+                <div className="w-8 h-8 rounded-full bg-cyan-900 border border-cyan-500 flex items-center justify-center text-xs font-bold text-cyan-400 shrink-0 shadow-inner">JG</div>
+              </div>
+
+              {/* AI RESPONSE MESSAGE */}
+              <div className="flex gap-3 w-full max-w-[95%]">
+                <div className="w-8 h-8 rounded-full bg-purple-900/30 border border-purple-500/50 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(168,85,247,0.3)] mt-1">
+                  <Sparkles size={14} className="text-purple-400" />
+                </div>
+                <div className="flex-1">
+                  <div className="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl rounded-tl-none shadow-md">
+                    <span className="block text-[10px] text-purple-400 font-mono mb-2">System Response</span>
+                    <p className="text-sm text-slate-300 mb-5 leading-relaxed">
+                      Acknowledged. Initializing AI-Assisted Full-Stack Engineering Protocol. Here is the sequential methodology for execution:
+                    </p>
+                    
+                    <div className="space-y-3 relative border-l border-purple-500/30 ml-2">
+                      {aiWorkflowSteps.map((step, idx) => (
+                        <div key={idx} className="flex items-center gap-3 pl-4 relative group cursor-default">
+                          <div className="absolute left-[-4.5px] top-2 w-2 h-2 rounded-full bg-[#02040a] border border-purple-500/50 group-hover:bg-purple-400 transition-colors shadow-[0_0_10px_rgba(168,85,247,0)] group-hover:shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
+                          <span className="text-xs font-mono text-purple-400/50 group-hover:text-purple-400 transition-colors">[{String(idx+1).padStart(2, '0')}]</span>
+                          <span className="text-sm font-medium text-slate-400 group-hover:text-white transition-colors">{step}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
+                </div>
               </div>
             </motion.div>
 
