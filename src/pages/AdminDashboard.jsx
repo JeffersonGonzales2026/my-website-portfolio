@@ -129,6 +129,27 @@ const creationsCategories = [
   }
 ];
 
+const PRESET_WEB_EXPERIENCES = [
+  "Interactive UI",
+  "Micro-interactions",
+  "Scroll-based Storytelling",
+  "Cinematic Hero Sections",
+  "Smooth Page Transitions",
+  "Parallax Scrolling",
+  "Glassmorphism",
+  "Bento Grid Layouts",
+  "Animated SVG",
+  "Responsive Design",
+  "3D Web Experiences (Learning)",
+  "Three.js (Learning)",
+  "React Three Fiber (Learning)",
+  "Lottie Animations (Learning)",
+  "Accessibility (WCAG) (Learning)",
+  "Performance Optimization (Learning)",
+  "SEO Optimization (Learning)",
+  "Progressive Web Apps (Learning)"
+];
+
 // =========================================================================
 // HELPER: Video Detection
 // =========================================================================
@@ -205,6 +226,7 @@ export default function AdminDashboard() {
   const [aiTimeline, setAiTimeline] = useState([]);
   const [aiEcosystemState, setAiEcosystemState] = useState([]);
   const [aiArchitecture, setAiArchitecture] = useState([]);
+  const [aiWebExperiences, setAiWebExperiences] = useState(PRESET_WEB_EXPERIENCES);
   const [aiShowcase, setAiShowcase] = useState([]);
   const [aiGithub, setAiGithub] = useState({});
 
@@ -260,6 +282,9 @@ export default function AdminDashboard() {
         setAiArchitecture(aiDev.architecture_stack || []);
         setAiShowcase(aiDev.engineering_showcase || []);
         setAiGithub(aiDev.github_sync || {});
+        if (aiDev.modern_web_experiences?.length > 0) {
+           setAiWebExperiences(aiDev.modern_web_experiences);
+        }
       }
 
       const { data: contact } = await supabase.from('contact_settings').select('*').single();
@@ -341,7 +366,15 @@ export default function AdminDashboard() {
         await supabase.from('data_analyst').update({ performance_counters: analystStats, experience_roles: analystRoles, technical_competencies: analystSkills, software_ecosystem: analystEcosystem, future_roadmap: analystRoadmap, portfolio_dashboards: portfolioDashboards, portfolio_reports: portfolioReports, portfolio_automations: portfolioAutomations, portfolio_case_studies: portfolioCaseStudies, portfolio_projects: portfolioProjects }).eq('id', 1);
         
       } else if (activeModule === 'AI Developer') {
-        await supabase.from('ai_developer').update({ metrics_counters: aiStats, development_timeline: aiTimeline, ai_partners: aiEcosystemState, architecture_stack: aiArchitecture, engineering_showcase: aiShowcase, github_sync: aiGithub }).eq('id', 1);
+        await supabase.from('ai_developer').update({ 
+          metrics_counters: aiStats, 
+          development_timeline: aiTimeline, 
+          ai_partners: aiEcosystemState, 
+          architecture_stack: aiArchitecture, 
+          modern_web_experiences: aiWebExperiences, 
+          engineering_showcase: aiShowcase, 
+          github_sync: aiGithub 
+        }).eq('id', 1);
         
       } else if (activeModule === 'Contact Links') {
         await supabase.from('contact_settings').update({ portfolio_url: contactPortfolioUrl }).eq('id', 1);
@@ -736,7 +769,6 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               </div>
-              {/* ================= WORKSPACE PANEL: CERTIFICATIONS ================= */}
               {/* ================= WORKSPACE PANEL: CERTIFICATIONS ================= */}
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
                 <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
@@ -1351,31 +1383,59 @@ export default function AdminDashboard() {
                   <div key={catIdx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/10 space-y-2 relative pr-8">
                     <button onClick={() => handleRemoveArrayItem(aiArchitecture, setAiArchitecture, catIdx)} className="absolute top-4 right-3 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
                     <div className="flex justify-between items-center border-b border-slate-800 pb-1 mb-2">
-                      <input type="text" value={stack.category} onChange={(e) => handleUpdateArrayField(aiArchitecture, setAiArchitecture, catIdx, 'category', e.target.value)} className="bg-transparent text-xs font-mono font-bold text-cyan-400 outline-none" placeholder="Category" />
+                      <input type="text" value={stack.category} onChange={(e) => handleUpdateArrayField(aiArchitecture, setAiArchitecture, catIdx, 'category', e.target.value)} className="bg-transparent text-xs font-mono font-bold text-cyan-400 outline-none w-[200px]" placeholder="Category" />
                       <button onClick={() => {
                         const updated = [...aiArchitecture];
                         updated[catIdx].items.push({ name: "Linked Item", imageSrc: "" });
                         setAiArchitecture(updated);
                       }} className="text-[9px] font-mono text-zinc-500 hover:text-white cursor-pointer">+ ADD LAYER ITEM</button>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                       {stack.items?.map((tool, tIdx) => (
-                        <div key={tIdx} className="grid grid-cols-2 gap-1 bg-zinc-950 p-1.5 rounded-lg border border-zinc-900">
+                        <div key={tIdx} className="grid grid-cols-3 gap-1 bg-zinc-950 p-1.5 rounded-lg border border-zinc-900 relative">
                           <input type="text" value={tool.name} onChange={(e) => {
                             const updated = [...aiArchitecture];
                             updated[catIdx].items[tIdx].name = e.target.value;
                             setAiArchitecture(updated);
-                          }} className="bg-transparent text-xs text-white outline-none" placeholder="Item Name" />
+                          }} className="bg-transparent text-xs text-white outline-none w-full" placeholder="Item Name" />
                           <input type="text" value={tool.imageSrc} onChange={(e) => {
                             const updated = [...aiArchitecture];
                             updated[catIdx].items[tIdx].imageSrc = e.target.value;
                             setAiArchitecture(updated);
-                          }} className="bg-transparent text-xs text-zinc-600 font-mono outline-none" placeholder="Logo Asset URL" />
+                          }} className="bg-transparent text-xs text-zinc-600 font-mono outline-none col-span-2 w-full pr-4" placeholder="Logo Asset URL" />
+                          <button onClick={() => {
+                             const updated = [...aiArchitecture];
+                             updated[catIdx].items.splice(tIdx, 1);
+                             setAiArchitecture(updated);
+                          }} className="absolute right-1 top-1.5 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={12}/></button>
                         </div>
                       ))}
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* ================= MODERN WEB EXPERIENCES ARRAY ================= */}
+              <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
+                <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
+                  <h4 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">// Modern Web Experiences Array</h4>
+                  <button onClick={() => setAiWebExperiences([...aiWebExperiences, "New Experience"])} className="px-2.5 py-1 text-[10px] font-mono bg-zinc-900 border border-zinc-800 rounded-lg text-white font-bold flex items-center gap-1 hover:border-zinc-700 cursor-pointer"><Plus size={12}/> ADD ITEM</button>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  {aiWebExperiences.map((item, idx) => (
+                    <div key={idx} className="relative flex items-center">
+                      <input type="text" value={item} onChange={(e) => {
+                        const copy = [...aiWebExperiences];
+                        copy[idx] = e.target.value;
+                        setAiWebExperiences(copy);
+                      }} className="w-full bg-zinc-950 border border-zinc-900 rounded-lg pl-2 pr-6 py-1.5 text-xs text-center font-mono text-zinc-300 focus:outline-none" />
+                      <button onClick={() => {
+                        const copy = aiWebExperiences.filter((_, i) => i !== idx);
+                        setAiWebExperiences(copy);
+                      }} className="absolute right-1 text-zinc-600 hover:text-red-400 cursor-pointer p-1"><Trash2 size={12}/></button>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="p-6 rounded-2xl border border-zinc-900 bg-zinc-950/40 space-y-4">
