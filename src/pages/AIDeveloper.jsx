@@ -1,401 +1,557 @@
-// src/pages/AiDeveloper.jsx
+// src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, useInView, animate, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from 'framer-motion';
-import { Cpu, Layers, ArrowUp, CheckCircle2, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity, useScroll } from 'framer-motion';
+import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, PictureInPicture, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import HTMLFlipBook from 'react-pageflip';
+import { useMobileBack } from '../hooks/useMobileBack';
 
-// ================= CUSTOM ANIMATED COUNTER =================
-const AnimatedCounter = ({ value, suffix = "" }) => {
+// GSAP IMPORTS
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+
+gsap.registerPlugin(ScrollTrigger);
+
+const AnimatedNumber = ({ value, suffix }) => {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-50px" });
+  const isInView = useInView(ref, { once: true });
 
   useEffect(() => {
-    if (inView) {
-      const controls = animate(0, value, {
+    if (isInView && ref.current) {
+      animate(0, value, {
         duration: 2.5,
         ease: "easeOut",
-        onUpdate(val) {
-          if (ref.current) {
-            ref.current.textContent = Math.floor(val) + suffix;
-          }
+        onUpdate: (v) => {
+          if (ref.current) ref.current.textContent = Math.floor(v) + suffix;
         }
       });
-      return () => controls.stop();
     }
-  }, [value, inView, suffix]);
+  }, [isInView, value, suffix]);
 
-  return <span ref={ref} className="text-3xl md:text-4xl font-black text-white tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">0{suffix}</span>;
+  return <span ref={ref}>0{suffix}</span>;
 };
 
-// ================= WAVE CARD COMPONENT (SCROLL-LINKED ANIMATION) =================
-const WaveCard = ({ principle }) => {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["center 100%", "center 0%"]
-  });
-
-  const scale = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.9, 1.1, 0.9]);
-  const opacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.4, 1, 0.4]);
-  const zIndex = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0, 10, 0]); 
-  
-  // VIOLET FADE OVERLAY: Starts at 0 (Invisible), Fades to 1 (Visible) when centered
-  const violetOverlayOpacity = useTransform(scrollYProgress, [0.35, 0.5, 0.65], [0, 1, 0]);
-
+const BookPage = React.forwardRef((props, ref) => {
   return (
-    <motion.div 
-      ref={ref}
-      style={{ scale, opacity, zIndex }}
-      // THE BASE BLUE CARD (Hindi aalisin, papatungan lang)
-      className="relative p-4 md:p-5 rounded-2xl border-2 border-blue-500 bg-blue-900/40 flex items-center gap-4 backdrop-blur-md w-full max-w-md mx-auto origin-center overflow-hidden shadow-[0_0_20px_rgba(59,130,246,0.3)]"
-    >
-      {/* VIOLET GLOW OVERLAY FADE (Ito ang papatong sa Blue) */}
-      <motion.div 
-        style={{ opacity: violetOverlayOpacity }}
-        className="absolute inset-0 bg-purple-900/80 border-2 border-purple-400 rounded-2xl shadow-[0_0_40px_rgba(168,85,247,0.8)] z-0"
-      />
-
-      <div className="relative z-10 flex items-center gap-4 w-full">
-        {/* ICON - Fades from Bright Blue to Purple */}
-        <div className="shrink-0 relative w-6 h-6 flex items-center justify-center">
-           <CheckCircle2 size={24} className="text-blue-300 absolute inset-0 drop-shadow-[0_0_8px_rgba(59,130,246,1)]" />
-           <motion.div style={{ opacity: violetOverlayOpacity }} className="absolute inset-0">
-             <CheckCircle2 size={24} className="text-purple-300 drop-shadow-[0_0_8px_rgba(168,85,247,1)]" />
-           </motion.div>
-        </div>
-        
-        {/* TEXT - Fades from Blue-tinted white to Pure white */}
-        <span className="text-sm font-bold tracking-wide text-white relative z-10 drop-shadow-md">
-          {principle}
-        </span>
+    <div className="bg-[#0e111a] border border-white/5 flex items-center justify-center overflow-hidden shadow-2xl relative" ref={ref} data-density="soft">
+      <div className={`absolute inset-y-0 ${props.number % 2 === 0 ? 'right-0' : 'left-0'} w-8 bg-gradient-to-${props.number % 2 === 0 ? 'l' : 'r'} from-black/40 to-transparent z-10 pointer-events-none`} />
+      <img key={props.imageUrl} src={props.imageUrl} onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} alt={`Page ${props.number}`} className="w-full h-full object-contain pointer-events-none relative z-0" />
+      <div className="hidden absolute inset-0 flex-col items-center justify-center text-xs text-red-400 font-mono text-center p-6 z-20">
+        <span className="text-2xl mb-2">⚠️</span>
+        <span className="font-bold mb-2">IMAGE NOT FOUND</span>
+        <span className="text-white/60 text-[10px] mb-1">Hinahanap ng system ang:</span>
+        <span className="text-cyan-400 text-[9px] break-all border border-white/10 bg-black/50 p-2 rounded">{props.imageUrl}</span>
       </div>
-    </motion.div>
+    </div>
   );
-};
+});
 
-// ================= VARIED ANIMATION VARIANTS =================
-const fadeSlideUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
-};
-
-const cardPop = {
-  hidden: { opacity: 0, scale: 0.8, rotateX: 15 },
-  visible: { opacity: 1, scale: 1, rotateX: 0, transition: { duration: 0.5, type: "spring", stiffness: 100 } }
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
-};
-
-const futuristicReveal = {
-  hidden: { opacity: 0, y: 40, scale: 0.95 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    scale: 1, 
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
-  }
-};
-
-// ================= DATA BASELINE GENERATORS =================
-const defaultDeveloperStats = [
-  { label: "Git Repositories", value: 4, suffix: "" },
-  { label: "Dashboards Built", value: 20, suffix: "" },
-  { label: "Hours Coding", value: 90, suffix: "+" },
-  { label: "AI Prompts Optimized", value: 1000, suffix: "+" }
+const featuredClients = [
+  { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
+  { id: 2, name: "Real Estate Partners", industry: "Property Development", icon: <Building2 size={32} /> },
+  { id: 3, name: "Rich Ams Global", industry: "E-Commerce", icon: <ShoppingBag size={32} /> },
+  { id: 4, name: "CapCut Creators", industry: "Digital Media", icon: <MonitorPlay size={32} /> },
+  { id: 5, name: "Tech Startups", industry: "SaaS & Technology", icon: <Globe size={32} /> },
+  { id: 6, name: "Corporate B2B", industry: "Consulting & Finance", icon: <Briefcase size={32} /> },
 ];
 
-const defaultAiEcosystem = [
-  { name: "ChatGPT", role: "Primary planning, architecture, documentation, learning, and technical guidance.", imageSrc: "/images/chatgpt.png" },
-  { name: "Claude", role: "Backend, Debugging, reasoning, architecture planning, code reviews, and structured writing.", imageSrc: "/images/claude.png" },
-  { name: "Gemini", role: "Frontend, UI & UX, architecture planning, Alternative implementation ideas.", imageSrc: "/images/gemini.png" },
-  { name: "GitHub Copilot", role: "In-editor code completion, agent, and developer assistance.", imageSrc: "/images/copilot.png" },
-  { name: "OpenAI Codex", role: "AI software engineering agent for autonomous coding and development workflows.", imageSrc: "" }
+const creationsCategories = [
+  { id: 1, category: "Branding & Identity", icon: <Fingerprint size={14} />, items: ["Logo Design", "Brand Identity Design", "Brand Style Guide", "Brand Refresh & Rebranding", "Business Card Design", "Letterhead & Stationery Design", "Email Signature Design", "Brand Pattern & Graphic Elements", "Packaging Design", "Label & Sticker Design", "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", "Brand Asset Kit"] },
+  { id: 2, category: "Social Media Design", icon: <Share2 size={14} />, items: ["Social Media Posts", "Story Designs", "Carousel Posts", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding", "Quote Graphics", "Event Announcement Graphics", "Holiday & eCards"] },
+  { id: 3, category: "Video Editing", icon: <Video size={14} />, items: ["Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", "Podcast Editing", "Testimonial Videos", "Tutorial Videos", "Video Thumbnails"] },
+  { id: 4, category: "Motion Graphics", icon: <PictureInPicture size={14} />, items: ["Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"] },
+  { id: 5, category: "Web Graphics", icon: <MousePointerClick size={14} />, items: ["Landing Page Graphics", "eCommerce Graphics", "Website Banners", "Hero Banners", "UI Graphics", "Icons", "Email Graphics", "WordPress Assets", "Blog Graphics", "Web Illustrations"] },
+  { id: 6, category: "Marketing & Corporate", icon: <Briefcase size={14} />, items: ["Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"] },
+  { id: 7, category: "Marketing Materials", icon: <FileText size={14} />, items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations", "Posters", "Banners", "Sales Sheets", "Product Sheets"] },
+  { id: 8, category: "Packaging Design", icon: <Box size={14} />, items: ["Packaging Graphics", "Product Labels", "Clothing Labels", "Box Packaging", "Bottle Labels", "Pouch Packaging", "Food Packaging", "Cosmetic Packaging"] },
+  { id: 9, category: "Photo Editing", icon: <ImageIcon size={14} />, items: ["Photo Retouching", "Photo Restoration", "Background Removal", "Photo Manipulation", "Color Correction", "Product Photo Enhancement", "Watercolor Portraits"] },
+  { id: 10, category: "Apparel Design", icon: <Shirt size={14} />, items: ["Streetwear Graphics", "T-Shirt Graphics", "Jersey Design", "Merchandise Graphics", "Mockups", "Clothing Hang Tags"] },
+  { id: 11, category: "Print Production", icon: <Printer size={14} />, items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards", "Stickers", "Roll-up Banners", "Calendars"] },
+  { id: 12, category: "Illustration", icon: <Pencil size={14} />, items: ["Digital Illustration", "Vector Artwork", "Character Illustration", "Cartoon Portraits", "Icon Design", "Seamless Patterns"] }
 ];
 
-const PRESET_PIPELINE_ARCHITECTURE = [
-  {
-    category: "Planning",
-    items: [
-      { name: "Notion", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" },
-      { name: "Trello", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/trello/trello-plain.svg" },
-      { name: "Jira (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jira/jira-original.svg" }
-    ]
-  },
-  {
-    category: "Requirements Analysis",
-    items: [
-      { name: "ChatGPT", imageSrc: "/images/chatgpt.png" },
-      { name: "Claude", imageSrc: "/images/claude.png" },
-      { name: "GitHub Issues", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
-      { name: "Notion", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" },
-      { name: "Kimi (Learning)", imageSrc: "/images/kimi.png" }
-    ]
-  },
-  {
-    category: "Architecture Design",
-    items: [
-      { name: "Excalidraw (Learning)", imageSrc: "" },
-      { name: "Draw.io (Learning)", imageSrc: "" },
-      { name: "Lucidchart (Learning)", imageSrc: "" },
-      { name: "Eraser.io (Learning)", imageSrc: "" }
-    ]
-  },
-  {
-    category: "Frontend Development",
-    items: [
-      { name: "React", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" },
-      { name: "Vite", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vite/vite-original.svg" },
-      { name: "Tailwind CSS", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" },
-      { name: "JavaScript (ES6+)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" },
-      { name: "HTML5", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" },
-      { name: "CSS3", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" },
-      { name: "Framer Motion", imageSrc: "" },
-      { name: "GSAP", imageSrc: "" }
-    ]
-  },
-  {
-    category: "Backend Development",
-    items: [
-      { name: "Node.js", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" },
-      { name: "JSON", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/json/json-original.svg" }
-    ]
-  },
-  {
-    category: "Database Design",
-    items: [
-      { name: "PostgreSQL", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg" },
-      { name: "Supabase", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" }
-    ]
-  },
-  {
-    category: "AI Integration",
-    items: [
-      { name: "GitHub Copilot", imageSrc: "/images/copilot.png" }
-    ]
-  },
-  {
-    category: "Testing & Debugging",
-    items: [
-      { name: "Chrome DevTools", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/chrome/chrome-original.svg" },
-      { name: "React Developer Tools", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" },
-      { name: "ESLint", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/eslint/eslint-original.svg" },
-      { name: "Prettier", imageSrc: "" }
-    ]
-  },
-  {
-    category: "Deployment",
-    items: [
-      { name: "Git", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" },
-      { name: "GitHub", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
-      { name: "Vercel", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" }
-    ]
-  },
-  {
-    category: "Monitoring & Maintenance",
-    items: [
-      { name: "GitHub", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
-      { name: "Vercel Analytics", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" }
-    ]
-  }
+const softwareExpertise = [
+  { id: 1, name: "Photoshop", imageSrc: "/images/photoshop.png" },
+  { id: 2, name: "Illustrator", imageSrc: "/images/illustrator.png" },
+  { id: 3, name: "Premiere Pro", imageSrc: "/images/premiere.png" },
+  { id: 4, name: "After Effects", imageSrc: "/images/aftereffects.png" },
+  { id: 5, name: "Canva", imageSrc: "/images/canva.png" },
+  { id: 6, name: "CapCut", imageSrc: "/images/capcut.png" },
+  { id: 7, name: "Microsoft Office", imageSrc: "/images/msoffice.png" },
+  { id: 8, name: "WordPress", imageSrc: "/images/wordpress.png" },
+  { id: 9, name: "AI Design Tools", imageSrc: "/images/ai-tools.png" },
 ];
 
-const defaultWebExperiences = [
-  "Interactive UI",
-  "Micro-interactions",
-  "Scroll-based Storytelling",
-  "Cinematic Hero Sections",
-  "Smooth Page Transitions",
-  "Parallax Scrolling",
-  "Glassmorphism",
-  "Bento Grid Layouts",
-  "Animated SVG",
-  "Responsive Design"
+const creativeProcess = [
+  { step: 1, title: "Client Consultation", desc: "Understand goals & vision." },
+  { step: 2, title: "Requirements Gathering", desc: "Scope & timelines." },
+  { step: 3, title: "Research", desc: "Competitors & audience." },
+  { step: 4, title: "Concept Development", desc: "Brainstorming ideas." },
+  { step: 5, title: "Sketches / Ideas", desc: "Rough visual drafts." },
+  { step: 6, title: "Design Production", desc: "High-fidelity artwork." },
+  { step: 7, title: "Internal Review", desc: "Quality assurance." },
+  { step: 8, title: "Client Presentation", desc: "Showcase for feedback." },
+  { step: 9, title: "Revisions", desc: "Refine based on input." },
+  { step: 10, title: "Final Approval", desc: "Client sign-off." },
+  { step: 11, title: "Production", desc: "Prepare final files." },
+  { step: 12, title: "Delivery", desc: "Handover assets." },
+  { step: 13, title: "Post-Project Support", desc: "Ongoing assistance." }
 ];
 
-const defaultShowcaseProjects = [
+const teamMembers = [
   {
     id: 1,
-    type: "flagship",
-    badge: "In Progress",
-    meta: "Flagship Software v1",
-    title: "Personal Portfolio Website",
-    desc: "A premium, custom-architected portfolio platform built entirely from scratch to showcase graphic design archives, data analytics systems, and modular web software while serving as an active production codebase.",
-    tech: ["React", "Vite", "Tailwind", "CSS", "Git", "GitHub", "VS Code", "AI Assistant Workflow"],
-    role: "AI-assisted Product Architect",
-    actionText: "Inspect Source",
-    link: "https://github.com"
+    name: "Dexter Joy D. Bautista",
+    photo: "/images/dexter.jpg", 
+    positions: ["Multimedia Designer", "Graphic Designer", "Portrait Artist"],
+    bio: "A Graphic Designer who loves turning ideas into visually striking and meaningful designs. Creativity is more than just a skill for me, it's my lifestyle. From sketching as a hobby to crafting unique, eye-catching visuals, I bring originality and heart into every task.",
+    skills: ["Package Design", "UI/UX Design", "Brand Identity", "Photo Manipulation"],
+    software: ["Photoshop", "Illustrator", "Premiere Pro", "Figma", "SketchUp"],
+    experience: "7+ Years",
+    availability: "Full-Time",
+    status: "Active",
+    portfolioUrl: "https://www.behance.net/gallery/190745335/PORTFOLIO-V2",
+    socialUrl: "#"
+  },
+  {
+    id: 2,
+    name: "Open Position",
+    photo: "", 
+    positions: ["-"],
+    bio: "Waiting for the next talented individual to fill this space. If you are driven by design and innovation, there might be a seat for you here.",
+    skills: ["-", "-", "-"],
+    software: ["-", "-", "-"],
+    experience: "-",
+    availability: "-",
+    status: "Hiring",
+    portfolioUrl: "#",
+    socialUrl: "#"
   }
 ];
 
-const defaultGithubProfile = {
-  name: "Jefferson Gonzales",
-  username: "jeffersongonzales",
-  profileUrl: "https://github.com",
-  badgeText: "Live Sync Standard ready",
-  matrixPlaceholder: "[Simulated GitHub Contribution Matrix Grid Placeholder]"
+const starsData = Array.from({ length: 60 }).map((_, i) => ({
+  id: i,
+  top: `${Math.random() * 100}%`,
+  left: `${Math.random() * 100}%`,
+  delay: Math.random() * 4,
+  duration: 1.5 + Math.random() * 2,
+  size: Math.random() * 2.5 + 1
+}));
+
+const cloudsData = Array.from({ length: 6 }).map((_, i) => ({
+  id: i,
+  top: `${10 + i * 15}%`,
+  delay: -(Math.random() * 30),
+  duration: 40 + Math.random() * 20,
+  scale: 0.8 + Math.random() * 1.5
+}));
+
+const isVideo = (url) => {
+  if (!url) return false;
+  return url.match(/\.(mp4|webm|mov|ogg)$/i) || url.includes('video');
 };
 
-const aiWorkflowSteps = [
-  "Idea", "Research", "Requirements Gathering", "Planning", "Architecture Design", "UI/UX Planning", 
-  "Prompt Engineering", "Prototype", "AI-Assisted Code Generation", "Manual Code Review", "Refactoring", 
-  "Debugging", "Testing", "Optimization", "Documentation", "Version Control", "Deployment", "Maintenance", "Continuous Improvement"
-];
+export default function DreamCreations() {
+  const containerRef = useRef(null);
+  const teamScrollRef = useRef(null);
+  const flipBookRef = useRef(null); 
 
-const extractImageDeep = (item) => {
-  if (!item || typeof item !== 'object') return null;
-  if (item.logo_url) return item.logo_url;
-  if (item.image_url) return item.image_url;
-  if (item.image) return item.image;
-  if (item.logo) return item.logo;
-  if (item.icon_url) return item.icon_url;
-  if (typeof item.icon === 'string' && item.icon.startsWith('http')) return item.icon;
+  // ================= SCROLL-LINKED MOON ANIMATION LOGIC (UNIFIED HERO + CREATIONS) =================
+  const heroCreationsWrapperRef = useRef(null);
   
-  let foundUrl = null;
-  const searchObj = (obj) => {
-    if (!obj || typeof obj !== 'object') return;
-    for (const key in obj) {
-      if (typeof obj[key] === 'string' && (obj[key].startsWith('http') || obj[key].includes('supabase.co'))) {
-        foundUrl = obj[key];
-        return;
-      }
-      if (typeof obj[key] === 'object') {
-        searchObj(obj[key]);
-        if (foundUrl) return;
-      }
+  // Track scroll exactly over the combined 150vh section (Mas maikli na space)
+  const { scrollYProgress: heroScroll } = useScroll({
+    target: heroCreationsWrapperRef,
+    offset: ["start start", "end end"] 
+  });
+
+  // Scale shrinks as you scroll down
+  const moonScale = useTransform(heroScroll, [0, 1], [1.0, 0.45]);
+  
+  // Naka-align ang Moon: Magsisimula nang mas mababa sa Hero (-10vh), tapos sa huli, sakto sa gitna (0vh)
+  const moonY = useTransform(heroScroll, [0, 1], ["-10vh", "0vh"]); 
+
+  // Fade Effects para ma-transition from Hero Text -> Solar System Orbits
+  const heroOpacity = useTransform(heroScroll, [0, 0.3], [1, 0]);
+  const creationsOpacity = useTransform(heroScroll, [0.4, 0.8], [0, 1]);
+
+  // Split categories for Orbital Layout
+  const innerCategories = creationsCategories.slice(0, 4);
+  const outerCategories = creationsCategories.slice(4, 12);
+
+  // ================= GSAP REFS FOR CREATIVE PROCESS =================
+  const processSectionRef = useRef(null);
+  const processTrackRef = useRef(null);
+
+  // PURE GSAP SCROLL-JACKING LOGIC
+  useGSAP(() => {
+    if (!processSectionRef.current || !processTrackRef.current) return;
+
+    const getScrollAmount = () => {
+      let trackWidth = processTrackRef.current.scrollWidth;
+      return Math.max(0, trackWidth - window.innerWidth + 48);
+    };
+
+    const tween = gsap.to(processTrackRef.current, {
+      x: () => -getScrollAmount(),
+      ease: "none"
+    });
+
+    ScrollTrigger.create({
+      trigger: processSectionRef.current,
+      start: "top top", 
+      end: () => `+=${getScrollAmount() * 1}`, 
+      pin: true,
+      animation: tween,
+      scrub: 1, 
+      invalidateOnRefresh: true, 
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, { scope: processSectionRef });
+
+  const [activeCreationPopup, setActiveCreationPopup] = useState(null);
+  const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
+  const [projects, setProjects] = useState([]); 
+  const [randomModalPositions, setRandomModalPositions] = useState([]);
+
+  // RANDOMIZE POSITIONS PARA SA BUBBLES SA LOOB NG MODAL
+  useEffect(() => {
+    if (activeCreationPopup) {
+      const count = activeCreationPopup.items.length;
+      const positions = activeCreationPopup.items.map((_, i) => {
+        // Distribute around the circle with a randomized distance to look "scattered"
+        const angle = (i / count) * 2 * Math.PI;
+        const radius = 18 + Math.random() * 12; // Between 18% to 30% from center (won't overflow)
+        return {
+          x: Math.cos(angle) * radius,
+          y: Math.sin(angle) * radius,
+          colorClass: ['bg-blue-600 border-blue-400', 'bg-cyan-600 border-cyan-400', 'bg-sky-600 border-sky-400'][Math.floor(Math.random() * 3)]
+        };
+      });
+      setRandomModalPositions(positions);
+    }
+  }, [activeCreationPopup]);
+
+  const [reviews, setReviews] = useState([
+    {
+      id: "temp-mr-king",
+      client_name: "Mr. King",
+      company: "GodsKing Royalty",
+      project_type: "Streetwear Graphics",
+      rating: 5,
+      feedback: "Designs is very impressive and unique.",
+      face_image_url: "/images/King.jpg"
+    },
+    {
+      id: "temp-memorialize-client",
+      client_name: "Memorialize Client",
+      company: "Memorialize",
+      project_type: "Watercolor Portrait",
+      rating: 5,
+      feedback: "Oh my goodness!!!! Im extremely happy with how it turned out!! Thank you so much… Im sure there will be lots of tears when my Mom opens this!!!",
+      face_image_url: "/images/MClient1.png"
+    }
+  ]); 
+
+  const [bannerUrl, setBannerUrl] = useState("/Logo Banner.png");
+  const [founderPhoto, setFounderPhoto] = useState("");
+  const [founderExp, setFounderExp] = useState(10);
+  const [founderProjects, setFounderProjects] = useState(200);
+  const [teamList, setTeamList] = useState(teamMembers);
+  const [softwareList, setSoftwareList] = useState(softwareExpertise);
+  const [clientsList, setClientsList] = useState(featuredClients);
+
+  const [photographyShots, setPhotographyShots] = useState([]);
+  const [isPhotographyOpen, setIsPhotographyOpen] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+
+  const [isFlipbookOpen, setIsFlipbookOpen] = useState(false);
+  const [flipbookPage, setFlipbookCurrentPage] = useState(0); 
+  const [activeFlipbookConfig, setActiveFlipbookConfig] = useState({ prefix: 'page-', totalPages: 91, extension: 'jpg' });
+
+  const [previewImage, setPreviewImage] = useState(null);
+  const isAnyModalOpen = activePortfolioSubtitle || isPhotographyOpen || activeCreationPopup || previewImage || isFlipbookOpen;
+  
+  useMobileBack(isAnyModalOpen, () => {
+    setActiveCreationPopup(null);
+    setActivePortfolioSubtitle(null);
+    setPreviewImage(null);
+    setIsPhotographyOpen(false);
+    setIsFlipbookOpen(false);
+  });
+
+  // ================= GSAP DOM REFRESHER =================
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 800); 
+    return () => clearTimeout(timeoutId);
+  }, [projects, activePortfolioSubtitle, isPhotographyOpen, activeCreationPopup]);
+
+  useEffect(() => {
+    if (isAnyModalOpen) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [isAnyModalOpen]);
+
+  const [zoomScale, setZoomScale] = useState(1);
+  const initialPinchDist = useRef(null);
+  useEffect(() => { setZoomScale(1); }, [previewImage]);
+
+  const handleTouchStart = (e) => {
+    if (e.touches.length === 2) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      initialPinchDist.current = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
     }
   };
-  
-  searchObj(item);
-  return foundUrl;
-};
+  const handleTouchMove = (e) => {
+    if (e.touches.length === 2 && initialPinchDist.current !== null) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const currentDist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+      const newScale = zoomScale * (currentDist / initialPinchDist.current);
+      setZoomScale(Math.min(Math.max(1, newScale), 4));
+      initialPinchDist.current = currentDist;
+    }
+  };
+  const handleTouchEnd = () => { initialPinchDist.current = null; };
 
-export default function AiDeveloper() {
-  const containerRef = useRef(null);
+  const goNextPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext(); };
+  const goPrevPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipPrev(); };
+  const onPageFlip = (e) => { setFlipbookCurrentPage(e.data); };
+  const getFlipbookUrl = (pageIndex, prefix = 'page-', ext = 'jpg') => `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/${prefix}${pageIndex}.${ext}`;
 
-  const [stats, setStats] = useState(defaultDeveloperStats);
-  const [aiPartners, setAiPartners] = useState(defaultAiEcosystem);
-  const [architecture, setArchitecture] = useState(PRESET_PIPELINE_ARCHITECTURE);
-  const [webExperiences, setWebExperiences] = useState(defaultWebExperiences);
-  const [showcase, setShowcase] = useState(defaultShowcaseProjects);
-  const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= 100% BUG-FREE FRAMER MOTION ARCHITECTURE SCROLL =================
-  const archScrollRef = useRef(null);
-  const [activeArchTab, setActiveArchTab] = useState(0);
-  const [gapSize, setGapSize] = useState(300);
-
-  // Auto-adjust horizontal spacing based on screen size
-  useEffect(() => {
-    const handleResize = () => setGapSize(window.innerWidth < 768 ? 200 : 350);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Track scroll position of the 400vh container
-  const { scrollYProgress: archScrollY } = useScroll({
-    target: archScrollRef,
-    offset: ["start start", "end end"]
-  });
-
-  // Smoothly update Active Tab without skipping or disappearing
-  useMotionValueEvent(archScrollY, "change", (latest) => {
-    const maxIndex = architecture.length > 0 ? architecture.length - 1 : 0;
-    const currentIndex = Math.round(latest * maxIndex);
-    if (currentIndex >= 0 && currentIndex <= maxIndex && currentIndex !== activeArchTab) {
-       setActiveArchTab(currentIndex);
+  const isTeamDragging = useRef(false);
+  const teamStartX = useRef(0);
+  const teamScrollLeftPos = useRef(0);
+  const teamDragHandlers = {
+    onMouseDown: (e) => {
+      isTeamDragging.current = true;
+      teamStartX.current = e.pageX - teamScrollRef.current.offsetLeft;
+      teamScrollLeftPos.current = teamScrollRef.current.scrollLeft;
+    },
+    onMouseLeave: () => { isTeamDragging.current = false; },
+    onMouseUp: () => { isTeamDragging.current = false; },
+    onMouseMove: (e) => {
+      if (!isTeamDragging.current) return;
+      e.preventDefault();
+      teamScrollRef.current.scrollLeft = teamScrollLeftPos.current - (e.pageX - teamScrollRef.current.offsetLeft - teamStartX.current) * 2;
     }
-  });
+  };
 
-  // Precise Math calculation for horizontal line movement
-  const maxItems = architecture.length > 0 ? architecture.length - 1 : 0;
-  const totalTrackWidth = maxItems * gapSize;
-  const xTransform = useTransform(archScrollY, [0, 1], ["0px", `-${totalTrackWidth}px`]);
-  const lineWidthTransform = useTransform(archScrollY, [0, 1], ["0%", "100%"]);
+  const clientsScrollRef = useRef(null);
+  const [isClientsPaused, setIsClientsPaused] = useState(false);
+  const isClientsDragging = useRef(false);
+  const clientsStartX = useRef(0);
+  const clientsScrollLeftPos = useRef(0);
+
+  // AUTO SCROLL OUR VALUED DREAMERS (RIGHTWARDS)
+  useEffect(() => {
+    let animationId;
+    const container = clientsScrollRef.current;
+    if (!container || clientsList.length === 0) return;
+
+    if (container.scrollLeft === 0) {
+      container.scrollLeft = container.scrollWidth / 2;
+    }
+
+    const scroll = () => {
+      if (!isClientsPaused && !isClientsDragging.current) {
+        container.scrollLeft -= 1; 
+        if (container.scrollLeft <= 0) {
+          container.scrollLeft += container.scrollWidth / 2;
+        }
+      }
+      animationId = requestAnimationFrame(scroll);
+    };
+    animationId = requestAnimationFrame(scroll);
+    return () => cancelAnimationFrame(animationId);
+  }, [isClientsPaused, clientsList]);
+
+  const clientsDragHandlers = {
+    onMouseDown: (e) => {
+      isClientsDragging.current = true; setIsClientsPaused(true);
+      clientsStartX.current = e.pageX - clientsScrollRef.current.offsetLeft;
+      clientsScrollLeftPos.current = clientsScrollRef.current.scrollLeft;
+    },
+    onMouseLeave: () => { isClientsDragging.current = false; setIsClientsPaused(false); },
+    onMouseUp: () => { isClientsDragging.current = false; setIsClientsPaused(false); },
+    onMouseMove: (e) => {
+      if (!isClientsDragging.current) return;
+      e.preventDefault();
+      clientsScrollRef.current.scrollLeft = clientsScrollLeftPos.current - (e.pageX - clientsScrollRef.current.offsetLeft - clientsStartX.current) * 2;
+    },
+    onTouchStart: () => setIsClientsPaused(true),
+    onTouchEnd: () => setIsClientsPaused(false)
+  };
+
+  const feedbackScrollRef = useRef(null);
+  const [isFeedbackPaused, setIsFeedbackPaused] = useState(false);
+  const isFeedbackDragging = useRef(false);
+  const feedbackStartX = useRef(0);
+  const feedbackScrollLeftPos = useRef(0);
+
+  // AUTO SCROLL CLIENT FEEDBACK (LEFTWARDS)
+  useEffect(() => {
+    let animationId;
+    const container = feedbackScrollRef.current;
+    if (!container || reviews.length === 0) return;
+
+    const scroll = () => {
+      if (!isFeedbackPaused && !isFeedbackDragging.current) {
+        container.scrollLeft += 1; 
+        if (container.scrollLeft >= container.scrollWidth / 2) {
+          container.scrollLeft = 0; 
+        }
+      }
+      animationId = requestAnimationFrame(scroll);
+    };
+    animationId = requestAnimationFrame(scroll);
+    return () => cancelAnimationFrame(animationId);
+  }, [isFeedbackPaused, reviews]);
+
+  const feedbackDragHandlers = {
+    onMouseDown: (e) => {
+      isFeedbackDragging.current = true; setIsFeedbackPaused(true);
+      feedbackStartX.current = e.pageX - feedbackScrollRef.current.offsetLeft;
+      feedbackScrollLeftPos.current = feedbackScrollRef.current.scrollLeft;
+    },
+    onMouseLeave: () => { isFeedbackDragging.current = false; setIsFeedbackPaused(false); },
+    onMouseUp: () => { isFeedbackDragging.current = false; setIsFeedbackPaused(false); },
+    onMouseMove: (e) => {
+      if (!isFeedbackDragging.current) return;
+      e.preventDefault();
+      feedbackScrollRef.current.scrollLeft = feedbackScrollLeftPos.current - (e.pageX - feedbackScrollRef.current.offsetLeft - feedbackStartX.current) * 2;
+    },
+    onTouchStart: () => setIsFeedbackPaused(true),
+    onTouchEnd: () => setIsFeedbackPaused(false)
+  };
+
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+  const springConfig = { damping: 25, stiffness: 200, mass: 0.5 };
+  const smoothX = useSpring(cursorX, springConfig);
+  const smoothY = useSpring(cursorY, springConfig);
+  const velocityX = useVelocity(smoothX);
+  const velocityY = useVelocity(smoothY);
+  const rotateZ = useTransform(velocityX, [-1000, 0, 1000], [-35, 0, 35]); 
+  const rotateY = useTransform(velocityX, [-1000, 0, 1000], [-40, 0, 40]); 
+  const rotateX = useTransform(velocityY, [-1000, 0, 1000], [40, 0, -40]); 
+
+  useEffect(() => {
+    const moveCursor = (e) => {
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      cursorX.set(clientX - 32); 
+      cursorY.set(clientY - 32);
+    };
+    window.addEventListener("mousemove", moveCursor);
+    window.addEventListener("touchmove", moveCursor, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", moveCursor);
+      window.removeEventListener("touchmove", moveCursor);
+    };
+  }, [cursorX, cursorY]);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (containerRef.current) {
+        containerRef.current.style.setProperty('--x', `${e.clientX}px`);
+        containerRef.current.style.setProperty('--y', `${e.clientY}px`);
+      }
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data, error } = await supabase.from('ai_developer').select('*').eq('id', 1).single();
-
-        if (error && error.code !== 'PGRST116') throw error;
-
-        if (data) {
-          if (data.metrics_counters?.length > 0) setStats(data.metrics_counters);
+        const { data: dreamData } = await supabase.from('dream_creations').select('*').eq('id', 1).single();
           
-          if (Array.isArray(data.ai_partners) && data.ai_partners.length > 0) {
-            const formattedPartners = data.ai_partners.map(ai => {
-              let imgUrl = extractImageDeep(ai);
-              if (!imgUrl) {
-                const localMatch = defaultAiEcosystem.find(d => d.name?.toLowerCase() === ai.name?.toLowerCase());
-                if (localMatch) imgUrl = localMatch.imageSrc;
-              }
-              if (!imgUrl && ai.imageSrc) imgUrl = ai.imageSrc;
-              return { ...ai, customImage: imgUrl };
-            });
-            setAiPartners(formattedPartners);
-          } else {
-            setAiPartners(defaultAiEcosystem);
-          }
+        if (dreamData) {
+          if (dreamData.banner_url) setBannerUrl(dreamData.banner_url);
+          if (dreamData.founder_photo) setFounderPhoto(dreamData.founder_photo);
+          if (dreamData.founder_experience !== null) setFounderExp(dreamData.founder_experience);
+          if (dreamData.founder_projects !== null) setFounderProjects(dreamData.founder_projects);
           
-          if (Array.isArray(data.architecture_stack) && data.architecture_stack.length > 5) {
-            const formattedArchitecture = data.architecture_stack.map(stack => {
-              let parsedTools = [];
-              if (Array.isArray(stack.items)) {
-                parsedTools = stack.items;
-              } else if (typeof stack.items === 'string') {
-                parsedTools = stack.items.split(',').map(t => ({ name: t.trim() }));
-              } else if (Array.isArray(stack.tools)) {
-                parsedTools = stack.tools;
-              }
-
-              return {
-                ...stack,
-                items: parsedTools.map(tool => {
-                  let toolObj = typeof tool === 'object' && tool !== null ? tool : { name: tool };
-                  let imgUrl = extractImageDeep(toolObj);
-                  if (!imgUrl) {
-                    PRESET_PIPELINE_ARCHITECTURE.forEach(defStack => {
-                      const match = defStack.items.find(d => d.name?.toLowerCase() === toolObj.name?.toLowerCase());
-                      if (match) imgUrl = match.imageSrc;
-                    });
-                  }
-                  if (!imgUrl && toolObj.imageSrc) imgUrl = toolObj.imageSrc;
-                  return { ...toolObj, customImage: imgUrl };
-                })
-              };
-            });
-            setArchitecture(formattedArchitecture);
-          } else {
-             setArchitecture(PRESET_PIPELINE_ARCHITECTURE);
-          }
-
-          if (data.modern_web_experiences?.length > 0) {
-            setWebExperiences(data.modern_web_experiences);
-          }
-          
-          if (data.engineering_showcase?.length > 0) {
-            const formattedShowcase = data.engineering_showcase.map(project => ({
-              ...project,
-              tech: typeof project.tech === 'string' ? project.tech.split(',').map(s => s.trim()).filter(Boolean) : project.tech || []
+          if (dreamData.team_roster && dreamData.team_roster.length > 0) {
+            const formattedTeam = dreamData.team_roster.map(member => ({
+              ...member,
+              positions: typeof member.positions === 'string' ? member.positions.split(',').map(s => s.trim()) : member.positions || [],
+              skills: typeof member.skills === 'string' ? member.skills.split(',').map(s => s.trim()) : member.skills || [],
+              software: typeof member.software === 'string' ? member.software.split(',').map(s => s.trim()) : member.software || []
             }));
-            setShowcase(formattedShowcase);
+            setTeamList(formattedTeam);
           }
+          if (dreamData.software_stack && dreamData.software_stack.length > 0) setSoftwareList(dreamData.software_stack);
           
-          if (data.github_sync && Object.keys(data.github_sync).length > 0) setGithub(data.github_sync);
+          if (dreamData.trusted_clients && dreamData.trusted_clients.length > 0) {
+            const clientsWithIcons = dreamData.trusted_clients.map(client => {
+              let imgUrl = null;
+              if (client.logo_url) imgUrl = client.logo_url;
+              else if (client.image_url) imgUrl = client.image_url;
+              else if (client.image) imgUrl = client.image;
+              else if (client.logo) imgUrl = client.logo;
+              else if (typeof client.icon === 'string' && client.icon.includes('http')) imgUrl = client.icon;
+              if (!imgUrl) {
+                for (const key in client) {
+                  if (typeof client[key] === 'string' && (client[key].startsWith('http') || client[key].includes('supabase.co'))) {
+                    imgUrl = client[key];
+                    break;
+                  }
+                }
+              }
+              if (imgUrl) return { ...client, customImage: imgUrl };
+
+              let iconComponent = <Globe size={32} />;
+              if (client.industry.toLowerCase().includes('health')) iconComponent = <HeartPulse size={32} />;
+              if (client.industry.toLowerCase().includes('property') || client.industry.toLowerCase().includes('real estate')) iconComponent = <Building2 size={32} />;
+              if (client.industry.toLowerCase().includes('commerce')) iconComponent = <ShoppingBag size={32} />;
+              if (client.industry.toLowerCase().includes('media')) iconComponent = <MonitorPlay size={32} />;
+              if (client.industry.toLowerCase().includes('consulting') || client.industry.toLowerCase().includes('finance')) iconComponent = <Briefcase size={32} />;
+              
+              return { ...client, icon: iconComponent };
+            });
+            setClientsList(clientsWithIcons);
+          }
+
+          if (dreamData.photography_shots && dreamData.photography_shots.length > 0) {
+            setPhotographyShots(dreamData.photography_shots);
+          }
         }
 
-        const { data: allResumes, error: resumeError } = await supabase.from('portfolio_resumes').select('*');
-        if (allResumes && !resumeError && allResumes.length > 0) {
-          const aiResume = allResumes.find(res => res.title.toLowerCase().includes('ai') || res.title.toLowerCase().includes('developer') || res.title.toLowerCase().includes('engineer')) || allResumes[0]; 
-          setPageResume(aiResume);
+        const { data: projectData } = await supabase.from('portfolio_projects').select('*').order('created_at', { ascending: false });
+        setProjects(projectData || []);
+
+        const { data: reviewData } = await supabase.from('client_reviews').select('*').order('created_at', { ascending: false });
+        if (reviewData && reviewData.length > 0) {
+          setReviews(reviewData);
         }
-      } catch (err) {
-        console.error('Error fetching AI Developer CMS data:', err.message);
+
+        const { data: allResumes } = await supabase.from('portfolio_resumes').select('*');
+        if (allResumes && allResumes.length > 0) {
+          const graphicResume = allResumes.find(res => res.title.toLowerCase().includes('graphic') || res.title.toLowerCase().includes('artist') || res.title.toLowerCase().includes('dream')) || allResumes[0]; 
+          setPageResume(graphicResume);
+        }
+
+      } catch (error) {
+        console.error('Error fetching CMS data:', error.message);
       }
     };
     fetchData();
@@ -403,560 +559,894 @@ export default function AiDeveloper() {
 
   const scrollToSection = (id) => {
     const targetElement = document.getElementById(id);
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  return (
-    <div ref={containerRef} className="flex flex-col min-h-screen text-slate-100 relative selection:bg-cyan-500/30 selection:text-cyan-200">
-      
-      {/* ================= HIGH-PERFORMANCE CSS BACKGROUND ================= */}
-      <style>{`
-        @keyframes pan-neural {
-          0% { background-position: 0 0, 30px 30px; }
-          100% { background-position: 120px 120px, 150px 150px; }
-        }
-        @keyframes ambient-pulse {
-          0%, 100% { opacity: 0.15; transform: scale(1); }
-          50% { opacity: 0.3; transform: scale(1.05); }
-        }
-        @keyframes data-stream-y {
-          0% { transform: translateY(-200px); }
-          100% { transform: translateY(120vh); }
-        }
-        @keyframes data-stream-x {
-          0% { transform: translateX(-200px); }
-          100% { transform: translateX(120vw); }
-        }
+  const openPortfolioGallery = (subtitle) => {
+    setActivePortfolioSubtitle(subtitle);
+  };
 
-        .stream-y { animation: data-stream-y linear infinite; will-change: transform; }
-        .stream-x { animation: data-stream-x linear infinite; will-change: transform; }
-        .ambient-glow { animation: ambient-pulse ease-in-out infinite; will-change: opacity, transform; }
+  // ================= FIXED EXACT SCROLL WITH GLOW EFFECT =================
+  const handleSubtitleModalClick = (subtitleName) => {
+    // 1. Force unlock screen scrolling immediately (since modal locks it)
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+
+    // 2. Close active popups
+    setActiveCreationPopup(null);
+    setActivePortfolioSubtitle(null); 
+    
+    // 3. Find element and scroll exactly to it
+    setTimeout(() => { 
+      const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
+      const targetElement = document.getElementById(targetId);
+      
+      if (targetElement) {
+        // Calculate precise offset so it's comfortably visible in the viewport
+        const yPosition = targetElement.getBoundingClientRect().top + window.scrollY - 150;
         
-        /* Utility to hide scrollbars elegantly */
+        window.scrollTo({
+          top: yPosition,
+          behavior: 'smooth'
+        });
+        
+        // Add a visual glowing highlight to the specific card
+        targetElement.style.transition = "all 0.5s ease";
+        targetElement.style.boxShadow = "0 0 40px rgba(16,149,210,0.9)";
+        targetElement.style.borderColor = "rgba(16,149,210,1)";
+        targetElement.style.transform = "scale(1.03)";
+        targetElement.style.zIndex = "50";
+        
+        // Remove highlight after 2 seconds
+        setTimeout(() => {
+          targetElement.style.boxShadow = "";
+          targetElement.style.borderColor = "";
+          targetElement.style.transform = "";
+          targetElement.style.zIndex = "";
+        }, 2000);
+
+      } else {
+        // Fallback kung sakaling wala
+        scrollToSection('portfolio-directory');
+      }
+    }, 150); // Very snappy delay
+  };
+
+  const filteredProjects = activePortfolioSubtitle && activePortfolioSubtitle !== 'All Projects'
+    ? projects.filter(p => (p.subtitle || '').toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim() || (p.category || '').toLowerCase().trim() === activePortfolioSubtitle.toLowerCase().trim())
+    : projects;
+
+  const visualProjects = activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' && activePortfolioSubtitle !== null
+    ? [...filteredProjects].reverse() 
+    : filteredProjects;
+
+  const currentPreviewIndex = previewImage ? visualProjects.findIndex(p => p.id === previewImage.id) : -1;
+  const hasNext = currentPreviewIndex !== -1 && currentPreviewIndex < visualProjects.length - 1;
+  const hasPrev = currentPreviewIndex > 0;
+
+  const handleNextImage = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (hasNext) setPreviewImage(visualProjects[currentPreviewIndex + 1]);
+  };
+
+  const handlePrevImage = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (hasPrev) setPreviewImage(visualProjects[currentPreviewIndex - 1]);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!previewImage) return;
+      if (e.key === 'Escape') {
+        setPreviewImage(null);
+        return;
+      }
+      if (e.key === 'ArrowRight') handleNextImage();
+      if (e.key === 'ArrowLeft') handlePrevImage();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [previewImage, currentPreviewIndex, hasNext, hasPrev, visualProjects]);
+
+  return (
+    <div ref={containerRef} className="flex flex-col min-h-screen text-white overflow-x-hidden relative transition-colors duration-[10000ms] animate-nightSkyCycle cursor-none">
+      
+      <div className="fixed inset-0 z-50 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(600px circle at var(--x, 50vw) var(--y, 50vh), rgba(16, 149, 210, 0.08), transparent 40%)' }} />
+
+      <style>{`
+        @keyframes nightSkyCycle {
+          0%   { background-color: #1e1b4b; } 
+          33%  { background-color: #0f172a; } 
+          66%  { background-color: #020617; } 
+          100% { background-color: #050508; } 
+        }
+        .animate-nightSkyCycle { animation: nightSkyCycle 25s ease-in-out infinite alternate; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Floating Animation */
+        @keyframes floating {
+          0%, 100% { transform: translateY(0px) translateX(0px); }
+          50% { transform: translateY(-8px) translateX(4px); }
+        }
 
-        /* Custom Sleek Scrollbar for Chat UI */
-        .chat-scroll::-webkit-scrollbar { width: 6px; }
-        .chat-scroll::-webkit-scrollbar-track { background: rgba(2, 6, 23, 0.4); border-radius: 10px; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.4); border-radius: 10px; }
-        .chat-scroll::-webkit-scrollbar-thumb:hover { background: rgba(168, 85, 247, 0.8); }
+        /* Custom modal scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(16,149,210,0.5); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(16,149,210,0.8); }
       `}</style>
 
-      {/* The STICKY Wrapper */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#02040a]">
-          
-          {/* Neural Network Layer */}
-          <div className="absolute inset-0 opacity-30" style={{
-            backgroundImage: `radial-gradient(rgba(168, 85, 247, 0.4) 2px, transparent 2px), radial-gradient(rgba(6, 182, 212, 0.3) 2px, transparent 2px)`,
-            backgroundSize: '60px 60px',
-            backgroundPosition: '0 0, 30px 30px',
-            animation: 'pan-neural 25s linear infinite'
-          }} />
+      <div className="absolute inset-0 z-0 opacity-80 pointer-events-none">
+        {starsData.map((star) => (
+          <motion.div key={star.id} className="absolute bg-white rounded-full shadow-[0_0_4px_rgba(255,255,255,0.6)]" style={{ top: star.top, left: star.left, width: star.size, height: star.size }} animate={{ opacity: [0.1, 1, 0.1] }} transition={{ duration: star.duration, repeat: Infinity, delay: star.delay, ease: "easeInOut" }} />
+        ))}
+      </div>
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        {cloudsData.map((cloud) => (
+          <motion.div key={cloud.id} className="absolute bg-white/10 blur-[40px] rounded-[100%]" style={{ top: cloud.top, width: `${450 * cloud.scale}px`, height: `${120 * cloud.scale}px` }} animate={{ x: ["110vw", "-50vw"] }} transition={{ duration: cloud.duration, repeat: Infinity, delay: cloud.delay, ease: "linear" }} />
+        ))}
+      </div>
 
-          {/* Hardware-Accelerated High-Speed Data Streams */}
-          <div className="absolute top-0 w-[2px] h-[150px] bg-gradient-to-b from-transparent via-cyan-400 to-transparent opacity-60 stream-y" style={{ left: '15%', animationDuration: '2.5s', animationDelay: '0s' }} />
-          <div className="absolute top-0 w-[2px] h-[200px] bg-gradient-to-b from-transparent via-purple-500 to-transparent opacity-60 stream-y" style={{ left: '45%', animationDuration: '3s', animationDelay: '1.2s' }} />
-          <div className="absolute top-0 w-[2px] h-[100px] bg-gradient-to-b from-transparent via-blue-400 to-transparent opacity-60 stream-y" style={{ left: '85%', animationDuration: '2s', animationDelay: '0.5s' }} />
-          
-          <div className="absolute left-0 h-[2px] w-[200px] bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-60 stream-x" style={{ top: '20%', animationDuration: '4.5s', animationDelay: '1.5s' }} />
-          <div className="absolute left-0 h-[2px] w-[150px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-60 stream-x" style={{ top: '75%', animationDuration: '3.5s', animationDelay: '0.8s' }} />
+      {/* ================= UNIFIED SCROLL-LINKED HERO & CREATIONS ================= */}
+      {/* 150vh forces a compact, fast transition between Hero and Solar System without huge spaces */}
+      <div ref={heroCreationsWrapperRef} className="relative z-10 h-[150vh] w-full">
+        
+        {/* STICKY CONTAINER: Ensures Moon Centers Perfectly */}
+        <div className="sticky top-0 h-[100vh] w-full flex items-center justify-center overflow-hidden">
+           
+           {/* THE MOON (Floating up and down only, NO rotation) */}
+           <motion.div style={{ scale: moonScale, y: moonY }} className="absolute z-10 pointer-events-none">
+             {/* Entrance Drop Animation */}
+             <motion.div initial={{ opacity: 0, y: -100 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, ease: "easeOut" }}>
+               {/* Floating Animation */}
+               <motion.img 
+                 src="/images/moon.png" 
+                 animate={{ y: [-15, 15, -15] }} 
+                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                 className="w-56 h-56 md:w-96 md:h-96 object-contain drop-shadow-[0_0_60px_rgba(16,149,210,0.8)]" 
+               />
+             </motion.div>
+           </motion.div>
 
-          {/* Deep Ambient Glows */}
-          <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] bg-cyan-600/30 rounded-full blur-[120px] ambient-glow" style={{ animationDuration: '8s' }} />
-          <div className="absolute bottom-[10%] right-[5%] w-[600px] h-[600px] bg-purple-600/30 rounded-full blur-[140px] ambient-glow" style={{ animationDuration: '12s', animationDelay: '2s' }} />
-          <div className="absolute top-[40%] right-[30%] w-[400px] h-[400px] bg-blue-600/20 rounded-full blur-[100px] ambient-glow" style={{ animationDuration: '10s', animationDelay: '5s' }} />
-          
+           {/* SOLAR SYSTEM PLANETS (Fades IN as you scroll) */}
+           <motion.div style={{ opacity: creationsOpacity }} className="absolute inset-0 items-center justify-center pointer-events-auto">
+              
+              {/* --- DESKTOP ORBITS --- */}
+              <div className="hidden md:flex absolute inset-0 items-center justify-center">
+                 <div className="absolute w-[440px] h-[440px] rounded-full border border-dashed border-[#1095d2]/40 pointer-events-none" />
+                 <div className="absolute w-[800px] h-[800px] rounded-full border border-dashed border-[#1095d2]/20 pointer-events-none" />
+                 
+                 {/* Inner Planets */}
+                 {innerCategories.map((cat, idx) => {
+                    const angle = (idx / innerCategories.length) * 2 * Math.PI;
+                    const radius = 220; // 440 diameter
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    return (
+                        <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                           <div className="group flex flex-col items-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
+                               <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white hover:bg-[#1095d2] hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.8)] cursor-pointer">
+                                  {cat.icon}
+                               </button>
+                               <span className="absolute top-20 text-[12px] text-white font-bold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full shadow-md pointer-events-none">
+                                  {cat.category}
+                               </span>
+                           </div>
+                        </div>
+                    );
+                 })}
+
+                 {/* Outer Planets */}
+                 {outerCategories.map((cat, idx) => {
+                    const angle = (idx / outerCategories.length) * 2 * Math.PI;
+                    const radius = 400; // 800 diameter
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    return (
+                        <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                           <div className="group flex flex-col items-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
+                               <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white hover:bg-[#1095d2] hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.8)] cursor-pointer">
+                                  {cat.icon}
+                               </button>
+                               <span className="absolute top-20 text-[12px] text-white font-bold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full shadow-md pointer-events-none">
+                                  {cat.category}
+                               </span>
+                           </div>
+                        </div>
+                    );
+                 })}
+              </div>
+
+              {/* --- MOBILE ORBITS --- */}
+              <div className="flex md:hidden absolute inset-0 items-center justify-center mt-[10vh]">
+                 {/* Shrink radius to perfectly fit mobile width without cut-offs */}
+                 <div className="absolute w-[140px] h-[140px] rounded-full border border-dashed border-[#1095d2]/40 pointer-events-none" />
+                 <div className="absolute w-[280px] h-[280px] rounded-full border border-dashed border-[#1095d2]/20 pointer-events-none" />
+                 
+                 {/* Inner Mobile Planets */}
+                 {innerCategories.map((cat, idx) => {
+                    const angle = (idx / innerCategories.length) * 2 * Math.PI;
+                    const radius = 70; // 140 diameter
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    return (
+                        <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                           <div className="flex flex-col items-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
+                               <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.8)] cursor-pointer">
+                                  {cat.icon}
+                               </button>
+                               <span className="absolute top-14 text-[9px] text-white font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full shadow-md pointer-events-none z-10">
+                                  {cat.category}
+                               </span>
+                           </div>
+                        </div>
+                    );
+                 })}
+
+                 {/* Outer Mobile Planets */}
+                 {outerCategories.map((cat, idx) => {
+                    const angle = (idx / outerCategories.length) * 2 * Math.PI;
+                    const radius = 140; // 280 diameter
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    return (
+                        <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                           <div className="flex flex-col items-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
+                               <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.8)] cursor-pointer">
+                                  {cat.icon}
+                               </button>
+                               <span className="absolute top-14 text-[9px] text-white font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full shadow-md pointer-events-none z-10">
+                                  {cat.category}
+                               </span>
+                           </div>
+                        </div>
+                    );
+                 })}
+              </div>
+
+           </motion.div>
+
+           {/* HERO TEXT (Fades OUT as you scroll) */}
+           <motion.div style={{ opacity: heroOpacity }} className="absolute top-[45vh] md:top-[50vh] w-full flex justify-center pointer-events-none z-20">
+              <div className="w-[90%] max-w-4xl backdrop-blur-sm p-6 md:p-8 rounded-3xl border border-white/5 bg-[#020617]/40 shadow-2xl pointer-events-auto text-center">
+                 <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-4 md:mb-8">
+                   Let's make your <br className="hidden md:block" />
+                   <span className="text-[#1095d2] drop-shadow-[0_0_15px_rgba(16,149,210,0.5)]">dream</span> a reality.
+                 </h2>
+                 <p className="text-sm md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">
+                   For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.
+                 </p>
+              </div>
+           </motion.div>
+
+           {/* CREATIONS HEADER TEXT (Fades IN as you scroll) */}
+           <motion.div style={{ opacity: creationsOpacity }} className="absolute top-[8vh] md:top-[12vh] w-full text-center z-20 pointer-events-none">
+              <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
+              <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
+              <p className="text-xs md:text-sm text-white/70 mt-4 max-w-xl mx-auto px-4">
+                Explore our specialized creative categories. Tap a planet to view our specific offerings and jump directly to our past works.
+              </p>
+           </motion.div>
+
         </div>
       </div>
 
-      {/* ================= PAGE CONTENT WRAPPER ================= */}
-      <div className="relative z-10 overflow-x-hidden">
+      <div id="founder-bio" className="scroll-mt-24" />
 
-        {/* ================= 59. HERO SECTION (LOWERED PADDING) ================= */}
-        <section className="relative pt-40 md:pt-48 pb-16 md:pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center">
-          <div className="max-w-5xl mx-auto text-center relative w-full">
-
-            {/* FIXED MOBILE HEADLINE */}
-            <motion.h1 variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}
-              className="text-[32px] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
-              
-              <span className="md:hidden block leading-[1.2]">
-                <span className="block whitespace-nowrap">Building the Future</span>
-                <span className="block whitespace-nowrap">with <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">Code, AI, &</span></span>
-                <span className="block whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">Continuous Learning.</span>
-              </span>
-
-              <span className="hidden md:block leading-tight">
-                Building the Future with <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">Code, AI, & Continuous Learning.</span>
-              </span>
-            </motion.h1>
-
-            {/* FIXED PARAGRAPH */}
-            <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }}
-              className="text-sm md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto mb-10 md:mb-12 space-y-5 md:space-y-6 px-2 md:px-0">
-              <p>
-                <strong>Software engineering is more than writing code.</strong> It is understanding problems, designing scalable solutions, collaborating with intelligent tools, and continuously improving through real-world experience. As an aspiring AI-Assisted Full-Stack Developer, I am building practical applications while learning modern technologies, software architecture, automation, and best development practices.
-              </p>
-              <p className="text-cyan-400 font-medium">
-                This portfolio is my first flagship software engineering project—and the beginning of a much larger journey.
-              </p>
-            </motion.div>
-
-            {/* BUTTONS */}
-            <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.4 }} 
-              className="flex flex-col sm:flex-row justify-center gap-4 relative z-20 mb-16 w-full sm:w-auto px-4 sm:px-0">
-              <button onClick={() => scrollToSection('current-projects')} className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-black text-sm hover:opacity-90 transition-opacity shadow-[0_0_25px_rgba(6,182,212,0.4)] cursor-pointer">
-                View Projects
-              </button>
-              <a href={github.profileUrl} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-black border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600 transition-colors flex items-center justify-center gap-2 text-sm font-semibold">
-                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-                GitHub
-              </a>
-            </motion.div>
-
-            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-16">
-              {stats.map((stat, idx) => (
-                <motion.div 
-                  variants={cardPop} 
-                  key={idx} 
-                  className="p-5 rounded-2xl bg-black/60 border border-slate-800 backdrop-blur-md flex flex-col items-center justify-center hover:border-cyan-500/60 transition-colors group relative overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                  <span className="text-[10px] text-slate-400 uppercase tracking-widest text-center mt-1 font-bold group-hover:text-cyan-300 transition-colors">{stat.label}</span>
-                </motion.div>
-              ))}
-            </motion.div>
-
-          </div>
-        </section>
-
-        {/* ================= 61. LEARNING PHILOSOPHY (CENTERED WAVE SCROLL WITH BLUE/VIOLET FADE) ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
-            
-            {/* CENTERED TEXT CONTENT */}
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="space-y-6 mb-12 z-20">
-              <h3 className="text-3xl font-black text-white">Learning by Building.</h3>
-              <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
-              <div className="text-slate-300 space-y-4 text-sm leading-relaxed max-w-2xl mx-auto">
-                <p>I believe the most effective way to learn software engineering is through practical application.</p>
-                <p>Rather than relying solely on tutorials or theoretical exercises, I build complete projects that challenge me to solve real problems, make architectural decisions, debug unexpected issues, and continuously improve my understanding.</p>
-                <p>Artificial Intelligence plays an important role in this process—not as a replacement for learning, but as a mentor, assistant, reviewer, and productivity tool.</p>
-                <p>Every feature I build is an opportunity to deepen my understanding of software engineering principles while producing something meaningful.</p>
-              </div>
-            </motion.div>
-
-            {/* DYNAMIC SCROLL WAVE LIST */}
-            <div className="w-full flex flex-col gap-3 py-10 relative z-10">
-              {[
-                "Build real projects.", "Understand the code.", "Learn continuously.", "Solve business problems.",
-                "Write maintainable software.", "Design scalable systems.", "Use AI responsibly.", "Embrace debugging.",
-                "Document everything.", "Improve every iteration."
-              ].map((principle, idx) => (
-                <WaveCard key={idx} principle={principle} />
-              ))}
+      {/* ================= MEET THE FOUNDER SECTION ================= */}
+      {/* Reduced top padding since transition from Solar System is very tight now */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-10 md:py-20 z-10 relative border-t border-white/10">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="flex justify-center mb-16">
+          <img src={bannerUrl} alt="Dream Creations Brand Banner" className="w-full max-w-5xl h-auto drop-shadow-[0_0_30px_rgba(16,149,210,0.3)] rounded-3xl border border-white/5 bg-black/40 p-2 md:p-4" />
+        </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="lg:col-span-5 flex justify-center">
+            <div className="relative w-full max-w-md aspect-square rounded-3xl border border-white/10 bg-black/40 overflow-hidden flex items-center justify-center group">
+               <div className="absolute inset-0 bg-gradient-to-tr from-[#1095d2]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+               {founderPhoto ? ( <img src={founderPhoto} alt="Jefferson Gonzales" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" /> ) : ( <div className="w-32 h-32 rounded-full border border-[#1095d2]/50 bg-black/50 flex items-center justify-center text-4xl font-bold text-white shadow-[0_0_30px_rgba(16,149,210,0.3)] z-10 group-hover:scale-105 transition-transform duration-500">JG</div> )}
+               <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 z-10">
+                 <p className="text-[#1095d2] text-xs font-bold uppercase tracking-wider mb-1">Owner & Team Manager</p>
+                 <h4 className="text-white font-bold text-lg">Jefferson Gonzales</h4>
+               </div>
             </div>
-
-          </div>
-        </section>
-
-        {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW (CHAT UI OVERHAUL) ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-5 space-y-6">
-              <h3 className="text-3xl font-black text-white">AI is a Partner, <br/>Not a Replacement.</h3>
-              <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
-              <div className="text-slate-300 space-y-4 text-sm leading-relaxed">
-                <p>Artificial Intelligence is transforming software development. Rather than fearing this change, I embrace AI as a productivity tool that accelerates learning, improves code quality, and helps solve complex technical challenges.</p>
-                <p>However, I believe true software engineering requires understanding the code being written. AI can generate ideas, explain concepts, suggest improvements, and accelerate implementation, but developers remain responsible for architecture, design decisions, debugging, testing, security, maintainability, and long-term scalability.</p>
-                <p className="text-cyan-400 font-semibold bg-cyan-500/10 p-4 rounded-xl border border-cyan-500/20">
-                  My goal is to combine human creativity, critical thinking, and engineering principles with AI-assisted productivity to build better software.
-                </p>
+          </motion.div>
+          <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }} className="lg:col-span-7 space-y-6">
+            <div className="mb-6"><h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">The Person Behind Dream Creations</h3><div className="w-20 h-1 bg-[#1095d2] rounded-full" /></div>
+            <div className="flex flex-wrap gap-2 mb-4">
+               {["Owner", "Creative Director", "Team Manager", "Graphic Designer"].map((role, idx) => ( <span key={idx} className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-medium text-white/80">{role}</span> ))}
+            </div>
+            <div className="space-y-4">
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">Jeff created Dream Creations with the vision of helping businesses communicate more effectively through thoughtful and impactful visual design.</p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">With more than ten years of professional experience, he has worked across multiple industries including healthcare, finance, insurance, technology, apparel, education, e-commerce, printing, media, and real estate.</p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">Inspired by his former team manager, he started building his own team of graphic designers with a vision to empower more dreamers (clients) and creators (designers).</p>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">Today, he continues leading Dream Creations while expanding its capabilities through data analytics, automation, and software development.</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4 pt-4">
+              <div className="p-4 rounded-xl border border-white/10 bg-black/20 hover:border-[#1095d2]/30 transition-colors">
+                <div className="text-2xl font-bold text-[#1095d2] mb-1"><AnimatedNumber value={founderExp} suffix="+" /></div>
+                <div className="text-xs text-white/60 uppercase tracking-wider">Years Experience</div>
               </div>
-            </motion.div>
-
-            {/* AI CHAT UI INTERFACE */}
-            <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
-              className="lg:col-span-7 h-[550px] overflow-y-auto pr-2 border border-slate-800 bg-slate-950/80 p-6 rounded-2xl chat-scroll relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-              <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-[#02040a] to-transparent pointer-events-none z-10" />
-              
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-slate-800 pb-3"><Settings size={14} className="text-purple-400" /> AI Prompts Context Window</h4>
-              
-              {/* USER PROMPT MESSAGE */}
-              <div className="flex gap-3 mb-8 w-full max-w-[90%] ml-auto justify-end">
-                <div className="bg-slate-800/80 border border-slate-700 p-4 rounded-2xl rounded-tr-none text-sm text-slate-200 shadow-md">
-                  <span className="block text-[10px] text-cyan-400 font-mono mb-1">User Prompt</span>
-                  Build a scalable, production-ready web application from scratch. What is your standard AI-assisted engineering workflow?
-                </div>
-                <div className="w-8 h-8 rounded-full bg-cyan-900 border border-cyan-500 flex items-center justify-center text-xs font-bold text-cyan-400 shrink-0 shadow-inner">JG</div>
+              <div className="p-4 rounded-xl border border-white/10 bg-black/20 hover:border-[#1095d2]/30 transition-colors">
+                <div className="text-2xl font-bold text-[#1095d2] mb-1"><AnimatedNumber value={founderProjects} suffix="+" /></div>
+                <div className="text-xs text-white/60 uppercase tracking-wider">Projects Delivered</div>
               </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
-              {/* AI RESPONSE MESSAGE */}
-              <div className="flex gap-3 w-full max-w-[95%]">
-                <div className="w-8 h-8 rounded-full bg-purple-900/30 border border-purple-500/50 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(168,85,247,0.3)] mt-1">
-                  <Sparkles size={14} className="text-purple-400" />
-                </div>
-                <div className="flex-1">
-                  <div className="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl rounded-tl-none shadow-md">
-                    <span className="block text-[10px] text-purple-400 font-mono mb-2">System Response</span>
-                    <p className="text-sm text-slate-300 mb-5 leading-relaxed">
-                      Acknowledged. Initializing AI-Assisted Full-Stack Engineering Protocol. Here is the sequential methodology for execution:
-                    </p>
-                    
-                    <div className="space-y-3 relative border-l border-purple-500/30 ml-2">
-                      {aiWorkflowSteps.map((step, idx) => (
-                        <div key={idx} className="flex items-center gap-3 pl-4 relative group cursor-default">
-                          <div className="absolute left-[-4.5px] top-2 w-2 h-2 rounded-full bg-[#02040a] border border-purple-500/50 group-hover:bg-purple-400 transition-colors shadow-[0_0_10px_rgba(168,85,247,0)] group-hover:shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
-                          <span className="text-xs font-mono text-purple-400/50 group-hover:text-purple-400 transition-colors">[{String(idx+1).padStart(2, '0')}]</span>
-                          <span className="text-sm font-medium text-slate-400 group-hover:text-white transition-colors">{step}</span>
-                        </div>
-                      ))}
+      {/* ================= OUR TEAM ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
+        <div className="mb-16 text-center md:text-left">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Meet the Creators</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+          <p className="text-base text-white/70 mt-4 max-w-2xl">The creative minds driving the studio's vision.</p>
+        </div>
+        <div ref={teamScrollRef} {...teamDragHandlers} className="flex overflow-x-auto gap-8 pb-8 hide-scrollbar snap-x snap-mandatory scroll-smooth cursor-grab active:cursor-grabbing">
+          {teamList.map((member) => (
+            <motion.div key={member.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className={`shrink-0 w-[85vw] md:w-[400px] lg:w-[380px] snap-center rounded-3xl bg-black/30 border border-white/10 backdrop-blur-md overflow-hidden hover:border-[#1095d2]/40 transition-all group flex flex-col h-full ${member.status === 'Hiring' ? 'border-dashed opacity-60 hover:opacity-100' : ''}`}>
+              <div className="p-6 pb-4 border-b border-white/5 relative overflow-hidden pointer-events-none">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#1095d2]/20 to-transparent opacity-50" />
+                <div className="flex gap-5 relative z-10">
+                  <div className="w-24 h-24 rounded-2xl bg-black/50 border border-white/10 overflow-hidden shrink-0 flex items-center justify-center">
+                    {member.photo ? ( <img src={member.photo} alt={member.name} className="w-full h-full object-cover" onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }} /> ) : ( <UserCheck size={32} className="text-white/20" /> )}
+                  </div>
+                  <div className="flex flex-col justify-center">
+                    <div className="flex items-center gap-2 mb-1">
+                       <UserCheck size={14} className={member.status === 'Hiring' ? 'text-white/40' : 'text-[#1095d2]'} />
+                       <span className="text-[10px] text-white/60 uppercase tracking-wider">{member.status}</span>
                     </div>
+                    <h4 className="text-xl font-bold text-white mb-1 leading-tight">{member.name}</h4>
+                    <span className="text-xs text-[#1095d2] font-semibold">{member.availability}</span>
                   </div>
                 </div>
               </div>
+               <div className="px-6 py-4 flex flex-wrap gap-2 pointer-events-none">
+                {member.positions.map((pos, idx) => ( <span key={idx} className="px-2.5 py-1 rounded-md bg-white/5 border border-white/5 text-[10px] text-white/80">{pos}</span> ))}
+              </div>
+              <div className="px-6 py-2 pointer-events-none">
+                <p className={`text-sm leading-relaxed ${member.status === 'Hiring' ? 'text-white/30 italic' : 'text-white/70'}`}>{member.bio}</p>
+              </div>
+              <div className="px-6 py-4 space-y-4 flex-grow border-b border-white/5 pointer-events-none">
+                <div>
+                  <h5 className="text-[10px] text-white/40 uppercase tracking-widest mb-2 font-semibold">Core Skills</h5>
+                  <div className="text-xs text-white/80 leading-relaxed">{member.skills.join(" • ")}</div>
+                </div>
+                <div>
+                  <h5 className="text-[10px] text-white/40 uppercase tracking-widest mb-2 font-semibold">Software Expertise</h5>
+                  <div className="text-xs text-white/80 leading-relaxed">{member.software.join(" • ")}</div>
+                </div>
+              </div>
+              <div className="p-6 bg-black/20 mt-auto flex items-center justify-between">
+                <div className="flex items-center gap-2 text-white/60"><Award size={16} /><span className="text-xs font-semibold">{member.experience}</span></div>
+                <div className="flex gap-2">
+                  <a href={member.portfolioUrl} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#1095d2] flex items-center justify-center transition-colors cursor-pointer relative z-20"><LinkIcon size={14} className="text-white" /></a>
+                </div>
+              </div>
             </motion.div>
+          ))}
+        </div>
+      </section>
 
+      {/* ================= FEATURED CLIENTS ================= */}
+      <section className="max-w-7xl mx-auto w-full px-0 py-20 z-10 relative border-t border-white/10">
+        <div className="mb-12 text-center px-6">
+          <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Our Valued Dreamers</h3>
+          <div className="w-16 h-1 bg-[#1095d2] rounded-full mx-auto" />
+          <p className="text-sm text-white/60 mt-4 max-w-2xl mx-auto">Delivered and delivering premium visual solutions across diverse industries.</p>
+        </div>
+        <div className="relative w-full">
+          <div ref={clientsScrollRef} {...clientsDragHandlers} className="flex overflow-x-auto gap-4 py-4 hide-scrollbar w-full relative z-20 cursor-grab active:cursor-grabbing px-6">
+            {[...clientsList, ...clientsList, ...clientsList, ...clientsList].map((client, index) => (
+              <div key={`${client.id}-${index}`} className="shrink-0 w-44 md:w-48 group flex flex-col items-center justify-center p-6 rounded-2xl border border-white/5 bg-black/20 hover:bg-black/40 hover:border-[#1095d2]/30 active:bg-black/40 active:border-[#1095d2]/30 transition-all duration-300 text-center">
+                <div className="text-[#1095d2] md:text-white/40 group-hover:text-[#1095d2] group-active:text-[#1095d2] transition-colors duration-300 mb-4 h-16 flex items-center justify-center w-full">
+                  {client.customImage ? ( <img src={client.customImage} alt={client.name} className="max-h-full max-w-full object-contain grayscale-0 opacity-100 md:grayscale md:opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-active:grayscale-0 group-active:opacity-100 transition-all duration-300 pointer-events-none" /> ) : ( client.icon )}
+                </div>
+                <h4 className="text-sm font-bold text-white mb-1 leading-tight select-none">{client.name}</h4>
+                <p className="text-[10px] text-white/50 uppercase tracking-wider select-none">{client.industry}</p>
+              </div>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ================= 65. AI ECOSYSTEM (GRID LAYOUT REVERTED) ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
-          <div className="max-w-7xl mx-auto">
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-              <h3 className="text-3xl font-black text-white mb-4">AI Ecosystem & Future Integrations</h3>
-              <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
-              <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed">
-                A dynamic network of artificial intelligence models, frameworks, and tools functioning harmoniously to enhance engineering productivity and system intelligence.
-              </p>
-            </motion.div>
-
-            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {aiPartners.map((ai, idx) => (
-                <motion.div variants={cardPop} key={idx} className="p-6 rounded-2xl bg-slate-950/60 border border-slate-900 flex flex-col hover:border-purple-500/50 hover:bg-purple-500/5 transition-all group shadow-lg backdrop-blur-sm">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-xl border border-slate-800 bg-black flex items-center justify-center relative overflow-hidden shrink-0 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-                      {ai.customImage ? (
-                        <img src={ai.customImage} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10" 
-                             onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
-                      ) : null}
-                      <Settings size={20} className={`text-slate-700 absolute inset-0 m-auto z-0 ${ai.customImage ? 'hidden' : 'block'}`} />
-                    </div>
-                    <h4 className={`text-base font-bold transition-colors ${ai.name.includes("Learning") ? "text-purple-300/80 group-hover:text-purple-300" : "text-white group-hover:text-purple-400"}`}>
-                      {ai.name}
-                    </h4>
+      {/* ================= TESTIMONIALS ================= */}
+      <section className="max-w-7xl mx-auto w-full px-0 py-20 z-10 relative border-t border-white/10">
+        <div className="mb-12 text-center md:text-left px-6">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Client Feedback</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+          <p className="text-base text-white/70 mt-4 max-w-2xl">What our partners and clients have to say about the Dream Creations experience.</p>
+        </div>
+        <div className="relative w-full">
+          <div ref={feedbackScrollRef} {...feedbackDragHandlers} className="flex overflow-x-auto gap-6 py-4 hide-scrollbar w-full relative z-20 cursor-grab active:cursor-grabbing px-6">
+            {reviews.length > 0 ? (
+              [...reviews, ...reviews, ...reviews, ...reviews].map((testimonial, index) => (
+                <div key={`review-${testimonial.id || index}-${index}`} className="shrink-0 w-[85vw] md:w-[400px] p-8 rounded-3xl bg-black/20 border border-white/10 backdrop-blur-md flex flex-col relative group hover:border-[#1095d2]/40 transition-colors">
+                  <Quote size={40} className="text-[#1095d2]/10 absolute top-6 right-6 group-hover:text-[#1095d2]/20 transition-colors pointer-events-none" />
+                  <div className="flex gap-1 mb-6 text-[#1095d2] pointer-events-none">
+                    {[...Array(testimonial.rating)].map((_, i) => ( <Star key={i} size={14} fill="currentColor" /> ))}
                   </div>
-                  <p className="text-xs text-slate-400 leading-relaxed flex-grow group-hover:text-slate-300 transition-colors">{ai.role}</p>
-                </motion.div>
-              ))}
-            </motion.div>
+                  <p className="text-sm text-white/80 leading-relaxed mb-8 flex-grow italic select-none">"{testimonial.feedback}"</p>
+                  <div className="flex items-center gap-4 mt-auto pointer-events-none">
+                    {testimonial.face_image_url ? ( <img src={testimonial.face_image_url} alt={testimonial.client_name} className="w-10 h-10 rounded-full object-cover border border-white/10" /> ) : ( <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 border border-white/5">{testimonial.client_name.charAt(0)}</div> )}
+                    <div>
+                      <h4 className="text-sm font-bold text-white leading-tight">{testimonial.client_name}</h4>
+                      <p className="text-[10px] text-white/50">{testimonial.project_type} • {testimonial.company}</p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : ( <div className="w-full py-16 text-center text-slate-500 font-mono text-sm border border-dashed border-white/10 rounded-2xl mx-6">No client testimonials have been published yet.</div> )}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE (100% BUG-FREE FRAMER MOTION HORIZONTAL SCROLL) ================= */}
-        <section ref={archScrollRef} className="h-[400vh] relative bg-black/40 border-t border-slate-900">
-          <div className="sticky top-0 h-[100dvh] w-full flex flex-col justify-center items-center overflow-hidden backdrop-blur-md pt-24 pb-8 md:py-0">
-            
-            {/* HEADER */}
-            <div className="text-center px-4 shrink-0 w-full max-w-4xl mx-auto md:mt-16">
-              <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Architecture Pipeline</h3>
-              <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
-              <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed hidden md:block">
-                A structured, horizontal engineering flowchart detailing every phase of my development process—from initial planning to post-deployment monitoring.
-              </p>
-              <p className="md:hidden mt-4 text-[10px] text-purple-400 font-mono tracking-widest opacity-70 animate-pulse">(Scroll down to navigate timeline)</p>
-            </div>
+      <div id="portfolio-directory" className="scroll-mt-24" />
 
-            {/* FRAMER MOTION EXACT HORIZONTAL TRACK */}
-            <div className="relative h-20 md:h-28 w-full mt-6 md:mt-10 shrink-0 overflow-hidden">
-              {/* xTransform precisely shifts this container based on scroll */}
-              <motion.div style={{ x: xTransform }} className="absolute top-0 bottom-0 left-[50vw] flex items-center">
+      {/* ================= UNIFIED PORTFOLIO DIRECTORY ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-screen">
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
+          <div className="text-center md:text-left">
+            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Archive</h3>
+            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+            <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are pulled directly from our live CMS.</p>
+          </div>
+          <button 
+            onClick={() => openPortfolioGallery('All Projects')} 
+            className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20"
+          >
+            View Full Archive
+          </button>
+        </div>
+
+        <div className="space-y-16 relative z-20">
+          {creationsCategories.map((cat) => (
+            <div key={cat.id} className="pt-4">
+              <h4 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-white/10 pb-3 inline-block flex items-center gap-3">
+                {cat.icon} {cat.category}
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {cat.items.map((subtitle, idx) => {
                   
-                  {/* Background Line Container */}
-                  <div className="absolute top-1/2 left-0 h-[2px] bg-slate-800 -translate-y-1/2 z-0" style={{ width: `${(architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
+                  // Exact ID generation that matches what we click
+                  const elementId = subtitle.toLowerCase().replace(/\s+/g, '-');
+                  const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
+                  const hasWork = !!latestProjectWithImage;
                   
-                  {/* Glowing Violet Line (Fills based on Scroll) */}
-                  <motion.div style={{ width: lineWidthTransform }} className="absolute top-1/2 left-0 h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-0 origin-left" />
-
-                  {/* Nodes positioned absolutely relative to left-[50vw] */}
-                  {architecture.map((stack, idx) => {
-                    const isActive = activeArchTab === idx;
-                    const isPassed = activeArchTab >= idx;
-
+                  if (!hasWork) {
                     return (
-                      <div key={idx} className="absolute top-1/2 -translate-y-1/2 flex flex-col items-center w-48 -translate-x-24" style={{ left: `${idx * gapSize}px` }}>
-                        
-                        {/* BOX VIEW POINT */}
-                        <div className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] ${isActive ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' : isPassed ? 'border-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)]' : 'border-slate-700'}`}>
-                          {/* Inner Blinking Box */}
-                          {isActive && <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-purple-400 animate-ping" />}
-                          {isPassed && !isActive && <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-purple-500" />}
-                        </div>
-
-                        {/* Label */}
-                        <span className={`absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center transition-colors duration-300 ${isActive ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : isPassed ? 'text-slate-300' : 'text-slate-600'}`}>
-                          {stack.category}
-                        </span>
+                      <div key={idx} id={elementId} className="relative rounded-2xl border border-dashed border-white/10 bg-black/20 flex flex-col items-start justify-center p-5 text-left min-h-[100px] cursor-not-allowed">
+                        <span className="text-[#1095d2]/80 text-[8px] font-mono font-bold uppercase tracking-widest mb-1.5 bg-[#1095d2]/10 px-2 py-0.5 rounded">Available • No Work Yet</span>
+                        <h4 className="text-white/50 font-bold text-sm leading-tight">{subtitle}</h4>
                       </div>
                     );
-                  })}
-              </motion.div>
-            </div>
+                  }
 
-            {/* DYNAMIC CONTENT BOX (Enlarged App-Style Icons) */}
-            <div className="w-full max-w-4xl mx-auto px-4 md:px-6 shrink-0 mt-4 md:mt-8 pb-4">
-              <AnimatePresence mode="wait">
-                {architecture[activeArchTab] && (
-                  <motion.div
-                    key={activeArchTab}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-full h-auto min-h-[250px] p-6 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative"
-                  >
-                    {/* Subtle Glowing Top Border */}
-                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
-
-                    <h4 className="text-base md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10">
-                      <span className="text-slate-600 mr-2">[{String(activeArchTab + 1).padStart(2, '0')}]</span>
-                      {architecture[activeArchTab].category} Stack
-                    </h4>
-                    
-                    {/* APP ICONS GRID */}
-                    <div className="flex flex-wrap justify-center gap-6 md:gap-10 pb-2">
-                      {architecture[activeArchTab].items?.map((tool, i) => {
-                        const isLearning = tool.name.toLowerCase().includes('(learning)');
-                        const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
-                        
-                        return (
-                          <div key={i} className="flex flex-col items-center gap-3 w-20 md:w-28 group">
-                            {/* App-like Square Icon Box */}
-                            <div className={`w-16 h-16 md:w-24 md:h-24 rounded-[1.2rem] md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
-                              {tool.customImage ? (
-                                <img src={tool.customImage} alt={cleanName} className="w-8 h-8 md:w-12 md:h-12 object-contain drop-shadow-md group-hover:scale-110 transition-transform" onError={(e) => e.target.style.display='none'} />
-                              ) : (
-                                <Settings className={`w-8 h-8 md:w-12 md:h-12 group-hover:scale-110 transition-transform ${isLearning ? 'text-purple-500' : 'text-cyan-500'}`} />
-                              )}
-                              
-                              {/* Overlay Learning Badge */}
-                              {isLearning && (
-                                <div className="absolute -bottom-2.5 px-2 py-0.5 bg-purple-900 border border-purple-400 text-purple-200 text-[9px] md:text-[10px] rounded-full uppercase tracking-widest shadow-md whitespace-nowrap">
-                                  Learning
-                                </div>
-                              )}
-                            </div>
-                            <span className="text-xs md:text-sm font-semibold text-slate-300 text-center leading-tight mt-1">
-                              {cleanName}
-                            </span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-          </div>
-        </section>
-
-        {/* ================= 67.5 MODERN WEB EXPERIENCES ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
-          <div className="max-w-5xl mx-auto">
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-              <h3 className="text-3xl md:text-4xl font-black text-white mb-4">✨ Modern Web Experiences</h3>
-              <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
-              <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed">
-                Beyond functional code, I focus on crafting immersive, high-performance digital experiences that engage users through motion, aesthetics, and smooth interactivity.
-              </p>
-            </motion.div>
-
-            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="flex flex-wrap justify-center gap-3 md:gap-4">
-              {webExperiences.map((exp, idx) => {
-                const isLearning = exp.toLowerCase().includes('(learning)');
-                const cleanName = exp.replace(/\(learning\)/i, '').trim();
-                return (
-                  <motion.div key={idx} variants={cardPop} className={`px-4 py-2.5 rounded-xl border flex items-center gap-2 backdrop-blur-sm transition-all hover:-translate-y-1 cursor-default shadow-lg ${isLearning ? 'bg-purple-950/30 border-purple-500/30 text-purple-300 hover:border-purple-400 hover:shadow-[0_0_20px_rgba(168,85,247,0.2)]' : 'bg-cyan-950/20 border-cyan-500/30 text-cyan-300 hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]'}`}>
-                    {isLearning ? <GraduationCap size={14} className="text-purple-500" /> : <Sparkles size={14} className="text-cyan-500" />}
-                    <span className="text-xs md:text-sm font-bold tracking-wide">{cleanName}</span>
-                    {isLearning && <span className="ml-1 text-[9px] bg-purple-500/20 border border-purple-500/30 text-purple-400 px-1.5 py-0.5 rounded uppercase tracking-wider">Learning</span>}
-                  </motion.div>
-                )
-              })}
-            </motion.div>
-          </div>
-        </section>
-
-        {/* ================= 68. CURRENT PROJECTS ================= */}
-        <section id="current-projects" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
-          <div className="max-w-7xl mx-auto">
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-              <h3 className="text-3xl font-black text-white mb-4">Engineering Showcase</h3>
-              <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
-            </motion.div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {showcase.map((project) => {
-                if (project.type === "flagship") {
+                  const coverImage = latestProjectWithImage.featured_image_url;
                   return (
-                    <motion.div key={project.id} variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
-                      className="lg:col-span-2 p-8 rounded-3xl bg-slate-950/80 border border-slate-800 flex flex-col h-full relative overflow-hidden hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] transition-all group backdrop-blur-md">
-                      <div className="absolute top-4 right-4 px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] uppercase font-black tracking-wider rounded shadow-[0_0_10px_rgba(6,182,212,0.2)]">{project.badge}</div>
-                      <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2 block">{project.meta}</span>
-                      <h4 className="text-2xl font-black text-white mb-4 group-hover:text-cyan-300 transition-colors">{project.title}</h4>
-                      <p className="text-sm text-slate-300 leading-relaxed mb-6">{project.desc}</p>
+                    <button key={idx} id={elementId} onClick={() => openPortfolioGallery(subtitle)} className="relative h-48 rounded-2xl overflow-hidden group cursor-pointer border border-white/10 text-left transition-all duration-500">
+                      {isVideo(coverImage) ? (
+                        <video key={coverImage} src={`${coverImage}#t=0.1`} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                      ) : (
+                        <img key={coverImage} src={coverImage} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
+                      <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
                       
-                      <h5 className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-3">Technologies Managed</h5>
-                      <div className="flex flex-wrap gap-2 mb-8">
-                        {project.tech.map((tech, i) => (
-                          <span key={i} className="px-2.5 py-1 rounded bg-black border border-slate-800 text-xs text-slate-300 font-medium group-hover:border-cyan-500/50 transition-colors">{tech}</span>
-                        ))}
+                      <div className="absolute inset-0 p-6 flex flex-col justify-end pointer-events-none">
+                        <span className="text-[#1095d2] text-[10px] font-black uppercase tracking-wider mb-2">View Works</span>
+                        <h4 className="text-white font-bold text-xl group-hover:text-[#1095d2] transition-colors">{subtitle}</h4>
                       </div>
-                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-800">
-                         <span className="text-xs text-cyan-400 font-bold">Role: {project.role}</span>
-                         <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-xs text-white/80 hover:text-cyan-400 flex items-center gap-1 font-bold">{project.actionText} <ExternalLink size={14}/></a>
-                      </div>
-                    </motion.div>
+                    </button>
                   );
-                } else {
-                  return (
-                    <motion.div key={project.id} variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.2 }}
-                      className="p-6 rounded-3xl border border-dashed border-slate-700 bg-black/60 flex flex-col justify-between h-full opacity-80 hover:opacity-100 hover:border-purple-500/50 transition-all backdrop-blur-md">
-                      <div>
-                        <Layers className="text-purple-400 mb-4" size={28} />
-                        <h4 className="text-lg font-bold text-white mb-2">{project.title}</h4>
-                        <p className="text-xs text-slate-400 leading-relaxed">{project.desc}</p>
-                      </div>
-                      <div className="pt-6 border-t border-slate-800/60 text-[11px] text-purple-400/80 font-mono flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" /> {project.status}
-                      </div>
-                    </motion.div>
-                  );
-                }
-              })}
+                })}
+              </div>
             </div>
-          </div>
-        </section>
+          ))}
+        </div>
+      </section>
 
-        {/* ================= 69. GITHUB SYSTEM (STATE ATTACHED) ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
-          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
-             <div className="flex flex-col sm:flex-row items-center gap-5 justify-between mb-6">
-                <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-white font-bold text-lg border border-slate-700 shadow-inner">JG</div>
-                   <div>
-                      <h4 className="text-base font-bold text-white flex items-center gap-2">
-                        {github.name} 
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" className="text-slate-500"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-                      </h4>
-                      <p className="text-xs text-slate-500">github.com/{github.username}</p>
-                   </div>
-                </div>
-                <span className="text-[10px] px-2 py-1 border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 rounded uppercase font-mono shadow-[0_0_10px_rgba(6,182,212,0.2)]">{github.badgeText}</span>
-             </div>
-             
-             <div className="h-32 bg-black border border-slate-900 rounded-xl flex items-center justify-center text-xs text-slate-700 font-mono relative overflow-hidden p-2 md:p-4">
-                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #334155 1px, transparent 1px), linear-gradient(to bottom, #334155 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
-                
-                {github.username ? (
-                   <>
-                      <img 
-                         src={`https://ghchart.rshah.org/06b6d4/${github.username}`} 
-                         alt={`${github.username} GitHub Chart`} 
-                         className="relative z-10 w-full h-full object-cover md:object-contain opacity-90 drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]"
-                         onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'block';
-                         }}
-                      />
-                      <span className="relative z-10 hidden text-zinc-500 animate-pulse">
-                         [Live Sync API Unavailable - Connection Retrying...]
-                      </span>
-                   </>
-                ) : (
-                   <span className="relative z-10">{github.matrixPlaceholder}</span>
-                )}
-             </div>
-          </motion.div>
-        </section>
-
-        {/* ================= 71. VISION STATEMENT ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900/80 text-center bg-black/20">
-          <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto">
-             <Quote size={40} className="text-purple-500/30 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
-             <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Vision Statement</h2>
-             <p className="text-base md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto">
-               My long-term goal is to become a software engineer who combines creativity, business understanding, data analytics, automation, and artificial intelligence to build meaningful digital products. 
-               <br/><br/>
-               Rather than specializing in only one discipline, I aim to bridge multiple fields and create solutions that are technically sound, visually polished, data-informed, and genuinely valuable to businesses and communities.
-             </p>
-          </motion.div>
-        </section>
-
-        {/* ================= PAGE RESUME DOWNLOAD ================= */}
-        {pageResume && (
-          <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center border-t border-slate-900/80 bg-black/20">
-            <motion.a
-              href={pageResume.file_url || pageResume.pdf_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.02 }}
-              className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-cyan-500/10 to-slate-900 border border-cyan-500/30 hover:border-cyan-500 transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(6,182,212,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.25)]"
-            >
-              <div className="w-12 h-12 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
-                <Download size={20} />
-              </div>
-              <div className="text-left">
-                <span className="text-[10px] text-slate-400 uppercase tracking-widest block font-semibold mb-0.5">Download Professional Resume</span>
-                <span className="text-sm md:text-base font-bold text-white group-hover:text-cyan-400 transition-colors block">
-                  {pageResume.title || 'AI Developer Resume'}
-                </span>
-              </div>
-            </motion.a>
-          </section>
-        )}
-
-        {/* ================= 72. TRANSITION TO CONTACT ================= */}
-        <section className="w-full relative border-t border-slate-900 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
+      {/* ================= BONUS: VISIONS THROUGH THE LENS (PHOTOGRAPHY) ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-10 z-10 relative border-t border-white/10 mt-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative rounded-3xl overflow-hidden group cursor-pointer border border-[#1095d2]/20 bg-black/40 min-h-[300px] flex items-center justify-center shadow-[0_0_30px_rgba(16,149,210,0.15)]"
+          onClick={() => setIsPhotographyOpen(true)}
+        >
+          <div 
+            className="absolute inset-0 bg-cover bg-center opacity-20 group-hover:opacity-40 group-hover:scale-105 transition-all duration-700 grayscale group-hover:grayscale-0" 
+            style={{ 
+              backgroundImage: `url(${photographyShots[0]?.url || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1600&auto=format&fit=crop'})` 
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
           
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/90 to-[#0c0c0e] z-[-1]" />
+          <div className="absolute inset-0 bg-white opacity-0 group-hover:animate-flash pointer-events-none" />
+          <style>{`
+            @keyframes flash {
+              0% { opacity: 0; }
+              10% { opacity: 0.8; }
+              100% { opacity: 0; }
+            }
+            .group-hover\\:animate-flash:hover { animation: flash 1s ease-out; }
+          `}</style>
 
-          <div className="max-w-4xl mx-auto text-center relative z-20">
-            <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
-                Every Project Begins with a Conversation.
-              </h2>
-              <p className="text-base md:text-lg text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-                Elegant neutral tones welcome you into the final hub. Animated code environments give way to a personal invitation. Connect with Jefferson Gonzales to transform creative and analytical inspiration into measurable operational opportunity.
-              </p>
-              
-              <div className="flex flex-wrap items-center justify-center gap-4">
-                <button onClick={() => window.location.href = '/contact'}
-                  className="px-8 py-4 rounded-xl bg-white text-black font-black text-sm hover:bg-slate-200 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] flex items-center gap-2 cursor-pointer relative z-20">
-                  Contact Us <Mail size={16} />
-                </button>
-                
-                <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  className="px-8 py-4 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-white font-bold text-sm transition-colors flex items-center gap-2 backdrop-blur-md cursor-pointer relative z-20">
-                  <ArrowUp size={16} /> Back to Top 
-                </button>
+          <div className="relative z-10 text-center p-8 max-w-2xl">
+            <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center justify-center mx-auto mb-4 group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]/50 group-hover:text-[#1095d2] transition-colors duration-300">
+              <Camera size={28} className="text-white/80 group-hover:text-[#1095d2]" />
+            </div>
+            <h3 className="text-sm font-mono text-[#1095d2] uppercase tracking-widest font-bold mb-2">A Creative Outlet</h3>
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-4">Visions Through the Lens</h2>
+            <p className="text-sm text-white/60 leading-relaxed mb-6">
+              Beyond the canvas of digital design lies my rawest creative outlet. This isn't a formal service, but a personal gallery—a bonus glimpse into how I capture and compose reality through a camera lens.
+            </p>
+            <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-wider group-hover:bg-[#1095d2] transition-colors">
+              Enter Gallery <ArrowRight size={14} />
+            </span>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ================= SOFTWARE EXPERTISE ================= */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 mt-10">
+        <div className="mb-12 text-center md:text-left">
+          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Software Expertise</h3>
+          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+          <p className="text-base text-white/70 mt-4 max-w-2xl">Proficient across the industry's leading creative and management tools.</p>
+        </div>
+        <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6">
+          {softwareList.map((tool, index) => (
+            <motion.div key={tool.id} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: index * 0.05 }} className="flex flex-col items-center gap-3 w-24 sm:w-28 group">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-white/5 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 overflow-hidden bg-black/40 hover:border-[#1095d2]/40">
+                <img src={tool.imageSrc} alt={tool.name} className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
               </div>
+              <span className="text-[10px] md:text-xs text-center font-semibold text-white/60 group-hover:text-white transition-colors">{tool.name}</span>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ================= CREATIVE PROCESS (GSAP PINNED SCROLL) ================= */}
+      <section 
+        ref={processSectionRef} 
+        className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mt-20 md:mt-32 mb-960 md:mb-730"
+      >
+        <div className="h-screen flex flex-col justify-center pt-16 md:pt-24 pb-24">
+          <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
+            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Creative Process</h3>
+            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
+            <p className="text-base text-white/70 mt-4 max-w-2xl">Journey through our structured, transparent workflow.</p>
+          </div>
+          
+          <div ref={processTrackRef} className="flex items-center gap-4 px-6 md:px-12 w-max pb-8 flex-nowrap">
+            {creativeProcess.map((item, index) => (
+              <React.Fragment key={item.step}>
+                <div className="shrink-0 w-64 p-6 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-md flex flex-col items-center text-center relative hover:bg-black/50 hover:border-[#1095d2]/50 transition-colors group shadow-lg select-none">
+                  <div className="w-10 h-10 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center text-sm font-black mb-4 group-hover:scale-110 group-hover:bg-[#1095d2] group-hover:text-white transition-all shadow-[0_0_15px_rgba(16,149,210,0.3)] pointer-events-none">{item.step}</div>
+                  <h4 className="text-base font-bold text-white mb-2 leading-tight group-hover:text-[#1095d2] transition-colors pointer-events-none">{item.title}</h4>
+                  <p className="text-xs text-white/50 leading-snug pointer-events-none">{item.desc}</p>
+                </div>
+                {index < creativeProcess.length - 1 && (
+                  <div className="shrink-0 text-[#1095d2]/30 flex items-center justify-center px-2 pointer-events-none">
+                    <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}><ArrowRight size={24} /></motion.div>
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ================= PRICING / PROJECT INVESTMENT ================= */}
+      <section className="max-w-4xl mx-auto w-full px-6 py-24 z-10 relative text-center mt-10 border-t border-white/10">
+        <div className="mb-12"><h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Investment</h3><div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" /></div>
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="p-10 md:p-14 rounded-3xl border border-[#1095d2]/20 bg-gradient-to-b from-[#1095d2]/10 to-black/40 backdrop-blur-md relative overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-[#1095d2]/20 blur-[80px] -z-10 pointer-events-none" />
+          <div className="w-16 h-16 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center mx-auto mb-6"><Calculator size={32} /></div>
+          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">Custom Tailored <span className="text-[#1095d2]">Quotations</span></h2>
+          <p className="text-base text-white/70 mb-8 max-w-xl mx-auto">Every dream is unique. Rather than offering rigid pricing tiers, we provide tailored quotations based exactly on your specific project requirements, timeline, and requested deliverables. Let's discuss your vision.</p>
+          <button onClick={() => window.location.href = '/contact'} className="px-8 py-4 rounded-xl bg-[#1095d2] text-white font-bold text-sm hover:bg-[#0c7ab0] transition-colors shadow-[0_0_20px_rgba(16,149,210,0.4)] hover:shadow-[0_0_30px_rgba(16,149,210,0.6)] group cursor-pointer relative z-20">Request a Quote</button>
+        </motion.div>
+      </section>
+
+      {/* ================= PAGE RESUME DOWNLOAD ================= */}
+      {pageResume && (
+        <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center border-t border-white/10 mt-10">
+          <motion.a href={pageResume.file_url || pageResume.pdf_url} target="_blank" rel="noopener noreferrer" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} whileHover={{ scale: 1.02 }} className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-[#1095d2]/20 to-black/40 border border-[#1095d2]/30 hover:border-[#1095d2] transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(16,149,210,0.15)] hover:shadow-[0_0_30px_rgba(16,149,210,0.3)]">
+            <div className="w-12 h-12 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0"><Download size={20} /></div>
+            <div className="text-left">
+              <span className="text-[10px] text-white/50 uppercase tracking-widest block font-semibold mb-0.5">Download Professional Resume</span>
+              <span className="text-sm md:text-base font-bold text-white group-hover:text-[#1095d2] transition-colors block">{pageResume.title || 'Dream Creations Resume'}</span>
+            </div>
+          </motion.a>
+        </section>
+      )}
+
+      {/* ================= TRANSITION TO THE NEXT JOURNEY ================= */}
+      <section className="w-full relative border-t border-white/10 mt-16 pt-32 pb-32 px-6 overflow-hidden z-10 flex flex-col items-center text-center">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#021f1a] to-[#011410] -z-10" />
+        <div className="max-w-3xl mx-auto relative z-20">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="flex flex-col items-center">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-8"><Database size={14} /> The Next Chapter</div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight mb-8">Evolution of <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Design & Data.</span></h2>
+            <div className="space-y-6 text-base md:text-lg text-slate-300 mb-12 leading-relaxed">
+              <p>Every stage of my career builds upon the previous one. The transition from a creative professional to a data-driven analyst reflects my evolution from crafting visual stories to uncovering the insights that drive them.</p>
+              <p>The next chapter introduces my journey into Data Analytics, where structured logic, reporting, and dashboarding converge with creative problem-solving.</p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+              <button onClick={() => window.location.href = '/data-analyst'} className="w-full sm:w-auto px-8 py-4 rounded-xl bg-emerald-500 text-black font-bold text-sm hover:bg-emerald-400 transition-colors shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 cursor-pointer relative z-20">Continue as Data Analyst <ArrowRight size={16} /></button>
+              <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-sm transition-colors flex items-center justify-center gap-2 backdrop-blur-md cursor-pointer relative z-20"><ArrowUp size={16} /> Back to Top</button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ================= BLUE CIRCULAR MODAL WITH RANDOM SCATTERED SUBTITLES ================= */}
+      <AnimatePresence>
+        {activeCreationPopup && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden pointer-events-auto">
+            
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setActiveCreationPopup(null)} className="absolute inset-0 bg-black/80 backdrop-blur-md cursor-pointer" />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.5 }} 
+              animate={{ opacity: 1, scale: 1 }} 
+              exit={{ opacity: 0, scale: 0.5 }} 
+              // SOLID DARK BLUE BACKGROUND
+              className="relative w-[95vw] h-[95vw] max-w-[600px] max-h-[600px] bg-gradient-to-br from-blue-950 to-[#020617] rounded-full border-2 border-blue-400/50 shadow-[0_0_80px_rgba(59,130,246,0.6)] flex items-center justify-center"
+            >
+              <button onClick={() => setActiveCreationPopup(null)} className="absolute top-[8%] right-[15%] text-white/50 hover:text-white z-50 transition-colors cursor-pointer p-2 bg-blue-900/40 rounded-full border border-blue-400/30"><X size={20} /></button>
+
+              {/* Title pinned at the top inner part of the circle */}
+              <div className="absolute top-[12%] md:top-[15%] left-0 w-full flex flex-col items-center text-center shrink-0 z-20 pointer-events-none">
+                 <div className="text-blue-300 mb-1 scale-125 drop-shadow-md">{activeCreationPopup.icon}</div>
+                 <h3 className="text-sm md:text-lg font-black text-white leading-tight uppercase tracking-wider drop-shadow-md">{activeCreationPopup.category}</h3>
+              </div>
+
+              {/* Randomized Bubbles constrained strictly within the circle */}
+              <div className="absolute inset-0 z-20 pointer-events-none mt-12 md:mt-16">
+                {randomModalPositions.map((pos, idx) => {
+                   const item = activeCreationPopup.items[idx];
+                   if (!item) return null;
+
+                   return (
+                     <motion.button 
+                        key={idx}
+                        whileHover={{ scale: 1.15, zIndex: 50, filter: "brightness(1.2)" }}
+                        onClick={() => handleSubtitleModalClick(item)}
+                        // Applying the random Math offset calculated from useEffect
+                        style={{ left: `calc(50% + ${pos.x}%)`, top: `calc(50% + ${pos.y}%)`, transform: 'translate(-50%, -50%)' }}
+                        className={`absolute rounded-full border ${pos.colorClass} text-white flex items-center justify-center text-center p-3 shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-all cursor-pointer pointer-events-auto backdrop-blur-md w-[80px] h-[80px] md:w-[100px] md:h-[100px] hover:shadow-[0_0_20px_rgba(59,130,246,0.8)]`}
+                     >
+                        <span className="text-[9px] md:text-[11px] font-bold leading-tight break-words line-clamp-3">{item}</span>
+                     </motion.button>
+                   );
+                })}
+              </div>
+
             </motion.div>
           </div>
-        </section>
+        )}
+      </AnimatePresence>
 
-      </div>
+      {/* ================= PORTFOLIO SUBTITLE GALLERY FULL-SCREEN MODAL ================= */}
+      <AnimatePresence>
+        {activePortfolioSubtitle && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+            className="fixed inset-0 z-[150] flex flex-col bg-[#050508]/95 backdrop-blur-2xl overflow-hidden pointer-events-auto"
+          >
+            <div className="absolute inset-0 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16, 149, 210, 0.1), transparent 80%)' }} />
+            
+            <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10 relative z-10 shrink-0 bg-black/40 pointer-events-auto">
+              <div>
+                <h2 className="text-lg md:text-2xl font-black text-white tracking-widest uppercase">
+                  {activePortfolioSubtitle === 'All Projects' ? 'Full Archive' : `Viewing: ${activePortfolioSubtitle}`}
+                </h2>
+              </div>
+              <button 
+                onClick={() => setActivePortfolioSubtitle(null)} 
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 shrink-0 pointer-events-auto"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar relative z-10 pointer-events-auto">
+              
+              {activePortfolioSubtitle === 'Watercolor Portraits' && (
+                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 p-5 rounded-2xl bg-[#1095d2]/10 border border-[#1095d2]/30 backdrop-blur-md max-w-4xl">
+                  <div className="flex items-start gap-3">
+                    <Info className="text-[#1095d2] shrink-0 mt-0.5" size={20} />
+                    <p className="text-sm text-white/80 leading-relaxed"><strong className="text-white">Creative Process:</strong> Merging different raw images, enhancing picture quality, seamlessly combining images into a single, proportional composition, and applying watercolor filters. Some includes adjustments like changing body parts or clothing.</p>
+                  </div>
+                </motion.div>
+              )}
+
+              {activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' ? (
+                <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5 block">
+                  {visualProjects.length > 0 ? (
+                    visualProjects.map((project) => (
+                      <div 
+                        key={project.id} 
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPreviewImage(project); }}
+                        className="break-inside-avoid relative w-full cursor-pointer group overflow-hidden border border-white/5 bg-[#050508] block rounded-none pointer-events-auto"
+                      >
+                        {project.featured_image_url ? ( 
+                          isVideo(project.featured_image_url) ? (
+                            <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
+                          ) : (
+                            <img src={project.featured_image_url} alt={project.title} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
+                          )
+                        ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
+                        
+                        {/* YouTube / Video Link Overlay for Masonry Layout */}
+                        {project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && (
+                          <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                            <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
+                              <MonitorPlay size={24} className="ml-1" />
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 z-20 pointer-events-none">
+                          <h4 className="text-white font-bold text-sm leading-tight truncate">{project.title}</h4>
+                          <p className="text-[#1095d2] text-[10px] font-mono truncate">{project.client_name}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : ( <div className="w-full break-inside-avoid py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm bg-black/40 border border-white/10"><ImageIcon size={32} className="mb-4 opacity-30" />No works uploaded for this category yet.</div> )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredProjects.length > 0 ? (
+                    filteredProjects.map((project) => (
+                      <div 
+                        key={project.id} 
+                        onClick={() => {
+                          const pTitle = (project.title || '').toLowerCase();
+                          const pCat = (project.category || '').toLowerCase();
+                          const pDesc = (project.description || '').toLowerCase();
+                          
+                          if (pTitle.includes('profile') || pCat.includes('profile') || pDesc.includes('company profile') || pTitle.includes('brochure') || pCat.includes('brochure') || pDesc.includes('brochure')) {
+                            let prefix = 'page-'; let pages = 91; let extension = 'jpg'; 
+                            if (project.video_url && typeof project.video_url === 'string' && project.video_url.includes(',')) {
+                               const parts = project.video_url.split(','); prefix = parts[0].trim(); pages = parseInt(parts[1].trim()) || 91; if (parts[2]) extension = parts[2].trim().replace('.', ''); 
+                            }
+                            setActiveFlipbookConfig({ prefix, totalPages: pages, extension }); setIsFlipbookOpen(true); setFlipbookCurrentPage(0);
+                          } else {
+                            setPreviewImage(project);
+                          }
+                        }}
+                        className="relative rounded-2xl border border-white/10 bg-black/40 overflow-hidden group hover:border-[#1095d2]/50 transition-colors cursor-pointer pointer-events-auto"
+                      >
+                         <div className="aspect-video relative overflow-hidden bg-black/60">
+                           {project.featured_image_url ? ( 
+                             isVideo(project.featured_image_url) ? (
+                               <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
+                             ) : (
+                               <img key={project.featured_image_url} src={project.featured_image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
+                             )
+                           ) : ( <div className="absolute inset-0 flex items-center justify-center text-white/20"><ImagePlaceholder size={48} /></div> )}
+                           
+                           {/* YouTube / Video Play Overlay for Grid Layout */}
+                           {project.video_url && typeof project.video_url === 'string' && !project.video_url.includes(',') && !(project.title || '').toLowerCase().includes('profile') && !(project.title || '').toLowerCase().includes('brochure') && (
+                             <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                               <div className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,149,210,0.6)] group-hover:scale-110 transition-transform">
+                                 <MonitorPlay size={24} className="ml-1" />
+                               </div>
+                             </div>
+                           )}
+                         </div>
+                         <div className="p-6">
+                            <h4 className="text-lg font-bold text-white mb-1 group-hover:text-[#1095d2] transition-colors">{project.title}</h4>
+                            <p className="text-xs text-[#1095d2] font-mono mb-4">{project.client_name || 'Independent Project'}</p>
+                            <p className="text-sm text-white/60 line-clamp-3 leading-relaxed">{project.description}</p>
+                         </div>
+                      </div>
+                    ))
+                  ) : ( <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/40 font-mono text-sm border border-dashed border-white/10 rounded-2xl"><ImageIcon size={32} className="mb-4 opacity-30" />No projects have been published to this archive category yet.</div> )}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= PAGE CURL PHYSICS FLIPBOOK MODAL ================= */}
+      <AnimatePresence>
+        {isFlipbookOpen && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md pointer-events-auto">
+            <div className="absolute top-6 right-6 z-50 flex items-center gap-4 pointer-events-auto">
+              <span className="text-xs font-mono text-white/40 hidden sm:block">Click page edges or drag to turn</span>
+              <button onClick={() => setIsFlipbookOpen(false)} className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"><X size={20} /></button>
+            </div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <div className="flex-grow w-full flex items-center justify-center px-4 max-h-[80vh] cursor-grab active:cursor-grabbing mt-8">
+                <HTMLFlipBook width={500} height={700} size="stretch" minWidth={300} maxWidth={800} minHeight={400} maxHeight={1000} maxShadowOpacity={0.6} showCover={true} mobileScrollSupport={true} className="mx-auto shadow-[0_0_50px_rgba(0,0,0,0.8)]" ref={flipBookRef} usePortrait={true} onFlip={onPageFlip}>
+                  {Array.from({ length: activeFlipbookConfig.totalPages }, (_, i) => ( <BookPage key={i} number={i + 1} imageUrl={getFlipbookUrl(i + 1, activeFlipbookConfig.prefix, activeFlipbookConfig.extension)} /> ))}
+                </HTMLFlipBook>
+              </div>
+              <div className="flex items-center gap-6 bg-black/40 border border-white/10 backdrop-blur-md px-6 py-3 rounded-full relative z-20 mt-8 mb-4 shadow-xl pointer-events-auto">
+                <button onClick={goPrevPage} className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer"><ChevronLeft size={24} /></button>
+                <span className="text-xs font-mono font-bold tracking-widest text-zinc-400 uppercase select-none min-w-[100px] text-center">Page {flipbookPage + 1} / {activeFlipbookConfig.totalPages}</span>
+                <button onClick={goNextPage} className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors cursor-pointer"><ChevronRight size={24} /></button>
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= POPUP MODAL NAVIGATION (YOUTUBE CINEMA SUPPORTED) ================= */}
+      <AnimatePresence>
+        {previewImage && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.3 } }} className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md cursor-pointer pointer-events-auto" onClick={() => setPreviewImage(null)}>
+            <div className="absolute top-6 right-6 z-50 flex items-center gap-4 pointer-events-auto">
+              <span className="text-xs font-mono text-white/40 hidden sm:block">Click anywhere to close</span>
+              <button onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }} className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"><X size={20} /></button>
+            </div>
+            {hasPrev && ( <button onClick={handlePrevImage} className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400] cursor-pointer pointer-events-auto"><ChevronLeft size={24} /></button> )}
+            {hasNext && ( <button onClick={handleNextImage} className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-white/10 text-white border border-white/10 hidden md:flex items-center justify-center transition-colors z-[400] cursor-pointer pointer-events-auto"><ChevronRight size={24} /></button> )}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[500] flex items-center gap-4 bg-black/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+              <button onClick={() => setZoomScale(prev => Math.max(prev - 0.5, 1))} className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"><span className="text-2xl leading-none -mt-0.5">−</span></button>
+              <span className="text-xs font-mono font-bold text-white/80 w-12 text-center select-none">{Math.round(zoomScale * 100)}%</span>
+              <button onClick={() => setZoomScale(prev => Math.min(prev + 0.5, 4))} className="w-8 h-8 flex items-center justify-center text-white hover:text-[#1095d2] transition-colors bg-white/5 hover:bg-white/10 rounded-full cursor-pointer"><span className="text-2xl leading-none -mt-0.5">+</span></button>
+            </div>
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="relative w-full h-full flex items-center justify-center pointer-events-none px-4">
+              <AnimatePresence mode="wait">
+                {(() => {
+                  const p = previewImage;
+                  const vUrl = p.video_url;
+                  const iUrl = p.featured_image_url;
+                  
+                  // ULTIMATE YOUTUBE SCANNER
+                  let ytId = null;
+                  if (vUrl && typeof vUrl === 'string') {
+                    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+                    const match = vUrl.match(regExp);
+                    if (match && match[2] && match[2].length === 11) {
+                      ytId = match[2];
+                    }
+                  }
+
+                  if (ytId) {
+                    return (
+                      <motion.div key={`yt-${p.id}`} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.2 }} className="w-full max-w-5xl aspect-video relative z-10 pointer-events-auto shadow-[0_0_50px_rgba(0,0,0,0.8)] rounded-2xl overflow-hidden bg-black">
+                        <iframe src={`https://www.youtube.com/embed/${ytId}?autoplay=1`} className="w-full h-full border-0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowFullScreen />
+                      </motion.div>
+                    );
+                  } else if (vUrl && typeof vUrl === 'string' && isVideo(vUrl) && !vUrl.includes(',')) {
+                    return (
+                      <motion.video key={`vid-${p.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={vUrl} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing relative z-10 pointer-events-auto" autoPlay controls playsInline loop onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
+                    );
+                  } else if (iUrl && isVideo(iUrl)) {
+                    return (
+                      <motion.video key={`vid-${p.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={iUrl} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing relative z-10 pointer-events-auto" autoPlay controls playsInline loop onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
+                    );
+                  } else {
+                    return (
+                      <motion.img key={`img-${p.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1, scale: zoomScale }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} src={iUrl} className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing select-none pointer-events-auto relative z-10" alt="Preview" onClick={(e) => { e.stopPropagation(); }} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} drag={zoomScale > 1 ? true : "x"} dragConstraints={zoomScale > 1 ? { left: -300, right: 300, top: -300, bottom: 300 } : { left: 0, right: 0 }} dragElastic={zoomScale > 1 ? 0.2 : 0.7} onDragEnd={(e, { offset }) => { if (zoomScale > 1) return; if (offset.x < -70) handleNextImage(e); else if (offset.x > 70) handlePrevImage(e); }} />
+                    );
+                  }
+                })()}
+              </AnimatePresence>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 🚀 Custom 3D Spaceship Cursor */}
+      <motion.div className="fixed top-0 left-0 w-16 h-16 z-[9999] pointer-events-none drop-shadow-[0_20px_20px_rgba(16,149,210,0.6)]" style={{ x: smoothX, y: smoothY, rotateX: rotateX, rotateY: rotateY, rotateZ: rotateZ, perspective: 800 }}>
+        <motion.div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-4 h-6 bg-gradient-to-t from-transparent via-orange-500 to-yellow-300 rounded-full blur-[2px] z-0" animate={{ y: [0, 10], scale: [1, 1.5], opacity: [0.8, 0] }} transition={{ duration: 0.3, repeat: Infinity, ease: "easeOut" }} />
+        <motion.div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/40 rounded-full blur-md z-0" animate={{ y: [0, 20], scale: [1, 3], opacity: [0.4, 0] }} transition={{ duration: 0.6, repeat: Infinity, ease: "easeOut", delay: 0.1 }} />
+        <img src="/images/spaceship.png" alt="Spaceship Cursor" className="w-full h-full object-contain relative z-10" />
+      </motion.div>
+
     </div>
   );
 }
