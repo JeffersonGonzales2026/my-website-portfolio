@@ -1,6 +1,6 @@
 // src/pages/DreamCreations.jsx
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity } from 'framer-motion';
+import { motion, AnimatePresence, useInView, animate, useMotionValue, useSpring, useTransform, useVelocity, useScroll } from 'framer-motion';
 import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Building2, HeartPulse, ShoppingBag, Briefcase, Globe, MonitorPlay, Palette, Info, LayoutGrid, Eye, Mail, Fingerprint, Share2, FileText, Video, MousePointerClick, PictureInPicture, Shirt, Printer, Box, Pencil, X, ArrowRight, Star, Quote, Calculator, ArrowLeft, Image as ImagePlaceholder, Award, Clock, Link as LinkIcon, UserCheck, ArrowUp, Database, Download, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
@@ -62,7 +62,7 @@ const creationsCategories = [
   { id: 3, category: "Video Editing", icon: <Video size={14} />, items: ["Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", "Podcast Editing", "Testimonial Videos", "Tutorial Videos", "Video Thumbnails"] },
   { id: 4, category: "Motion Graphics", icon: <PictureInPicture size={14} />, items: ["Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"] },
   { id: 5, category: "Web Graphics", icon: <MousePointerClick size={14} />, items: ["Landing Page Graphics", "eCommerce Graphics", "Website Banners", "Hero Banners", "UI Graphics", "Icons", "Email Graphics", "WordPress Assets", "Blog Graphics", "Web Illustrations"] },
-  { id: 6, category: "Marketing & Corporate Graphics", icon: <Briefcase size={14} />, items: ["Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"] },
+  { id: 6, category: "Marketing & Corporate", icon: <Briefcase size={14} />, items: ["Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"] },
   { id: 7, category: "Marketing Materials", icon: <FileText size={14} />, items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations", "Posters", "Banners", "Sales Sheets", "Product Sheets"] },
   { id: 8, category: "Packaging Design", icon: <Box size={14} />, items: ["Packaging Graphics", "Product Labels", "Clothing Labels", "Box Packaging", "Bottle Labels", "Pouch Packaging", "Food Packaging", "Cosmetic Packaging"] },
   { id: 9, category: "Photo Editing", icon: <ImageIcon size={14} />, items: ["Photo Retouching", "Photo Restoration", "Background Removal", "Photo Manipulation", "Color Correction", "Product Photo Enhancement", "Watercolor Portraits"] },
@@ -160,6 +160,14 @@ export default function DreamCreations() {
   // ================= GSAP REFS =================
   const processSectionRef = useRef(null);
   const processTrackRef = useRef(null);
+
+  // ================= SCROLL FOR SOLAR SYSTEM =================
+  const topSectionRef = useRef(null);
+  const { scrollYProgress: topScrollYProgress } = useScroll({
+    target: topSectionRef,
+    offset: ["start start", "end center"]
+  });
+  const moonScale = useTransform(topScrollYProgress, [0, 0.4, 0.8], [1, 0.9, 0.45]);
 
   // PURE GSAP SCROLL-JACKING LOGIC
   useGSAP(() => {
@@ -643,43 +651,75 @@ export default function DreamCreations() {
         ))}
       </div>
 
-      {/* ================= HERO SECTION ================= */}
-      <section className="relative pt-40 pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center text-center z-10">
-        <motion.div initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }} transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }} className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10" />
-        <motion.div initial={{ y: 150, scale: 0.5, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }} className="-mt-12 mb-16 relative" >
-          <motion.div animate={{ y: [-15, 15, -15], rotate: [-3, 3, -3] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
-            <img src="/images/moon.png" alt="Dream Creations Moon" className="w-40 h-40 object-contain drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]" />
-          </motion.div>
-        </motion.div>
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="max-w-4xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl border border-transparent z-10">
-          <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">Let's make your{' '}<br className="hidden md:block" /><span className="text-[#1095d2]">dream</span> a reality.</h2>
-          <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
-            <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.</p>
+      {/* ================= HERO & CREATIONS (SOLAR SYSTEM WRAPPER) ================= */}
+      <div ref={topSectionRef} className="relative w-full">
+        
+        {/* Sticky Moon Wrapper (Tracks scroll and docks exactly at the center of Creations) */}
+        <div className="absolute top-0 left-0 w-full h-[calc(100%-250px)] sm:h-[calc(100%-350px)] md:h-[calc(100%-480px)] lg:h-[calc(100%-550px)] pointer-events-none z-0">
+          <div className="sticky top-[25vh] md:top-[30vh] w-full flex justify-center items-center pointer-events-none">
+            <motion.div initial={{ y: 150, scale: 0.5, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }} className="relative z-10">
+              <motion.div style={{ scale: moonScale }}>
+                <motion.div animate={{ y: [-15, 15, -15], rotate: [-3, 3, -3] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
+                  <img src="/images/moon.png" alt="Dream Creations Moon" className="w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]" />
+                </motion.div>
+              </motion.div>
+            </motion.div>
           </div>
-        </motion.div>
-      </section>
-
-      <div id="creations-grid" className="scroll-mt-24" />
-
-      {/* ================= CREATIONS SECTION ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
-        <div className="mb-12 text-center md:text-left">
-          <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
-          <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-          <p className="text-base text-white/70 mt-4 max-w-2xl">Explore our specialized creative categories. Click any box to view our specific offerings and jump directly to our past works.</p>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-0.0">
-          {creationsCategories.map((category, index) => {
-            const isGlowing = randomGlowIndex === index;
-            return (
-              <motion.button key={category.id} onClick={() => setActiveCreationPopup(category)} whileHover={{ scale: 1.05, borderColor: "rgba(16,149,210,1)", backgroundColor: "rgba(16,149,210,0.3)", boxShadow: "0 0 30px rgba(16,149,210,0.8)" }} className="p-2 h-20 rounded-xl bg-black/30 border border-white/10 backdrop-blur-md transition-all duration-300 group flex flex-col items-center justify-center text-center shadow-lg cursor-pointer relative z-20">
-                <div className={`transition-all duration-500 mb-1 ${isGlowing ? 'text-[#1095d2] scale-125 drop-shadow-[0_0_8px_rgba(16,149,210,0.8)]' : 'text-white/60 group-hover:text-[#1095d2] group-hover:scale-110'}`}>{category.icon}</div>
-                <h4 className={`text-[10px] font-bold transition-all duration-500 leading-tight px-1 ${isGlowing ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]' : 'text-white/90 group-hover:text-white'}`}>{category.category}</h4>
-              </motion.button>
-            );
-          })}
-        </div>
-      </section>
+
+        {/* HERO SECTION */}
+        <section className="relative pt-40 pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center text-center z-10 pointer-events-auto">
+          <motion.div initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }} transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }} className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10" />
+          
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="max-w-4xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl border border-transparent z-10 mt-40 md:mt-56">
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">Let's make your{' '}<br className="hidden md:block" /><span className="text-[#1095d2]">dream</span> a reality.</h2>
+            <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
+              <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.</p>
+            </div>
+          </motion.div>
+        </section>
+
+        <div id="creations-grid" className="scroll-mt-24" />
+
+        {/* CREATIONS SECTION (SOLAR SYSTEM LAYOUT) */}
+        <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 pointer-events-auto flex flex-col items-center">
+          <div className="mb-4 text-center">
+            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
+            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
+            <p className="text-base text-white/70 mt-4 max-w-2xl mx-auto">Explore our specialized creative categories. Click any planet to view our specific offerings and jump directly to our past works.</p>
+          </div>
+          
+          <div className="relative w-full max-w-[340px] sm:max-w-[550px] md:max-w-[700px] lg:max-w-[800px] aspect-square mx-auto mt-12 mb-12 flex items-center justify-center">
+            {/* Orbit Rings */}
+            <div className="absolute inset-0 rounded-full border border-white/5 pointer-events-none" style={{ scale: '0.9' }} />
+            <div className="absolute inset-0 rounded-full border border-[#1095d2]/20 pointer-events-none shadow-[inset_0_0_40px_rgba(16,149,210,0.1)] animate-[spin_60s_linear_infinite]" style={{ scale: '0.6' }} />
+            <div className="absolute inset-0 rounded-full border border-white/5 pointer-events-none" style={{ scale: '0.3' }} />
+
+            {/* Planets (Categories) */}
+            {creationsCategories.map((category, index) => {
+              const total = creationsCategories.length;
+              const angle = (index * (360 / total) - 90) * (Math.PI / 180);
+              const radius = 45; // 45% of the container size
+              const left = 50 + radius * Math.cos(angle);
+              const top = 50 + radius * Math.sin(angle);
+              const isGlowing = randomGlowIndex === index;
+
+              return (
+                <motion.button
+                  key={category.id}
+                  onClick={() => setActiveCreationPopup(category)}
+                  whileHover={{ scale: 1.15, zIndex: 50, borderColor: "rgba(16,149,210,0.8)", backgroundColor: "rgba(16,149,210,0.3)" }}
+                  style={{ left: `${left}%`, top: `${top}%` }}
+                  className="absolute w-[72px] h-[72px] sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/60 border border-white/10 backdrop-blur-md transition-all duration-300 flex flex-col items-center justify-center text-center shadow-[0_0_15px_rgba(16,149,210,0.15)] cursor-pointer z-20 group"
+                >
+                  <div className={`transition-all duration-500 mb-1 ${isGlowing ? 'text-[#1095d2] scale-125 drop-shadow-[0_0_8px_rgba(16,149,210,0.8)]' : 'text-white/60 group-hover:text-[#1095d2] group-hover:scale-110'}`}>{category.icon}</div>
+                  <h4 className={`text-[7px] sm:text-[9px] md:text-[10px] lg:text-xs font-bold transition-all duration-500 leading-tight px-1 sm:px-2 ${isGlowing ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]' : 'text-white/90 group-hover:text-white'}`}>{category.category}</h4>
+                </motion.button>
+              );
+            })}
+          </div>
+        </section>
+      </div>
 
       <div id="founder-bio" className="scroll-mt-24" />
 
@@ -961,7 +1001,7 @@ export default function DreamCreations() {
       {/* ================= CREATIVE PROCESS (GSAP PINNED SCROLL) ================= */}
       <section 
         ref={processSectionRef} 
-        className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mt-20 md:mt-32 mb-960 md:mb-730"
+        className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mt-20 md:mt-32 mb-[960px] md:mb-[730px]"
       >
         <div className="h-screen flex flex-col justify-center pt-16 md:pt-24 pb-24">
           <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
