@@ -1,7 +1,7 @@
 // src/pages/AiDeveloper.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate, useScroll, useTransform } from 'framer-motion';
-import { Cpu, Terminal, Layers, ArrowUp, CheckCircle2, ArrowDown, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Palette, Briefcase, LineChart, Rocket, Sparkles } from 'lucide-react';
+import { Cpu, Layers, ArrowUp, CheckCircle2, ArrowDown, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useMobileBack } from '../hooks/useMobileBack';
 
@@ -39,6 +39,7 @@ const WaveCard = ({ principle }) => {
   // At 0.5 (element is at the exact center of viewport), apply the Violet Spotlight
   const scale = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.85, 1.15, 0.85]);
   const opacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.3, 1, 0.3]);
+  const zIndex = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0, 10, 0]); // Pop over other cards
   
   const borderColor = useTransform(
     scrollYProgress, 
@@ -73,8 +74,8 @@ const WaveCard = ({ principle }) => {
   return (
     <motion.div 
       ref={ref}
-      style={{ scale, opacity, borderColor, backgroundColor, boxShadow }}
-      className="p-5 md:p-6 rounded-2xl border flex items-center gap-5 backdrop-blur-md w-full max-w-lg mx-auto"
+      style={{ scale, opacity, borderColor, backgroundColor, boxShadow, zIndex }}
+      className="p-5 md:p-6 rounded-2xl border flex items-center gap-5 backdrop-blur-md w-full max-w-lg mx-auto relative origin-center"
     >
       <motion.div style={{ color: iconColor }} className="shrink-0">
         <CheckCircle2 size={28} style={{ filter: 'drop-shadow(0px 0px 8px currentColor)' }} />
@@ -568,7 +569,7 @@ export default function AiDeveloper() {
               </motion.div>
 
               {/* DYNAMIC SCROLL WAVE LIST */}
-              <div className="lg:col-span-7 flex flex-col gap-6 py-[20vh] relative z-10">
+              <div className="lg:col-span-7 flex flex-col gap-2 py-[40vh] relative z-10">
                 {[
                   "Build real projects.", "Understand the code.", "Learn continuously.", "Solve business problems.",
                   "Write maintainable software.", "Design scalable systems.", "Use AI responsibly.", "Embrace debugging.",
@@ -582,83 +583,8 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 62. DEVELOPMENT JOURNEY TIMELINE (ZIG-ZAG) ================= */}
-        <section id="learning-timeline" className="py-32 px-6 relative border-t border-slate-900/80 bg-black/20">
-          <div className="max-w-5xl mx-auto">
-            
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-24">
-              <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Journey</h3>
-              <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
-            </motion.div>
-
-            <div className="relative">
-              {/* Glowing Center Line */}
-              <div className="absolute left-[28px] md:left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-cyan-500 via-purple-500 to-slate-900 md:-translate-x-1/2 opacity-40 shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
-
-              {timeline.map((item, idx) => {
-                const isEven = idx % 2 === 0;
-                const text = (item.year + " " + item.desc).toLowerCase();
-                
-                // Dynamic Visual Logic based on Keywords
-                let Icon = CheckCircle2;
-                let glowClass = "border-slate-800 group-hover:border-cyan-500/50";
-                let yearColor = "text-cyan-400";
-                let iconColor = "text-cyan-400";
-                
-                if (text.includes("future")) {
-                  Icon = Rocket;
-                  glowClass = "border-purple-500/50 shadow-[0_0_30px_rgba(168,85,247,0.15)] group-hover:border-purple-400";
-                  yearColor = "text-purple-400";
-                  iconColor = "text-purple-400";
-                } else if (text.includes("current")) {
-                  Icon = Terminal;
-                  glowClass = "border-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.15)] group-hover:border-cyan-400";
-                } else if (text.includes("graphic")) {
-                  Icon = Palette;
-                } else if (text.includes("bachelor") || text.includes("bsit")) {
-                  Icon = GraduationCap;
-                } else if (text.includes("dream creations") || text.includes("freelance")) {
-                  Icon = Briefcase;
-                } else if (text.includes("data analyst")) {
-                  Icon = LineChart;
-                } else if (text.includes("milestone") || text.includes("portfolio")) {
-                  Icon = Layers;
-                }
-
-                return (
-                  <motion.div 
-                    variants={fadeSlideUp} 
-                    initial="hidden" 
-                    whileInView="visible" 
-                    viewport={{ once: true, margin: "-50px" }} 
-                    transition={{ delay: 0.1 }} 
-                    key={idx} 
-                    className={`relative flex flex-col md:flex-row items-center w-full mb-12 ${isEven ? 'md:flex-row-reverse' : ''} group`}
-                  >
-                    {/* Central Icon */}
-                    <div className={`absolute left-[28px] md:left-1/2 w-12 h-12 -translate-x-1/2 bg-[#02040a] border-2 ${glowClass.includes('purple') ? 'border-purple-500' : 'border-cyan-500'} rounded-full flex items-center justify-center z-20 shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-transform duration-300 group-hover:scale-110`}>
-                      <Icon size={20} className={iconColor} />
-                    </div>
-
-                    {/* Card Container */}
-                    <div className={`ml-[70px] md:ml-0 w-[calc(100%-70px)] md:w-[45%] ${isEven ? 'md:pl-12 md:text-left' : 'md:pr-12 md:text-right'}`}>
-                      <div className={`p-6 md:p-8 rounded-3xl bg-slate-950/60 border ${glowClass} backdrop-blur-md transition-all duration-300 group-hover:bg-slate-900/80`}>
-                        <span className={`${yearColor} font-black text-sm md:text-base tracking-widest mb-3 block uppercase drop-shadow-sm`}>{item.year}</span>
-                        <p className="text-sm md:text-base text-slate-400 leading-relaxed whitespace-pre-line group-hover:text-slate-200 transition-colors">
-                          {item.desc}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-
         {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW (CHAT UI OVERHAUL) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
-          {/* Changed items-start to items-center to fix the empty gap on the left */}
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-5 space-y-6">
@@ -760,7 +686,6 @@ export default function AiDeveloper() {
                   const y = Math.sin(angle) * radius;
                   
                   return (
-                     // Fixed: Translate Wrapper separate from Animating Node
                      <div key={`inner-${idx}`} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
                          <div className="group flex flex-col items-center justify-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
                             
