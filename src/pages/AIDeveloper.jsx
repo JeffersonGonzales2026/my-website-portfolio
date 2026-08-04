@@ -665,10 +665,18 @@ export default function AiDeveloper() {
                 </div>
                 <span className="text-[10px] px-2 py-1 border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 rounded uppercase font-mono shadow-[0_0_10px_rgba(6,182,212,0.2)]">{github.badgeText}</span>
              </div>
-             <div className="h-32 bg-black border border-slate-900 rounded-xl flex items-center justify-center text-xs text-slate-700 font-mono relative overflow-hidden">
+             <div className="h-32 bg-black border border-slate-900 rounded-xl flex items-center justify-center text-xs text-slate-700 font-mono relative overflow-hidden p-2 md:p-4">
                 <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #334155 1px, transparent 1px), linear-gradient(to bottom, #334155 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
-                <span className="relative z-10">{github.matrixPlaceholder}</span>
-             </div>
+                {github.username ? (
+                  <img 
+                    src={`https://ghchart.rshah.org/06b6d4/${github.username}`} 
+                    alt={`${github.username} GitHub Chart`} 
+                    className="relative z-10 w-full h-full object-cover md:object-contain opacity-90 drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]"
+                  />
+                ) : (
+                  <span className="relative z-10">{github.matrixPlaceholder}</span>
+                )}
+              </div>
           </motion.div>
         </section>
 
