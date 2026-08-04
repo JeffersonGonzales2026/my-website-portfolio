@@ -165,12 +165,13 @@ export default function DreamCreations() {
   const topSectionRef = useRef(null);
   const { scrollYProgress: topScrollYProgress } = useScroll({
     target: topSectionRef,
-    offset: ["start start", "end center"]
+    offset: ["start start", "end end"]
   });
   
-  // Maps position: from 25vh ABOVE center (Hero) down to exactly 0vh (Center of Solar System)
-  const moonY = useTransform(topScrollYProgress, [0, 1], ["-25vh", "0vh"]);
-  const moonScale = useTransform(topScrollYProgress, [0, 1], [1, 0.75]);
+  // Smoothly Map the Moon from high above the solar system (-100vh) right down to the center (0vh)
+  const smoothProgress = useSpring(topScrollYProgress, { stiffness: 100, damping: 25, restDelta: 0.001 });
+  const moonY = useTransform(smoothProgress, [0, 1], ["-100vh", "0vh"]);
+  const moonScale = useTransform(smoothProgress, [0, 1], [1.3, 0.75]);
 
   // PURE GSAP SCROLL-JACKING LOGIC
   useGSAP(() => {
@@ -657,17 +658,6 @@ export default function DreamCreations() {
       {/* ================= HERO & CREATIONS (SOLAR SYSTEM WRAPPER) ================= */}
       <div ref={topSectionRef} className="relative w-full flex flex-col">
         
-        {/* Scroll-Tracking Moon Container (Stays visually centered in viewport) */}
-        <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-20 overflow-hidden">
-          <div className="sticky top-0 w-full h-screen flex justify-center items-center pointer-events-none">
-            <motion.div style={{ y: moonY, scale: moonScale }} className="relative z-10 flex flex-col items-center">
-              <motion.div animate={{ y: [-15, 15, -15], rotate: [-3, 3, -3] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
-                <img src="/images/moon.png" alt="Dream Creations Moon" className="w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]" />
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-
         {/* HERO SECTION */}
         <section className="relative min-h-[90vh] flex flex-col items-center justify-center text-center z-10 pt-48 pb-20 px-6">
           <motion.div initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }} transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }} className="absolute top-1/2 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10" />
@@ -699,6 +689,16 @@ export default function DreamCreations() {
             {/* Inner Orbital Ring */}
             <div className="absolute inset-0 m-auto w-[55%] h-[55%] rounded-full border border-[#1095d2]/20 border-dashed animate-[spin_60s_linear_reverse_infinite] pointer-events-none" />
 
+            {/* THE MOON */}
+            <motion.div 
+              style={{ y: moonY, scale: moonScale }} 
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center pointer-events-none"
+            >
+              <motion.div animate={{ y: [-15, 15, -15], rotate: [-3, 3, -3] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
+                <img src="/images/moon.png" alt="Dream Creations Moon" className="w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]" />
+              </motion.div>
+            </motion.div>
+
             {/* Inner Planets (First 4 Categories) */}
             {creationsCategories.slice(0, 4).map((category, index) => {
               // Angles: -45, 45, 135, 225 (Creates an X pattern)
@@ -712,17 +712,17 @@ export default function DreamCreations() {
                 <motion.div
                   key={category.id}
                   style={{ left: `${left}%`, top: `${top}%` }}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 md:gap-1.5 z-30 group cursor-pointer"
+                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 z-30 group cursor-pointer"
                   onClick={() => setActiveCreationPopup(category)}
-                  animate={{ y: [0, -6, 0], x: [0, 3, 0] }}
-                  transition={{ duration: 4 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 3 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
                   whileHover={{ scale: 1.15, zIndex: 100 }}
                 >
-                  <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-[#050b14] border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 shadow-[0_0_15px_rgba(16,149,210,0.2)] group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]'}`}>
-                    <span className={`transition-colors [&>svg]:w-3 [&>svg]:h-3 sm:[&>svg]:w-4 sm:[&>svg]:h-4 md:[&>svg]:w-5 md:[&>svg]:h-5 ${isGlowing ? 'text-white' : 'text-[#1095d2] group-hover:text-white'}`}>{category.icon}</span>
+                  <div className={`w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-[#050b14] border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_15px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 shadow-[0_0_10px_rgba(16,149,210,0.2)] group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]'}`}>
+                    <span className={`transition-colors [&>svg]:w-2.5 [&>svg]:h-2.5 sm:[&>svg]:w-3 sm:[&>svg]:h-3 md:[&>svg]:w-4 md:[&>svg]:h-4 ${isGlowing ? 'text-white' : 'text-[#1095d2] group-hover:text-white'}`}>{category.icon}</span>
                   </div>
-                  <div className={`px-1.5 py-0.5 md:px-2 md:py-1 rounded-full bg-[#050b14] border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_15px_rgba(16,149,210,0.4)]' : 'border-white/10 text-white/80 group-hover:border-[#1095d2]/50 group-hover:text-white'}`}>
-                    <span className="text-[6px] sm:text-[7px] md:text-[9px] font-bold leading-none block">{category.category}</span>
+                  <div className={`px-1.5 py-0.5 md:px-2 md:py-0.5 rounded-full bg-[#050b14] border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_10px_rgba(16,149,210,0.4)]' : 'border-white/10 text-white/80 group-hover:border-[#1095d2]/50 group-hover:text-white'}`}>
+                    <span className="text-[5px] sm:text-[6px] md:text-[8px] font-bold leading-none block">{category.category}</span>
                   </div>
                 </motion.div>
               );
@@ -742,17 +742,17 @@ export default function DreamCreations() {
                 <motion.div
                   key={category.id}
                   style={{ left: `${left}%`, top: `${top}%` }}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 md:gap-1.5 z-30 group cursor-pointer"
+                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 z-30 group cursor-pointer"
                   onClick={() => setActiveCreationPopup(category)}
-                  animate={{ y: [0, (index % 2 === 0 ? -7 : 7), 0], x: [0, (index % 2 !== 0 ? -3 : 3), 0] }}
-                  transition={{ duration: 5 + (index % 4), repeat: Infinity, ease: "easeInOut", delay: index * 0.15 }}
+                  animate={{ y: [0, (index % 2 === 0 ? -5 : 5), 0] }}
+                  transition={{ duration: 4 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: index * 0.15 }}
                   whileHover={{ scale: 1.15, zIndex: 100 }}
                 >
-                  <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-[#050b14] border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 shadow-[0_0_15px_rgba(16,149,210,0.2)] group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]'}`}>
-                    <span className={`transition-colors [&>svg]:w-3 [&>svg]:h-3 sm:[&>svg]:w-4 sm:[&>svg]:h-4 md:[&>svg]:w-5 md:[&>svg]:h-5 ${isGlowing ? 'text-white' : 'text-[#1095d2] group-hover:text-white'}`}>{category.icon}</span>
+                  <div className={`w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-[#050b14] border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_15px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 shadow-[0_0_10px_rgba(16,149,210,0.2)] group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]'}`}>
+                    <span className={`transition-colors [&>svg]:w-2.5 [&>svg]:h-2.5 sm:[&>svg]:w-3 sm:[&>svg]:h-3 md:[&>svg]:w-4 md:[&>svg]:h-4 ${isGlowing ? 'text-white' : 'text-[#1095d2] group-hover:text-white'}`}>{category.icon}</span>
                   </div>
-                  <div className={`px-1.5 py-0.5 md:px-2 md:py-1 rounded-full bg-[#050b14] border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_15px_rgba(16,149,210,0.4)]' : 'border-white/10 text-white/80 group-hover:border-[#1095d2]/50 group-hover:text-white'}`}>
-                    <span className="text-[6px] sm:text-[7px] md:text-[9px] font-bold leading-none block">{category.category}</span>
+                  <div className={`px-1.5 py-0.5 md:px-2 md:py-0.5 rounded-full bg-[#050b14] border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_10px_rgba(16,149,210,0.4)]' : 'border-white/10 text-white/80 group-hover:border-[#1095d2]/50 group-hover:text-white'}`}>
+                    <span className="text-[5px] sm:text-[6px] md:text-[8px] font-bold leading-none block">{category.category}</span>
                   </div>
                 </motion.div>
               );
