@@ -57,18 +57,18 @@ const featuredClients = [
 ];
 
 const creationsCategories = [
-  { id: 1, category: "Branding & Identity", icon: <Fingerprint size={14} />, items: ["Logo Design", "Brand Identity Design", "Brand Style Guide", "Brand Refresh & Rebranding", "Business Card Design", "Letterhead & Stationery Design", "Email Signature Design", "Brand Pattern & Graphic Elements", "Packaging Design", "Label & Sticker Design", "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", "Brand Asset Kit"] },
-  { id: 2, category: "Social Media Design", icon: <Share2 size={14} />, items: ["Social Media Posts", "Story Designs", "Carousel Posts", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding", "Quote Graphics", "Event Announcement Graphics", "Holiday & eCards"] },
-  { id: 3, category: "Video Editing", icon: <Video size={14} />, items: ["Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", "Podcast Editing", "Testimonial Videos", "Tutorial Videos", "Video Thumbnails"] },
-  { id: 4, category: "Motion Graphics", icon: <PictureInPicture size={14} />, items: ["Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"] },
-  { id: 5, category: "Web Graphics", icon: <MousePointerClick size={14} />, items: ["Landing Page Graphics", "eCommerce Graphics", "Website Banners", "Hero Banners", "UI Graphics", "Icons", "Email Graphics", "WordPress Assets", "Blog Graphics", "Web Illustrations"] },
-  { id: 6, category: "Marketing & Corporate", icon: <Briefcase size={14} />, items: ["Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"] },
-  { id: 7, category: "Marketing Materials", icon: <FileText size={14} />, items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations", "Posters", "Banners", "Sales Sheets", "Product Sheets"] },
-  { id: 8, category: "Packaging Design", icon: <Box size={14} />, items: ["Packaging Graphics", "Product Labels", "Clothing Labels", "Box Packaging", "Bottle Labels", "Pouch Packaging", "Food Packaging", "Cosmetic Packaging"] },
-  { id: 9, category: "Photo Editing", icon: <ImageIcon size={14} />, items: ["Photo Retouching", "Photo Restoration", "Background Removal", "Photo Manipulation", "Color Correction", "Product Photo Enhancement", "Watercolor Portraits"] },
-  { id: 10, category: "Apparel Design", icon: <Shirt size={14} />, items: ["Streetwear Graphics", "T-Shirt Graphics", "Jersey Design", "Merchandise Graphics", "Mockups", "Clothing Hang Tags"] },
-  { id: 11, category: "Print Production", icon: <Printer size={14} />, items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards", "Stickers", "Roll-up Banners", "Calendars"] },
-  { id: 12, category: "Illustration", icon: <Pencil size={14} />, items: ["Digital Illustration", "Vector Artwork", "Character Illustration", "Cartoon Portraits", "Icon Design", "Seamless Patterns"] }
+  { id: 1, category: "Branding & Identity", icon: <Fingerprint size={16} />, items: ["Logo Design", "Brand Identity Design", "Brand Style Guide", "Brand Refresh & Rebranding", "Business Card Design", "Letterhead & Stationery Design", "Email Signature Design", "Brand Pattern & Graphic Elements", "Packaging Design", "Label & Sticker Design", "Brand Icons & Illustrations", "Brand Presentation Templates", "Company Profile Design", "Brand Asset Kit"] },
+  { id: 2, category: "Social Media Design", icon: <Share2 size={16} />, items: ["Social Media Posts", "Story Designs", "Carousel Posts", "LinkedIn Graphics", "Social Media Campaigns", "Cover Photos", "Profile Branding", "Quote Graphics", "Event Announcement Graphics", "Holiday & eCards"] },
+  { id: 3, category: "Video Editing", icon: <Video size={16} />, items: ["Social Media Videos", "Marketing Videos", "Product Promotion Videos & Motion Graphics", "Corporate Videos & Motion Graphics", "Event Highlights", "YouTube Video Editing", "Podcast Editing", "Testimonial Videos", "Tutorial Videos", "Video Thumbnails"] },
+  { id: 4, category: "Motion Graphics", icon: <PictureInPicture size={16} />, items: ["Animated Ads", "Social Media Motion Graphics", "Logo Animation", "Explainer Videos", "Kinetic Typography", "Animated Infographics", "UI or App Animations", "Lottie Animations", "Intro & Outro Animations", "Lower Thirds & Broadcast Graphics"] },
+  { id: 5, category: "Web Graphics", icon: <MousePointerClick size={16} />, items: ["Landing Page Graphics", "eCommerce Graphics", "Website Banners", "Hero Banners", "UI Graphics", "Icons", "Email Graphics", "WordPress Assets", "Blog Graphics", "Web Illustrations"] },
+  { id: 6, category: "Marketing & Corporate", icon: <Briefcase size={16} />, items: ["Marketing Graphics", "Corporate Graphics", "Promotional Graphics", "Instructional Posters", "Infographics", "Presentation Design", "Report Design", "Annual Report Design", "Event Signage"] },
+  { id: 7, category: "Marketing Materials", icon: <FileText size={16} />, items: ["Flyers", "Brochures", "Company Profiles", "Catalogs", "Business Presentations", "Posters", "Banners", "Sales Sheets", "Product Sheets"] },
+  { id: 8, category: "Packaging Design", icon: <Box size={16} />, items: ["Packaging Graphics", "Product Labels", "Clothing Labels", "Box Packaging", "Bottle Labels", "Pouch Packaging", "Food Packaging", "Cosmetic Packaging"] },
+  { id: 9, category: "Photo Editing", icon: <ImageIcon size={16} />, items: ["Photo Retouching", "Photo Restoration", "Background Removal", "Photo Manipulation", "Color Correction", "Product Photo Enhancement", "Watercolor Portraits"] },
+  { id: 10, category: "Apparel Design", icon: <Shirt size={16} />, items: ["Streetwear Graphics", "T-Shirt Graphics", "Jersey Design", "Merchandise Graphics", "Mockups", "Clothing Hang Tags"] },
+  { id: 11, category: "Print Production", icon: <Printer size={16} />, items: ["Tarpaulins", "Calling Cards", "Invitations", "Souvenirs", "ID Cards", "Certificates", "Book Covers", "Menu Cards", "Stickers", "Roll-up Banners", "Calendars"] },
+  { id: 12, category: "Illustration", icon: <Pencil size={16} />, items: ["Digital Illustration", "Vector Artwork", "Character Illustration", "Cartoon Portraits", "Icon Design", "Seamless Patterns"] }
 ];
 
 const softwareExpertise = [
@@ -167,7 +167,10 @@ export default function DreamCreations() {
     target: topSectionRef,
     offset: ["start start", "end center"]
   });
-  const moonScale = useTransform(topScrollYProgress, [0, 0.4, 0.8], [1, 0.9, 0.45]);
+  
+  // Maps position: from 25vh ABOVE center (Hero) down to exactly 0vh (Center of Solar System)
+  const moonY = useTransform(topScrollYProgress, [0, 1], ["-25vh", "0vh"]);
+  const moonScale = useTransform(topScrollYProgress, [0, 1], [1, 0.75]);
 
   // PURE GSAP SCROLL-JACKING LOGIC
   useGSAP(() => {
@@ -652,26 +655,24 @@ export default function DreamCreations() {
       </div>
 
       {/* ================= HERO & CREATIONS (SOLAR SYSTEM WRAPPER) ================= */}
-      <div ref={topSectionRef} className="relative w-full">
+      <div ref={topSectionRef} className="relative w-full flex flex-col">
         
-        {/* Sticky Moon Wrapper (Tracks scroll and docks exactly at the center of Creations) */}
-        <div className="absolute top-0 left-0 w-full h-[calc(100%-250px)] sm:h-[calc(100%-350px)] md:h-[calc(100%-480px)] lg:h-[calc(100%-550px)] pointer-events-none z-0">
-          <div className="sticky top-[25vh] md:top-[30vh] w-full flex justify-center items-center pointer-events-none">
-            <motion.div initial={{ y: 150, scale: 0.5, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }} className="relative z-10">
-              <motion.div style={{ scale: moonScale }}>
-                <motion.div animate={{ y: [-15, 15, -15], rotate: [-3, 3, -3] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
-                  <img src="/images/moon.png" alt="Dream Creations Moon" className="w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]" />
-                </motion.div>
+        {/* Scroll-Tracking Moon Container (Stays visually centered in viewport) */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-20 overflow-hidden">
+          <div className="sticky top-0 w-full h-screen flex justify-center items-center pointer-events-none">
+            <motion.div style={{ y: moonY, scale: moonScale }} className="relative z-10 flex flex-col items-center">
+              <motion.div animate={{ y: [-15, 15, -15], rotate: [-3, 3, -3] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
+                <img src="/images/moon.png" alt="Dream Creations Moon" className="w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]" />
               </motion.div>
             </motion.div>
           </div>
         </div>
 
         {/* HERO SECTION */}
-        <section className="relative pt-40 pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center text-center z-10 pointer-events-auto">
-          <motion.div initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }} transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }} className="absolute top-[40vh] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10" />
+        <section className="relative min-h-[90vh] flex flex-col items-center justify-center text-center z-10 pt-48 pb-20 px-6">
+          <motion.div initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }} transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }} className="absolute top-1/2 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10" />
           
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="max-w-4xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl border border-transparent z-10 mt-40 md:mt-56">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="max-w-4xl mx-auto backdrop-blur-[2px] p-6 rounded-2xl border border-transparent z-10 mt-32 md:mt-40 pointer-events-auto">
             <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">Let's make your{' '}<br className="hidden md:block" /><span className="text-[#1095d2]">dream</span> a reality.</h2>
             <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
               <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.</p>
@@ -682,41 +683,77 @@ export default function DreamCreations() {
         <div id="creations-grid" className="scroll-mt-24" />
 
         {/* CREATIONS SECTION (SOLAR SYSTEM LAYOUT) */}
-        <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 pointer-events-auto flex flex-col items-center">
-          <div className="mb-4 text-center">
-            <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
+        <section className="min-h-screen w-full px-4 py-20 flex flex-col items-center justify-center z-10 relative border-t border-white/10">
+          <div className="mb-4 text-center pointer-events-auto">
+            <h3 className="text-3xl md:text-5xl font-black text-white mb-4">Our Creations</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
-            <p className="text-base text-white/70 mt-4 max-w-2xl mx-auto">Explore our specialized creative categories. Click any planet to view our specific offerings and jump directly to our past works.</p>
+            <p className="text-sm md:text-base text-white/70 mt-4 max-w-2xl mx-auto px-6">Explore our specialized creative categories. Click any node to view our specific offerings and jump directly to our past works.</p>
           </div>
           
-          <div className="relative w-full max-w-[340px] sm:max-w-[550px] md:max-w-[700px] lg:max-w-[800px] aspect-square mx-auto mt-12 mb-12 flex items-center justify-center">
-            {/* Orbit Rings */}
-            <div className="absolute inset-0 rounded-full border border-white/5 pointer-events-none" style={{ scale: '0.9' }} />
-            <div className="absolute inset-0 rounded-full border border-[#1095d2]/20 pointer-events-none shadow-[inset_0_0_40px_rgba(16,149,210,0.1)] animate-[spin_60s_linear_infinite]" style={{ scale: '0.6' }} />
-            <div className="absolute inset-0 rounded-full border border-white/5 pointer-events-none" style={{ scale: '0.3' }} />
+          {/* Solar System Container */}
+          <div className="relative w-full max-w-[450px] sm:max-w-[650px] md:max-w-[750px] lg:max-w-[900px] aspect-square mx-auto mt-16 mb-24 flex items-center justify-center pointer-events-auto">
+            
+            {/* Outer Orbital Ring */}
+            <div className="absolute inset-0 m-auto w-[90%] h-[90%] rounded-full border border-white/10 border-dashed animate-[spin_100s_linear_infinite] pointer-events-none" />
+            
+            {/* Inner Orbital Ring */}
+            <div className="absolute inset-0 m-auto w-[55%] h-[55%] rounded-full border border-[#1095d2]/20 border-dashed animate-[spin_60s_linear_reverse_infinite] pointer-events-none" />
 
-            {/* Planets (Categories) */}
-            {creationsCategories.map((category, index) => {
-              const total = creationsCategories.length;
-              const angle = (index * (360 / total) - 90) * (Math.PI / 180);
-              const radius = 45; // 45% of the container size
+            {/* Inner Planets (First 4 Categories) */}
+            {creationsCategories.slice(0, 4).map((category, index) => {
+              // Angles: -45, 45, 135, 225 (Creates an X pattern)
+              const angle = (index * 90 - 45) * (Math.PI / 180);
+              const radius = 27.5; // Half of 55%
               const left = 50 + radius * Math.cos(angle);
               const top = 50 + radius * Math.sin(angle);
               const isGlowing = randomGlowIndex === index;
 
               return (
-                <motion.button
+                <motion.div
                   key={category.id}
-                  onClick={() => setActiveCreationPopup(category)}
-                  whileHover={{ scale: 1.15, zIndex: 50, borderColor: "rgba(16,149,210,0.8)", backgroundColor: "rgba(16,149,210,0.3)" }}
                   style={{ left: `${left}%`, top: `${top}%` }}
-                  className="absolute w-[72px] h-[72px] sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/60 border border-white/10 backdrop-blur-md transition-all duration-300 flex flex-col items-center justify-center text-center shadow-[0_0_15px_rgba(16,149,210,0.15)] cursor-pointer z-20 group"
+                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 md:gap-2 z-30 group cursor-pointer"
+                  onClick={() => setActiveCreationPopup(category)}
+                  whileHover={{ scale: 1.15, zIndex: 50 }}
                 >
-                  <div className={`transition-all duration-500 mb-1 ${isGlowing ? 'text-[#1095d2] scale-125 drop-shadow-[0_0_8px_rgba(16,149,210,0.8)]' : 'text-white/60 group-hover:text-[#1095d2] group-hover:scale-110'}`}>{category.icon}</div>
-                  <h4 className={`text-[7px] sm:text-[9px] md:text-[10px] lg:text-xs font-bold transition-all duration-500 leading-tight px-1 sm:px-2 ${isGlowing ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]' : 'text-white/90 group-hover:text-white'}`}>{category.category}</h4>
-                </motion.button>
+                  <div className={`w-12 h-12 md:w-16 md:h-16 rounded-full bg-[#050b14] border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 shadow-[0_0_15px_rgba(16,149,210,0.2)] group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]'}`}>
+                    <span className={`transition-colors ${isGlowing ? 'text-white' : 'text-[#1095d2] group-hover:text-white'}`}>{category.icon}</span>
+                  </div>
+                  <div className={`px-2.5 py-1 md:px-4 md:py-1.5 rounded-full bg-[#050b14] border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_15px_rgba(16,149,210,0.4)]' : 'border-white/10 text-white/80 group-hover:border-[#1095d2]/50 group-hover:text-white'}`}>
+                    <span className="text-[9px] md:text-xs font-bold leading-none">{category.category}</span>
+                  </div>
+                </motion.div>
               );
             })}
+
+            {/* Outer Planets (Next 8 Categories) */}
+            {creationsCategories.slice(4, 12).map((category, index) => {
+              // Angles: 8 evenly spaced nodes starting from -90 (top)
+              const angle = (index * 45 - 90) * (Math.PI / 180);
+              const radius = 45; // Half of 90%
+              const left = 50 + radius * Math.cos(angle);
+              const top = 50 + radius * Math.sin(angle);
+              const actualIndex = index + 4;
+              const isGlowing = randomGlowIndex === actualIndex;
+
+              return (
+                <motion.div
+                  key={category.id}
+                  style={{ left: `${left}%`, top: `${top}%` }}
+                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 md:gap-2 z-30 group cursor-pointer"
+                  onClick={() => setActiveCreationPopup(category)}
+                  whileHover={{ scale: 1.15, zIndex: 50 }}
+                >
+                  <div className={`w-12 h-12 md:w-16 md:h-16 rounded-full bg-[#050b14] border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 shadow-[0_0_15px_rgba(16,149,210,0.2)] group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]'}`}>
+                    <span className={`transition-colors ${isGlowing ? 'text-white' : 'text-[#1095d2] group-hover:text-white'}`}>{category.icon}</span>
+                  </div>
+                  <div className={`px-2.5 py-1 md:px-4 md:py-1.5 rounded-full bg-[#050b14] border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_15px_rgba(16,149,210,0.4)]' : 'border-white/10 text-white/80 group-hover:border-[#1095d2]/50 group-hover:text-white'}`}>
+                    <span className="text-[9px] md:text-xs font-bold leading-none">{category.category}</span>
+                  </div>
+                </motion.div>
+              );
+            })}
+
           </div>
         </section>
       </div>
