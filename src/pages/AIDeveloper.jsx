@@ -36,21 +36,11 @@ const WaveCard = ({ principle }) => {
   });
 
   const scale = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.9, 1.1, 0.9]);
-  const opacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.4, 1, 0.4]);
+  const opacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.5, 1, 0.5]);
   const zIndex = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0, 10, 0]); 
   
-  // Base is Blue, fading to Purple
-  const borderColor = useTransform(
-    scrollYProgress, 
-    [0.3, 0.5, 0.7], 
-    ['rgba(59, 130, 246, 0.3)', 'rgba(168, 85, 247, 0.9)', 'rgba(59, 130, 246, 0.3)'] 
-  );
-  
-  const backgroundColor = useTransform(
-    scrollYProgress, 
-    [0.3, 0.5, 0.7], 
-    ['rgba(2, 6, 23, 0.4)', 'rgba(88, 28, 135, 0.3)', 'rgba(2, 6, 23, 0.4)'] 
-  );
+  // Nananatili ang blue background, violet overlay lang ang lalabas
+  const violetOverlayOpacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0, 1, 0]);
 
   const textColor = useTransform(
     scrollYProgress,
@@ -58,35 +48,31 @@ const WaveCard = ({ principle }) => {
     ['#94a3b8', '#ffffff', '#94a3b8'] 
   );
 
-  const iconColor = useTransform(
-    scrollYProgress,
-    [0.3, 0.5, 0.7],
-    ['#3b82f6', '#a855f7', '#3b82f6'] 
-  );
-
-  // Gradient Overlay Fade: Blue remains constant, Purple fades in on top
-  const boxShadow = useTransform(
-    scrollYProgress,
-    [0.3, 0.5, 0.7],
-    [
-      '0px 0px 20px rgba(59, 130, 246, 0.15), 0px 0px 40px rgba(168, 85, 247, 0)', 
-      '0px 0px 20px rgba(59, 130, 246, 0.15), 0px 0px 60px rgba(168, 85, 247, 0.7)', 
-      '0px 0px 20px rgba(59, 130, 246, 0.15), 0px 0px 40px rgba(168, 85, 247, 0)'
-    ]
-  );
-
   return (
     <motion.div 
       ref={ref}
-      style={{ scale, opacity, borderColor, backgroundColor, boxShadow, zIndex }}
-      className="p-4 md:p-5 rounded-2xl border flex items-center gap-4 backdrop-blur-md w-full max-w-md mx-auto relative origin-center"
+      style={{ scale, opacity, zIndex }}
+      className="relative p-4 md:p-5 rounded-2xl border border-blue-500/20 bg-[#020617]/80 flex items-center gap-4 backdrop-blur-md w-full max-w-md mx-auto origin-center overflow-hidden"
     >
-      <motion.div style={{ color: iconColor }} className="shrink-0">
-        <CheckCircle2 size={24} style={{ filter: 'drop-shadow(0px 0px 8px currentColor)' }} />
-      </motion.div>
-      <motion.span style={{ color: textColor }} className="text-sm font-bold tracking-wide text-left">
-        {principle}
-      </motion.span>
+      {/* VIOLET GLOW OVERLAY FADE */}
+      <motion.div 
+        style={{ opacity: violetOverlayOpacity }}
+        className="absolute inset-0 bg-purple-900/40 border-2 border-purple-500 rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.5)] z-0"
+      />
+
+      <div className="relative z-10 flex items-center gap-4 w-full">
+        {/* ICON - Fades from Blue to Violet */}
+        <div className="shrink-0 relative">
+           <CheckCircle2 size={24} className="text-blue-500 absolute inset-0" />
+           <motion.div style={{ opacity: violetOverlayOpacity }}>
+             <CheckCircle2 size={24} className="text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+           </motion.div>
+        </div>
+        
+        <motion.span style={{ color: textColor }} className="text-sm font-bold tracking-wide text-left relative z-10">
+          {principle}
+        </motion.span>
+      </div>
     </motion.div>
   );
 };
@@ -201,6 +187,13 @@ const PRESET_PIPELINE_ARCHITECTURE = [
       { name: "GitHub", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
       { name: "Vercel", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" }
     ]
+  },
+  {
+    category: "Monitoring & Maintenance",
+    items: [
+      { name: "GitHub", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
+      { name: "Vercel Analytics", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" }
+    ]
   }
 ];
 
@@ -300,7 +293,7 @@ export default function AiDeveloper() {
   });
 
   // Calculate the horizontal translation needed to keep the active node centered.
-  const trackSpacing = 250; // Responsive spacing mapping
+  const trackSpacing = 250; 
   const totalTrackWidth = (architecture.length - 1) * trackSpacing;
   const xTransform = useTransform(archScrollY, [0, 1], ["0px", `-${totalTrackWidth}px`]);
   const lineWidthTransform = useTransform(archScrollY, [0, 1], ["0%", "100%"]);
@@ -651,20 +644,20 @@ export default function AiDeveloper() {
 
         {/* ================= 67. DEVELOPMENT ARCHITECTURE (AUTO-SCROLL HORIZONTAL FLOWCHART) ================= */}
         <section ref={archScrollRef} className="h-[400vh] relative bg-black/40 border-t border-slate-900">
-          <div className="sticky top-0 h-[100dvh] w-full flex flex-col justify-center items-center overflow-hidden backdrop-blur-md pt-20 pb-10">
+          <div className="sticky top-0 h-[100dvh] w-full flex flex-col justify-center items-center overflow-hidden backdrop-blur-md pt-24 pb-8 md:py-0">
             
             {/* HEADER - Constrained to prevent pushing content out */}
-            <div className="text-center px-4 shrink-0 w-full max-w-4xl mx-auto">
+            <div className="text-center px-4 shrink-0 w-full max-w-4xl mx-auto md:mt-24">
               <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Architecture Pipeline</h3>
               <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
-              <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed">
+              <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed hidden md:block">
                 A structured, horizontal engineering flowchart detailing every phase of my development process—from initial planning to post-deployment monitoring.
               </p>
-              <p className="md:hidden mt-2 text-[10px] text-purple-400 font-mono tracking-widest opacity-70 animate-pulse">(Scroll down to navigate timeline)</p>
+              <p className="md:hidden mt-4 text-[10px] text-purple-400 font-mono tracking-widest opacity-70 animate-pulse">(Scroll down to navigate timeline)</p>
             </div>
 
             {/* HORIZONTAL TRACK - Constrained height */}
-            <div className="relative h-24 md:h-32 w-full mt-6 md:mt-10 shrink-0">
+            <div className="relative h-20 md:h-28 w-full mt-6 md:mt-10 shrink-0">
               <div className="absolute inset-0 overflow-hidden w-full">
                 <motion.div style={{ x: xTransform }} className="absolute top-0 bottom-0 flex items-center px-[calc(50vw-16px)] gap-[250px] md:gap-[300px]">
                   
@@ -684,14 +677,14 @@ export default function AiDeveloper() {
                     return (
                       <div key={idx} className="relative z-10 flex flex-col items-center shrink-0 w-8">
                         {/* Square View Point (Box) */}
-                        <div className={`w-8 h-8 flex items-center justify-center transition-all duration-300 border-2 ${isActive ? 'bg-[#02040a] border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' : isPassed ? 'bg-[#02040a] border-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)]' : 'bg-[#02040a] border-slate-700'}`}>
+                        <div className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 ${isActive ? 'bg-[#02040a] border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' : isPassed ? 'bg-[#02040a] border-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)]' : 'bg-[#02040a] border-slate-700'}`}>
                           {/* Inner Blinking Box */}
-                          {isActive && <div className="w-2.5 h-2.5 bg-purple-400 animate-ping" />}
-                          {isPassed && !isActive && <div className="w-2.5 h-2.5 bg-purple-500" />}
+                          {isActive && <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-purple-400 animate-ping" />}
+                          {isPassed && !isActive && <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-purple-500" />}
                         </div>
 
                         {/* Label */}
-                        <span className={`absolute top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 ${isActive ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : isPassed ? 'text-slate-300' : 'text-slate-600'}`}>
+                        <span className={`absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 ${isActive ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : isPassed ? 'text-slate-300' : 'text-slate-600'}`}>
                           {stack.category}
                         </span>
                       </div>
@@ -702,7 +695,8 @@ export default function AiDeveloper() {
             </div>
 
             {/* DYNAMIC CONTENT BOX (Enlarged Icons, Fully Responsive, No Cut-offs) */}
-            <div className="w-full max-w-4xl mx-auto px-4 md:px-6 shrink-0 flex-1 min-h-0 flex flex-col justify-start md:justify-center mt-2 pb-4">
+            {/* Added 'h-auto' to ensure the box fits exactly its content without overflowing */}
+            <div className="w-full max-w-4xl mx-auto px-4 md:px-6 shrink-0 mt-4 md:mt-8 pb-4">
               <AnimatePresence mode="wait">
                 {architecture[activeArchTab] && (
                   <motion.div
@@ -711,7 +705,7 @@ export default function AiDeveloper() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.3 }}
-                    className="w-full p-6 md:p-10 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative max-h-full overflow-y-auto hide-scrollbar"
+                    className="w-full h-auto p-6 md:p-10 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative overflow-hidden"
                   >
                     {/* Subtle Glowing Top Border */}
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
@@ -721,7 +715,7 @@ export default function AiDeveloper() {
                       {architecture[activeArchTab].category} Stack
                     </h4>
                     
-                    <div className="flex flex-wrap justify-center gap-6 md:gap-10 pb-4">
+                    <div className="flex flex-wrap justify-center gap-6 md:gap-10 pb-2 md:pb-4">
                       {architecture[activeArchTab].items?.map((tool, i) => {
                         const isLearning = tool.name.toLowerCase().includes('(learning)');
                         const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
@@ -729,7 +723,7 @@ export default function AiDeveloper() {
                         return (
                           <div key={i} className="flex flex-col items-center gap-3 w-20 md:w-28 group">
                             {/* App-like Large Icon Card */}
-                            <div className={`w-16 h-16 md:w-24 md:h-24 rounded-3xl flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-slate-900/60 border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
+                            <div className={`w-16 h-16 md:w-24 md:h-24 rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
                               {tool.customImage ? (
                                 <img src={tool.customImage} alt={cleanName} className="w-8 h-8 md:w-12 md:h-12 object-contain drop-shadow-md group-hover:scale-110 transition-transform" onError={(e) => e.target.style.display='none'} />
                               ) : (
@@ -738,7 +732,7 @@ export default function AiDeveloper() {
                               
                               {/* Overlay Learning Badge */}
                               {isLearning && (
-                                <div className="absolute -bottom-2 md:-bottom-2.5 px-2 py-0.5 bg-purple-900 border border-purple-400 text-purple-200 text-[9px] md:text-[10px] rounded-full uppercase tracking-widest shadow-md whitespace-nowrap">
+                                <div className="absolute -bottom-2.5 px-2 py-0.5 bg-purple-900 border border-purple-400 text-purple-200 text-[9px] md:text-[10px] rounded-full uppercase tracking-widest shadow-md whitespace-nowrap">
                                   Learning
                                 </div>
                               )}
