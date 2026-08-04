@@ -157,11 +157,10 @@ export default function DreamCreations() {
   const teamScrollRef = useRef(null);
   const flipBookRef = useRef(null); 
 
-  // ================= SCROLL-LINKED MOON LOGIC (FOOLPROOF DOM FLOW) =================
+  // ================= SCROLL-LINKED MOON LOGIC =================
   const heroCreationsWrapperRef = useRef(null);
   
   // This wrapper spans exactly 200vh (Hero + Creations).
-  // Scroll goes from 0 (top of wrapper) to 1 (bottom of wrapper hitting bottom of screen).
   const { scrollYProgress: heroScroll } = useScroll({
     target: heroCreationsWrapperRef,
     offset: ["start start", "end end"] 
@@ -170,8 +169,8 @@ export default function DreamCreations() {
   // Scale shrinks smoothly as you scroll
   const moonScale = useTransform(heroScroll, [0, 1], [0.85, 0.35]);
   
-  // Y Position: Starts high up (-25vh) in the Hero, ends precisely at the center of the orbits (5vh)
-  const moonY = useTransform(heroScroll, [0, 1], ["-25vh", "5vh"]); 
+  // Y Position: Starts high up (-25vh) in the Hero, ends precisely at the dead center of the solar system (0vh)
+  const moonY = useTransform(heroScroll, [0, 1], ["-25vh", "0vh"]); 
 
   // Split categories for Orbital Layout
   const innerCategories = creationsCategories.slice(0, 4);
@@ -214,7 +213,7 @@ export default function DreamCreations() {
   const [projects, setProjects] = useState([]); 
   const [randomModalPositions, setRandomModalPositions] = useState([]);
 
-  // RANDOMIZE POSITIONS PARA SA BUBBLES SA LOOB NG MODAL
+  // DYNAMIC SIZING & STAGGERED RING POSITIONING (NO OVERLAPS)
   useEffect(() => {
     if (activeCreationPopup) {
       const count = activeCreationPopup.items.length;
@@ -225,22 +224,44 @@ export default function DreamCreations() {
         'bg-blue-800/90 border-blue-500 text-blue-100'
       ];
       
-      const positions = activeCreationPopup.items.map((_, i) => {
-        const angle = (i / count) * 2 * Math.PI;
-        
-        // Strict alternating rings to prevent any overlaps on mobile
+      const positions = activeCreationPopup.items.map((item, i) => {
+        // Dynamic Size based on text length to fit contents properly
+        const textLength = item.length;
+        const sizeClass = textLength > 20 ? 'w-[75px] h-[75px] sm:w-[95px] sm:h-[95px] md:w-[115px] md:h-[115px]'
+                        : textLength > 12 ? 'w-[65px] h-[65px] sm:w-[85px] sm:h-[85px] md:w-[100px] md:h-[100px]'
+                        : 'w-[55px] h-[55px] sm:w-[70px] sm:h-[70px] md:w-[85px] md:h-[85px]';
+
         let radius = 0;
+        let angle = 0;
+
         if (count > 6) {
-          // Inner ring and Outer ring
-          radius = i % 2 === 0 ? 18 + Math.random() * 2 : 36 + Math.random() * 2;
+          // Staggered Rings Logic to guarantee ZERO overlaps
+          const isOuter = i % 2 !== 0;
+          const ringItemCount = isOuter ? Math.ceil(count / 2) : Math.floor(count / 2);
+          const ringIndex = Math.floor(i / 2);
+
+          // Spread out evenly across the ring
+          angle = (ringIndex / ringItemCount) * 2 * Math.PI;
+          
+          // Offset outer ring to sit in the "gaps" of the inner ring (zig-zag pattern)
+          if (isOuter) {
+            angle += (Math.PI / ringItemCount); 
+          }
+
+          // Strict restricted radius so they never spill outside the blue modal container
+          radius = isOuter ? 35 : 17; 
         } else {
-          // Standard ring for fewer items
-          radius = 26 + Math.random() * 4;
+          angle = (i / count) * 2 * Math.PI;
+          radius = 26; // Ideal radius for a single ring
         }
 
+        // Extremely subtle randomness so it looks organic but mathematically safe
+        const finalRadius = radius + (Math.random() * 1.5);
+
         return {
-          x: Math.cos(angle) * radius,
-          y: Math.sin(angle) * radius,
+          x: Math.cos(angle) * finalRadius,
+          y: Math.sin(angle) * finalRadius,
+          sizeClass: sizeClass,
           colorClass: colors[Math.floor(Math.random() * colors.length)]
         };
       });
@@ -708,8 +729,8 @@ export default function DreamCreations() {
           </div>
         </div>
 
-        {/* 1. HERO SECTION (Box pushed to the bottom so Moon fits perfectly above it) */}
-        <section className="relative h-screen flex flex-col justify-end items-center pb-[15vh] md:pb-[25vh] px-6 z-10 pointer-events-auto">
+        {/* 1. HERO SECTION (Box lowered further so it sits nicely on PC/Mobile) */}
+        <section className="relative h-screen flex flex-col justify-end items-center pb-[10vh] md:pb-[15vh] px-6 z-10 pointer-events-auto">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="w-full max-w-4xl backdrop-blur-sm p-8 rounded-3xl border border-white/5 bg-[#020617]/40 shadow-2xl text-center">
              <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
                Let's make your <br className="hidden md:block" />
@@ -726,7 +747,8 @@ export default function DreamCreations() {
         {/* 2. OUR CREATIONS (SOLAR SYSTEM - Absolutely perfectly aligned) */}
         <section className="relative h-screen flex flex-col items-center justify-center z-10 w-full overflow-hidden pointer-events-auto pb-10">
           
-          <div className="absolute top-[10vh] md:top-[12vh] text-center w-full px-6">
+          {/* TEXT PUSHED UP TO CREATE SPACE FROM ORBITS */}
+          <div className="absolute top-[8vh] md:top-[8vh] text-center w-full px-6 z-20">
              <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
              <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
              <p className="text-xs md:text-sm text-white/70 mt-4 max-w-xl mx-auto">
@@ -734,7 +756,8 @@ export default function DreamCreations() {
              </p>
           </div>
 
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none mt-[10vh] md:mt-[5vh]">
+          {/* SOLAR SYSTEM PERFECTLY CENTERED WITH ZERO OFFSET */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             
             {/* --- DESKTOP ORBITS (Wider Spacing) --- */}
             <div className="hidden md:flex absolute inset-0 items-center justify-center">
@@ -1213,7 +1236,7 @@ export default function DreamCreations() {
                    return (
                      <motion.button 
                         key={idx}
-                        whileHover={{ scale: 1.15, zIndex: 50, filter: "brightness(1.2)" }}
+                        whileHover={{ scale: 1.1, zIndex: 50, filter: "brightness(1.2)" }}
                         onClick={() => handleSubtitleModalClick(item)}
                         // Use Framer Motion's native x and y instead of CSS transform to stop hover jumping
                         style={{ 
@@ -1222,9 +1245,9 @@ export default function DreamCreations() {
                           x: "-50%", 
                           y: "-50%" 
                         }}
-                        className={`absolute rounded-full border ${pos.colorClass} text-white flex items-center justify-center text-center p-2 shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-colors cursor-pointer pointer-events-auto backdrop-blur-md w-[65px] h-[65px] sm:w-[80px] sm:h-[80px] md:w-[100px] md:h-[100px] hover:shadow-[0_0_20px_rgba(59,130,246,0.8)]`}
+                        className={`absolute rounded-full border ${pos.colorClass} text-white flex items-center justify-center text-center p-2 shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-colors cursor-pointer pointer-events-auto backdrop-blur-md ${pos.sizeClass} hover:shadow-[0_0_20px_rgba(59,130,246,0.8)]`}
                      >
-                        <span className="text-[8px] sm:text-[9px] md:text-[11px] font-bold leading-tight break-words line-clamp-3">{item}</span>
+                        <span className="text-[8px] sm:text-[9px] md:text-[11px] font-bold leading-tight break-words line-clamp-3 px-1">{item}</span>
                      </motion.button>
                    );
                 })}
