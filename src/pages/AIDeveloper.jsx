@@ -650,35 +650,46 @@ export default function AiDeveloper() {
         </section>
 
         {/* ================= 69. GITHUB SYSTEM (STATE ATTACHED) ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
-          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
-             <div className="flex flex-col sm:flex-row items-center gap-5 justify-between mb-6">
-                <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-white font-bold text-lg border border-slate-700 shadow-inner">JG</div>
-                   <div>
-                      <h4 className="text-base font-bold text-white flex items-center gap-2">
-                        {github.name} 
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" className="text-slate-500"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-                      </h4>
-                      <p className="text-xs text-slate-500">github.com/{github.username}</p>
-                   </div>
-                </div>
-                <span className="text-[10px] px-2 py-1 border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 rounded uppercase font-mono shadow-[0_0_10px_rgba(6,182,212,0.2)]">{github.badgeText}</span>
-             </div>
-             <div className="h-32 bg-black border border-slate-900 rounded-xl flex items-center justify-center text-xs text-slate-700 font-mono relative overflow-hidden p-2 md:p-4">
-                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #334155 1px, transparent 1px), linear-gradient(to bottom, #334155 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
-                {github.username ? (
-                  <img 
-                    src={`https://ghchart.rshah.org/06b6d4/${github.username}`} 
-                    alt={`${github.username} GitHub Chart`} 
-                    className="relative z-10 w-full h-full object-cover md:object-contain opacity-90 drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]"
-                  />
-                ) : (
-                  <span className="relative z-10">{github.matrixPlaceholder}</span>
-                )}
-              </div>
-          </motion.div>
-        </section>
+<section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
+  <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+     <div className="flex flex-col sm:flex-row items-center gap-5 justify-between mb-6">
+        <div className="flex items-center gap-4">
+           <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-white font-bold text-lg border border-slate-700 shadow-inner">JG</div>
+           <div>
+              <h4 className="text-base font-bold text-white flex items-center gap-2">
+                {github.name} 
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" className="text-slate-500"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+              </h4>
+              <p className="text-xs text-slate-500">github.com/{github.username}</p>
+           </div>
+        </div>
+        <span className="text-[10px] px-2 py-1 border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 rounded uppercase font-mono shadow-[0_0_10px_rgba(6,182,212,0.2)]">{github.badgeText}</span>
+     </div>
+     
+     <div className="h-32 bg-black border border-slate-900 rounded-xl flex items-center justify-center text-xs text-slate-700 font-mono relative overflow-hidden p-2 md:p-4">
+        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #334155 1px, transparent 1px), linear-gradient(to bottom, #334155 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
+        
+        {github.username ? (
+           <>
+              <img 
+                 src={`https://ghchart.rshah.org/06b6d4/${github.username}`} 
+                 alt={`${github.username} GitHub Chart`} 
+                 className="relative z-10 w-full h-full object-cover md:object-contain opacity-90 drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]"
+                 onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'block';
+                 }}
+              />
+              <span className="relative z-10 hidden text-zinc-500 animate-pulse">
+                 [Live Sync API Unavailable - Connection Retrying...]
+              </span>
+           </>
+        ) : (
+           <span className="relative z-10">{github.matrixPlaceholder}</span>
+        )}
+     </div>
+  </motion.div>
+</section>
 
         {/* ================= 71. VISION STATEMENT ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 text-center bg-black/20">
