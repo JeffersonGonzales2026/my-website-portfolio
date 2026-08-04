@@ -157,26 +157,30 @@ export default function DreamCreations() {
   const teamScrollRef = useRef(null);
   const flipBookRef = useRef(null); 
 
-  // ================= SCROLL-LINKED MOON ANIMATION LOGIC =================
+  // ================= SCROLL-LINKED MOON ANIMATION LOGIC (UNIFIED HERO + CREATIONS) =================
   const heroCreationsWrapperRef = useRef(null);
   
-  // Track scroll exactly over the combined 200vh section
+  // Track scroll exactly over the combined 150vh section (Mas maikli na space)
   const { scrollYProgress: heroScroll } = useScroll({
     target: heroCreationsWrapperRef,
     offset: ["start start", "end end"] 
   });
 
   // Scale shrinks as you scroll down
-  const moonScale = useTransform(heroScroll, [0, 1], [1.1, 0.45]);
-  // To reach EXACTLY the center of the Rings (which are absolutely centered), 
-  // the sticky container starts with Moon high up (-25vh). By scroll = 1, it hits exactly 0vh (dead center).
-  const moonY = useTransform(heroScroll, [0, 1], ["-25vh", "0vh"]); 
+  const moonScale = useTransform(heroScroll, [0, 1], [1.0, 0.45]);
+  
+  // Naka-align ang Moon: Magsisimula nang mas mababa sa Hero (-10vh), tapos sa huli, sakto sa gitna (0vh)
+  const moonY = useTransform(heroScroll, [0, 1], ["-10vh", "0vh"]); 
+
+  // Fade Effects para ma-transition from Hero Text -> Solar System Orbits
+  const heroOpacity = useTransform(heroScroll, [0, 0.3], [1, 0]);
+  const creationsOpacity = useTransform(heroScroll, [0.4, 0.8], [0, 1]);
 
   // Split categories for Orbital Layout
   const innerCategories = creationsCategories.slice(0, 4);
   const outerCategories = creationsCategories.slice(4, 12);
 
-  // ================= GSAP REFS =================
+  // ================= GSAP REFS FOR CREATIVE PROCESS =================
   const processSectionRef = useRef(null);
   const processTrackRef = useRef(null);
 
@@ -212,6 +216,25 @@ export default function DreamCreations() {
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
   const [projects, setProjects] = useState([]); 
+  const [randomModalPositions, setRandomModalPositions] = useState([]);
+
+  // RANDOMIZE POSITIONS PARA SA BUBBLES SA LOOB NG MODAL
+  useEffect(() => {
+    if (activeCreationPopup) {
+      const count = activeCreationPopup.items.length;
+      const positions = activeCreationPopup.items.map((_, i) => {
+        // Distribute around the circle with a randomized distance to look "scattered"
+        const angle = (i / count) * 2 * Math.PI;
+        const radius = 18 + Math.random() * 12; // Between 18% to 30% from center (won't overflow)
+        return {
+          x: Math.cos(angle) * radius,
+          y: Math.sin(angle) * radius,
+          colorClass: ['bg-blue-600 border-blue-400', 'bg-cyan-600 border-cyan-400', 'bg-sky-600 border-sky-400'][Math.floor(Math.random() * 3)]
+        };
+      });
+      setRandomModalPositions(positions);
+    }
+  }, [activeCreationPopup]);
 
   const [reviews, setReviews] = useState([
     {
@@ -641,6 +664,12 @@ export default function DreamCreations() {
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
+        /* Floating Animation */
+        @keyframes floating {
+          0%, 100% { transform: translateY(0px) translateX(0px); }
+          50% { transform: translateY(-8px) translateX(4px); }
+        }
+
         /* Custom modal scrollbar */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
@@ -659,157 +688,155 @@ export default function DreamCreations() {
         ))}
       </div>
 
-      {/* ================= HERO & CREATIONS SOLAR SYSTEM WRAPPER ================= */}
-      <div ref={heroCreationsWrapperRef} className="relative z-10 pb-20">
+      {/* ================= UNIFIED SCROLL-LINKED HERO & CREATIONS ================= */}
+      {/* 150vh forces a compact, fast transition between Hero and Solar System without huge spaces */}
+      <div ref={heroCreationsWrapperRef} className="relative z-10 h-[150vh] w-full">
         
-        {/* STICKY MOON BACKGROUND LAYER (NO ROTATION, FLOATING ONLY) */}
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <div className="sticky top-0 h-screen w-full flex items-center justify-center">
-             <motion.div style={{ scale: moonScale, y: moonY }}>
-               {/* Entrance Animation Wrap */}
-               <motion.div initial={{ opacity: 0, y: 150 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, ease: "easeOut" }}>
-                 {/* Floating Animation Wrap (Up and down only) */}
-                 <motion.img 
-                   src="/images/moon.png" 
-                   animate={{ y: [-15, 15, -15] }} 
-                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                   className="w-56 h-56 md:w-96 md:h-96 object-contain drop-shadow-[0_0_60px_rgba(16,149,210,0.8)]" 
-                 />
-               </motion.div>
+        {/* STICKY CONTAINER: Ensures Moon Centers Perfectly */}
+        <div className="sticky top-0 h-[100vh] w-full flex items-center justify-center overflow-hidden">
+           
+           {/* THE MOON (Floating up and down only, NO rotation) */}
+           <motion.div style={{ scale: moonScale, y: moonY }} className="absolute z-10 pointer-events-none">
+             {/* Entrance Drop Animation */}
+             <motion.div initial={{ opacity: 0, y: -100 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, ease: "easeOut" }}>
+               {/* Floating Animation */}
+               <motion.img 
+                 src="/images/moon.png" 
+                 animate={{ y: [-15, 15, -15] }} 
+                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                 className="w-56 h-56 md:w-96 md:h-96 object-contain drop-shadow-[0_0_60px_rgba(16,149,210,0.8)]" 
+               />
              </motion.div>
-          </div>
+           </motion.div>
+
+           {/* SOLAR SYSTEM PLANETS (Fades IN as you scroll) */}
+           <motion.div style={{ opacity: creationsOpacity }} className="absolute inset-0 items-center justify-center pointer-events-auto">
+              
+              {/* --- DESKTOP ORBITS --- */}
+              <div className="hidden md:flex absolute inset-0 items-center justify-center">
+                 <div className="absolute w-[440px] h-[440px] rounded-full border border-dashed border-[#1095d2]/40 pointer-events-none" />
+                 <div className="absolute w-[800px] h-[800px] rounded-full border border-dashed border-[#1095d2]/20 pointer-events-none" />
+                 
+                 {/* Inner Planets */}
+                 {innerCategories.map((cat, idx) => {
+                    const angle = (idx / innerCategories.length) * 2 * Math.PI;
+                    const radius = 220; // 440 diameter
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    return (
+                        <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                           <div className="group flex flex-col items-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
+                               <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white hover:bg-[#1095d2] hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.8)] cursor-pointer">
+                                  {cat.icon}
+                               </button>
+                               <span className="absolute top-20 text-[12px] text-white font-bold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full shadow-md pointer-events-none">
+                                  {cat.category}
+                               </span>
+                           </div>
+                        </div>
+                    );
+                 })}
+
+                 {/* Outer Planets */}
+                 {outerCategories.map((cat, idx) => {
+                    const angle = (idx / outerCategories.length) * 2 * Math.PI;
+                    const radius = 400; // 800 diameter
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    return (
+                        <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                           <div className="group flex flex-col items-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
+                               <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white hover:bg-[#1095d2] hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.8)] cursor-pointer">
+                                  {cat.icon}
+                               </button>
+                               <span className="absolute top-20 text-[12px] text-white font-bold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full shadow-md pointer-events-none">
+                                  {cat.category}
+                               </span>
+                           </div>
+                        </div>
+                    );
+                 })}
+              </div>
+
+              {/* --- MOBILE ORBITS --- */}
+              <div className="flex md:hidden absolute inset-0 items-center justify-center mt-[10vh]">
+                 {/* Shrink radius to perfectly fit mobile width without cut-offs */}
+                 <div className="absolute w-[140px] h-[140px] rounded-full border border-dashed border-[#1095d2]/40 pointer-events-none" />
+                 <div className="absolute w-[280px] h-[280px] rounded-full border border-dashed border-[#1095d2]/20 pointer-events-none" />
+                 
+                 {/* Inner Mobile Planets */}
+                 {innerCategories.map((cat, idx) => {
+                    const angle = (idx / innerCategories.length) * 2 * Math.PI;
+                    const radius = 70; // 140 diameter
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    return (
+                        <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                           <div className="flex flex-col items-center animate-[floating_4s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.5}s` }}>
+                               <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.8)] cursor-pointer">
+                                  {cat.icon}
+                               </button>
+                               <span className="absolute top-14 text-[9px] text-white font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full shadow-md pointer-events-none z-10">
+                                  {cat.category}
+                               </span>
+                           </div>
+                        </div>
+                    );
+                 })}
+
+                 {/* Outer Mobile Planets */}
+                 {outerCategories.map((cat, idx) => {
+                    const angle = (idx / outerCategories.length) * 2 * Math.PI;
+                    const radius = 140; // 280 diameter
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    return (
+                        <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                           <div className="flex flex-col items-center animate-[floating_5s_ease-in-out_infinite]" style={{ animationDelay: `${idx * 0.7}s` }}>
+                               <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#004aad] border border-[#1095d2] flex items-center justify-center text-white active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.8)] cursor-pointer">
+                                  {cat.icon}
+                               </button>
+                               <span className="absolute top-14 text-[9px] text-white font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full shadow-md pointer-events-none z-10">
+                                  {cat.category}
+                               </span>
+                           </div>
+                        </div>
+                    );
+                 })}
+              </div>
+
+           </motion.div>
+
+           {/* HERO TEXT (Fades OUT as you scroll) */}
+           <motion.div style={{ opacity: heroOpacity }} className="absolute top-[45vh] md:top-[50vh] w-full flex justify-center pointer-events-none z-20">
+              <div className="w-[90%] max-w-4xl backdrop-blur-sm p-6 md:p-8 rounded-3xl border border-white/5 bg-[#020617]/40 shadow-2xl pointer-events-auto text-center">
+                 <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-4 md:mb-8">
+                   Let's make your <br className="hidden md:block" />
+                   <span className="text-[#1095d2] drop-shadow-[0_0_15px_rgba(16,149,210,0.5)]">dream</span> a reality.
+                 </h2>
+                 <p className="text-sm md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">
+                   For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.
+                 </p>
+              </div>
+           </motion.div>
+
+           {/* CREATIONS HEADER TEXT (Fades IN as you scroll) */}
+           <motion.div style={{ opacity: creationsOpacity }} className="absolute top-[8vh] md:top-[12vh] w-full text-center z-20 pointer-events-none">
+              <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
+              <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
+              <p className="text-xs md:text-sm text-white/70 mt-4 max-w-xl mx-auto px-4">
+                Explore our specialized creative categories. Tap a planet to view our specific offerings and jump directly to our past works.
+              </p>
+           </motion.div>
+
         </div>
-
-        {/* 1. HERO SECTION (Adjusted Spacing) */}
-        <section className="relative h-[100vh] flex flex-col items-center justify-start text-center z-10 pointer-events-auto pt-[45vh] md:pt-[50vh]">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="max-w-4xl mx-auto backdrop-blur-sm p-8 rounded-3xl border border-white/5 bg-[#020617]/40 shadow-2xl relative z-10">
-             <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
-               Let's make your <br className="hidden md:block" />
-               <span className="text-[#1095d2] drop-shadow-[0_0_15px_rgba(16,149,210,0.5)]">dream</span> a reality.
-             </h2>
-             <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">
-               For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.
-             </p>
-          </motion.div>
-        </section>
-
-        <div id="creations-grid" className="scroll-mt-24" />
-
-        {/* 2. OUR CREATIONS (SOLAR SYSTEM) */}
-        {/* Exactly 100vh so it perfectly aligns with the sticky Moon at scroll progress = 1 */}
-        <section className="relative h-[100vh] flex flex-col items-center justify-start z-10 w-full overflow-hidden pointer-events-auto">
-          
-          <div className="pt-16 md:pt-24 text-center relative z-20 w-full">
-             <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Our Creations</h3>
-             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
-             <p className="text-sm text-white/70 mt-4 max-w-xl mx-auto px-4">
-               Explore our specialized creative categories. Tap a planet to view our specific offerings and jump directly to our past works.
-             </p>
-          </div>
-
-          {/* DESKTOP ORBITAL SYSTEM (Absolutely centered) */}
-          <div className="hidden md:flex absolute inset-0 items-center justify-center mt-16 md:mt-24 pointer-events-none">
-             {/* Rings */}
-             <div className="absolute w-[440px] h-[440px] rounded-full border border-dashed border-[#1095d2]/40" />
-             <div className="absolute w-[800px] h-[800px] rounded-full border border-dashed border-[#1095d2]/20" />
-             
-             {/* Inner Planets */}
-             {innerCategories.map((cat, idx) => {
-                const angle = (idx / innerCategories.length) * 2 * Math.PI;
-                const radius = 220; // 440 diameter
-                const x = Math.cos(angle) * radius;
-                const y = Math.sin(angle) * radius;
-                return (
-                    <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                       <div className="group flex flex-col items-center">
-                           <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.8)] cursor-pointer pointer-events-auto">
-                              {cat.icon}
-                           </button>
-                           {/* No truncation */}
-                           <span className="absolute top-20 text-[12px] text-white font-bold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full shadow-md">
-                              {cat.category}
-                           </span>
-                       </div>
-                    </div>
-                );
-             })}
-
-             {/* Outer Planets */}
-             {outerCategories.map((cat, idx) => {
-                const angle = (idx / outerCategories.length) * 2 * Math.PI;
-                const radius = 400; // 800 diameter
-                const x = Math.cos(angle) * radius;
-                const y = Math.sin(angle) * radius;
-                return (
-                    <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                       <div className="group flex flex-col items-center">
-                           <button onClick={() => setActiveCreationPopup(cat)} className="w-16 h-16 rounded-full bg-[#1095d2] flex items-center justify-center text-white hover:scale-110 transition-all shadow-[0_0_20px_rgba(16,149,210,0.8)] cursor-pointer pointer-events-auto">
-                              {cat.icon}
-                           </button>
-                           {/* No truncation */}
-                           <span className="absolute top-20 text-[12px] text-white font-bold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full shadow-md">
-                              {cat.category}
-                           </span>
-                       </div>
-                    </div>
-                );
-             })}
-          </div>
-
-          {/* MOBILE ORBITAL SYSTEM (Absolutely centered, tighter radius) */}
-          <div className="flex md:hidden absolute inset-0 items-center justify-center mt-20 pointer-events-none">
-             <div className="absolute w-[160px] h-[160px] rounded-full border border-dashed border-[#1095d2]/40" />
-             <div className="absolute w-[300px] h-[300px] rounded-full border border-dashed border-[#1095d2]/20" />
-             
-             {/* Inner Mobile Planets */}
-             {innerCategories.map((cat, idx) => {
-                const angle = (idx / innerCategories.length) * 2 * Math.PI;
-                const radius = 80; // 160 diameter
-                const x = Math.cos(angle) * radius;
-                const y = Math.sin(angle) * radius;
-                return (
-                    <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                       <div className="flex flex-col items-center">
-                           <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#1095d2] flex items-center justify-center text-white active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.8)] cursor-pointer pointer-events-auto">
-                              {cat.icon}
-                           </button>
-                           {/* Buong text, hindi mapuputol */}
-                           <span className="absolute top-14 text-[9px] text-white font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full shadow-md">
-                              {cat.category}
-                           </span>
-                       </div>
-                    </div>
-                );
-             })}
-
-             {/* Outer Mobile Planets */}
-             {outerCategories.map((cat, idx) => {
-                const angle = (idx / outerCategories.length) * 2 * Math.PI;
-                const radius = 150; // 300 diameter
-                const x = Math.cos(angle) * radius;
-                const y = Math.sin(angle) * radius;
-                return (
-                    <div key={idx} className="absolute z-40" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                       <div className="flex flex-col items-center">
-                           <button onClick={() => setActiveCreationPopup(cat)} className="w-12 h-12 rounded-full bg-[#1095d2] flex items-center justify-center text-white active:scale-110 transition-all shadow-[0_0_15px_rgba(16,149,210,0.8)] cursor-pointer pointer-events-auto">
-                              {cat.icon}
-                           </button>
-                           {/* Buong text, hindi mapuputol */}
-                           <span className="absolute top-14 text-[9px] text-white font-bold whitespace-nowrap bg-black/80 px-2 py-0.5 rounded-full shadow-md">
-                              {cat.category}
-                           </span>
-                       </div>
-                    </div>
-                );
-             })}
-          </div>
-        </section>
       </div>
 
       <div id="founder-bio" className="scroll-mt-24" />
 
       {/* ================= MEET THE FOUNDER SECTION ================= */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
+      {/* Reduced top padding since transition from Solar System is very tight now */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-10 md:py-20 z-10 relative border-t border-white/10">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="flex justify-center mb-16">
           <img src={bannerUrl} alt="Dream Creations Brand Banner" className="w-full max-w-5xl h-auto drop-shadow-[0_0_30px_rgba(16,149,210,0.3)] rounded-3xl border border-white/5 bg-black/40 p-2 md:p-4" />
         </motion.div>
@@ -982,7 +1009,7 @@ export default function DreamCreations() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {cat.items.map((subtitle, idx) => {
                   
-                  // ADDED: Exact ID generation that matches what we click
+                  // Exact ID generation that matches what we click
                   const elementId = subtitle.toLowerCase().replace(/\s+/g, '-');
                   const latestProjectWithImage = projects.find(p => (p.subtitle || '').toLowerCase().trim() === subtitle.toLowerCase().trim() && p.featured_image_url);
                   const hasWork = !!latestProjectWithImage;
@@ -1094,7 +1121,6 @@ export default function DreamCreations() {
             <p className="text-base text-white/70 mt-4 max-w-2xl">Journey through our structured, transparent workflow.</p>
           </div>
           
-          {/* GSAP will animate this div to the left */}
           <div ref={processTrackRef} className="flex items-center gap-4 px-6 md:px-12 w-max pb-8 flex-nowrap">
             {creativeProcess.map((item, index) => (
               <React.Fragment key={item.step}>
@@ -1158,49 +1184,44 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= CIRCULAR INTERACTIVE POP-UP MODAL (CREATIONS DIRECTORY) ================= */}
+      {/* ================= BLUE CIRCULAR MODAL WITH RANDOM SCATTERED SUBTITLES ================= */}
       <AnimatePresence>
         {activeCreationPopup && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden pointer-events-auto">
-            {/* Backdrop */}
+            
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setActiveCreationPopup(null)} className="absolute inset-0 bg-black/80 backdrop-blur-md cursor-pointer" />
             
-            {/* Circular Container */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.5 }} 
               animate={{ opacity: 1, scale: 1 }} 
               exit={{ opacity: 0, scale: 0.5 }} 
-              className="relative w-[95vw] h-[95vw] max-w-[600px] max-h-[600px] bg-[#050a15] rounded-full border-2 border-[#1095d2]/40 shadow-[0_0_80px_rgba(16,149,210,0.5)] flex flex-col items-center justify-start pt-10 md:pt-16 pb-8 px-6 overflow-hidden"
+              // SOLID DARK BLUE BACKGROUND
+              className="relative w-[95vw] h-[95vw] max-w-[600px] max-h-[600px] bg-gradient-to-br from-blue-950 to-[#020617] rounded-full border-2 border-blue-400/50 shadow-[0_0_80px_rgba(59,130,246,0.6)] flex items-center justify-center"
             >
-              
-              <button onClick={() => setActiveCreationPopup(null)} className="absolute top-[8%] right-[15%] text-white/50 hover:text-white z-50 transition-colors cursor-pointer p-2 bg-black/40 rounded-full border border-white/10"><X size={20} /></button>
+              <button onClick={() => setActiveCreationPopup(null)} className="absolute top-[8%] right-[15%] text-white/50 hover:text-white z-50 transition-colors cursor-pointer p-2 bg-blue-900/40 rounded-full border border-blue-400/30"><X size={20} /></button>
 
-              {/* Header inside the circle */}
-              <div className="flex flex-col items-center text-center mb-4 md:mb-6 shrink-0 relative z-20">
-                 <div className="text-[#1095d2] mb-1 scale-125">{activeCreationPopup.icon}</div>
-                 <h3 className="text-sm md:text-lg font-bold text-white leading-tight uppercase tracking-wider">{activeCreationPopup.category}</h3>
+              {/* Title pinned at the top inner part of the circle */}
+              <div className="absolute top-[12%] md:top-[15%] left-0 w-full flex flex-col items-center text-center shrink-0 z-20 pointer-events-none">
+                 <div className="text-blue-300 mb-1 scale-125 drop-shadow-md">{activeCreationPopup.icon}</div>
+                 <h3 className="text-sm md:text-lg font-black text-white leading-tight uppercase tracking-wider drop-shadow-md">{activeCreationPopup.category}</h3>
               </div>
 
-              {/* Flex wrapped Bubbles */}
-              <div className="flex-1 w-full flex flex-wrap items-center justify-center content-center gap-2 md:gap-3 relative z-20 pb-4">
-                {activeCreationPopup.items.map((item, idx) => {
-                   const itemCount = activeCreationPopup.items.length;
-                   // Adaptive bubble sizes based on total item count
-                   let bubbleClass = "w-16 h-16 md:w-20 md:h-20 text-[10px] md:text-xs"; // Default
-                   if (itemCount > 10) {
-                      bubbleClass = "w-[60px] h-[60px] md:w-[70px] md:h-[70px] text-[8px] md:text-[9px]";
-                   } else if (itemCount < 6) {
-                      bubbleClass = "w-20 h-20 md:w-24 md:h-24 text-[11px] md:text-sm";
-                   }
+              {/* Randomized Bubbles constrained strictly within the circle */}
+              <div className="absolute inset-0 z-20 pointer-events-none mt-12 md:mt-16">
+                {randomModalPositions.map((pos, idx) => {
+                   const item = activeCreationPopup.items[idx];
+                   if (!item) return null;
 
                    return (
                      <motion.button 
                         key={idx}
-                        whileHover={{ scale: 1.05, backgroundColor: "rgba(16,149,210,1)", color: "#fff", borderColor: "rgba(16,149,210,1)" }}
+                        whileHover={{ scale: 1.15, zIndex: 50, filter: "brightness(1.2)" }}
                         onClick={() => handleSubtitleModalClick(item)}
-                        className={`rounded-full bg-[#1095d2]/10 border border-[#1095d2]/40 text-white flex items-center justify-center text-center p-2 shadow-lg transition-colors cursor-pointer pointer-events-auto ${bubbleClass}`}
+                        // Applying the random Math offset calculated from useEffect
+                        style={{ left: `calc(50% + ${pos.x}%)`, top: `calc(50% + ${pos.y}%)`, transform: 'translate(-50%, -50%)' }}
+                        className={`absolute rounded-full border ${pos.colorClass} text-white flex items-center justify-center text-center p-3 shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-all cursor-pointer pointer-events-auto backdrop-blur-md w-[80px] h-[80px] md:w-[100px] md:h-[100px] hover:shadow-[0_0_20px_rgba(59,130,246,0.8)]`}
                      >
-                        <span className="leading-tight">{item}</span>
+                        <span className="text-[9px] md:text-[11px] font-bold leading-tight break-words line-clamp-3">{item}</span>
                      </motion.button>
                    );
                 })}
