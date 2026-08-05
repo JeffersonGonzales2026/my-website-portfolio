@@ -310,16 +310,12 @@ export default function AiDeveloper() {
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= GSAP ARCHITECTURE SCROLL LOGIC (PERFECT MATH & PERFORMANCE) =================
+  // ================= GSAP ARCHITECTURE SCROLL LOGIC (NATIVE STICKY FIX) =================
   const archSectionRef = useRef(null);
   const archTrackRef = useRef(null);
   const progressBarRef = useRef(null);
   
-  const boxRefs = useRef([]);
-  const innerBoxRefs = useRef([]);
-  const labelRefs = useRef([]);
-  const contentRefs = useRef([]);
-  
+  const [activeArchTab, setActiveArchTab] = useState(0);
   const activeArchTabRef = useRef(0);
   const [gapSize, setGapSize] = useState(400);
 
@@ -335,78 +331,27 @@ export default function AiDeveloper() {
 
     const scrollDistance = (architecture.length - 1) * gapSize;
 
-    // Default CSS state configuration using GSAP to ensure no flickering
-    architecture.forEach((_, i) => {
-      if (contentRefs.current[i]) {
-        gsap.set(contentRefs.current[i], {
-          autoAlpha: i === 0 ? 1 : 0,
-          y: i === 0 ? 0 : 20,
-          zIndex: i === 0 ? 10 : 0,
-          pointerEvents: i === 0 ? 'auto' : 'none'
-        });
-      }
-    });
-
-    const tween = gsap.to(archTrackRef.current, {
+    gsap.to(archTrackRef.current, {
       x: -scrollDistance,
-      ease: "none"
-    });
-
-    ScrollTrigger.create({
-      trigger: archSectionRef.current,
-      start: "top top", 
-      end: () => `+=${scrollDistance}`, 
-      pin: true,
-      animation: tween,
-      scrub: 1, 
-      invalidateOnRefresh: true,
-      onUpdate: (self) => {
-        // Direct width update para sa violet bar
-        if (progressBarRef.current) {
-          progressBarRef.current.style.width = `${self.progress * scrollDistance}px`;
-        }
-
-        const currentIndex = Math.min(Math.round(self.progress * (architecture.length - 1)), architecture.length - 1);
-
-        // Magpapalit lang ng styles kapag lumipat na sa bagong category
-        if (currentIndex !== activeArchTabRef.current) {
-          const oldIdx = activeArchTabRef.current;
-
-          // --- ANIMATE OUT (Patayin ang nakaraan) ---
-          if (contentRefs.current[oldIdx]) {
-            gsap.to(contentRefs.current[oldIdx], { autoAlpha: 0, y: 20, duration: 0.3, zIndex: 0, pointerEvents: 'none' });
-          }
-          if (boxRefs.current[oldIdx]) {
-            boxRefs.current[oldIdx].classList.remove('border-purple-400', 'scale-125', 'shadow-[0_0_20px_rgba(168,85,247,0.8)]');
-            boxRefs.current[oldIdx].classList.add('border-blue-500', 'shadow-[0_0_15px_rgba(59,130,246,0.6)]');
-          }
-          if (innerBoxRefs.current[oldIdx]) {
-            innerBoxRefs.current[oldIdx].classList.remove('bg-purple-400', 'animate-ping');
-            innerBoxRefs.current[oldIdx].classList.add('bg-blue-400');
-          }
-          if (labelRefs.current[oldIdx]) {
-            labelRefs.current[oldIdx].classList.remove('text-purple-400', 'drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]');
-            labelRefs.current[oldIdx].classList.add('text-blue-300/70');
+      ease: "none",
+      scrollTrigger: {
+        trigger: archSectionRef.current,
+        start: "top top", 
+        end: "bottom bottom", 
+        scrub: 1,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          // Direct DOM update sa violet bar
+          if (progressBarRef.current) {
+            progressBarRef.current.style.width = `${self.progress * scrollDistance}px`;
           }
 
-          // --- ANIMATE IN (Buhayin ang kasalukuyan) ---
-          if (contentRefs.current[currentIndex]) {
-            gsap.to(contentRefs.current[currentIndex], { autoAlpha: 1, y: 0, duration: 0.3, zIndex: 10, pointerEvents: 'auto' });
+          // Active tab tracker
+          const currentIndex = Math.min(Math.round(self.progress * (architecture.length - 1)), architecture.length - 1);
+          if (activeArchTabRef.current !== currentIndex) {
+            activeArchTabRef.current = currentIndex;
+            setActiveArchTab(currentIndex);
           }
-          if (boxRefs.current[currentIndex]) {
-            boxRefs.current[currentIndex].classList.remove('border-blue-500', 'shadow-[0_0_15px_rgba(59,130,246,0.6)]');
-            boxRefs.current[currentIndex].classList.add('border-purple-400', 'scale-125', 'shadow-[0_0_20px_rgba(168,85,247,0.8)]');
-          }
-          if (innerBoxRefs.current[currentIndex]) {
-            innerBoxRefs.current[currentIndex].classList.remove('bg-blue-400');
-            innerBoxRefs.current[currentIndex].classList.add('bg-purple-400', 'animate-ping');
-          }
-          if (labelRefs.current[currentIndex]) {
-            labelRefs.current[currentIndex].classList.remove('text-blue-300/70');
-            labelRefs.current[currentIndex].classList.add('text-purple-400', 'drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]');
-          }
-
-          activeArchTabRef.current = currentIndex;
         }
       }
     });
@@ -770,9 +715,14 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE (GSAP AUTO-SCROLL HORIZONTAL FLOWCHART) ================= */}
-        <section ref={archSectionRef} className="w-full relative z-30 border-t border-slate-900 bg-black/40 overflow-hidden min-h-screen">
-          <div className="h-screen flex flex-col justify-center items-center backdrop-blur-md pt-20 pb-10">
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE (NATIVE STICKY HORIZONTAL SCROLL) ================= */}
+        <section 
+          ref={archSectionRef} 
+          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a]"
+          style={{ height: `${Math.max(architecture.length, 1) * 80}vh` }} // Dito nanggagaling ang eksaktong vertical scroll distance
+        >
+          {/* STICKY CONTAINER - Natively locks to viewport without breaking position: fixed */}
+          <div className="sticky top-0 h-screen w-full flex flex-col justify-center items-center overflow-hidden pt-16 pb-8">
             
             {/* HEADER */}
             <div className="text-center px-4 shrink-0 w-full max-w-4xl mx-auto">
@@ -784,41 +734,35 @@ export default function AiDeveloper() {
               <p className="md:hidden mt-4 text-[10px] text-purple-400 font-mono tracking-widest opacity-70 animate-pulse">(Scroll down to navigate timeline)</p>
             </div>
 
-            {/* GSAP HORIZONTAL TRACK (PERFECT ABSOLUTE ALIGNMENT) */}
-            <div className="relative h-24 md:h-32 w-full mt-6 md:mt-10 shrink-0 overflow-hidden">
-              <div ref={archTrackRef} className="absolute left-[50vw] top-1/2 -translate-y-1/2 h-full flex items-center w-full">
+            {/* GSAP HORIZONTAL TRACK */}
+            <div className="relative h-24 md:h-32 w-full mt-6 md:mt-10 shrink-0 overflow-hidden flex items-center">
+              
+              <div ref={archTrackRef} className="flex items-center px-[50vw] flex-nowrap w-max relative" style={{ gap: `${gapSize}px` }}>
                   
                   {/* SOLID BLUE BACKGROUND LINE */}
-                  <div className="absolute top-1/2 left-0 h-[2px] bg-blue-900/50 shadow-[0_0_10px_rgba(59,130,246,0.3)] -translate-y-1/2 z-0" style={{ width: `${(architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
+                  <div className="absolute top-1/2 left-[50vw] h-[2px] bg-blue-900/50 shadow-[0_0_10px_rgba(59,130,246,0.3)] -translate-y-1/2 z-0" style={{ width: `${(architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
                   
                   {/* VIOLET PROGRESS LINE */}
-                  <div ref={progressBarRef} className="absolute top-1/2 left-0 h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 origin-left" style={{ width: '0px' }} />
+                  <div ref={progressBarRef} className="absolute top-1/2 left-[50vw] h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 origin-left" style={{ width: '0px' }} />
 
                   {architecture.map((stack, idx) => {
-                    const isInitialActive = idx === 0;
+                    const isActive = activeArchTab === idx;
 
                     return (
-                      <div key={idx} className="absolute top-1/2 -translate-y-1/2 flex flex-col items-center w-48 -ml-24 z-20" style={{ left: `${idx * gapSize}px` }}>
+                      <div key={idx} className="relative z-20 flex flex-col items-center shrink-0 w-8">
                         {/* BOX VIEW POINT */}
-                        <div 
-                          ref={el => boxRefs.current[idx] = el}
-                          className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] ${
-                            isInitialActive ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' : 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]'
-                          }`}
-                        >
-                          <div 
-                            ref={el => innerBoxRefs.current[idx] = el}
-                            className={`w-2 h-2 md:w-2.5 md:h-2.5 transition-colors ${isInitialActive ? 'bg-purple-400 animate-ping' : 'bg-blue-400'}`} 
-                          />
+                        <div className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] ${
+                          isActive 
+                            ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' // VIOLET kapag nakatutok
+                            : 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]'             // BLUE sa lahat ng iba
+                        }`}>
+                          <div className={`w-2 h-2 md:w-2.5 md:h-2.5 transition-colors ${isActive ? 'bg-purple-400 animate-ping' : 'bg-blue-400'}`} />
                         </div>
 
                         {/* Label */}
-                        <span 
-                          ref={el => labelRefs.current[idx] = el}
-                          className={`absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 ${
-                            isInitialActive ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : 'text-blue-300/70'
-                          }`}
-                        >
+                        <span className={`absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 ${
+                          isActive ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : 'text-blue-300/70'
+                        }`}>
                           {stack.category}
                         </span>
                       </div>
@@ -827,14 +771,17 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (GRID STACK) - GSAP ONLY (No CSS Transitions) */}
+            {/* DYNAMIC CONTENT BOX */}
             <div className="w-full max-w-5xl mx-auto px-4 md:px-6 shrink-0 flex-1 mt-2 md:mt-4 pb-4 grid [grid-template-areas:'stack'] items-start md:items-center">
               {architecture.map((stack, idx) => {
+                const isActive = activeArchTab === idx;
+                
                 return (
                   <div
                     key={idx}
-                    ref={el => contentRefs.current[idx] = el}
-                    className="[grid-area:stack] w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative"
+                    className={`[grid-area:stack] w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/90 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] text-center relative transition-all duration-300 ${
+                      isActive ? 'opacity-100 z-10 translate-y-0 pointer-events-auto' : 'opacity-0 z-0 translate-y-6 pointer-events-none'
+                    }`}
                   >
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
 
