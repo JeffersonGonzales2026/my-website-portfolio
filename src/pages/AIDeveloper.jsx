@@ -835,19 +835,19 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67.5 MODERN WEB EXPERIENCES ================= */}
+        {/* ================= 67.5 MODERN WEB EXPERIENCES (CLEAN GRID LAYOUT) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-5xl mx-auto">
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-10 md:mb-16">
-              <h3 className="text-3xl md:text-4xl font-black text-white mb-4">✨ Modern Web Experiences</h3>
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-12 md:mb-16">
+              <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Modern Web Experiences</h3>
               <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
               <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed">
                 Beyond functional code, I focus on crafting immersive, high-performance digital experiences that engage users through motion, aesthetics, and smooth interactivity.
               </p>
             </motion.div>
 
-            {/* GINAWANG MAS SIKSIK ANG GAP SA MOBILE (gap-2) AT BINALIK SA DATI SA PC (md:gap-4) */}
-            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="flex flex-wrap justify-center gap-2 md:gap-4">
+            {/* STRUCTURED GRID: 1 column sa mobile, 2 sa tablet, 3 sa PC */}
+            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
               {webExperiences.map((exp, idx) => {
                 const expText = typeof exp === 'string' ? exp : String(exp || '');
                 if (!expText) return null;
@@ -856,15 +856,18 @@ export default function AiDeveloper() {
                 const cleanName = expText.replace(/\(learning\)/i, '').trim();
 
                 return (
-                  /* PINALIIT ANG PADDING SA MOBILE (px-3 py-1.5) AT BINALIK SA DATI SA PC (md:px-4 md:py-2.5) */
-                  <motion.div key={idx} variants={cardPop} className={`px-3 py-1.5 md:px-4 md:py-2.5 rounded-xl border flex items-center gap-1.5 md:gap-2 backdrop-blur-sm transition-all hover:-translate-y-1 cursor-default shadow-lg ${isLearning ? 'bg-purple-950/30 border-purple-500/30 text-purple-300 hover:border-purple-400 hover:shadow-[0_0_20px_rgba(168,85,247,0.2)]' : 'bg-cyan-950/20 border-cyan-500/30 text-cyan-300 hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]'}`}>
-                    
-                    {/* PINALIIT ANG FONT SIZE SA MOBILE (text-[11px]) AT BINALIK SA DATI SA PC (md:text-sm) */}
-                    <span className="text-[11px] sm:text-xs md:text-sm font-bold tracking-wide">{cleanName}</span>
+                  <motion.div 
+                    key={idx} 
+                    variants={cardPop} 
+                    className={`w-full px-4 py-3 md:px-5 md:py-4 rounded-xl border flex items-center justify-between backdrop-blur-sm transition-all hover:-translate-y-1 cursor-default shadow-lg ${isLearning ? 'bg-purple-950/20 border-purple-500/20 text-purple-300 hover:border-purple-400/50 hover:bg-purple-900/20' : 'bg-cyan-950/10 border-cyan-500/20 text-cyan-300 hover:border-cyan-400/50 hover:bg-cyan-900/10'}`}
+                  >
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      {isLearning ? <GraduationCap size={16} className="text-purple-500 shrink-0" /> : <Sparkles size={16} className="text-cyan-500 shrink-0" />}
+                      <span className="text-sm font-semibold tracking-wide text-left truncate">{cleanName}</span>
+                    </div>
                     
                     {isLearning && (
-                      /* PINALIIT DIN ANG LEARNING BADGE SA MOBILE (text-[7px]) */
-                      <span className="ml-0.5 md:ml-1 text-[7px] md:text-[9px] bg-purple-500/20 border border-purple-500/30 text-purple-400 px-1 py-0.5 md:px-1.5 rounded uppercase tracking-wider">
+                      <span className="ml-3 shrink-0 text-[9px] bg-purple-500/10 border border-purple-500/30 text-purple-400 px-2 py-0.5 rounded uppercase tracking-wider font-mono">
                         Learning
                       </span>
                     )}
