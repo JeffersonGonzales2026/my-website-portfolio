@@ -310,54 +310,49 @@ export default function AiDeveloper() {
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= GSAP ARCHITECTURE SCROLL LOGIC (EXACT DISTANCE SYNC) =================
+  // ================= GSAP ARCHITECTURE SCROLL LOGIC (EXACT DREAM CREATIONS PATTERN) =================
   const archSectionRef = useRef(null);
   const archTrackRef = useRef(null);
   const progressBarRef = useRef(null);
-  
   const [activeArchTab, setActiveArchTab] = useState(0);
-  const activeArchTabRef = useRef(0);
-  const [gapSize, setGapSize] = useState(400);
-
-  useEffect(() => {
-    const handleResize = () => setGapSize(window.innerWidth < 768 ? 250 : 400);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   useGSAP(() => {
     if (!archSectionRef.current || !archTrackRef.current || architecture.length <= 1) return;
 
-    const scrollDistance = (architecture.length - 1) * gapSize;
+    // Direct DOM Measurement katulad ng DreamCreations.jsx
+    const getScrollAmount = () => {
+      const trackWidth = archTrackRef.current.scrollWidth;
+      return Math.max(0, trackWidth - window.innerWidth + 100);
+    };
 
-    gsap.to(archTrackRef.current, {
-      x: -scrollDistance,
-      ease: "none",
-      scrollTrigger: {
-        trigger: archSectionRef.current,
-        start: "top top", 
-        end: "bottom bottom", 
-        scrub: 1,
-        invalidateOnRefresh: true,
-        onUpdate: (self) => {
-          // Direct DOM update sa violet bar
-          if (progressBarRef.current) {
-            progressBarRef.current.style.width = `${self.progress * scrollDistance}px`;
-          }
+    const tween = gsap.to(archTrackRef.current, {
+      x: () => -getScrollAmount(),
+      ease: "none"
+    });
 
-          // Active tab tracker
-          const currentIndex = Math.min(Math.round(self.progress * (architecture.length - 1)), architecture.length - 1);
-          if (activeArchTabRef.current !== currentIndex) {
-            activeArchTabRef.current = currentIndex;
-            setActiveArchTab(currentIndex);
-          }
+    ScrollTrigger.create({
+      trigger: archSectionRef.current,
+      start: "top top", 
+      end: () => `+=${getScrollAmount()}`, // Exact distance base sa scrollWidth
+      pin: true,                           // GSAP Native Pinning
+      animation: tween,
+      scrub: 1, 
+      invalidateOnRefresh: true,
+      onUpdate: (self) => {
+        // Direct DOM update sa progress line
+        if (progressBarRef.current) {
+          progressBarRef.current.style.width = `${self.progress * getScrollAmount()}px`;
         }
+
+        const currentIndex = Math.min(Math.round(self.progress * (architecture.length - 1)), architecture.length - 1);
+        setActiveArchTab(currentIndex);
       }
     });
 
-    return () => ScrollTrigger.getAll().forEach(t => t.kill());
-  }, { scope: archSectionRef, dependencies: [architecture, gapSize] });
+    return () => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, { scope: archSectionRef, dependencies: [architecture] });
 
 
   useEffect(() => {
@@ -715,18 +710,9 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE (EXACT STICKY TIMELINE) ================= */}
-        <section 
-          ref={archSectionRef} 
-          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a]"
-          style={{ 
-            height: architecture.length > 1 
-              ? `calc(100vh + ${(architecture.length - 1) * gapSize}px)` 
-              : '100vh' 
-          }}
-        >
-          {/* STICKY CONTAINER - Lock exact distance to screen */}
-          <div className="sticky top-0 h-screen w-full flex flex-col justify-center items-center overflow-hidden pt-16 pb-8">
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE (MATCHED DREAM CREATIONS STRUCTURE) ================= */}
+        <section ref={archSectionRef} className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] overflow-hidden min-h-screen">
+          <div className="h-screen flex flex-col justify-center items-center pt-16 pb-8">
             
             {/* HEADER */}
             <div className="text-center px-4 shrink-0 w-full max-w-4xl mx-auto">
@@ -741,10 +727,10 @@ export default function AiDeveloper() {
             {/* GSAP HORIZONTAL TRACK */}
             <div className="relative h-24 md:h-32 w-full mt-6 md:mt-10 shrink-0 overflow-hidden flex items-center">
               
-              <div ref={archTrackRef} className="flex items-center px-[50vw] flex-nowrap w-max relative" style={{ gap: `${gapSize}px` }}>
+              <div ref={archTrackRef} className="flex items-center gap-24 md:gap-40 px-[50vw] flex-nowrap w-max relative">
                   
                   {/* SOLID BLUE BACKGROUND LINE */}
-                  <div className="absolute top-1/2 left-[50vw] h-[2px] bg-blue-900/50 shadow-[0_0_10px_rgba(59,130,246,0.3)] -translate-y-1/2 z-0" style={{ width: `${(architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
+                  <div className="absolute top-1/2 left-[50vw] right-[50vw] h-[2px] bg-blue-900/50 shadow-[0_0_10px_rgba(59,130,246,0.3)] -translate-y-1/2 z-0" />
                   
                   {/* VIOLET PROGRESS LINE */}
                   <div ref={progressBarRef} className="absolute top-1/2 left-[50vw] h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 origin-left" style={{ width: '0px' }} />
