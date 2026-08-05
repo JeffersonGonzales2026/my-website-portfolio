@@ -180,7 +180,7 @@ export default function DreamCreations() {
     const pcStopPoint = 1; 
 
     // 📱 SETTINGS PARA SA MOBILE VIEW
-    const mobileStart = -135; // Binalik ko sa -145 dahil ito ang sakto para sayo
+    const mobileStart = -135; 
     const mobileEnd = 0;      
     const mobileStopPoint = 0.75; 
 
@@ -303,7 +303,7 @@ export default function DreamCreations() {
     return () => {
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
-    };
+    }
   }, [isAnyModalOpen]);
 
   const [zoomScale, setZoomScale] = useState(1);
@@ -703,7 +703,7 @@ export default function DreamCreations() {
         <div id="creations-grid" className="scroll-mt-24" />
 
         {/* CREATIONS SECTION (SOLAR SYSTEM LAYOUT) - Z-Index 10 ensures the moon slides perfectly behind the Hero Text */}
-<section className="min-h-screen md:h-screen w-full px-4 py-20 md:py-10 flex flex-col items-center justify-center z-10 relative border-t border-white/10">
+        <section className="min-h-screen md:h-screen w-full px-4 py-20 md:py-10 flex flex-col items-center justify-center z-10 relative border-t border-white/10">
           <div className="mb-4 md:mb-2 text-center pointer-events-auto relative z-40 shrink-0">
             <h3 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-3 drop-shadow-2xl">Our Creations</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
@@ -737,9 +737,19 @@ export default function DreamCreations() {
               const top = 50 + radius * Math.sin(angle);
               const isGlowing = randomGlowIndex === index;
 
-              // Iba't ibang shades ng asul (Awtomatikong umiikot base sa category ID)
-              const blueShades = ['bg-[#061e3e]', 'bg-[#092a59]', 'bg-[#0d3b73]', 'bg-[#094770]', 'bg-[#073659]'];
-              const planetBg = blueShades[category.id % blueShades.length];
+              // 3D SPHERE GRADIENTS (Bright spot fading into dark blue para magmukhang totoong planetang pabilog)
+              const blueSpheres = [
+                'radial-gradient(circle at 30% 30%, #60a5fa, #061e3e)', // Light Blue to Deep Navy
+                'radial-gradient(circle at 30% 30%, #38bdf8, #092a59)', // Sky Blue to Dark Blue
+                'radial-gradient(circle at 30% 30%, #22d3ee, #0d3b73)', // Cyan to Royal Blue
+                'radial-gradient(circle at 30% 30%, #818cf8, #094770)', // Indigo to Ocean Blue
+                'radial-gradient(circle at 30% 30%, #3b82f6, #073659)'  // Solid Blue to Slate
+              ];
+              // Solid dark blues para sa text pill sa ilalim ng planeta
+              const solidDarkBlues = ['#061e3e', '#092a59', '#0d3b73', '#094770', '#073659'];
+              
+              const planet3DBackground = blueSpheres[category.id % blueSpheres.length];
+              const textPillBg = solidDarkBlues[category.id % solidDarkBlues.length];
 
               return (
                 <motion.div
@@ -751,13 +761,19 @@ export default function DreamCreations() {
                   transition={{ duration: 3 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
                   whileHover={{ scale: 1.15, zIndex: 100 }}
                 >
-                  {/* Pinalaki ang planet node: w-8/10/14 at h-8/10/14 */}
-                  <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 rounded-full ${planetBg} border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.8)]' : 'border-[#1095d2]/40 shadow-[0_0_10px_rgba(16,149,210,0.3)] group-hover:border-[#1095d2]'}`}>
-                    {/* Pinaputi ang icons (text-white) at pinalaki */}
-                    <span className="text-white [&>svg]:w-3.5 [&>svg]:h-3.5 sm:[&>svg]:w-4 sm:[&>svg]:h-4 md:[&>svg]:w-6 md:[&>svg]:h-6 transition-transform group-hover:scale-110">{category.icon}</span>
+                  {/* Pinaliit nang kaunti ang planet node at nilagyan ng 3D Sphere Style */}
+                  <div 
+                    className={`w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 rounded-full border border-white/20 flex items-center justify-center transition-all duration-300 ${isGlowing ? 'shadow-[0_0_20px_rgba(16,149,210,0.8)] scale-110' : 'shadow-[0_0_10px_rgba(16,149,210,0.3)] group-hover:shadow-[0_0_15px_rgba(16,149,210,0.6)]'}`}
+                    style={{ background: planet3DBackground }}
+                  >
+                    {/* Pinaputi ang icons (text-white), nilagyan ng shadow, at naka-scale */}
+                    <span className="text-white [&>svg]:w-3.5 [&>svg]:h-3.5 sm:[&>svg]:w-4 sm:[&>svg]:h-4 md:[&>svg]:w-5 md:[&>svg]:h-5 transition-transform group-hover:scale-110 drop-shadow-md">{category.icon}</span>
                   </div>
-                  {/* Pinalaki ang text pill at font size */}
-                  <div className={`px-2 py-0.5 md:px-3 md:py-1 rounded-full ${planetBg} border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_10px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 text-white/90 group-hover:border-[#1095d2] group-hover:text-white'}`}>
+                  {/* Text pill sa ilalim */}
+                  <div 
+                    className={`px-2 py-0.5 md:px-3 md:py-1 rounded-full border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_10px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 text-white/90 group-hover:border-[#1095d2] group-hover:text-white'}`}
+                    style={{ backgroundColor: textPillBg }}
+                  >
                     <span className="text-[6px] sm:text-[8px] md:text-[10px] font-bold leading-none block">{category.category}</span>
                   </div>
                 </motion.div>
@@ -773,8 +789,18 @@ export default function DreamCreations() {
               const actualIndex = index + 4;
               const isGlowing = randomGlowIndex === actualIndex;
 
-              const blueShades = ['bg-[#061e3e]', 'bg-[#092a59]', 'bg-[#0d3b73]', 'bg-[#094770]', 'bg-[#073659]', 'bg-[#102d4f]'];
-              const planetBg = blueShades[category.id % blueShades.length];
+              const blueSpheres = [
+                'radial-gradient(circle at 30% 30%, #60a5fa, #061e3e)',
+                'radial-gradient(circle at 30% 30%, #38bdf8, #092a59)',
+                'radial-gradient(circle at 30% 30%, #22d3ee, #0d3b73)',
+                'radial-gradient(circle at 30% 30%, #818cf8, #094770)',
+                'radial-gradient(circle at 30% 30%, #3b82f6, #073659)',
+                'radial-gradient(circle at 30% 30%, #0284c7, #102d4f)' 
+              ];
+              const solidDarkBlues = ['#061e3e', '#092a59', '#0d3b73', '#094770', '#073659', '#102d4f'];
+              
+              const planet3DBackground = blueSpheres[category.id % blueSpheres.length];
+              const textPillBg = solidDarkBlues[category.id % solidDarkBlues.length];
 
               return (
                 <motion.div
@@ -786,12 +812,16 @@ export default function DreamCreations() {
                   transition={{ duration: 4 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: index * 0.15 }}
                   whileHover={{ scale: 1.15, zIndex: 100 }}
                 >
-                  {/* Pinalaki ang planet node */}
-                  <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 rounded-full ${planetBg} border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.8)]' : 'border-[#1095d2]/40 shadow-[0_0_10px_rgba(16,149,210,0.3)] group-hover:border-[#1095d2]'}`}>
-                    <span className="text-white [&>svg]:w-3.5 [&>svg]:h-3.5 sm:[&>svg]:w-4 sm:[&>svg]:h-4 md:[&>svg]:w-6 md:[&>svg]:h-6 transition-transform group-hover:scale-110">{category.icon}</span>
+                  <div 
+                    className={`w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 rounded-full border border-white/20 flex items-center justify-center transition-all duration-300 ${isGlowing ? 'shadow-[0_0_20px_rgba(16,149,210,0.8)] scale-110' : 'shadow-[0_0_10px_rgba(16,149,210,0.3)] group-hover:shadow-[0_0_15px_rgba(16,149,210,0.6)]'}`}
+                    style={{ background: planet3DBackground }}
+                  >
+                    <span className="text-white [&>svg]:w-3.5 [&>svg]:h-3.5 sm:[&>svg]:w-4 sm:[&>svg]:h-4 md:[&>svg]:w-5 md:[&>svg]:h-5 transition-transform group-hover:scale-110 drop-shadow-md">{category.icon}</span>
                   </div>
-                  {/* Pinalaki ang text pill */}
-                  <div className={`px-2 py-0.5 md:px-3 md:py-1 rounded-full ${planetBg} border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_10px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 text-white/90 group-hover:border-[#1095d2] group-hover:text-white'}`}>
+                  <div 
+                    className={`px-2 py-0.5 md:px-3 md:py-1 rounded-full border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_10px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 text-white/90 group-hover:border-[#1095d2] group-hover:text-white'}`}
+                    style={{ backgroundColor: textPillBg }}
+                  >
                     <span className="text-[6px] sm:text-[8px] md:text-[10px] font-bold leading-none block">{category.category}</span>
                   </div>
                 </motion.div>
