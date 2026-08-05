@@ -161,7 +161,7 @@ export default function DreamCreations() {
   const processSectionRef = useRef(null);
   const processTrackRef = useRef(null);
 
-  // ================= SCROLL FOR SOLAR SYSTEM =================
+ // ================= SCROLL FOR SOLAR SYSTEM =================
   const topSectionRef = useRef(null);
   const { scrollYProgress: topScrollYProgress } = useScroll({
     target: topSectionRef,
@@ -177,20 +177,25 @@ export default function DreamCreations() {
     // 💻 SETTINGS PARA SA PC VIEW
     const pcStart = -120;  
     const pcEnd = 0;       
-    const pcStopPoint = 1; // 1 = 100% ng scroll bago tuluyang huminto
+    const pcStopPoint = 1; 
 
     // 📱 SETTINGS PARA SA MOBILE VIEW
-    const mobileStart = -128; 
-    const mobileEnd = 0;      // Iwanang 0 para saktong gitna siya hihinto
-    const mobileStopPoint = 0.75; // 0.75 = sa 75% pa lang ng pag-scroll, hihinto na siya sa gitna (0)
+    const mobileStart = -128; // Binalik ko sa -145 dahil ito ang sakto para sayo
+    const mobileEnd = 0;      
+    const mobileStopPoint = 0.75; 
 
     const startPos = isDesktop ? pcStart : mobileStart;
     const endPos = isDesktop ? pcEnd : mobileEnd;
     const stopPoint = isDesktop ? pcStopPoint : mobileStopPoint;
     
-    // I-clamp ang progress: bibilisan nitong pumunta sa gitna, at ili-lock pagdating sa stopPoint
+    // STRICT FIX: Kapag nasa pinakataas na ang screen (o nag-bounce sa mobile), 
+    // i-fo-force natin siyang bumalik sa eksaktong startPos para hindi ma-stuck sa gitna.
+    if (value <= 0.01) {
+      return `${startPos}vh`;
+    }
+
+    // Kung nag-scroll pababa, ia-apply niya yung normal na animation
     const progress = Math.min(value / stopPoint, 1);
-    
     const currentPos = startPos + (endPos - startPos) * progress;
     
     return `${currentPos}vh`;
