@@ -170,12 +170,26 @@ export default function DreamCreations() {
   
   const smoothProgress = useSpring(topScrollYProgress, { stiffness: 100, damping: 25, restDelta: 0.001 });
   
-  // DYNAMIC MOON POSITION: -115vh for PC (pushes it higher, above the text) & -145vh for Mobile
+  // DITO MO IA-ADJUST ANG MGA VALUES NG MOON (in vh / viewport height)
   const moonY = useTransform(smoothProgress, (value) => {
     const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
-    // Pinalitan ang -95 naging -115 para mas umangat ang moon sa PC view
-    const startPos = isDesktop ? -115 : -145; 
-    return `${startPos * (1 - value)}vh`;
+
+    // 💻 SETTINGS PARA SA PC VIEW
+    const pcStart = -115;  // Gaano kataas ang moon bago ka mag-scroll (negative = pataas)
+    const pcEnd = 0;       // Saan titigil ang moon pag nag-scroll pababa (0 = gitna ng solar system)
+
+    // 📱 SETTINGS PARA SA MOBILE VIEW
+    const mobileStart = -145; // Gaano kataas ang moon sa mobile bago mag-scroll
+    const mobileEnd = 0;      // Saan titigil ang moon sa mobile (0 = gitna ng solar system)
+
+    // Logika para sa pag-animate mula Start papuntang End
+    const startPos = isDesktop ? pcStart : mobileStart;
+    const endPos = isDesktop ? pcEnd : mobileEnd;
+    
+    // Kinakalkula ang eksaktong posisyon habang nag-i-scroll ka
+    const currentPos = startPos + (endPos - startPos) * value;
+    
+    return `${currentPos}vh`;
   });
   
   const moonScale = useTransform(smoothProgress, [0, 1], [1.15, 0.4]);
