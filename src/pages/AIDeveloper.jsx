@@ -310,27 +310,23 @@ export default function AiDeveloper() {
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= GSAP ARCHITECTURE SCROLL LOGIC =================
+  // ================= GSAP ARCHITECTURE SCROLL LOGIC (DIRECTIONAL COLOR & ZERO-RENDER FIX) =================
   const archSectionRef = useRef(null);
   const archTrackRef = useRef(null);
   const progressBarRef = useRef(null);
-  const [activeArchTab, setActiveArchTab] = useState(0);
 
-  // FIX 1: Auto-refresh ScrollTrigger kapag tapos na mag-load ang CMS/architecture data
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [architecture]);
+  // Pure DOM Refs para sa smooth at walang glitch na scroll
+  const boxRefs = useRef([]);
+  const innerBoxRefs = useRef([]);
+  const labelRefs = useRef([]);
+  const contentRefs = useRef([]);
 
   useGSAP(() => {
     if (!archSectionRef.current || !archTrackRef.current || architecture.length <= 1) return;
 
     const getScrollAmount = () => {
       if (!archTrackRef.current) return 0;
-      const trackWidth = archTrackRef.current.scrollWidth;
-      return Math.max(0, trackWidth - window.innerWidth);
+      return Math.max(0, archTrackRef.current.scrollWidth - window.innerWidth);
     };
 
     const tween = gsap.to(archTrackRef.current, {
@@ -343,31 +339,99 @@ export default function AiDeveloper() {
       start: "top top", 
       end: () => `+=${getScrollAmount()}`, 
       pin: true,
-      anticipatePin: 1, // FIX 2: Pipigilan ang visual jump o pagkawala sa pinaka-umpisa ng scroll
+      anticipatePin: 1,
       animation: tween,
       scrub: 1, 
       invalidateOnRefresh: true,
       onUpdate: (self) => {
+        const scrollDist = getScrollAmount();
+        const progressPx = self.progress * scrollDist;
+
+        // DIRECTION DETECTION: self.direction === 1 (Moving Right / Scrolling Down), self.direction === -1 (Moving Left / Scrolling Up)
+        const isGoingRight = self.direction >= 0;
+
+        // 1. UPDATE PROGRESS LINE COLOR BASED ON DIRECTION
         if (progressBarRef.current) {
-          progressBarRef.current.style.width = `${self.progress * getScrollAmount()}px`;
+          progressBarRef.current.style.width = `${progressPx}px`;
+          if (isGoingRight) {
+            progressBarRef.current.className = "absolute top-1/2 left-[50vw] h-[3px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 origin-left transition-colors duration-300";
+          } else {
+            progressBarRef.current.className = "absolute top-1/2 left-[50vw] h-[3px] bg-blue-500 shadow-[0_0_20px_rgba(59,130,246,1)] -translate-y-1/2 z-10 origin-left transition-colors duration-300";
+          }
         }
 
+        // 2. CALCULATE CURRENT ACTIVE INDEX
         const currentIndex = Math.min(
           Math.round(self.progress * (architecture.length - 1)), 
           architecture.length - 1
         );
-        setActiveArchTab(currentIndex);
+
+        // 3. PURE DOM MANIPULATION FOR TOUCHPOINTS & CARDS (ZERO REACT RE-RENDERS)
+        for (let i = 0; i < architecture.length; i++) {
+          const isActive = i === currentIndex;
+
+          // Outer Box Point
+          if (boxRefs.current[i]) {
+            if (isActive) {
+              boxRefs.current[i].className = isGoingRight
+                ? "w-7 h-7 md:w-9 md:h-9 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] border-purple-400 scale-125 shadow-[0_0_25px_rgba(168,85,247,0.9)]"
+                : "w-7 h-7 md:w-9 md:h-9 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] border-blue-400 scale-125 shadow-[0_0_25px_rgba(59,130,246,0.9)]";
+            } else {
+              boxRefs.current[i].className = "w-7 h-7 md:w-9 md:h-9 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] border-slate-800 shadow-none";
+            }
+          }
+
+          // Inner Blinking Dot
+          if (innerBoxRefs.current[i]) {
+            if (isActive) {
+              innerBoxRefs.current[i].className = isGoingRight
+                ? "w-2.5 h-2.5 md:w-3 md:h-3 bg-purple-400 animate-ping"
+                : "w-2.5 h-2.5 md:w-3 md:h-3 bg-blue-400 animate-ping";
+            } else {
+              innerBoxRefs.current[i].className = "w-2.5 h-2.5 md:w-3 md:h-3 bg-slate-600";
+            }
+          }
+
+          // Label Text Below Point
+          if (labelRefs.current[i]) {
+            if (isActive) {
+              labelRefs.current[i].className = isGoingRight
+                ? "absolute top-11 md:top-14 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-52 transition-colors duration-300 text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.9)]"
+                : "absolute top-11 md:top-14 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-52 transition-colors duration-300 text-blue-400 drop-shadow-[0_0_10px_rgba(59,130,246,0.9)]";
+            } else {
+              labelRefs.current[i].className = "absolute top-11 md:top-14 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-52 transition-colors duration-300 text-slate-500";
+            }
+          }
+
+          // Content Box Below
+          if (contentRefs.current[i]) {
+            if (isActive) {
+              contentRefs.current[i].style.opacity = "1";
+              contentRefs.current[i].style.visibility = "visible";
+              contentRefs.current[i].style.transform = "translateY(0px)";
+              contentRefs.current[i].style.pointerEvents = "auto";
+              contentRefs.current[i].style.zIndex = "10";
+            } else {
+              contentRefs.current[i].style.opacity = "0";
+              contentRefs.current[i].style.visibility = "hidden";
+              contentRefs.current[i].style.transform = "translateY(20px)";
+              contentRefs.current[i].style.pointerEvents = "none";
+              contentRefs.current[i].style.zIndex = "0";
+            }
+          }
+        }
       }
     });
 
-    // Forced initial calculation
-    ScrollTrigger.refresh();
+    const refreshTimer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 400);
 
     return () => {
+      clearTimeout(refreshTimer);
       st.kill();
     };
-  }, { scope: archSectionRef, dependencies: [architecture] });
-
+  }, { scope: archSectionRef, dependencies: [architecture?.length] }); // ARRAY LENGTH DEPENDENCY FIX
 
   useEffect(() => {
     const fetchData = async () => {
@@ -738,35 +802,44 @@ export default function AiDeveloper() {
               <p className="md:hidden mt-4 text-[10px] text-purple-400 font-mono tracking-widest opacity-70 animate-pulse">(Scroll down to navigate timeline)</p>
             </div>
 
-            {/* GSAP HORIZONTAL TRACK */}
+            {/* GSAP HORIZONTAL TRACK - GAP IS EXPANDED TO gap-[300px] md:gap-[500px] FOR LONGER LINES */}
             <div className="relative h-24 md:h-32 w-full mt-6 md:mt-10 shrink-0 overflow-hidden flex items-center">
               
-              <div ref={archTrackRef} className="flex items-center gap-24 md:gap-40 px-[50vw] flex-nowrap w-max relative">
+              <div ref={archTrackRef} className="flex items-center gap-[300px] md:gap-[500px] px-[50vw] flex-nowrap w-max relative">
                   
-                  {/* SOLID BLUE BACKGROUND LINE */}
-                  <div className="absolute top-1/2 left-[50vw] right-[50vw] h-[2px] bg-blue-900/50 shadow-[0_0_10px_rgba(59,130,246,0.3)] -translate-y-1/2 z-0" />
+                  {/* SOLID BLUE/DARK BACKGROUND LINE */}
+                  <div className="absolute top-1/2 left-[50vw] right-[50vw] h-[2px] bg-slate-800 shadow-none -translate-y-1/2 z-0" />
                   
-                  {/* VIOLET PROGRESS LINE */}
-                  <div ref={progressBarRef} className="absolute top-1/2 left-[50vw] h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 origin-left" style={{ width: '0px' }} />
+                  {/* DYNAMIC DIRECTIONAL PROGRESS LINE */}
+                  <div ref={progressBarRef} className="absolute top-1/2 left-[50vw] h-[3px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 origin-left transition-colors duration-300" style={{ width: '0px' }} />
 
                   {architecture.map((stack, idx) => {
-                    const isActive = activeArchTab === idx;
+                    const isInitialActive = idx === 0;
 
                     return (
                       <div key={idx} className="relative z-20 flex flex-col items-center shrink-0 w-8">
                         {/* BOX VIEW POINT */}
-                        <div className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] ${
-                          isActive 
-                            ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]'
-                            : 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]'
-                        }`}>
-                          <div className={`w-2 h-2 md:w-2.5 md:h-2.5 transition-colors ${isActive ? 'bg-purple-400 animate-ping' : 'bg-blue-400'}`} />
+                        <div 
+                          ref={el => boxRefs.current[idx] = el}
+                          className={`w-7 h-7 md:w-9 md:h-9 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] ${
+                            isInitialActive 
+                              ? 'border-purple-400 scale-125 shadow-[0_0_25px_rgba(168,85,247,0.9)]'
+                              : 'border-slate-800 shadow-none'
+                          }`}
+                        >
+                          <div 
+                            ref={el => innerBoxRefs.current[idx] = el}
+                            className={`w-2.5 h-2.5 md:w-3 md:h-3 transition-colors ${isInitialActive ? 'bg-purple-400 animate-ping' : 'bg-slate-600'}`} 
+                          />
                         </div>
 
                         {/* Label */}
-                        <span className={`absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 ${
-                          isActive ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : 'text-blue-300/70'
-                        }`}>
+                        <span 
+                          ref={el => labelRefs.current[idx] = el}
+                          className={`absolute top-11 md:top-14 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-52 transition-colors duration-300 ${
+                            isInitialActive ? 'text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.9)]' : 'text-slate-500'
+                          }`}
+                        >
                           {stack.category}
                         </span>
                       </div>
@@ -775,17 +848,23 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX */}
+            {/* DYNAMIC CONTENT BOX (PURE STACK REFS) */}
             <div className="w-full max-w-5xl mx-auto px-4 md:px-6 shrink-0 flex-1 mt-2 md:mt-4 pb-4 grid [grid-template-areas:'stack'] items-start md:items-center">
               {architecture.map((stack, idx) => {
-                const isActive = activeArchTab === idx;
+                const isInitialActive = idx === 0;
                 
                 return (
                   <div
                     key={idx}
-                    className={`[grid-area:stack] w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/90 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] text-center relative transition-all duration-300 ${
-                      isActive ? 'opacity-100 z-10 translate-y-0 pointer-events-auto' : 'opacity-0 z-0 translate-y-6 pointer-events-none'
-                    }`}
+                    ref={el => contentRefs.current[idx] = el}
+                    className="[grid-area:stack] w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/90 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] text-center relative transition-all duration-300"
+                    style={{
+                      opacity: isInitialActive ? 1 : 0,
+                      visibility: isInitialActive ? 'visible' : 'hidden',
+                      transform: isInitialActive ? 'translateY(0px)' : 'translateY(20px)',
+                      pointerEvents: isInitialActive ? 'auto' : 'none',
+                      zIndex: isInitialActive ? 10 : 0
+                    }}
                   >
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
 
