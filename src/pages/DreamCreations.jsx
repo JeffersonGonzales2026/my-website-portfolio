@@ -672,6 +672,22 @@ export default function DreamCreations() {
         .animate-nightSkyCycle { animation: nightSkyCycle 25s ease-in-out infinite alternate; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* BAGONG MANIPIS NA SCROLLBAR PARA SA CIRCLE MODAL */
+        .custom-circle-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-circle-scrollbar::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 10px;
+        }
+        .custom-circle-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(16, 149, 210, 0.5);
+          border-radius: 10px;
+        }
+        .custom-circle-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(16, 149, 210, 0.8);
+        }
       `}</style>
 
       <div className="absolute inset-0 z-0 opacity-80 pointer-events-none">
@@ -1208,12 +1224,12 @@ export default function DreamCreations() {
                 <div className="w-12 h-12 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(16,149,210,0.4)]">{activeCreationPopup.icon}</div>
                 <div>
                   <h3 className="text-lg md:text-xl font-bold text-white leading-tight px-4">{activeCreationPopup.category}</h3>
-                  <p className="text-[10px] md:text-xs text-white/50 mt-1">Scroll down to view works or arrow keys for web users</p>
+                  <p className="text-[10px] md:text-xs text-white/50 mt-1">Scroll down to view works</p>
                 </div>
               </div>
               
-              {/* Scrollable List Container inside the Circle (Hidden Scrollbar) */}
-              <div className="w-[85%] md:w-[75%] mx-auto flex-1 overflow-y-auto hide-scrollbar pb-12 relative z-10">
+              {/* Scrollable List Container inside the Circle (Custom Thin Scrollbar) */}
+<div className="w-[85%] md:w-[75%] mx-auto flex-1 overflow-y-auto custom-circle-scrollbar pr-2 pb-12 relative z-10">
                 <ul className="flex flex-col gap-2 w-full pb-8">
                   {activeCreationPopup.items.map((item, idx) => (
                     <li key={idx} className="w-full">
