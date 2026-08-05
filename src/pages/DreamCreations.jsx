@@ -179,7 +179,7 @@ export default function DreamCreations() {
     const pcEnd = 0;       // Saan titigil ang moon pag nag-scroll pababa (0 = gitna ng solar system)
 
     // 📱 SETTINGS PARA SA MOBILE VIEW
-    const mobileStart = -130; // Gaano kataas ang moon sa mobile bago mag-scroll
+    const mobileStart = -120; // Gaano kataas ang moon sa mobile bago mag-scroll
     const mobileEnd = 0;      // Saan titigil ang moon sa mobile (0 = gitna ng solar system)
 
     // Logika para sa pag-animate mula Start papuntang End
@@ -683,7 +683,7 @@ export default function DreamCreations() {
         <section className="relative min-h-[90vh] flex flex-col items-center justify-center text-center z-30 pt-48 pb-20 px-6">
           <motion.div initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }} transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }} className="absolute top-1/2 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1095d2]/60 to-transparent -z-10" />
           
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="max-w-4xl mx-auto backdrop-blur-sm bg-[#050508]/10 p-8 rounded-3xl border border-transparent shadow-[0_0_40px_rgba(0,0,0,0.3)] z-40 mt-35 md:mt-60 pointer-events-auto">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="max-w-4xl mx-auto backdrop-blur-sm bg-[#050508]/10 p-8 rounded-3xl border border-transparent shadow-[0_0_40px_rgba(0,0,0,0.3)] z-40 mt-40 md:mt-60 pointer-events-auto">
             <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">Let's make your{' '}<br className="hidden md:block" /><span className="text-[#1095d2]">dream</span> a reality.</h2>
             <div className="space-y-4 text-base md:text-lg text-white/80 leading-relaxed max-w-3xl mx-auto text-center font-medium">
               <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-2xl mx-auto">For over a decade, Dream Creations has transformed ideas into compelling visual experiences while empowering dreamers (clients) and creators (designers) to bring their visions to life.</p>
