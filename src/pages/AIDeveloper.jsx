@@ -310,13 +310,17 @@ export default function AiDeveloper() {
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= GSAP ARCHITECTURE SCROLL LOGIC (PERFORMANCE FIXED) =================
+  // ================= GSAP ARCHITECTURE SCROLL LOGIC (100% PERFORMANCE FIXED) =================
   const archSectionRef = useRef(null);
   const archTrackRef = useRef(null);
   const progressBarRef = useRef(null);
   
-  const [activeArchTab, setActiveArchTab] = useState(0);
-  const activeArchTabRef = useRef(0); // Pinipigilan ang spam refresh ni React
+  // WALA NANG USESTATE DITO! PURE REFS NA LANG PARA HINDI MAG-CRASH ANG BROWSER
+  const boxRefs = useRef([]);
+  const innerBoxRefs = useRef([]);
+  const labelRefs = useRef([]);
+  const contentRefs = useRef([]);
+  
   const [gapSize, setGapSize] = useState(400);
 
   // Auto-adjust spacing on resize
@@ -327,7 +331,6 @@ export default function AiDeveloper() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // GSAP ScrollTrigger
   useGSAP(() => {
     if (!archSectionRef.current || !archTrackRef.current || architecture.length <= 1) return;
 
@@ -347,25 +350,45 @@ export default function AiDeveloper() {
       scrub: 1, 
       invalidateOnRefresh: true,
       onUpdate: (self) => {
-        // Direct update sa Violet Line para super smooth kahit walang re-render
+        // 1. I-animate ang violet line nang direkta sa DOM
         if (progressBarRef.current) {
           progressBarRef.current.style.width = `${self.progress * (architecture.length - 1) * gapSize}px`;
         }
 
-        // Kunin kung anong tab dapat ang active ngayon
+        // 2. Kunin ang kasalukuyang tab
         const currentIndex = Math.min(Math.round(self.progress * (architecture.length - 1)), architecture.length - 1);
-        
-        // I-update lang si React kung nagbago na talaga ang index (Pang-iwas sa pagka-blanko)
-        if (activeArchTabRef.current !== currentIndex) {
-          activeArchTabRef.current = currentIndex;
-          setActiveArchTab(currentIndex);
+
+        // 3. Direktang papalit-palitin ang kulay at display gamit ang FOR LOOP. Walang React Render!
+        for (let i = 0; i < architecture.length; i++) {
+          const isActive = i === currentIndex;
+          
+          if (boxRefs.current[i]) {
+            boxRefs.current[i].className = isActive 
+              ? "w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]"
+              : "w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]";
+          }
+          if (innerBoxRefs.current[i]) {
+            innerBoxRefs.current[i].className = isActive
+              ? "w-2 h-2 md:w-2.5 md:h-2.5 bg-purple-400 animate-ping"
+              : "w-2 h-2 md:w-2.5 md:h-2.5 bg-blue-400";
+          }
+          if (labelRefs.current[i]) {
+            labelRefs.current[i].className = isActive
+              ? "absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]"
+              : "absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 text-blue-300/70";
+          }
+          if (contentRefs.current[i]) {
+            contentRefs.current[i].style.opacity = isActive ? "1" : "0";
+            contentRefs.current[i].style.visibility = isActive ? "visible" : "hidden";
+            contentRefs.current[i].style.transform = isActive ? "translateY(0px)" : "translateY(20px)";
+            contentRefs.current[i].style.pointerEvents = isActive ? "auto" : "none";
+            contentRefs.current[i].style.zIndex = isActive ? "10" : "0";
+          }
         }
       }
     });
 
-    return () => {
-      ScrollTrigger.getAll().forEach(t => t.kill());
-    };
+    return () => ScrollTrigger.getAll().forEach(t => t.kill());
   }, { scope: archSectionRef, dependencies: [architecture, gapSize] });
 
 
@@ -750,24 +773,30 @@ export default function AiDeveloper() {
                   <div ref={progressBarRef} className="absolute top-1/2 left-[50vw] h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 origin-left" style={{ width: '0px' }} />
 
                   {architecture.map((stack, idx) => {
-                    // Tanging ang kasalukuyang nakatutok lang ang active
-                    const isActive = activeArchTab === idx;
+                    const isInitialActive = idx === 0;
 
                     return (
                       <div key={idx} className="relative z-20 flex flex-col items-center shrink-0 w-8">
                         {/* BOX VIEW POINT */}
-                        <div className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] ${
-                          isActive 
-                            ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' // VIOLET kapag active
-                            : 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]'             // BLUE kapag inactive
-                        }`}>
-                          <div className={`w-2 h-2 md:w-2.5 md:h-2.5 transition-colors ${isActive ? 'bg-purple-400 animate-ping' : 'bg-blue-400'}`} />
+                        <div 
+                          ref={el => boxRefs.current[idx] = el}
+                          className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] ${
+                            isInitialActive ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' : 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]'
+                          }`}
+                        >
+                          <div 
+                            ref={el => innerBoxRefs.current[idx] = el}
+                            className={`w-2 h-2 md:w-2.5 md:h-2.5 ${isInitialActive ? 'bg-purple-400 animate-ping' : 'bg-blue-400'}`} 
+                          />
                         </div>
 
                         {/* Label */}
-                        <span className={`absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 ${
-                          isActive ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : 'text-blue-300/70'
-                        }`}>
+                        <span 
+                          ref={el => labelRefs.current[idx] = el}
+                          className={`absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 ${
+                            isInitialActive ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : 'text-blue-300/70'
+                          }`}
+                        >
                           {stack.category}
                         </span>
                       </div>
@@ -776,18 +805,23 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (GRID STACK) - Hinding-hindi na mawawala dahil lahat ay permanenteng nandoon, opacity na lang ang nagpapalit! */}
+            {/* DYNAMIC CONTENT BOX (GRID STACK) - WALA NANG REACT LOGIC DITO, 100% STATIC KAYA WALANG MAG-CRASH */}
             <div className="w-full max-w-5xl mx-auto px-4 md:px-6 shrink-0 flex-1 mt-2 md:mt-4 pb-4 grid [grid-template-areas:'stack'] items-start md:items-center">
               {architecture.map((stack, idx) => {
-                const isActive = activeArchTab === idx;
+                const isInitialActive = idx === 0;
                 
                 return (
                   <div
                     key={idx}
-                    /* CSS classes na lang ang nagko-kontrol, kaya wala nang GSAP vs React Conflict! */
-                    className={`[grid-area:stack] w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative transition-all duration-500 ease-in-out ${
-                      isActive ? 'opacity-100 z-10 translate-y-0 pointer-events-auto' : 'opacity-0 z-0 translate-y-8 pointer-events-none'
-                    }`}
+                    ref={el => contentRefs.current[idx] = el}
+                    className="[grid-area:stack] w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative transition-all duration-500 ease-in-out"
+                    style={{
+                      opacity: isInitialActive ? 1 : 0,
+                      visibility: isInitialActive ? 'visible' : 'hidden',
+                      transform: isInitialActive ? 'translateY(0px)' : 'translateY(20px)',
+                      pointerEvents: isInitialActive ? 'auto' : 'none',
+                      zIndex: isInitialActive ? 10 : 0
+                    }}
                   >
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
 
