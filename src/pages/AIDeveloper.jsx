@@ -310,7 +310,7 @@ export default function AiDeveloper() {
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= GSAP ARCHITECTURE SCROLL LOGIC (NATIVE STICKY FIX) =================
+  // ================= GSAP ARCHITECTURE SCROLL LOGIC (EXACT DISTANCE SYNC) =================
   const archSectionRef = useRef(null);
   const archTrackRef = useRef(null);
   const progressBarRef = useRef(null);
@@ -715,13 +715,17 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE (NATIVE STICKY HORIZONTAL SCROLL) ================= */}
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE (EXACT STICKY TIMELINE) ================= */}
         <section 
           ref={archSectionRef} 
           className="w-full relative z-30 border-t border-slate-900 bg-[#02040a]"
-          style={{ height: `${Math.max(architecture.length, 1) * 80}vh` }} // Dito nanggagaling ang eksaktong vertical scroll distance
+          style={{ 
+            height: architecture.length > 1 
+              ? `calc(100vh + ${(architecture.length - 1) * gapSize}px)` 
+              : '100vh' 
+          }}
         >
-          {/* STICKY CONTAINER - Natively locks to viewport without breaking position: fixed */}
+          {/* STICKY CONTAINER - Lock exact distance to screen */}
           <div className="sticky top-0 h-screen w-full flex flex-col justify-center items-center overflow-hidden pt-16 pb-8">
             
             {/* HEADER */}
@@ -753,8 +757,8 @@ export default function AiDeveloper() {
                         {/* BOX VIEW POINT */}
                         <div className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] ${
                           isActive 
-                            ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' // VIOLET kapag nakatutok
-                            : 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]'             // BLUE sa lahat ng iba
+                            ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]'
+                            : 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]'
                         }`}>
                           <div className={`w-2 h-2 md:w-2.5 md:h-2.5 transition-colors ${isActive ? 'bg-purple-400 animate-ping' : 'bg-blue-400'}`} />
                         </div>
