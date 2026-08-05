@@ -737,21 +737,28 @@ export default function DreamCreations() {
               const top = 50 + radius * Math.sin(angle);
               const isGlowing = randomGlowIndex === index;
 
+              // Iba't ibang shades ng asul (Awtomatikong umiikot base sa category ID)
+              const blueShades = ['bg-[#061e3e]', 'bg-[#092a59]', 'bg-[#0d3b73]', 'bg-[#094770]', 'bg-[#073659]'];
+              const planetBg = blueShades[category.id % blueShades.length];
+
               return (
                 <motion.div
                   key={category.id}
                   style={{ left: `${left}%`, top: `${top}%` }}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 z-30 group cursor-pointer"
+                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 z-30 group cursor-pointer"
                   onClick={() => setActiveCreationPopup(category)}
                   animate={{ y: [0, -4, 0] }}
                   transition={{ duration: 3 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
                   whileHover={{ scale: 1.15, zIndex: 100 }}
                 >
-                  <div className={`w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-[#050b14] border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_15px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 shadow-[0_0_10px_rgba(16,149,210,0.2)] group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]'}`}>
-                    <span className={`transition-colors [&>svg]:w-2.5 [&>svg]:h-2.5 sm:[&>svg]:w-3 sm:[&>svg]:h-3 md:[&>svg]:w-4 md:[&>svg]:h-4 ${isGlowing ? 'text-white' : 'text-[#1095d2] group-hover:text-white'}`}>{category.icon}</span>
+                  {/* Pinalaki ang planet node: w-8/10/14 at h-8/10/14 */}
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 rounded-full ${planetBg} border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.8)]' : 'border-[#1095d2]/40 shadow-[0_0_10px_rgba(16,149,210,0.3)] group-hover:border-[#1095d2]'}`}>
+                    {/* Pinaputi ang icons (text-white) at pinalaki */}
+                    <span className="text-white [&>svg]:w-3.5 [&>svg]:h-3.5 sm:[&>svg]:w-4 sm:[&>svg]:h-4 md:[&>svg]:w-6 md:[&>svg]:h-6 transition-transform group-hover:scale-110">{category.icon}</span>
                   </div>
-                  <div className={`px-1.5 py-0.5 md:px-2 md:py-0.5 rounded-full bg-[#050b14] border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_10px_rgba(16,149,210,0.4)]' : 'border-white/10 text-white/80 group-hover:border-[#1095d2]/50 group-hover:text-white'}`}>
-                    <span className="text-[5px] sm:text-[6px] md:text-[8px] font-bold leading-none block">{category.category}</span>
+                  {/* Pinalaki ang text pill at font size */}
+                  <div className={`px-2 py-0.5 md:px-3 md:py-1 rounded-full ${planetBg} border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_10px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 text-white/90 group-hover:border-[#1095d2] group-hover:text-white'}`}>
+                    <span className="text-[6px] sm:text-[8px] md:text-[10px] font-bold leading-none block">{category.category}</span>
                   </div>
                 </motion.div>
               );
@@ -766,26 +773,30 @@ export default function DreamCreations() {
               const actualIndex = index + 4;
               const isGlowing = randomGlowIndex === actualIndex;
 
+              const blueShades = ['bg-[#061e3e]', 'bg-[#092a59]', 'bg-[#0d3b73]', 'bg-[#094770]', 'bg-[#073659]', 'bg-[#102d4f]'];
+              const planetBg = blueShades[category.id % blueShades.length];
+
               return (
                 <motion.div
                   key={category.id}
                   style={{ left: `${left}%`, top: `${top}%` }}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 z-30 group cursor-pointer"
+                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 z-30 group cursor-pointer"
                   onClick={() => setActiveCreationPopup(category)}
                   animate={{ y: [0, (index % 2 === 0 ? -5 : 5), 0] }}
                   transition={{ duration: 4 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: index * 0.15 }}
                   whileHover={{ scale: 1.15, zIndex: 100 }}
                 >
-                  <div className={`w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-[#050b14] border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_15px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 shadow-[0_0_10px_rgba(16,149,210,0.2)] group-hover:bg-[#1095d2]/20 group-hover:border-[#1095d2]'}`}>
-                    <span className={`transition-colors [&>svg]:w-2.5 [&>svg]:h-2.5 sm:[&>svg]:w-3 sm:[&>svg]:h-3 md:[&>svg]:w-4 md:[&>svg]:h-4 ${isGlowing ? 'text-white' : 'text-[#1095d2] group-hover:text-white'}`}>{category.icon}</span>
+                  {/* Pinalaki ang planet node */}
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 rounded-full ${planetBg} border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.8)]' : 'border-[#1095d2]/40 shadow-[0_0_10px_rgba(16,149,210,0.3)] group-hover:border-[#1095d2]'}`}>
+                    <span className="text-white [&>svg]:w-3.5 [&>svg]:h-3.5 sm:[&>svg]:w-4 sm:[&>svg]:h-4 md:[&>svg]:w-6 md:[&>svg]:h-6 transition-transform group-hover:scale-110">{category.icon}</span>
                   </div>
-                  <div className={`px-1.5 py-0.5 md:px-2 md:py-0.5 rounded-full bg-[#050b14] border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_10px_rgba(16,149,210,0.4)]' : 'border-white/10 text-white/80 group-hover:border-[#1095d2]/50 group-hover:text-white'}`}>
-                    <span className="text-[5px] sm:text-[6px] md:text-[8px] font-bold leading-none block">{category.category}</span>
+                  {/* Pinalaki ang text pill */}
+                  <div className={`px-2 py-0.5 md:px-3 md:py-1 rounded-full ${planetBg} border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_10px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 text-white/90 group-hover:border-[#1095d2] group-hover:text-white'}`}>
+                    <span className="text-[6px] sm:text-[8px] md:text-[10px] font-bold leading-none block">{category.category}</span>
                   </div>
                 </motion.div>
               );
             })}
-
           </div>
         </section>
       </div>
