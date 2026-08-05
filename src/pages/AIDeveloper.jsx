@@ -310,7 +310,7 @@ export default function AiDeveloper() {
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= 67. DEVELOPMENT ARCHITECTURE (MANUAL, KEYBOARD, & SIDE-TAP LOGIC) =================
+  // ================= 67. DEVELOPMENT ARCHITECTURE (MANUAL, KEYBOARD, & SCREEN CLICK/TAP LOGIC) =================
   const [activeArchTab, setActiveArchTab] = useState(0);
   const [gapSize, setGapSize] = useState(400);
 
@@ -330,7 +330,7 @@ export default function AiDeveloper() {
     setActiveArchTab(prev => (prev > 0 ? prev - 1 : prev));
   };
 
-  // Keyboard Arrow Keys Support
+  // Keyboard Arrow Keys Support (PC)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowRight') {
@@ -344,16 +344,16 @@ export default function AiDeveloper() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [architecture.length]);
 
-  // Screen Side-Tap Logic (Instagram Story style)
+  // Screen Side-Tap / Mouse Click Logic (Gagana sa PC Mouse Click at Phone Tap)
   const handleScreenTap = (e) => {
     const clickX = e.clientX;
     const screenWidth = window.innerWidth;
 
-    // Kung pinindot ay nasa kanang kalahati ng screen (Right 50%)
+    // Right 50% of the screen
     if (clickX > screenWidth / 2) {
       handleNextArch();
     } 
-    // Kung pinindot ay nasa kaliwang kalahati (Left 50%)
+    // Left 50% of the screen
     else {
       handlePrevArch();
     }
@@ -714,53 +714,41 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE (SIDE-TAP & 4-COLUMN MOBILE) ================= */}
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE (CLICK/TAP & 4-COLUMN MOBILE) ================= */}
         <section 
-          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] overflow-hidden min-h-screen py-20 cursor-pointer select-none"
+          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] min-h-screen py-16 cursor-pointer select-none flex flex-col justify-center"
           onClick={handleScreenTap}
         >
-          <div className="flex flex-col justify-center items-center w-full max-w-7xl mx-auto">
+          <div className="w-full max-w-7xl mx-auto flex flex-col items-center relative z-10">
             
-            {/* HEADER */}
-            <div className="text-center px-4 shrink-0 w-full max-w-4xl mx-auto pointer-events-none">
+            {/* HEADER & INSTRUCTIONS (Visible on both PC and Phone) */}
+            <div className="text-center px-4 w-full max-w-4xl mx-auto pointer-events-none mb-6 md:mb-8">
               <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Architecture Pipeline</h3>
-              <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
-              <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed hidden md:block">
-                A structured engineering flowchart detailing every phase of my development process. Use the arrows, keyboard, or tap the sides of the screen to navigate.
+              <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)] mb-6" />
+              
+              <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+                A structured engineering flowchart detailing every phase of my development process.
               </p>
-              <p className="md:hidden mt-4 text-[10px] text-purple-400 font-mono tracking-widest opacity-70 animate-pulse">
-                (Tap the left or right side of your screen to navigate)
-              </p>
+              
+              {/* Universal Instruction Tag */}
+              <div className="mt-4 inline-block bg-purple-900/30 border border-purple-500/30 rounded-full px-4 py-1.5 backdrop-blur-sm">
+                <p className="text-purple-300 font-mono text-[9px] md:text-xs tracking-widest uppercase">
+                  Press arrow keys or click/tap sides of screen to navigate
+                </p>
+              </div>
             </div>
 
-            {/* NEXT & PREV BUTTONS */}
+            {/* TAB COUNTER (No more Arrow Buttons) */}
             <div 
-              className="flex items-center justify-center gap-6 mt-10 md:mt-12 mb-4 z-40 relative"
-              onClick={(e) => e.stopPropagation()} /* Protektado pa rin ang mismong buttons */
+              className="flex items-center justify-center mb-6 z-40 relative pointer-events-none"
             >
-              <button 
-                onClick={handlePrevArch}
-                disabled={activeArchTab === 0}
-                className="w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center border-2 border-white/10 bg-black/40 text-white/50 hover:text-[#1095d2] hover:border-[#1095d2] hover:bg-[#1095d2]/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer"
-              >
-                <ChevronLeft size={24} />
-              </button>
-              
-              <div className="font-mono text-sm text-slate-400 font-bold bg-black/40 px-6 py-2 rounded-full border border-white/5 shadow-inner select-none">
+              <div className="font-mono text-sm text-slate-400 font-bold bg-black/40 px-8 py-2 rounded-full border border-white/5 shadow-inner">
                 <span className="text-purple-400">{String(activeArchTab + 1).padStart(2, '0')}</span> / {String(architecture.length).padStart(2, '0')}
               </div>
-
-              <button 
-                onClick={handleNextArch}
-                disabled={activeArchTab === architecture.length - 1}
-                className="w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center border-2 border-white/10 bg-black/40 text-white/50 hover:text-purple-400 hover:border-purple-400 hover:bg-purple-500/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer"
-              >
-                <ChevronRight size={24} />
-              </button>
             </div>
 
             {/* TIMELINE TRACK */}
-            <div className="relative h-24 md:h-40 w-full mt-4 md:mt-6 overflow-hidden flex items-center justify-center pointer-events-none">
+            <div className="relative h-24 md:h-32 w-full mb-6 md:mb-10 overflow-hidden flex items-center justify-center pointer-events-none">
               
               {/* SLIDING TRACK CONTAINER */}
               <div 
@@ -789,7 +777,7 @@ export default function AiDeveloper() {
                         className="absolute top-1/2 flex flex-col items-center z-20 cursor-pointer group pointer-events-auto"
                         style={{ left: `${idx * gapSize}px`, transform: 'translate(-50%, -50%)' }}
                         onClick={(e) => {
-                          e.stopPropagation(); // Kapag mismong tuldok ang pinindot, pupunta sa exact tab
+                          e.stopPropagation(); // Pinipigilan mag-trigger ang side tap kung ang mismong tuldok ang pinindot
                           setActiveArchTab(idx);
                         }} 
                       >
@@ -826,9 +814,10 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (4-COLUMNS ON MOBILE) */}
+            {/* DYNAMIC CONTENT BOX (FIXED HEIGHT/COLLAPSE ISSUE FOR PC & 4-COLUMNS ON MOBILE) */}
             <div 
-              className="w-full max-w-5xl mx-auto px-4 md:px-6 shrink-0 flex-1 mt-6 pb-10 grid [grid-template-areas:'stack'] items-start md:items-center pointer-events-none"
+              className="w-full max-w-5xl mx-auto px-4 md:px-6 grid [grid-template-areas:'stack'] items-center cursor-default z-20 relative"
+              onClick={(e) => e.stopPropagation()} /* Pinipigilan ang side-tap kung pinindot/may highlight sa loob ng box */
             >
               {architecture.map((stack, idx) => {
                 const isActive = activeArchTab === idx;
@@ -836,25 +825,25 @@ export default function AiDeveloper() {
                 return (
                   <div
                     key={idx}
-                    className={`[grid-area:stack] w-full h-auto p-4 md:p-12 rounded-3xl bg-slate-950/90 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] text-center relative transition-all duration-500 ease-in-out cursor-default ${
-                      isActive ? 'opacity-100 z-10 translate-y-0' : 'opacity-0 z-0 translate-y-10'
+                    className={`[grid-area:stack] w-full p-6 md:p-12 rounded-3xl bg-slate-950/90 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] text-center transition-all duration-500 ease-in-out ${
+                      isActive ? 'opacity-100 z-10 translate-y-0 pointer-events-auto' : 'opacity-0 z-0 translate-y-10 pointer-events-none'
                     }`}
                   >
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
 
-                    <h4 className="text-sm md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10 transition-colors">
+                    <h4 className="text-sm md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10">
                       <span className="text-slate-600 mr-1 md:mr-2">[{String(idx + 1).padStart(2, '0')}]</span>
                       {stack.category} Stack
                     </h4>
                     
-                    {/* BAGONG GRID SYSTEM: 4 Columns sa phone, auto-wrap sa desktop */}
-                    <div className="grid grid-cols-4 md:flex md:flex-wrap justify-items-center justify-center gap-x-2 gap-y-4 md:gap-10 pb-2">
+                    {/* 4-COLUMN MOBILE GRID / AUTO-WRAP DESKTOP */}
+                    <div className="grid grid-cols-4 md:flex md:flex-wrap justify-items-center justify-center gap-x-2 gap-y-6 md:gap-10 pb-2">
                       {stack.items?.map((tool, j) => {
                         const isLearning = tool.name.toLowerCase().includes('(learning)');
                         const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
                         
                         return (
-                          <div key={j} className="flex flex-col items-center gap-1.5 md:gap-3 w-full group">
+                          <div key={j} className="flex flex-col items-center gap-2 md:gap-3 w-full group cursor-pointer">
                             
                             {/* In-adjust na sukat para magkasya ang 4 sa mobile (w-14 h-14) */}
                             <div className={`w-14 h-14 sm:w-16 sm:h-16 md:w-28 md:h-28 rounded-2xl md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
@@ -873,7 +862,7 @@ export default function AiDeveloper() {
                             </div>
 
                             {/* Label Text - Responsive Text Size */}
-                            <span className="text-[9px] sm:text-[10px] md:text-sm font-semibold text-slate-300 text-center leading-tight mt-0.5 md:mt-1 break-words w-full px-1">
+                            <span className="text-[9px] sm:text-[10px] md:text-sm font-semibold text-slate-300 text-center leading-tight break-words w-full px-1">
                               {cleanName}
                             </span>
 
