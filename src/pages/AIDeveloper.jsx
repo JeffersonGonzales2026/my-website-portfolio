@@ -714,41 +714,26 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE (FIXED PC LAYOUT & 4-COLUMN MOBILE) ================= */}
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE (CLEAN UI & FIXED GAP LAYOUT) ================= */}
         <section 
-          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] min-h-screen pt-24 md:pt-32 pb-20 cursor-pointer select-none"
+          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] min-h-screen pt-24 md:pt-32 pb-20 cursor-pointer select-none block"
           onClick={handleScreenTap}
         >
-          <div className="w-full max-w-7xl mx-auto flex flex-col items-center relative z-10">
+          <div className="w-full max-w-7xl mx-auto flex flex-col items-center justify-start relative z-10">
             
-            {/* HEADER & INSTRUCTIONS */}
-            <div className="text-center px-4 w-full max-w-4xl mx-auto pointer-events-none mb-6 md:mb-10">
+            {/* HEADER & COMBINED INSTRUCTIONS */}
+            <div className="text-center px-6 w-full max-w-4xl mx-auto pointer-events-none mb-12 md:mb-16">
               <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Architecture Pipeline</h3>
               <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)] mb-6" />
               
-              <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
-                A structured engineering flowchart detailing every phase of my development process.
+              <p className="text-slate-400 text-[13px] md:text-base max-w-2xl mx-auto leading-relaxed">
+                A structured engineering flowchart detailing every phase of my development process. <br className="hidden md:block" />
+                <span className="text-purple-400/80 italic">(Press arrow keys or tap sides of screen to navigate)</span>
               </p>
-              
-              {/* Universal Instruction Tag */}
-              <div className="mt-5 inline-block bg-purple-900/30 border border-purple-500/30 rounded-full px-5 py-2 backdrop-blur-sm">
-                <p className="text-purple-300 font-mono text-[10px] md:text-xs tracking-widest uppercase">
-                  Press arrow keys or click/tap sides of screen to navigate
-                </p>
-              </div>
-            </div>
-
-            {/* TAB COUNTER */}
-            <div 
-              className="flex items-center justify-center mb-6 md:mb-10 z-40 relative pointer-events-none"
-            >
-              <div className="font-mono text-sm md:text-base text-slate-400 font-bold bg-black/40 px-8 py-2.5 rounded-full border border-white/5 shadow-inner">
-                <span className="text-purple-400">{String(activeArchTab + 1).padStart(2, '0')}</span> / {String(architecture.length).padStart(2, '0')}
-              </div>
             </div>
 
             {/* TIMELINE TRACK */}
-            <div className="relative h-20 md:h-24 w-full mb-8 md:mb-12 overflow-hidden flex items-center justify-center pointer-events-none">
+            <div className="relative h-24 md:h-28 w-full mb-8 md:mb-12 overflow-hidden flex items-center justify-center pointer-events-none">
               
               {/* SLIDING TRACK CONTAINER */}
               <div 
@@ -814,10 +799,10 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (FIXED CUT-OFF ISSUE) */}
+            {/* DYNAMIC CONTENT BOX (FIXED UNIFORM GAP) */}
             <div 
               className="w-full max-w-5xl mx-auto px-4 md:px-6 grid [grid-template-areas:'stack'] items-start cursor-default z-20 relative"
-              onClick={(e) => e.stopPropagation()} /* Pinipigilan ang side-tap kung pinindot/may highlight sa loob ng box */
+              onClick={(e) => e.stopPropagation()} 
             >
               {architecture.map((stack, idx) => {
                 const isActive = activeArchTab === idx;
@@ -831,8 +816,8 @@ export default function AiDeveloper() {
                   >
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
 
+                    {/* INALIS NA ANG NUMBERING DITO */}
                     <h4 className="text-sm md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10">
-                      <span className="text-slate-600 mr-1 md:mr-2">[{String(idx + 1).padStart(2, '0')}]</span>
                       {stack.category} Stack
                     </h4>
                     
