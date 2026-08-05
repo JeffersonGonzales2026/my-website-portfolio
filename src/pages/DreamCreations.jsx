@@ -161,7 +161,7 @@ export default function DreamCreations() {
   const processSectionRef = useRef(null);
   const processTrackRef = useRef(null);
 
- / ================= SCROLL FOR SOLAR SYSTEM =================
+ // ================= SCROLL FOR SOLAR SYSTEM =================
   const topSectionRef = useRef(null);
   const { scrollYProgress: topScrollYProgress } = useScroll({
     target: topSectionRef,
@@ -170,17 +170,39 @@ export default function DreamCreations() {
   
   const smoothProgress = useSpring(topScrollYProgress, { stiffness: 100, damping: 25, restDelta: 0.001 });
   
-  // Alamin kung PC o Mobile para ihiwalay ang behavior
-  const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
+  // DITO MO IA-ADJUST ANG MGA VALUES NG MOON (in vh / viewport height)
+  const moonY = useTransform(smoothProgress, (value) => {
+    const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
 
-  // NATIVE FRAMER MOTION ARRAY (Ito ang mag-aayos sa "stuck" bug sa scroll up)
-  const moonY = useTransform(
-    smoothProgress,
-    isDesktop ? [0, 1] : [0, 0.75],                   // [Start Scroll, Stop Scroll]
-    isDesktop ? ["-120vh", "0vh"] : ["-140vh", "0vh"] // [Start Position, End Position]
-  );
+    // 💻 SETTINGS PARA SA PC VIEW
+    const pcStart = -120;  
+    const pcEnd = 0;       
+    const pcStopPoint = 1; 
+
+    // 📱 SETTINGS PARA SA MOBILE VIEW
+    const mobileStart = -135; // Binalik ko sa -145 dahil ito ang sakto para sayo
+    const mobileEnd = 0;      
+    const mobileStopPoint = 0.75; 
+
+    const startPos = isDesktop ? pcStart : mobileStart;
+    const endPos = isDesktop ? pcEnd : mobileEnd;
+    const stopPoint = isDesktop ? pcStopPoint : mobileStopPoint;
+    
+    // STRICT FIX: Kapag nasa pinakataas na ang screen (o nag-bounce sa mobile), 
+    // i-fo-force natin siyang bumalik sa eksaktong startPos para hindi ma-stuck sa gitna.
+    if (value <= 0.01) {
+      return `${startPos}vh`;
+    }
+
+    // Kung nag-scroll pababa, ia-apply niya yung normal na animation
+    const progress = Math.min(value / stopPoint, 1);
+    const currentPos = startPos + (endPos - startPos) * progress;
+    
+    return `${currentPos}vh`;
+  });
   
   const moonScale = useTransform(smoothProgress, [0, 1], [1.15, 0.4]);
+
   // PURE GSAP SCROLL-JACKING LOGIC
   useGSAP(() => {
     if (!processSectionRef.current || !processTrackRef.current) return;
