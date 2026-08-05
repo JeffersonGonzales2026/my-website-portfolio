@@ -175,19 +175,23 @@ export default function DreamCreations() {
     const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
 
     // 💻 SETTINGS PARA SA PC VIEW
-    const pcStart = -120;  // Gaano kataas ang moon bago ka mag-scroll (negative = pataas)
-    const pcEnd = 0;       // Saan titigil ang moon pag nag-scroll pababa (0 = gitna ng solar system)
+    const pcStart = -120;  
+    const pcEnd = 0;       
+    const pcStopPoint = 1; // 1 = 100% ng scroll bago tuluyang huminto
 
     // 📱 SETTINGS PARA SA MOBILE VIEW
-    const mobileStart = -128; // Gaano kataas ang moon sa mobile bago mag-scroll
-    const mobileEnd = 10;      // Saan titigil ang moon sa mobile (0 = gitna ng solar system)
+    const mobileStart = -128; 
+    const mobileEnd = 0;      // Iwanang 0 para saktong gitna siya hihinto
+    const mobileStopPoint = 0.75; // 0.75 = sa 75% pa lang ng pag-scroll, hihinto na siya sa gitna (0)
 
-    // Logika para sa pag-animate mula Start papuntang End
     const startPos = isDesktop ? pcStart : mobileStart;
     const endPos = isDesktop ? pcEnd : mobileEnd;
+    const stopPoint = isDesktop ? pcStopPoint : mobileStopPoint;
     
-    // Kinakalkula ang eksaktong posisyon habang nag-i-scroll ka
-    const currentPos = startPos + (endPos - startPos) * value;
+    // I-clamp ang progress: bibilisan nitong pumunta sa gitna, at ili-lock pagdating sa stopPoint
+    const progress = Math.min(value / stopPoint, 1);
+    
+    const currentPos = startPos + (endPos - startPos) * progress;
     
     return `${currentPos}vh`;
   });
