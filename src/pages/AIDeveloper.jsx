@@ -1,7 +1,7 @@
 // src/pages/AiDeveloper.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Cpu, Layers, ArrowUp, CheckCircle2, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Sparkles } from 'lucide-react';
+import { Cpu, Layers, ArrowUp, CheckCircle2, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // GSAP IMPORTS (Restored for pinned horizontal scrolling)
@@ -310,128 +310,54 @@ export default function AiDeveloper() {
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= GSAP ARCHITECTURE SCROLL LOGIC (DIRECTIONAL COLOR & ZERO-RENDER FIX) =================
-  const archSectionRef = useRef(null);
-  const archTrackRef = useRef(null);
-  const progressBarRef = useRef(null);
+  // ================= 67. DEVELOPMENT ARCHITECTURE (MANUAL, KEYBOARD, & SIDE-TAP LOGIC) =================
+  const [activeArchTab, setActiveArchTab] = useState(0);
+  const [gapSize, setGapSize] = useState(400);
 
-  // Pure DOM Refs para sa smooth at walang glitch na scroll
-  const boxRefs = useRef([]);
-  const innerBoxRefs = useRef([]);
-  const labelRefs = useRef([]);
-  const contentRefs = useRef([]);
+  // Auto-adjust spacing on resize
+  useEffect(() => {
+    const handleResize = () => setGapSize(window.innerWidth < 768 ? 250 : 400);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-  useGSAP(() => {
-    if (!archSectionRef.current || !archTrackRef.current || architecture.length <= 1) return;
+  const handleNextArch = () => {
+    setActiveArchTab(prev => (prev < architecture.length - 1 ? prev + 1 : prev));
+  };
 
-    const getScrollAmount = () => {
-      if (!archTrackRef.current) return 0;
-      return Math.max(0, archTrackRef.current.scrollWidth - window.innerWidth);
-    };
+  const handlePrevArch = () => {
+    setActiveArchTab(prev => (prev > 0 ? prev - 1 : prev));
+  };
 
-    const tween = gsap.to(archTrackRef.current, {
-      x: () => -getScrollAmount(),
-      ease: "none"
-    });
-
-    const st = ScrollTrigger.create({
-      trigger: archSectionRef.current,
-      start: "top top", 
-      end: () => `+=${getScrollAmount()}`, 
-      pin: true,
-      anticipatePin: 1,
-      animation: tween,
-      scrub: 1, 
-      invalidateOnRefresh: true,
-      onUpdate: (self) => {
-        const scrollDist = getScrollAmount();
-        const progressPx = self.progress * scrollDist;
-
-        // DIRECTION DETECTION: self.direction === 1 (Moving Right / Scrolling Down), self.direction === -1 (Moving Left / Scrolling Up)
-        const isGoingRight = self.direction >= 0;
-
-        // 1. UPDATE PROGRESS LINE COLOR BASED ON DIRECTION
-        if (progressBarRef.current) {
-          progressBarRef.current.style.width = `${progressPx}px`;
-          if (isGoingRight) {
-            progressBarRef.current.className = "absolute top-1/2 left-[50vw] h-[3px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 origin-left transition-colors duration-300";
-          } else {
-            progressBarRef.current.className = "absolute top-1/2 left-[50vw] h-[3px] bg-blue-500 shadow-[0_0_20px_rgba(59,130,246,1)] -translate-y-1/2 z-10 origin-left transition-colors duration-300";
-          }
-        }
-
-        // 2. CALCULATE CURRENT ACTIVE INDEX
-        const currentIndex = Math.min(
-          Math.round(self.progress * (architecture.length - 1)), 
-          architecture.length - 1
-        );
-
-        // 3. PURE DOM MANIPULATION FOR TOUCHPOINTS & CARDS (ZERO REACT RE-RENDERS)
-        for (let i = 0; i < architecture.length; i++) {
-          const isActive = i === currentIndex;
-
-          // Outer Box Point
-          if (boxRefs.current[i]) {
-            if (isActive) {
-              boxRefs.current[i].className = isGoingRight
-                ? "w-7 h-7 md:w-9 md:h-9 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] border-purple-400 scale-125 shadow-[0_0_25px_rgba(168,85,247,0.9)]"
-                : "w-7 h-7 md:w-9 md:h-9 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] border-blue-400 scale-125 shadow-[0_0_25px_rgba(59,130,246,0.9)]";
-            } else {
-              boxRefs.current[i].className = "w-7 h-7 md:w-9 md:h-9 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] border-slate-800 shadow-none";
-            }
-          }
-
-          // Inner Blinking Dot
-          if (innerBoxRefs.current[i]) {
-            if (isActive) {
-              innerBoxRefs.current[i].className = isGoingRight
-                ? "w-2.5 h-2.5 md:w-3 md:h-3 bg-purple-400 animate-ping"
-                : "w-2.5 h-2.5 md:w-3 md:h-3 bg-blue-400 animate-ping";
-            } else {
-              innerBoxRefs.current[i].className = "w-2.5 h-2.5 md:w-3 md:h-3 bg-slate-600";
-            }
-          }
-
-          // Label Text Below Point
-          if (labelRefs.current[i]) {
-            if (isActive) {
-              labelRefs.current[i].className = isGoingRight
-                ? "absolute top-11 md:top-14 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-52 transition-colors duration-300 text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.9)]"
-                : "absolute top-11 md:top-14 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-52 transition-colors duration-300 text-blue-400 drop-shadow-[0_0_10px_rgba(59,130,246,0.9)]";
-            } else {
-              labelRefs.current[i].className = "absolute top-11 md:top-14 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-52 transition-colors duration-300 text-slate-500";
-            }
-          }
-
-          // Content Box Below
-          if (contentRefs.current[i]) {
-            if (isActive) {
-              contentRefs.current[i].style.opacity = "1";
-              contentRefs.current[i].style.visibility = "visible";
-              contentRefs.current[i].style.transform = "translateY(0px)";
-              contentRefs.current[i].style.pointerEvents = "auto";
-              contentRefs.current[i].style.zIndex = "10";
-            } else {
-              contentRefs.current[i].style.opacity = "0";
-              contentRefs.current[i].style.visibility = "hidden";
-              contentRefs.current[i].style.transform = "translateY(20px)";
-              contentRefs.current[i].style.pointerEvents = "none";
-              contentRefs.current[i].style.zIndex = "0";
-            }
-          }
-        }
+  // Keyboard Arrow Keys Support
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight') {
+        setActiveArchTab(prev => (prev < architecture.length - 1 ? prev + 1 : prev));
+      } else if (e.key === 'ArrowLeft') {
+        setActiveArchTab(prev => (prev > 0 ? prev - 1 : prev));
       }
-    });
-
-    const refreshTimer = setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 400);
-
-    return () => {
-      clearTimeout(refreshTimer);
-      st.kill();
     };
-  }, { scope: archSectionRef, dependencies: [architecture?.length] }); // ARRAY LENGTH DEPENDENCY FIX
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [architecture.length]);
+
+  // Screen Side-Tap Logic (Instagram Story style)
+  const handleScreenTap = (e) => {
+    const clickX = e.clientX;
+    const screenWidth = window.innerWidth;
+
+    // Kung pinindot ay nasa kanang kalahati ng screen (Right 50%)
+    if (clickX > screenWidth / 2) {
+      handleNextArch();
+    } 
+    // Kung pinindot ay nasa kaliwang kalahati (Left 50%)
+    else {
+      handlePrevArch();
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -788,56 +714,107 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE ================= */}
-        <section ref={archSectionRef} className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] overflow-hidden min-h-screen">
-          <div className="h-screen flex flex-col justify-center items-center pt-16 pb-8">
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE (SIDE-TAP & MANUAL NAVIGATION) ================= */}
+        <section 
+          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] overflow-hidden min-h-screen py-20 cursor-pointer"
+          onClick={handleScreenTap}
+        >
+          <div className="flex flex-col justify-center items-center w-full max-w-7xl mx-auto">
             
             {/* HEADER */}
-            <div className="text-center px-4 shrink-0 w-full max-w-4xl mx-auto">
+            <div className="text-center px-4 shrink-0 w-full max-w-4xl mx-auto pointer-events-none">
               <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Architecture Pipeline</h3>
               <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
               <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed hidden md:block">
-                A structured, horizontal engineering flowchart detailing every phase of my development process—from initial planning to post-deployment monitoring.
+                A structured engineering flowchart detailing every phase of my development process. Use the arrows, keyboard, or tap the sides of the screen to navigate.
               </p>
-              <p className="md:hidden mt-4 text-[10px] text-purple-400 font-mono tracking-widest opacity-70 animate-pulse">(Scroll down to navigate timeline)</p>
+              <p className="md:hidden mt-4 text-[10px] text-purple-400 font-mono tracking-widest opacity-70 animate-pulse">
+                (Tap the left or right side of your screen to navigate)
+              </p>
             </div>
 
-            {/* GSAP HORIZONTAL TRACK - GAP IS EXPANDED TO gap-[300px] md:gap-[500px] FOR LONGER LINES */}
-            <div className="relative h-24 md:h-32 w-full mt-6 md:mt-10 shrink-0 overflow-hidden flex items-center">
+            {/* NEXT & PREV BUTTONS */}
+            <div 
+              className="flex items-center justify-center gap-6 mt-10 md:mt-12 mb-4 z-40 relative"
+              onClick={(e) => e.stopPropagation()} /* Pinipigilan ang background tap kapag pinindot ang buttons na ito */
+            >
+              <button 
+                onClick={handlePrevArch}
+                disabled={activeArchTab === 0}
+                className="w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center border-2 border-white/10 bg-black/40 text-white/50 hover:text-[#1095d2] hover:border-[#1095d2] hover:bg-[#1095d2]/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer"
+              >
+                <ChevronLeft size={24} />
+              </button>
               
-              <div ref={archTrackRef} className="flex items-center gap-[300px] md:gap-[500px] px-[50vw] flex-nowrap w-max relative">
+              <div className="font-mono text-sm text-slate-400 font-bold bg-black/40 px-6 py-2 rounded-full border border-white/5 shadow-inner select-none">
+                <span className="text-purple-400">{String(activeArchTab + 1).padStart(2, '0')}</span> / {String(architecture.length).padStart(2, '0')}
+              </div>
+
+              <button 
+                onClick={handleNextArch}
+                disabled={activeArchTab === architecture.length - 1}
+                className="w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center border-2 border-white/10 bg-black/40 text-white/50 hover:text-purple-400 hover:border-purple-400 hover:bg-purple-500/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer"
+              >
+                <ChevronRight size={24} />
+              </button>
+            </div>
+
+            {/* TIMELINE TRACK */}
+            <div 
+              className="relative h-32 md:h-40 w-full mt-4 md:mt-6 overflow-hidden flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()} /* Pinipigilan ang side-tap kung pinindot mo ang mismong linya/touchpoints */
+            >
+              {/* SLIDING TRACK CONTAINER */}
+              <div 
+                className="absolute left-1/2 flex items-center transition-transform duration-700 ease-in-out"
+                style={{ transform: `translateX(-${activeArchTab * gapSize}px)` }}
+              >
+                  {/* GLOWING NEON CYAN/BLUE BASE LINE */}
+                  <div 
+                    className="absolute top-1/2 left-0 h-[2px] bg-cyan-600/60 shadow-[0_0_10px_rgba(6,182,212,0.4)] -translate-y-1/2 z-0" 
+                    style={{ width: `${(architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} 
+                  />
                   
-                  {/* SOLID BLUE/DARK BACKGROUND LINE */}
-                  <div className="absolute top-1/2 left-[50vw] right-[50vw] h-[2px] bg-slate-800 shadow-none -translate-y-1/2 z-0" />
-                  
-                  {/* DYNAMIC DIRECTIONAL PROGRESS LINE */}
-                  <div ref={progressBarRef} className="absolute top-1/2 left-[50vw] h-[3px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 origin-left transition-colors duration-300" style={{ width: '0px' }} />
+                  {/* VIOLET PROGRESS LINE */}
+                  <div 
+                    className="absolute top-1/2 left-0 h-[3px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 transition-all duration-700 ease-in-out" 
+                    style={{ width: `${activeArchTab * gapSize}px` }} 
+                  />
 
                   {architecture.map((stack, idx) => {
-                    const isInitialActive = idx === 0;
+                    const isActive = idx === activeArchTab;
+                    const isPassed = idx <= activeArchTab;
 
                     return (
-                      <div key={idx} className="relative z-20 flex flex-col items-center shrink-0 w-8">
-                        {/* BOX VIEW POINT */}
+                      <div 
+                        key={idx} 
+                        className="absolute top-1/2 flex flex-col items-center z-20 cursor-pointer group"
+                        style={{ left: `${idx * gapSize}px`, transform: 'translate(-50%, -50%)' }}
+                        onClick={() => setActiveArchTab(idx)} 
+                      >
+                        {/* TOUCHPOINT BOX */}
                         <div 
-                          ref={el => boxRefs.current[idx] = el}
-                          className={`w-7 h-7 md:w-9 md:h-9 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] ${
-                            isInitialActive 
-                              ? 'border-purple-400 scale-125 shadow-[0_0_25px_rgba(168,85,247,0.9)]'
-                              : 'border-slate-800 shadow-none'
+                          className={`w-7 h-7 md:w-9 md:h-9 flex items-center justify-center transition-all duration-500 border-2 bg-[#02040a] ${
+                            isActive ? 'border-purple-400 scale-125 shadow-[0_0_25px_rgba(168,85,247,0.9)] z-30' :
+                            isPassed ? 'border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.6)] z-20' : 
+                            'border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.8)] z-20 group-hover:scale-110'
                           }`}
                         >
                           <div 
-                            ref={el => innerBoxRefs.current[idx] = el}
-                            className={`w-2.5 h-2.5 md:w-3 md:h-3 transition-colors ${isInitialActive ? 'bg-purple-400 animate-ping' : 'bg-slate-600'}`} 
+                            className={`w-2.5 h-2.5 md:w-3 md:h-3 transition-colors duration-500 ${
+                              isActive ? 'bg-purple-400 animate-ping' : 
+                              isPassed ? 'bg-purple-500' : 
+                              'bg-cyan-400 shadow-[0_0_10px_rgba(6,182,212,1)]'
+                            }`} 
                           />
                         </div>
 
-                        {/* Label */}
+                        {/* LABEL */}
                         <span 
-                          ref={el => labelRefs.current[idx] = el}
-                          className={`absolute top-11 md:top-14 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-52 transition-colors duration-300 ${
-                            isInitialActive ? 'text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.9)]' : 'text-slate-500'
+                          className={`absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-52 transition-colors duration-500 ${
+                            isActive ? 'text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.9)]' : 
+                            isPassed ? 'text-purple-300/70' : 
+                            'text-cyan-300/80 drop-shadow-[0_0_8px_rgba(6,182,212,0.7)] group-hover:text-cyan-200'
                           }`}
                         >
                           {stack.category}
@@ -848,27 +825,24 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (PURE STACK REFS) */}
-            <div className="w-full max-w-5xl mx-auto px-4 md:px-6 shrink-0 flex-1 mt-2 md:mt-4 pb-4 grid [grid-template-areas:'stack'] items-start md:items-center">
+            {/* DYNAMIC CONTENT BOX (LAYERED GRID) */}
+            <div 
+              className="w-full max-w-5xl mx-auto px-4 md:px-6 shrink-0 flex-1 mt-6 pb-10 grid [grid-template-areas:'stack'] items-start md:items-center"
+              onClick={(e) => e.stopPropagation()} /* Pinipigilan ang side-tap kung pinindot mo ang mismong kahon ng content */
+            >
               {architecture.map((stack, idx) => {
-                const isInitialActive = idx === 0;
+                const isActive = activeArchTab === idx;
                 
                 return (
                   <div
                     key={idx}
-                    ref={el => contentRefs.current[idx] = el}
-                    className="[grid-area:stack] w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/90 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] text-center relative transition-all duration-300"
-                    style={{
-                      opacity: isInitialActive ? 1 : 0,
-                      visibility: isInitialActive ? 'visible' : 'hidden',
-                      transform: isInitialActive ? 'translateY(0px)' : 'translateY(20px)',
-                      pointerEvents: isInitialActive ? 'auto' : 'none',
-                      zIndex: isInitialActive ? 10 : 0
-                    }}
+                    className={`[grid-area:stack] w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/90 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] text-center relative transition-all duration-500 ease-in-out cursor-default ${
+                      isActive ? 'opacity-100 z-10 translate-y-0 pointer-events-auto' : 'opacity-0 z-0 translate-y-10 pointer-events-none'
+                    }`}
                   >
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
 
-                    <h4 className="text-base md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10">
+                    <h4 className="text-base md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10 transition-colors">
                       <span className="text-slate-600 mr-2">[{String(idx + 1).padStart(2, '0')}]</span>
                       {stack.category} Stack
                     </h4>
