@@ -313,8 +313,8 @@ export default function AiDeveloper() {
   // ================= GSAP ARCHITECTURE SCROLL LOGIC =================
   const archSectionRef = useRef(null);
   const archTrackRef = useRef(null);
+  const progressBarRef = useRef(null); // BAGONG REF PARA HINDI MAG-CRASH ANG REACT
   const [activeArchTab, setActiveArchTab] = useState(0);
-  const [archProgress, setArchProgress] = useState(0);
   const [gapSize, setGapSize] = useState(400);
 
   // Auto-adjust spacing on resize
@@ -325,12 +325,11 @@ export default function AiDeveloper() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // GSAP ScrollTrigger identical to DreamCreations
+  // GSAP ScrollTrigger
   useGSAP(() => {
     if (!archSectionRef.current || !archTrackRef.current || architecture.length <= 1) return;
 
     const getScrollAmount = () => {
-      // Explicitly calculated distance guarantees no jumping or disappearing bugs
       return (architecture.length - 1) * gapSize;
     };
 
@@ -348,11 +347,17 @@ export default function AiDeveloper() {
       scrub: 1, 
       invalidateOnRefresh: true,
       onUpdate: (self) => {
-        setArchProgress(self.progress);
-        const currentIndex = Math.min(Math.round(self.progress * (architecture.length - 1)), architecture.length - 1);
-        if (currentIndex !== activeArchTab) {
-           setActiveArchTab(currentIndex);
+        // 1. Direct DOM Manipulation (Ito ang nag-fix sa performance crash / blank screen)
+        if (progressBarRef.current) {
+          progressBarRef.current.style.width = `${self.progress * (architecture.length - 1) * gapSize}px`;
         }
+        
+        // 2. Anti-Loop State Setter (Ito ang pipigil sa infinite refresh glitch)
+        const currentIndex = Math.min(Math.round(self.progress * (architecture.length - 1)), architecture.length - 1);
+        setActiveArchTab((prevTab) => {
+          if (prevTab !== currentIndex) return currentIndex;
+          return prevTab; // Huwag mag-update kung pareho lang
+        });
       }
     });
 
@@ -740,8 +745,8 @@ export default function AiDeveloper() {
                   {/* SOLID BLUE BACKGROUND LINE PARA SA BUONG TIMELINE */}
                   <div className="absolute top-1/2 left-[50vw] h-[2px] bg-blue-900/50 shadow-[0_0_10px_rgba(59,130,246,0.3)] -translate-y-1/2 z-0" style={{ width: `${(architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
                   
-                  {/* VIOLET PROGRESS LINE */}
-                  <div className="absolute top-1/2 left-[50vw] h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 transition-all duration-100 ease-linear origin-left" style={{ width: `${archProgress * (architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
+                  {/* GLOWING VIOLET LINE (Direct DOM Controlled - FIX) */}
+                  <div ref={progressBarRef} className="absolute top-1/2 left-[50vw] h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 origin-left" style={{ width: '0px' }} />
 
                   {architecture.map((stack, idx) => {
                     // STRICT LOGIC: Kapag nakatutok lang mismo (activeArchTab === idx), saka lang magva-violet.
