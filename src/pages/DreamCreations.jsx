@@ -175,12 +175,12 @@ export default function DreamCreations() {
     const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
 
     // 💻 SETTINGS PARA SA PC VIEW
-    const pcStart = -130;  // Gaano kataas ang moon bago ka mag-scroll (negative = pataas)
+    const pcStart = -120;  // Gaano kataas ang moon bago ka mag-scroll (negative = pataas)
     const pcEnd = 0;       // Saan titigil ang moon pag nag-scroll pababa (0 = gitna ng solar system)
 
     // 📱 SETTINGS PARA SA MOBILE VIEW
     const mobileStart = -145; // Gaano kataas ang moon sa mobile bago mag-scroll
-    const mobileEnd = 5;      // Saan titigil ang moon sa mobile (0 = gitna ng solar system)
+    const mobileEnd = 0;      // Saan titigil ang moon sa mobile (0 = gitna ng solar system)
 
     // Logika para sa pag-animate mula Start papuntang End
     const startPos = isDesktop ? pcStart : mobileStart;
