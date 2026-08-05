@@ -168,10 +168,15 @@ export default function DreamCreations() {
     offset: ["start start", "end end"]
   });
   
-  // Maps the moon position from 145vh ABOVE the creations center down to exactly 0vh
-  // Starts scale at 1.15 and shrinks to 0.4 at the solar system center
   const smoothProgress = useSpring(topScrollYProgress, { stiffness: 100, damping: 25, restDelta: 0.001 });
-  const moonY = useTransform(smoothProgress, [0, 1], ["-145vh", "0vh"]);
+  
+  // DYNAMIC MOON POSITION: -95vh for PC (fits the new screen height) & -145vh for Mobile (untouched)
+  const moonY = useTransform(smoothProgress, (value) => {
+    const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
+    const startPos = isDesktop ? -95 : -145; 
+    return `${startPos * (1 - value)}vh`;
+  });
+  
   const moonScale = useTransform(smoothProgress, [0, 1], [1.15, 0.4]);
 
   // PURE GSAP SCROLL-JACKING LOGIC
