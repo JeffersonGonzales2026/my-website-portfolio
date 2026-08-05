@@ -303,7 +303,7 @@ export default function DreamCreations() {
     return () => {
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
-    }
+    };
   }, [isAnyModalOpen]);
 
   const [zoomScale, setZoomScale] = useState(1);
@@ -737,9 +737,9 @@ export default function DreamCreations() {
               const top = 50 + radius * Math.sin(angle);
               const isGlowing = randomGlowIndex === index;
 
-              // Explicit Inline Shades of Blue guaranteed to render
-              const blueShades = ['#061e3e', '#092a59', '#0d3b73', '#094770', '#073659'];
-              const planetBgColor = blueShades[category.id % blueShades.length];
+              // Iba't ibang shades ng asul (Awtomatikong umiikot base sa category ID)
+              const blueShades = ['bg-[#061e3e]', 'bg-[#092a59]', 'bg-[#0d3b73]', 'bg-[#094770]', 'bg-[#073659]'];
+              const planetBg = blueShades[category.id % blueShades.length];
 
               return (
                 <motion.div
@@ -751,20 +751,14 @@ export default function DreamCreations() {
                   transition={{ duration: 3 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
                   whileHover={{ scale: 1.15, zIndex: 100 }}
                 >
-                  {/* Pinalaki ang planet node at gumamit ng explicit inline style para sa kulay */}
-                  <div 
-                    className={`w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.8)]' : 'border-[#1095d2]/40 shadow-[0_0_10px_rgba(16,149,210,0.3)] group-hover:border-[#1095d2]'}`}
-                    style={{ backgroundColor: planetBgColor }}
-                  >
-                    {/* Pinaputi ang icons at pinalaki */}
-                    <span className="text-white [&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-5 sm:[&>svg]:h-5 md:[&>svg]:w-7 md:[&>svg]:h-7 transition-transform group-hover:scale-110">{category.icon}</span>
+                  {/* Pinalaki ang planet node: w-8/10/14 at h-8/10/14 */}
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 rounded-full ${planetBg} border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.8)]' : 'border-[#1095d2]/40 shadow-[0_0_10px_rgba(16,149,210,0.3)] group-hover:border-[#1095d2]'}`}>
+                    {/* Pinaputi ang icons (text-white) at pinalaki */}
+                    <span className="text-white [&>svg]:w-3.5 [&>svg]:h-3.5 sm:[&>svg]:w-4 sm:[&>svg]:h-4 md:[&>svg]:w-6 md:[&>svg]:h-6 transition-transform group-hover:scale-110">{category.icon}</span>
                   </div>
                   {/* Pinalaki ang text pill at font size */}
-                  <div 
-                    className={`px-2 py-0.5 md:px-3 md:py-1 rounded-full border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_10px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 text-white/90 group-hover:border-[#1095d2] group-hover:text-white'}`}
-                    style={{ backgroundColor: planetBgColor }}
-                  >
-                    <span className="text-[7px] sm:text-[9px] md:text-[11px] font-bold leading-none block">{category.category}</span>
+                  <div className={`px-2 py-0.5 md:px-3 md:py-1 rounded-full ${planetBg} border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_10px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 text-white/90 group-hover:border-[#1095d2] group-hover:text-white'}`}>
+                    <span className="text-[6px] sm:text-[8px] md:text-[10px] font-bold leading-none block">{category.category}</span>
                   </div>
                 </motion.div>
               );
@@ -779,9 +773,8 @@ export default function DreamCreations() {
               const actualIndex = index + 4;
               const isGlowing = randomGlowIndex === actualIndex;
 
-              // Explicit Inline Shades of Blue guaranteed to render
-              const blueShades = ['#061e3e', '#092a59', '#0d3b73', '#094770', '#073659', '#102d4f'];
-              const planetBgColor = blueShades[category.id % blueShades.length];
+              const blueShades = ['bg-[#061e3e]', 'bg-[#092a59]', 'bg-[#0d3b73]', 'bg-[#094770]', 'bg-[#073659]', 'bg-[#102d4f]'];
+              const planetBg = blueShades[category.id % blueShades.length];
 
               return (
                 <motion.div
@@ -793,17 +786,13 @@ export default function DreamCreations() {
                   transition={{ duration: 4 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: index * 0.15 }}
                   whileHover={{ scale: 1.15, zIndex: 100 }}
                 >
-                  <div 
-                    className={`w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.8)]' : 'border-[#1095d2]/40 shadow-[0_0_10px_rgba(16,149,210,0.3)] group-hover:border-[#1095d2]'}`}
-                    style={{ backgroundColor: planetBgColor }}
-                  >
-                    <span className="text-white [&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-5 sm:[&>svg]:h-5 md:[&>svg]:w-7 md:[&>svg]:h-7 transition-transform group-hover:scale-110">{category.icon}</span>
+                  {/* Pinalaki ang planet node */}
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 rounded-full ${planetBg} border flex items-center justify-center transition-all duration-300 ${isGlowing ? 'border-[#1095d2] shadow-[0_0_20px_rgba(16,149,210,0.8)]' : 'border-[#1095d2]/40 shadow-[0_0_10px_rgba(16,149,210,0.3)] group-hover:border-[#1095d2]'}`}>
+                    <span className="text-white [&>svg]:w-3.5 [&>svg]:h-3.5 sm:[&>svg]:w-4 sm:[&>svg]:h-4 md:[&>svg]:w-6 md:[&>svg]:h-6 transition-transform group-hover:scale-110">{category.icon}</span>
                   </div>
-                  <div 
-                    className={`px-2 py-0.5 md:px-3 md:py-1 rounded-full border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_10px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 text-white/90 group-hover:border-[#1095d2] group-hover:text-white'}`}
-                    style={{ backgroundColor: planetBgColor }}
-                  >
-                    <span className="text-[7px] sm:text-[9px] md:text-[11px] font-bold leading-none block">{category.category}</span>
+                  {/* Pinalaki ang text pill */}
+                  <div className={`px-2 py-0.5 md:px-3 md:py-1 rounded-full ${planetBg} border transition-all duration-300 whitespace-nowrap text-center ${isGlowing ? 'border-[#1095d2] text-white shadow-[0_0_10px_rgba(16,149,210,0.6)]' : 'border-[#1095d2]/40 text-white/90 group-hover:border-[#1095d2] group-hover:text-white'}`}>
+                    <span className="text-[6px] sm:text-[8px] md:text-[10px] font-bold leading-none block">{category.category}</span>
                   </div>
                 </motion.div>
               );
