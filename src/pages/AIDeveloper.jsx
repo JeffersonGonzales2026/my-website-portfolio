@@ -714,9 +714,9 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE (SIDE-TAP & MANUAL NAVIGATION) ================= */}
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE (SIDE-TAP & 4-COLUMN MOBILE) ================= */}
         <section 
-          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] overflow-hidden min-h-screen py-20 cursor-pointer"
+          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] overflow-hidden min-h-screen py-20 cursor-pointer select-none"
           onClick={handleScreenTap}
         >
           <div className="flex flex-col justify-center items-center w-full max-w-7xl mx-auto">
@@ -736,7 +736,7 @@ export default function AiDeveloper() {
             {/* NEXT & PREV BUTTONS */}
             <div 
               className="flex items-center justify-center gap-6 mt-10 md:mt-12 mb-4 z-40 relative"
-              onClick={(e) => e.stopPropagation()} /* Pinipigilan ang background tap kapag pinindot ang buttons na ito */
+              onClick={(e) => e.stopPropagation()} /* Protektado pa rin ang mismong buttons */
             >
               <button 
                 onClick={handlePrevArch}
@@ -760,10 +760,8 @@ export default function AiDeveloper() {
             </div>
 
             {/* TIMELINE TRACK */}
-            <div 
-              className="relative h-32 md:h-40 w-full mt-4 md:mt-6 overflow-hidden flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()} /* Pinipigilan ang side-tap kung pinindot mo ang mismong linya/touchpoints */
-            >
+            <div className="relative h-24 md:h-40 w-full mt-4 md:mt-6 overflow-hidden flex items-center justify-center pointer-events-none">
+              
               {/* SLIDING TRACK CONTAINER */}
               <div 
                 className="absolute left-1/2 flex items-center transition-transform duration-700 ease-in-out"
@@ -788,9 +786,12 @@ export default function AiDeveloper() {
                     return (
                       <div 
                         key={idx} 
-                        className="absolute top-1/2 flex flex-col items-center z-20 cursor-pointer group"
+                        className="absolute top-1/2 flex flex-col items-center z-20 cursor-pointer group pointer-events-auto"
                         style={{ left: `${idx * gapSize}px`, transform: 'translate(-50%, -50%)' }}
-                        onClick={() => setActiveArchTab(idx)} 
+                        onClick={(e) => {
+                          e.stopPropagation(); // Kapag mismong tuldok ang pinindot, pupunta sa exact tab
+                          setActiveArchTab(idx);
+                        }} 
                       >
                         {/* TOUCHPOINT BOX */}
                         <div 
@@ -811,7 +812,7 @@ export default function AiDeveloper() {
 
                         {/* LABEL */}
                         <span 
-                          className={`absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-52 transition-colors duration-500 ${
+                          className={`absolute top-8 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-52 transition-colors duration-500 ${
                             isActive ? 'text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.9)]' : 
                             isPassed ? 'text-purple-300/70' : 
                             'text-cyan-300/80 drop-shadow-[0_0_8px_rgba(6,182,212,0.7)] group-hover:text-cyan-200'
@@ -825,10 +826,9 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (LAYERED GRID) */}
+            {/* DYNAMIC CONTENT BOX (4-COLUMNS ON MOBILE) */}
             <div 
-              className="w-full max-w-5xl mx-auto px-4 md:px-6 shrink-0 flex-1 mt-6 pb-10 grid [grid-template-areas:'stack'] items-start md:items-center"
-              onClick={(e) => e.stopPropagation()} /* Pinipigilan ang side-tap kung pinindot mo ang mismong kahon ng content */
+              className="w-full max-w-5xl mx-auto px-4 md:px-6 shrink-0 flex-1 mt-6 pb-10 grid [grid-template-areas:'stack'] items-start md:items-center pointer-events-none"
             >
               {architecture.map((stack, idx) => {
                 const isActive = activeArchTab === idx;
@@ -836,40 +836,47 @@ export default function AiDeveloper() {
                 return (
                   <div
                     key={idx}
-                    className={`[grid-area:stack] w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/90 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] text-center relative transition-all duration-500 ease-in-out cursor-default ${
-                      isActive ? 'opacity-100 z-10 translate-y-0 pointer-events-auto' : 'opacity-0 z-0 translate-y-10 pointer-events-none'
+                    className={`[grid-area:stack] w-full h-auto p-4 md:p-12 rounded-3xl bg-slate-950/90 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] text-center relative transition-all duration-500 ease-in-out cursor-default ${
+                      isActive ? 'opacity-100 z-10 translate-y-0' : 'opacity-0 z-0 translate-y-10'
                     }`}
                   >
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
 
-                    <h4 className="text-base md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10 transition-colors">
-                      <span className="text-slate-600 mr-2">[{String(idx + 1).padStart(2, '0')}]</span>
+                    <h4 className="text-sm md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10 transition-colors">
+                      <span className="text-slate-600 mr-1 md:mr-2">[{String(idx + 1).padStart(2, '0')}]</span>
                       {stack.category} Stack
                     </h4>
                     
-                    <div className="flex flex-wrap justify-center gap-6 md:gap-10 pb-2">
+                    {/* BAGONG GRID SYSTEM: 4 Columns sa phone, auto-wrap sa desktop */}
+                    <div className="grid grid-cols-4 md:flex md:flex-wrap justify-items-center justify-center gap-x-2 gap-y-4 md:gap-10 pb-2">
                       {stack.items?.map((tool, j) => {
                         const isLearning = tool.name.toLowerCase().includes('(learning)');
                         const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
                         
                         return (
-                          <div key={j} className="flex flex-col items-center gap-3 w-20 md:w-28 group">
-                            <div className={`w-20 h-20 md:w-28 md:h-28 rounded-[1.2rem] md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
+                          <div key={j} className="flex flex-col items-center gap-1.5 md:gap-3 w-full group">
+                            
+                            {/* In-adjust na sukat para magkasya ang 4 sa mobile (w-14 h-14) */}
+                            <div className={`w-14 h-14 sm:w-16 sm:h-16 md:w-28 md:h-28 rounded-2xl md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
                               {tool.customImage ? (
-                                <img src={tool.customImage} alt={cleanName} className="w-10 h-10 md:w-16 md:h-16 object-contain drop-shadow-md group-hover:scale-110 transition-transform" onError={(e) => e.target.style.display='none'} />
+                                <img src={tool.customImage} alt={cleanName} className="w-8 h-8 sm:w-10 sm:h-10 md:w-16 md:h-16 object-contain drop-shadow-md group-hover:scale-110 transition-transform" onError={(e) => e.target.style.display='none'} />
                               ) : (
-                                <Settings className={`w-10 h-10 md:w-16 md:h-16 group-hover:scale-110 transition-transform ${isLearning ? 'text-purple-500' : 'text-cyan-500'}`} />
+                                <Settings className={`w-7 h-7 sm:w-8 sm:h-8 md:w-16 md:h-16 group-hover:scale-110 transition-transform ${isLearning ? 'text-purple-500' : 'text-cyan-500'}`} />
                               )}
                               
+                              {/* Learning Badge - Pinaliit para sa Mobile */}
                               {isLearning && (
-                                <div className="absolute -bottom-2.5 px-2 py-0.5 bg-purple-900 border border-purple-400 text-purple-200 text-[9px] md:text-[10px] rounded-full uppercase tracking-widest shadow-md whitespace-nowrap">
+                                <div className="absolute -bottom-2 md:-bottom-2.5 px-1.5 py-0.5 bg-purple-900 border border-purple-400 text-purple-200 text-[6px] md:text-[10px] rounded-full uppercase tracking-widest shadow-md whitespace-nowrap scale-90 md:scale-100">
                                   Learning
                                 </div>
                               )}
                             </div>
-                            <span className="text-xs md:text-sm font-semibold text-slate-300 text-center leading-tight mt-1">
+
+                            {/* Label Text - Responsive Text Size */}
+                            <span className="text-[9px] sm:text-[10px] md:text-sm font-semibold text-slate-300 text-center leading-tight mt-0.5 md:mt-1 break-words w-full px-1">
                               {cleanName}
                             </span>
+
                           </div>
                         )
                       })}
