@@ -835,7 +835,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67.5 MODERN WEB EXPERIENCES (2-COLUMN COMPACT GRID) ================= */}
+        {/* ================= 67.5 MODERN WEB EXPERIENCES (2-COLUMN COMPACT GRID - NO TRUNCATE) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-6xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-10 md:mb-16">
@@ -859,18 +859,17 @@ export default function AiDeveloper() {
                   <motion.div 
                     key={idx} 
                     variants={cardPop} 
-                    /* Pinaliit ang padding sa mobile (px-2.5 py-2) para magkasya sa 2 columns */
-                    className={`w-full px-2.5 py-2 md:px-4 md:py-3 rounded-lg md:rounded-xl border flex items-center justify-between backdrop-blur-sm transition-all hover:-translate-y-1 cursor-default shadow-sm md:shadow-lg ${isLearning ? 'bg-purple-950/20 border-purple-500/20 text-purple-300 hover:border-purple-400/50 hover:bg-purple-900/20' : 'bg-cyan-950/10 border-cyan-500/20 text-cyan-300 hover:border-cyan-400/50 hover:bg-cyan-900/10'}`}
+                    className={`w-full px-2.5 py-2 md:px-4 md:py-3 rounded-lg md:rounded-xl border flex items-center justify-between backdrop-blur-sm transition-all hover:-translate-y-1 cursor-default shadow-sm md:shadow-lg h-full min-h-[44px] ${isLearning ? 'bg-purple-950/20 border-purple-500/20 text-purple-300 hover:border-purple-400/50 hover:bg-purple-900/20' : 'bg-cyan-950/10 border-cyan-500/20 text-cyan-300 hover:border-cyan-400/50 hover:bg-cyan-900/10'}`}
                   >
-                    <div className="flex items-center gap-1.5 md:gap-3 overflow-hidden">
+                    <div className="flex items-center gap-1.5 md:gap-3 flex-1 pr-1">
                       {isLearning ? <GraduationCap className="text-purple-500 shrink-0 w-3 h-3 md:w-4 md:h-4" /> : <Sparkles className="text-cyan-500 shrink-0 w-3 h-3 md:w-4 md:h-4" />}
                       
-                      {/* Font ay naging text-[9px] sa mobile, truncate para hindi sumira sa box kung sobrang haba */}
-                      <span className="text-[10px] sm:text-[11px] md:text-sm font-semibold tracking-wide text-left truncate">{cleanName}</span>
+                      {/* TINANGGAL ANG TRUNCATE. Nilagyan ng leading-tight para maganda ang spacing kung 2 lines */}
+                      <span className="text-[10px] sm:text-[11px] md:text-sm font-semibold tracking-wide text-left leading-tight break-words">{cleanName}</span>
                     </div>
                     
                     {isLearning && (
-                      <span className="ml-1.5 shrink-0 text-[6px] md:text-[9px] bg-purple-500/10 border border-purple-500/30 text-purple-400 px-1 md:px-2 py-0.5 rounded uppercase tracking-wider font-mono">
+                      <span className="ml-1 shrink-0 text-[6px] md:text-[9px] bg-purple-500/10 border border-purple-500/30 text-purple-400 px-1 md:px-2 py-0.5 rounded uppercase tracking-wider font-mono mt-0.5">
                         Learn
                       </span>
                     )}
@@ -879,99 +878,6 @@ export default function AiDeveloper() {
               })}
             </motion.div>
           </div>
-        </section>
-
-        {/* ================= 68. CURRENT PROJECTS ================= */}
-        <section id="current-projects" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
-          <div className="max-w-7xl mx-auto">
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-              <h3 className="text-3xl font-black text-white mb-4">Engineering Showcase</h3>
-              <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
-            </motion.div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {showcase.map((project) => {
-                if (project.type === "flagship") {
-                  return (
-                    <motion.div key={project.id} variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
-                      className="lg:col-span-2 p-8 rounded-3xl bg-slate-950/80 border border-slate-800 flex flex-col h-full relative overflow-hidden hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] transition-all group backdrop-blur-md">
-                      <div className="absolute top-4 right-4 px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] uppercase font-black tracking-wider rounded shadow-[0_0_10px_rgba(6,182,212,0.2)]">{project.badge}</div>
-                      <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2 block">{project.meta}</span>
-                      <h4 className="text-2xl font-black text-white mb-4 group-hover:text-cyan-300 transition-colors">{project.title}</h4>
-                      <p className="text-sm text-slate-300 leading-relaxed mb-6">{project.desc}</p>
-                      
-                      <h5 className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-3">Technologies Managed</h5>
-                      <div className="flex flex-wrap gap-2 mb-8">
-                        {project.tech.map((tech, i) => (
-                          <span key={i} className="px-2.5 py-1 rounded bg-black border border-slate-800 text-xs text-slate-300 font-medium group-hover:border-cyan-500/50 transition-colors">{tech}</span>
-                        ))}
-                      </div>
-                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-800">
-                         <span className="text-xs text-cyan-400 font-bold">Role: {project.role}</span>
-                         <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-xs text-white/80 hover:text-cyan-400 flex items-center gap-1 font-bold">{project.actionText} <ExternalLink size={14}/></a>
-                      </div>
-                    </motion.div>
-                  );
-                } else {
-                  return (
-                    <motion.div key={project.id} variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.2 }}
-                      className="p-6 rounded-3xl border border-dashed border-slate-700 bg-black/60 flex flex-col justify-between h-full opacity-80 hover:opacity-100 hover:border-purple-500/50 transition-all backdrop-blur-md">
-                      <div>
-                        <Layers className="text-purple-400 mb-4" size={28} />
-                        <h4 className="text-lg font-bold text-white mb-2">{project.title}</h4>
-                        <p className="text-xs text-slate-400 leading-relaxed">{project.desc}</p>
-                      </div>
-                      <div className="pt-6 border-t border-slate-800/60 text-[11px] text-purple-400/80 font-mono flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" /> {project.status}
-                      </div>
-                    </motion.div>
-                  );
-                }
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* ================= 69. GITHUB SYSTEM (STATE ATTACHED) ================= */}
-        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
-          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
-             <div className="flex flex-col sm:flex-row items-center gap-5 justify-between mb-6">
-                <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-white font-bold text-lg border border-slate-700 shadow-inner">JG</div>
-                   <div>
-                      <h4 className="text-base font-bold text-white flex items-center gap-2">
-                        {github.name} 
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" className="text-slate-500"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-                      </h4>
-                      <p className="text-xs text-slate-500">github.com/{github.username}</p>
-                   </div>
-                </div>
-                <span className="text-[10px] px-2 py-1 border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 rounded uppercase font-mono shadow-[0_0_10px_rgba(6,182,212,0.2)]">{github.badgeText}</span>
-             </div>
-             
-             <div className="h-32 bg-black border border-slate-900 rounded-xl flex items-center justify-center text-xs text-slate-700 font-mono relative overflow-hidden p-2 md:p-4">
-                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #334155 1px, transparent 1px), linear-gradient(to bottom, #334155 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
-                
-                {github.username ? (
-                   <>
-                      <img 
-                         src={`https://ghchart.rshah.org/06b6d4/${github.username}`} 
-                         alt={`${github.username} GitHub Chart`} 
-                         className="relative z-10 w-full h-full object-cover md:object-contain opacity-90 drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]"
-                         onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'block';
-                         }}
-                      />
-                      <span className="relative z-10 hidden text-zinc-500 animate-pulse">
-                         [Live Sync API Unavailable - Connection Retrying...]
-                      </span>
-                   </>
-                ) : (
-                   <span className="relative z-10">{github.matrixPlaceholder}</span>
-                )}
-             </div>
-          </motion.div>
         </section>
 
         {/* ================= 71. VISION STATEMENT ================= */}
