@@ -737,14 +737,14 @@ export default function AiDeveloper() {
               {/* TRACK CONTAINER THAT SCROLLS LEFT */}
               <div ref={archTrackRef} className="flex items-center px-[50vw] flex-nowrap w-max relative" style={{ gap: `${gapSize}px` }}>
                   
-                  {/* BASE BLUE BACKGROUND LINE */}
+                  {/* SOLID BLUE BACKGROUND LINE PARA SA BUONG TIMELINE */}
                   <div className="absolute top-1/2 left-[50vw] h-[2px] bg-blue-900/50 shadow-[0_0_10px_rgba(59,130,246,0.3)] -translate-y-1/2 z-0" style={{ width: `${(architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
                   
-                  {/* GLOWING VIOLET LINE (Fills based on GSAP Progress) */}
+                  {/* VIOLET PROGRESS LINE */}
                   <div className="absolute top-1/2 left-[50vw] h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 transition-all duration-100 ease-linear origin-left" style={{ width: `${archProgress * (architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
 
                   {architecture.map((stack, idx) => {
-                    // FIX: ACTIVE LANG ANG VIOLET AT BLINKING
+                    // STRICT LOGIC: Kapag nakatutok lang mismo (activeArchTab === idx), saka lang magva-violet.
                     const isActive = activeArchTab === idx;
 
                     return (
@@ -752,18 +752,18 @@ export default function AiDeveloper() {
                         {/* BOX VIEW POINT */}
                         <div className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] ${
                           isActive 
-                            ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' // VIOLET kapag active
-                            : 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]'             // BLUE kapag hindi active
+                            ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' // VIOLET & MALAKI kapag nakatutok
+                            : 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]'             // BLUE sa lahat ng hindi active
                         }`}>
-                          {/* Inner Box */}
+                          {/* Inner Blinking Box */}
                           {isActive ? (
-                            <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-purple-400 animate-ping" /> // BLINKING kapag active
+                            <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-purple-400 animate-ping" /> // VIOLET BLINK kapag active
                           ) : (
-                            <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-blue-400" /> // SOLID BLUE kapag hindi active
+                            <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-blue-400" /> // SOLID BLUE kapag hindi
                           )}
                         </div>
 
-                        {/* Label */}
+                        {/* Label Text */}
                         <span className={`absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 ${
                           isActive 
                             ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' 
@@ -777,21 +777,14 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX */}
+            {/* DYNAMIC CONTENT BOX (Permanenteng naka-display para hindi masira ang height at GSAP) */}
             <div className="w-full max-w-5xl mx-auto px-4 md:px-6 shrink-0 flex-1 min-h-[350px] flex flex-col justify-start md:justify-center mt-2 md:mt-4 pb-4">
-              {/* FIX: INALIS ANG ANIMATEPRESENCE PARA HINDI MAWALA ANG CONTENT SA MABILIS NA SCROLL */}
               {architecture[activeArchTab] && (
-                <motion.div
-                  key={activeArchTab}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative"
-                >
+                <div className="w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative transition-all duration-300">
                   {/* Subtle Glowing Top Border */}
                   <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
 
-                  <h4 className="text-base md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10">
+                  <h4 className="text-base md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10 transition-colors duration-300">
                     <span className="text-slate-600 mr-2">[{String(activeArchTab + 1).padStart(2, '0')}]</span>
                     {architecture[activeArchTab].category} Stack
                   </h4>
@@ -803,7 +796,7 @@ export default function AiDeveloper() {
                       const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
                       
                       return (
-                        <div key={i} className="flex flex-col items-center gap-3 w-20 md:w-28 group">
+                        <div key={`${activeArchTab}-${i}`} className="flex flex-col items-center gap-3 w-20 md:w-28 group">
                           {/* Larger App-like Icon Card */}
                           <div className={`w-20 h-20 md:w-28 md:h-28 rounded-[1.2rem] md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
                             {tool.customImage ? (
@@ -826,7 +819,7 @@ export default function AiDeveloper() {
                       )
                     })}
                   </div>
-                </motion.div>
+                </div>
               )}
             </div>
 
