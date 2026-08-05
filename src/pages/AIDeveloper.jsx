@@ -411,8 +411,14 @@ export default function AiDeveloper() {
              setArchitecture(PRESET_PIPELINE_ARCHITECTURE);
           }
 
-          if (data.modern_web_experiences?.length > 0) {
-            setWebExperiences(data.modern_web_experiences);
+          // Kino-convert ang data kung sakaling object ang ibinabato ng CMS sa halip na string
+          if (data.modern_web_experiences && data.modern_web_experiences.length > 0) {
+            const formattedExperiences = data.modern_web_experiences.map(item => {
+              if (typeof item === 'string') return item;
+              // Extract the value based on common CMS object keys
+              return item.value || item.name || item.title || item.label || Object.values(item)[0] || '';
+            }).filter(Boolean);
+            setWebExperiences(formattedExperiences);
           }
           
           if (data.engineering_showcase?.length > 0) {
@@ -823,7 +829,7 @@ export default function AiDeveloper() {
         <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-5xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-              <h3 className="text-3xl md:text-4xl font-black text-white mb-4">✨ Modern Web Experiences</h3>
+              <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Modern Web Experiences</h3>
               <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
               <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed">
                 Beyond functional code, I focus on crafting immersive, high-performance digital experiences that engage users through motion, aesthetics, and smooth interactivity.
