@@ -231,7 +231,15 @@ const defaultWebExperiences = [
   "Glassmorphism",
   "Bento Grid Layouts",
   "Animated SVG",
-  "Responsive Design"
+  "Responsive Design",
+  "3D Web Experiences (Learning)",
+  "Three.js (Learning)",
+  "React Three Fiber (Learning)",
+  "Lottie Animations (Learning)",
+  "Accessibility (WCAG) (Learning)",
+  "Performance Optimization (Learning)",
+  "SEO Optimization (Learning)",
+  "Progressive Web Apps (Learning)"
 ];
 
 const defaultShowcaseProjects = [
@@ -411,14 +419,16 @@ export default function AiDeveloper() {
              setArchitecture(PRESET_PIPELINE_ARCHITECTURE);
           }
 
-          // Kino-convert ang data kung sakaling object ang ibinabato ng CMS sa halip na string
+          // FIX: Robust parser to handle strings OR objects from CMS correctly
           if (data.modern_web_experiences && data.modern_web_experiences.length > 0) {
             const formattedExperiences = data.modern_web_experiences.map(item => {
               if (typeof item === 'string') return item;
-              // Extract the value based on common CMS object keys
               return item.value || item.name || item.title || item.label || Object.values(item)[0] || '';
             }).filter(Boolean);
             setWebExperiences(formattedExperiences);
+          } else {
+            // Ito yung idinagdag natin na fallback!
+            setWebExperiences(defaultWebExperiences);
           }
           
           if (data.engineering_showcase?.length > 0) {
@@ -838,11 +848,16 @@ export default function AiDeveloper() {
 
             <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="flex flex-wrap justify-center gap-3 md:gap-4">
               {webExperiences.map((exp, idx) => {
-                const isLearning = exp.toLowerCase().includes('(learning)');
-                const cleanName = exp.replace(/\(learning\)/i, '').trim();
+                // Pinatibay na pagkuha ng text para siguradong hindi magka-crash kung object man ito
+                const expText = typeof exp === 'string' ? exp : String(exp || '');
+                if (!expText) return null;
+
+                const isLearning = expText.toLowerCase().includes('(learning)');
+                const cleanName = expText.replace(/\(learning\)/i, '').trim();
+
                 return (
                   <motion.div key={idx} variants={cardPop} className={`px-4 py-2.5 rounded-xl border flex items-center gap-2 backdrop-blur-sm transition-all hover:-translate-y-1 cursor-default shadow-lg ${isLearning ? 'bg-purple-950/30 border-purple-500/30 text-purple-300 hover:border-purple-400 hover:shadow-[0_0_20px_rgba(168,85,247,0.2)]' : 'bg-cyan-950/20 border-cyan-500/30 text-cyan-300 hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]'}`}>
-                    {isLearning ? <GraduationCap size={14} className="text-purple-500" /> : <Sparkles size={14} className="text-cyan-500" />}
+                    {/* INALIS NA ANG MGA ICONS DITO */}
                     <span className="text-xs md:text-sm font-bold tracking-wide">{cleanName}</span>
                     {isLearning && <span className="ml-1 text-[9px] bg-purple-500/20 border border-purple-500/30 text-purple-400 px-1.5 py-0.5 rounded uppercase tracking-wider">Learning</span>}
                   </motion.div>
@@ -951,9 +966,9 @@ export default function AiDeveloper() {
              <Quote size={40} className="text-purple-500/30 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
              <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Vision Statement</h2>
              <p className="text-base md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto">
-               My long-term goal is to become a software engineer who combines creativity, business understanding, data analytics, automation, and artificial intelligence to build meaningful digital products. 
-               <br/><br/>
-               Rather than specializing in only one discipline, I aim to bridge multiple fields and create solutions that are technically sound, visually polished, data-informed, and genuinely valuable to businesses and communities.
+                My long-term goal is to become a software engineer who combines creativity, business understanding, data analytics, automation, and artificial intelligence to build meaningful digital products. 
+                <br/><br/>
+                Rather than specializing in only one discipline, I aim to bridge multiple fields and create solutions that are technically sound, visually polished, data-informed, and genuinely valuable to businesses and communities.
              </p>
           </motion.div>
         </section>
