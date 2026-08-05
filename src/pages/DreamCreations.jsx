@@ -704,10 +704,10 @@ export default function DreamCreations() {
 
         {/* CREATIONS SECTION (SOLAR SYSTEM LAYOUT) - Z-Index 10 ensures the moon slides perfectly behind the Hero Text */}
         <section className="min-h-screen md:h-screen w-full px-4 py-20 md:py-10 flex flex-col items-center justify-center z-10 relative border-t border-white/10">
-          <div className="mb-4 md:mb-2 text-center pointer-events-auto relative z-40 shrink-0">
+          <div className="mb-4 md:mb-2 text-center pointer-events-auto relative z-40 shrink-0 backdrop-blur-md bg-[#050508]/30 border border-white/5 p-6 md:p-8 rounded-3xl shadow-[0_0_40px_rgba(0,0,0,0.5)] max-w-3xl mx-auto">
             <h3 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-3 drop-shadow-2xl">Our Creations</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
-            <p className="text-sm md:text-base text-white/70 mt-4 max-w-2xl mx-auto px-6 drop-shadow-md">Explore our specialized creative categories. Click any node to view our specific offerings and jump directly to our past works.</p>
+            <p className="text-sm md:text-base text-white/80 mt-4 px-2 drop-shadow-md">Explore our specialized creative categories. Click any node to view our specific offerings and jump directly to our past works.</p>
           </div>
           
           {/* Solar System Container - Adjusted for PC using 'vh' (viewport height) constraints */}
@@ -1111,7 +1111,7 @@ export default function DreamCreations() {
       {/* ================= CREATIVE PROCESS (GSAP PINNED SCROLL) ================= */}
       <section 
         ref={processSectionRef} 
-        className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mt-20 md:mt-32 mb-[3500px] md:mb-[3000px]"
+        className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mt-20 md:mt-32 mb-[4000px] md:mb-[3000px]"
       >
         <div className="h-screen flex flex-col justify-center pt-16 md:pt-24 pb-24">
           <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
@@ -1187,30 +1187,49 @@ export default function DreamCreations() {
       {/* ================= INTERACTIVE POP-UP MODAL (CREATIONS DIRECTORY MENU) ================= */}
       <AnimatePresence>
         {activeCreationPopup && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setActiveCreationPopup(null)} className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer" />
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-lg bg-[#0b1026] border border-[#1095d2]/30 rounded-3xl p-8 shadow-[0_0_50px_rgba(16,149,210,0.4)] overflow-hidden">
-              <button onClick={() => setActiveCreationPopup(null)} className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors cursor-pointer"><X size={24} /></button>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-xl bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center shrink-0">{activeCreationPopup.icon}</div>
+            
+            {/* CIRCULAR MODAL CONTAINER */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8, rotate: -10 }} 
+              animate={{ opacity: 1, scale: 1, rotate: 0 }} 
+              exit={{ opacity: 0, scale: 0.8, rotate: 10 }} 
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="relative w-[95vw] max-w-[500px] aspect-square bg-gradient-to-b from-[#0b1026] to-[#050b14] border-2 border-[#1095d2]/40 rounded-full p-6 md:p-10 shadow-[0_0_60px_rgba(16,149,210,0.5)] overflow-hidden flex flex-col items-center"
+            >
+              {/* Outer decorative ring */}
+              <div className="absolute inset-0 m-auto w-[95%] h-[95%] rounded-full border border-white/5 pointer-events-none" />
+
+              <button onClick={() => setActiveCreationPopup(null)} className="absolute top-8 right-8 md:top-12 md:right-12 text-white/50 hover:text-white hover:rotate-90 transition-all cursor-pointer z-50 bg-black/40 rounded-full w-8 h-8 flex items-center justify-center"><X size={18} /></button>
+              
+              {/* Centered Header for Circle */}
+              <div className="flex flex-col items-center text-center gap-2 mb-4 mt-6 md:mt-8 shrink-0 relative z-10">
+                <div className="w-12 h-12 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(16,149,210,0.4)]">{activeCreationPopup.icon}</div>
                 <div>
-                  <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">{activeCreationPopup.category}</h3>
-                  <p className="text-xs md:text-sm text-white/60">Select a specific area to view works</p>
+                  <h3 className="text-lg md:text-xl font-bold text-white leading-tight px-4">{activeCreationPopup.category}</h3>
+                  <p className="text-[10px] md:text-xs text-white/50 mt-1">Select area to view works</p>
                 </div>
               </div>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
-                {activeCreationPopup.items.map((item, idx) => (
-                  <li key={idx}>
-                    <button 
-                      onClick={() => handleSubtitleModalClick(item)}
-                      className="w-full text-left flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#1095d2]/40 hover:bg-[#1095d2]/10 transition-all group cursor-pointer"
-                    >
-                      <span className="text-[#1095d2] group-hover:translate-x-1 transition-transform">▹</span>
-                      <span className="text-sm font-medium text-white/80 group-hover:text-white">{item}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
+              
+              {/* Scrollable List Container inside the Circle (Hidden Scrollbar) */}
+              <div className="w-[85%] md:w-[75%] mx-auto flex-1 overflow-y-auto hide-scrollbar pb-12 relative z-10">
+                <ul className="flex flex-col gap-2 w-full pb-8">
+                  {activeCreationPopup.items.map((item, idx) => (
+                    <li key={idx} className="w-full">
+                      <button 
+                        onClick={() => handleSubtitleModalClick(item)}
+                        className="w-full text-center flex items-center justify-center gap-2 p-3 rounded-full bg-white/5 border border-white/10 hover:border-[#1095d2]/50 hover:bg-[#1095d2]/20 transition-all group cursor-pointer backdrop-blur-sm"
+                      >
+                        <span className="text-sm font-medium text-white/80 group-hover:text-white truncate px-2">{item}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              {/* Fade out gradient at bottom of circle */}
+              <div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-[#050b14] to-transparent pointer-events-none rounded-b-full z-20" />
             </motion.div>
           </div>
         )}
