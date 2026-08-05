@@ -175,12 +175,12 @@ export default function DreamCreations() {
     const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
 
     // 💻 SETTINGS PARA SA PC VIEW
-    const pcStart = -120;  
+    const pcStart = -125;  
     const pcEnd = 0;       
     const pcStopPoint = 1; 
 
     // 📱 SETTINGS PARA SA MOBILE VIEW
-    const mobileStart = -135; 
+    const mobileStart = -140; 
     const mobileEnd = 0;      
     const mobileStopPoint = 0.75; 
 
@@ -1111,7 +1111,7 @@ export default function DreamCreations() {
       {/* ================= CREATIVE PROCESS (GSAP PINNED SCROLL) ================= */}
       <section 
         ref={processSectionRef} 
-        className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mt-20 md:mt-32 mb-[3900px] md:mb-[2900px]"
+        className="w-full relative z-30 border-t border-white/10 bg-[#050508] overflow-hidden mt-20 md:mt-32 mb-[3850px] md:mb-[2850px]"
       >
         <div className="h-screen flex flex-col justify-center pt-16 md:pt-24 pb-24">
           <div className="max-w-7xl mx-auto mb-10 px-6 text-center md:text-left w-full shrink-0">
@@ -1208,7 +1208,7 @@ export default function DreamCreations() {
                 <div className="w-12 h-12 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(16,149,210,0.4)]">{activeCreationPopup.icon}</div>
                 <div>
                   <h3 className="text-lg md:text-xl font-bold text-white leading-tight px-4">{activeCreationPopup.category}</h3>
-                  <p className="text-[10px] md:text-xs text-white/50 mt-1">Select area to view works</p>
+                  <p className="text-[10px] md:text-xs text-white/50 mt-1">Scroll down to view works or arrow keys for web users</p>
                 </div>
               </div>
               
