@@ -310,19 +310,27 @@ export default function AiDeveloper() {
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= GSAP ARCHITECTURE SCROLL LOGIC (EXACT DREAM CREATIONS PATTERN) =================
+  // ================= GSAP ARCHITECTURE SCROLL LOGIC =================
   const archSectionRef = useRef(null);
   const archTrackRef = useRef(null);
   const progressBarRef = useRef(null);
   const [activeArchTab, setActiveArchTab] = useState(0);
 
+  // FIX 1: Auto-refresh ScrollTrigger kapag tapos na mag-load ang CMS/architecture data
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [architecture]);
+
   useGSAP(() => {
     if (!archSectionRef.current || !archTrackRef.current || architecture.length <= 1) return;
 
-    // Direct DOM Measurement katulad ng DreamCreations.jsx
     const getScrollAmount = () => {
+      if (!archTrackRef.current) return 0;
       const trackWidth = archTrackRef.current.scrollWidth;
-      return Math.max(0, trackWidth - window.innerWidth + 100);
+      return Math.max(0, trackWidth - window.innerWidth);
     };
 
     const tween = gsap.to(archTrackRef.current, {
@@ -330,27 +338,33 @@ export default function AiDeveloper() {
       ease: "none"
     });
 
-    ScrollTrigger.create({
+    const st = ScrollTrigger.create({
       trigger: archSectionRef.current,
       start: "top top", 
-      end: () => `+=${getScrollAmount()}`, // Exact distance base sa scrollWidth
-      pin: true,                           // GSAP Native Pinning
+      end: () => `+=${getScrollAmount()}`, 
+      pin: true,
+      anticipatePin: 1, // FIX 2: Pipigilan ang visual jump o pagkawala sa pinaka-umpisa ng scroll
       animation: tween,
       scrub: 1, 
       invalidateOnRefresh: true,
       onUpdate: (self) => {
-        // Direct DOM update sa progress line
         if (progressBarRef.current) {
           progressBarRef.current.style.width = `${self.progress * getScrollAmount()}px`;
         }
 
-        const currentIndex = Math.min(Math.round(self.progress * (architecture.length - 1)), architecture.length - 1);
+        const currentIndex = Math.min(
+          Math.round(self.progress * (architecture.length - 1)), 
+          architecture.length - 1
+        );
         setActiveArchTab(currentIndex);
       }
     });
 
+    // Forced initial calculation
+    ScrollTrigger.refresh();
+
     return () => {
-      ScrollTrigger.getAll().forEach(t => t.kill());
+      st.kill();
     };
   }, { scope: archSectionRef, dependencies: [architecture] });
 
@@ -710,7 +724,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE (MATCHED DREAM CREATIONS STRUCTURE) ================= */}
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE ================= */}
         <section ref={archSectionRef} className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] overflow-hidden min-h-screen">
           <div className="h-screen flex flex-col justify-center items-center pt-16 pb-8">
             
