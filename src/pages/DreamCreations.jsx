@@ -161,7 +161,7 @@ export default function DreamCreations() {
   const processSectionRef = useRef(null);
   const processTrackRef = useRef(null);
 
- // ================= SCROLL FOR SOLAR SYSTEM =================
+ / ================= SCROLL FOR SOLAR SYSTEM =================
   const topSectionRef = useRef(null);
   const { scrollYProgress: topScrollYProgress } = useScroll({
     target: topSectionRef,
@@ -170,43 +170,17 @@ export default function DreamCreations() {
   
   const smoothProgress = useSpring(topScrollYProgress, { stiffness: 100, damping: 25, restDelta: 0.001 });
   
-  // DITO MO IA-ADJUST ANG MGA VALUES NG MOON (in vh / viewport height)
-  const moonY = useTransform(smoothProgress, (value) => {
-    const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
+  // Alamin kung PC o Mobile para ihiwalay ang behavior
+  const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
 
-    // 💻 SETTINGS PARA SA PC VIEW
-    const pcStart = -120;  
-    const pcEnd = 0;       
-    const pcStopPoint = 1; 
-
-    // 📱 SETTINGS PARA SA MOBILE VIEW
-    const mobileStart = -128; 
-    const mobileEnd = 0;      
-    const mobileStopPoint = 0.75; 
-
-    const startPos = isDesktop ? pcStart : mobileStart;
-    const endPos = isDesktop ? pcEnd : mobileEnd;
-    const stopPoint = isDesktop ? pcStopPoint : mobileStopPoint;
-    
-    // 🚀 THE FIX: "Safe Zone" para sa Mobile Address Bar Issue
-    // Sa PC, 1% (0.01) lang ang allowance. 
-    // Sa Mobile, binigyan natin ng 8% (0.08) na safe zone.
-    const safeZone = isDesktop ? 0.01 : 0.08; 
-
-    // I-lock sa itaas kapag nasa safe zone para hindi maapektuhan ng address bar bounce
-    if (value <= safeZone) {
-      return `${startPos}vh`;
-    }
-
-    // Smooth transition pababa pag lagpas na ng safe zone
-    const progress = Math.min((value - safeZone) / (stopPoint - safeZone), 1);
-    const currentPos = startPos + (endPos - startPos) * Math.max(0, progress);
-    
-    return `${currentPos}vh`;
-  });
+  // NATIVE FRAMER MOTION ARRAY (Ito ang mag-aayos sa "stuck" bug sa scroll up)
+  const moonY = useTransform(
+    smoothProgress,
+    isDesktop ? [0, 1] : [0, 0.75],                   // [Start Scroll, Stop Scroll]
+    isDesktop ? ["-120vh", "0vh"] : ["-128vh", "0vh"] // [Start Position, End Position]
+  );
   
   const moonScale = useTransform(smoothProgress, [0, 1], [1.15, 0.4]);
-
   // PURE GSAP SCROLL-JACKING LOGIC
   useGSAP(() => {
     if (!processSectionRef.current || !processTrackRef.current) return;
