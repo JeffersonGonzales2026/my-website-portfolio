@@ -177,7 +177,7 @@ export default function DreamCreations() {
   const moonY = useTransform(
     smoothProgress,
     isDesktop ? [0, 1] : [0, 0.75],                   // [Start Scroll, Stop Scroll]
-    isDesktop ? ["-120vh", "0vh"] : ["-132vh", "0vh"] // [Start Position, End Position]
+    isDesktop ? ["-120vh", "0vh"] : ["-140vh", "0vh"] // [Start Position, End Position]
   );
   
   const moonScale = useTransform(smoothProgress, [0, 1], [1.15, 0.4]);
