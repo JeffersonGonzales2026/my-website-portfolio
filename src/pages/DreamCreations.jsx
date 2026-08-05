@@ -180,7 +180,7 @@ export default function DreamCreations() {
     const pcStopPoint = 1; 
 
     // 📱 SETTINGS PARA SA MOBILE VIEW
-    const mobileStart = -128; // Binalik ko sa -145 dahil ito ang sakto para sayo
+    const mobileStart = -128; 
     const mobileEnd = 0;      
     const mobileStopPoint = 0.75; 
 
@@ -188,15 +188,19 @@ export default function DreamCreations() {
     const endPos = isDesktop ? pcEnd : mobileEnd;
     const stopPoint = isDesktop ? pcStopPoint : mobileStopPoint;
     
-    // STRICT FIX: Kapag nasa pinakataas na ang screen (o nag-bounce sa mobile), 
-    // i-fo-force natin siyang bumalik sa eksaktong startPos para hindi ma-stuck sa gitna.
-    if (value <= 0.01) {
+    // 🚀 THE FIX: "Safe Zone" para sa Mobile Address Bar Issue
+    // Sa PC, 1% (0.01) lang ang allowance. 
+    // Sa Mobile, binigyan natin ng 8% (0.08) na safe zone.
+    const safeZone = isDesktop ? 0.01 : 0.08; 
+
+    // I-lock sa itaas kapag nasa safe zone para hindi maapektuhan ng address bar bounce
+    if (value <= safeZone) {
       return `${startPos}vh`;
     }
 
-    // Kung nag-scroll pababa, ia-apply niya yung normal na animation
-    const progress = Math.min(value / stopPoint, 1);
-    const currentPos = startPos + (endPos - startPos) * progress;
+    // Smooth transition pababa pag lagpas na ng safe zone
+    const progress = Math.min((value - safeZone) / (stopPoint - safeZone), 1);
+    const currentPos = startPos + (endPos - startPos) * Math.max(0, progress);
     
     return `${currentPos}vh`;
   });
