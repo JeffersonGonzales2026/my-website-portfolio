@@ -310,11 +310,13 @@ export default function AiDeveloper() {
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= GSAP ARCHITECTURE SCROLL LOGIC =================
+  // ================= GSAP ARCHITECTURE SCROLL LOGIC (PERFORMANCE FIXED) =================
   const archSectionRef = useRef(null);
   const archTrackRef = useRef(null);
-  const progressBarRef = useRef(null); // BAGONG REF PARA HINDI MAG-CRASH ANG REACT
+  const progressBarRef = useRef(null);
+  
   const [activeArchTab, setActiveArchTab] = useState(0);
+  const activeArchTabRef = useRef(0); // Pinipigilan ang spam refresh ni React
   const [gapSize, setGapSize] = useState(400);
 
   // Auto-adjust spacing on resize
@@ -329,9 +331,7 @@ export default function AiDeveloper() {
   useGSAP(() => {
     if (!archSectionRef.current || !archTrackRef.current || architecture.length <= 1) return;
 
-    const getScrollAmount = () => {
-      return (architecture.length - 1) * gapSize;
-    };
+    const getScrollAmount = () => (architecture.length - 1) * gapSize;
 
     const tween = gsap.to(archTrackRef.current, {
       x: () => -getScrollAmount(),
@@ -347,17 +347,19 @@ export default function AiDeveloper() {
       scrub: 1, 
       invalidateOnRefresh: true,
       onUpdate: (self) => {
-        // 1. Direct DOM Manipulation (Ito ang nag-fix sa performance crash / blank screen)
+        // Direct update sa Violet Line para super smooth kahit walang re-render
         if (progressBarRef.current) {
           progressBarRef.current.style.width = `${self.progress * (architecture.length - 1) * gapSize}px`;
         }
-        
-        // 2. Anti-Loop State Setter (Ito ang pipigil sa infinite refresh glitch)
+
+        // Kunin kung anong tab dapat ang active ngayon
         const currentIndex = Math.min(Math.round(self.progress * (architecture.length - 1)), architecture.length - 1);
-        setActiveArchTab((prevTab) => {
-          if (prevTab !== currentIndex) return currentIndex;
-          return prevTab; // Huwag mag-update kung pareho lang
-        });
+        
+        // I-update lang si React kung nagbago na talaga ang index (Pang-iwas sa pagka-blanko)
+        if (activeArchTabRef.current !== currentIndex) {
+          activeArchTabRef.current = currentIndex;
+          setActiveArchTab(currentIndex);
+        }
       }
     });
 
@@ -739,17 +741,16 @@ export default function AiDeveloper() {
             {/* GSAP HORIZONTAL TRACK */}
             <div className="relative h-24 md:h-32 w-full mt-6 md:mt-10 shrink-0 overflow-hidden flex items-center">
               
-              {/* TRACK CONTAINER THAT SCROLLS LEFT */}
               <div ref={archTrackRef} className="flex items-center px-[50vw] flex-nowrap w-max relative" style={{ gap: `${gapSize}px` }}>
                   
-                  {/* SOLID BLUE BACKGROUND LINE PARA SA BUONG TIMELINE */}
+                  {/* SOLID BLUE BACKGROUND LINE */}
                   <div className="absolute top-1/2 left-[50vw] h-[2px] bg-blue-900/50 shadow-[0_0_10px_rgba(59,130,246,0.3)] -translate-y-1/2 z-0" style={{ width: `${(architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
                   
-                  {/* GLOWING VIOLET LINE (Direct DOM Controlled - FIX) */}
+                  {/* VIOLET PROGRESS LINE */}
                   <div ref={progressBarRef} className="absolute top-1/2 left-[50vw] h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 origin-left" style={{ width: '0px' }} />
 
                   {architecture.map((stack, idx) => {
-                    // STRICT LOGIC: Kapag nakatutok lang mismo (activeArchTab === idx), saka lang magva-violet.
+                    // Tanging ang kasalukuyang nakatutok lang ang active
                     const isActive = activeArchTab === idx;
 
                     return (
@@ -757,22 +758,15 @@ export default function AiDeveloper() {
                         {/* BOX VIEW POINT */}
                         <div className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] ${
                           isActive 
-                            ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' // VIOLET & MALAKI kapag nakatutok
-                            : 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]'             // BLUE sa lahat ng hindi active
+                            ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' // VIOLET kapag active
+                            : 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]'             // BLUE kapag inactive
                         }`}>
-                          {/* Inner Blinking Box */}
-                          {isActive ? (
-                            <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-purple-400 animate-ping" /> // VIOLET BLINK kapag active
-                          ) : (
-                            <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-blue-400" /> // SOLID BLUE kapag hindi
-                          )}
+                          <div className={`w-2 h-2 md:w-2.5 md:h-2.5 transition-colors ${isActive ? 'bg-purple-400 animate-ping' : 'bg-blue-400'}`} />
                         </div>
 
-                        {/* Label Text */}
+                        {/* Label */}
                         <span className={`absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 ${
-                          isActive 
-                            ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' 
-                            : 'text-blue-300/70'
+                          isActive ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : 'text-blue-300/70'
                         }`}>
                           {stack.category}
                         </span>
@@ -782,50 +776,56 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (Permanenteng naka-display para hindi masira ang height at GSAP) */}
-            <div className="w-full max-w-5xl mx-auto px-4 md:px-6 shrink-0 flex-1 min-h-[350px] flex flex-col justify-start md:justify-center mt-2 md:mt-4 pb-4">
-              {architecture[activeArchTab] && (
-                <div className="w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative transition-all duration-300">
-                  {/* Subtle Glowing Top Border */}
-                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
+            {/* DYNAMIC CONTENT BOX (GRID STACK) - Hinding-hindi na mawawala dahil lahat ay permanenteng nandoon, opacity na lang ang nagpapalit! */}
+            <div className="w-full max-w-5xl mx-auto px-4 md:px-6 shrink-0 flex-1 mt-2 md:mt-4 pb-4 grid [grid-template-areas:'stack'] items-start md:items-center">
+              {architecture.map((stack, idx) => {
+                const isActive = activeArchTab === idx;
+                
+                return (
+                  <div
+                    key={idx}
+                    /* CSS classes na lang ang nagko-kontrol, kaya wala nang GSAP vs React Conflict! */
+                    className={`[grid-area:stack] w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative transition-all duration-500 ease-in-out ${
+                      isActive ? 'opacity-100 z-10 translate-y-0 pointer-events-auto' : 'opacity-0 z-0 translate-y-8 pointer-events-none'
+                    }`}
+                  >
+                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
 
-                  <h4 className="text-base md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10 transition-colors duration-300">
-                    <span className="text-slate-600 mr-2">[{String(activeArchTab + 1).padStart(2, '0')}]</span>
-                    {architecture[activeArchTab].category} Stack
-                  </h4>
-                  
-                  {/* APP ICONS GRID */}
-                  <div className="flex flex-wrap justify-center gap-6 md:gap-10 pb-2">
-                    {architecture[activeArchTab].items?.map((tool, i) => {
-                      const isLearning = tool.name.toLowerCase().includes('(learning)');
-                      const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
-                      
-                      return (
-                        <div key={`${activeArchTab}-${i}`} className="flex flex-col items-center gap-3 w-20 md:w-28 group">
-                          {/* Larger App-like Icon Card */}
-                          <div className={`w-20 h-20 md:w-28 md:h-28 rounded-[1.2rem] md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
-                            {tool.customImage ? (
-                              <img src={tool.customImage} alt={cleanName} className="w-10 h-10 md:w-16 md:h-16 object-contain drop-shadow-md group-hover:scale-110 transition-transform" onError={(e) => e.target.style.display='none'} />
-                            ) : (
-                              <Settings className={`w-10 h-10 md:w-16 md:h-16 group-hover:scale-110 transition-transform ${isLearning ? 'text-purple-500' : 'text-cyan-500'}`} />
-                            )}
-                            
-                            {/* Overlay Learning Badge */}
-                            {isLearning && (
-                              <div className="absolute -bottom-2.5 px-2 py-0.5 bg-purple-900 border border-purple-400 text-purple-200 text-[9px] md:text-[10px] rounded-full uppercase tracking-widest shadow-md whitespace-nowrap">
-                                Learning
-                              </div>
-                            )}
+                    <h4 className="text-base md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10">
+                      <span className="text-slate-600 mr-2">[{String(idx + 1).padStart(2, '0')}]</span>
+                      {stack.category} Stack
+                    </h4>
+                    
+                    <div className="flex flex-wrap justify-center gap-6 md:gap-10 pb-2">
+                      {stack.items?.map((tool, j) => {
+                        const isLearning = tool.name.toLowerCase().includes('(learning)');
+                        const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
+                        
+                        return (
+                          <div key={j} className="flex flex-col items-center gap-3 w-20 md:w-28 group">
+                            <div className={`w-20 h-20 md:w-28 md:h-28 rounded-[1.2rem] md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
+                              {tool.customImage ? (
+                                <img src={tool.customImage} alt={cleanName} className="w-10 h-10 md:w-16 md:h-16 object-contain drop-shadow-md group-hover:scale-110 transition-transform" onError={(e) => e.target.style.display='none'} />
+                              ) : (
+                                <Settings className={`w-10 h-10 md:w-16 md:h-16 group-hover:scale-110 transition-transform ${isLearning ? 'text-purple-500' : 'text-cyan-500'}`} />
+                              )}
+                              
+                              {isLearning && (
+                                <div className="absolute -bottom-2.5 px-2 py-0.5 bg-purple-900 border border-purple-400 text-purple-200 text-[9px] md:text-[10px] rounded-full uppercase tracking-widest shadow-md whitespace-nowrap">
+                                  Learning
+                                </div>
+                              )}
+                            </div>
+                            <span className="text-xs md:text-sm font-semibold text-slate-300 text-center leading-tight mt-1">
+                              {cleanName}
+                            </span>
                           </div>
-                          <span className="text-xs md:text-sm font-semibold text-slate-300 text-center leading-tight mt-1">
-                            {cleanName}
-                          </span>
-                        </div>
-                      )
-                    })}
+                        )
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })}
             </div>
 
           </div>
