@@ -721,7 +721,7 @@ export default function AiDeveloper() {
         <section ref={archSectionRef} className="w-full relative z-30 border-t border-slate-900 bg-black/40 overflow-hidden min-h-screen">
           <div className="h-screen flex flex-col justify-center items-center backdrop-blur-md pt-20 pb-10">
             
-            {/* HEADER - Pinapanatili sa itaas para hindi matulak */}
+            {/* HEADER */}
             <div className="text-center px-4 shrink-0 w-full max-w-4xl mx-auto">
               <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Architecture Pipeline</h3>
               <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
@@ -744,30 +744,30 @@ export default function AiDeveloper() {
                   <div className="absolute top-1/2 left-[50vw] h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 transition-all duration-100 ease-linear origin-left" style={{ width: `${archProgress * (architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
 
                   {architecture.map((stack, idx) => {
+                    // FIX: ACTIVE LANG ANG VIOLET AT BLINKING
                     const isActive = activeArchTab === idx;
-                    const isPassed = activeArchTab >= idx;
 
                     return (
                       <div key={idx} className="relative z-20 flex flex-col items-center shrink-0 w-8">
-                        {/* BOX VIEW POINT - Default Blue, Passed/Active Purple */}
+                        {/* BOX VIEW POINT */}
                         <div className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] ${
                           isActive 
-                            ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' 
-                            : isPassed 
-                              ? 'border-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)]' 
-                              : 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]' // BLUE DEFAULT
+                            ? 'border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]' // VIOLET kapag active
+                            : 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]'             // BLUE kapag hindi active
                         }`}>
-                          {/* Inner Blinking Box */}
-                          {isActive && <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-purple-400 animate-ping" />}
-                          {isPassed && !isActive && <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-purple-500" />}
-                          {!isPassed && <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-blue-400 animate-pulse" />} {/* BLUE DEFAULT */}
+                          {/* Inner Box */}
+                          {isActive ? (
+                            <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-purple-400 animate-ping" /> // BLINKING kapag active
+                          ) : (
+                            <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-blue-400" /> // SOLID BLUE kapag hindi active
+                          )}
                         </div>
 
                         {/* Label */}
                         <span className={`absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 ${
-                          isActive ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' 
-                          : isPassed ? 'text-slate-300' 
-                          : 'text-blue-300/70' // BLUE DEFAULT TEXT
+                          isActive 
+                            ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' 
+                            : 'text-blue-300/70'
                         }`}>
                           {stack.category}
                         </span>
@@ -777,59 +777,57 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (Enlarged Icons, fixed min-height to prevent jumping) */}
+            {/* DYNAMIC CONTENT BOX */}
             <div className="w-full max-w-5xl mx-auto px-4 md:px-6 shrink-0 flex-1 min-h-[350px] flex flex-col justify-start md:justify-center mt-2 md:mt-4 pb-4">
-              <AnimatePresence mode="wait">
-                {architecture[activeArchTab] && (
-                  <motion.div
-                    key={activeArchTab}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative"
-                  >
-                    {/* Subtle Glowing Top Border */}
-                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
+              {/* FIX: INALIS ANG ANIMATEPRESENCE PARA HINDI MAWALA ANG CONTENT SA MABILIS NA SCROLL */}
+              {architecture[activeArchTab] && (
+                <motion.div
+                  key={activeArchTab}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative"
+                >
+                  {/* Subtle Glowing Top Border */}
+                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
 
-                    <h4 className="text-base md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10">
-                      <span className="text-slate-600 mr-2">[{String(activeArchTab + 1).padStart(2, '0')}]</span>
-                      {architecture[activeArchTab].category} Stack
-                    </h4>
-                    
-                    {/* APP ICONS GRID */}
-                    <div className="flex flex-wrap justify-center gap-6 md:gap-10 pb-2">
-                      {architecture[activeArchTab].items?.map((tool, i) => {
-                        const isLearning = tool.name.toLowerCase().includes('(learning)');
-                        const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
-                        
-                        return (
-                          <div key={i} className="flex flex-col items-center gap-3 w-20 md:w-28 group">
-                            {/* Larger App-like Icon Card */}
-                            <div className={`w-20 h-20 md:w-28 md:h-28 rounded-[1.2rem] md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
-                              {tool.customImage ? (
-                                <img src={tool.customImage} alt={cleanName} className="w-10 h-10 md:w-16 md:h-16 object-contain drop-shadow-md group-hover:scale-110 transition-transform" onError={(e) => e.target.style.display='none'} />
-                              ) : (
-                                <Settings className={`w-10 h-10 md:w-16 md:h-16 group-hover:scale-110 transition-transform ${isLearning ? 'text-purple-500' : 'text-cyan-500'}`} />
-                              )}
-                              
-                              {/* Overlay Learning Badge */}
-                              {isLearning && (
-                                <div className="absolute -bottom-2.5 px-2 py-0.5 bg-purple-900 border border-purple-400 text-purple-200 text-[9px] md:text-[10px] rounded-full uppercase tracking-widest shadow-md whitespace-nowrap">
-                                  Learning
-                                </div>
-                              )}
-                            </div>
-                            <span className="text-xs md:text-sm font-semibold text-slate-300 text-center leading-tight mt-1">
-                              {cleanName}
-                            </span>
+                  <h4 className="text-base md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10">
+                    <span className="text-slate-600 mr-2">[{String(activeArchTab + 1).padStart(2, '0')}]</span>
+                    {architecture[activeArchTab].category} Stack
+                  </h4>
+                  
+                  {/* APP ICONS GRID */}
+                  <div className="flex flex-wrap justify-center gap-6 md:gap-10 pb-2">
+                    {architecture[activeArchTab].items?.map((tool, i) => {
+                      const isLearning = tool.name.toLowerCase().includes('(learning)');
+                      const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
+                      
+                      return (
+                        <div key={i} className="flex flex-col items-center gap-3 w-20 md:w-28 group">
+                          {/* Larger App-like Icon Card */}
+                          <div className={`w-20 h-20 md:w-28 md:h-28 rounded-[1.2rem] md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
+                            {tool.customImage ? (
+                              <img src={tool.customImage} alt={cleanName} className="w-10 h-10 md:w-16 md:h-16 object-contain drop-shadow-md group-hover:scale-110 transition-transform" onError={(e) => e.target.style.display='none'} />
+                            ) : (
+                              <Settings className={`w-10 h-10 md:w-16 md:h-16 group-hover:scale-110 transition-transform ${isLearning ? 'text-purple-500' : 'text-cyan-500'}`} />
+                            )}
+                            
+                            {/* Overlay Learning Badge */}
+                            {isLearning && (
+                              <div className="absolute -bottom-2.5 px-2 py-0.5 bg-purple-900 border border-purple-400 text-purple-200 text-[9px] md:text-[10px] rounded-full uppercase tracking-widest shadow-md whitespace-nowrap">
+                                Learning
+                              </div>
+                            )}
                           </div>
-                        )
-                      })}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                          <span className="text-xs md:text-sm font-semibold text-slate-300 text-center leading-tight mt-1">
+                            {cleanName}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </motion.div>
+              )}
             </div>
 
           </div>
