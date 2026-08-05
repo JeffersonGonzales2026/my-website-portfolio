@@ -180,7 +180,7 @@ export default function DreamCreations() {
 
     // 📱 SETTINGS PARA SA MOBILE VIEW
     const mobileStart = -128; // Gaano kataas ang moon sa mobile bago mag-scroll
-    const mobileEnd = 0;      // Saan titigil ang moon sa mobile (0 = gitna ng solar system)
+    const mobileEnd = 10;      // Saan titigil ang moon sa mobile (0 = gitna ng solar system)
 
     // Logika para sa pag-animate mula Start papuntang End
     const startPos = isDesktop ? pcStart : mobileStart;
