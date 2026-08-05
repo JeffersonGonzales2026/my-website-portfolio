@@ -674,7 +674,7 @@ export default function DreamCreations() {
         <div id="creations-grid" className="scroll-mt-24" />
 
         {/* CREATIONS SECTION (SOLAR SYSTEM LAYOUT) - Z-Index 10 ensures the moon slides perfectly behind the Hero Text */}
-        <section className="min-h-screen md:h-screen w-full px-4 py-20 md:py-10 flex flex-col items-center justify-center z-10 relative border-t border-white/10 overflow-hidden">
+<section className="min-h-screen md:h-screen w-full px-4 py-20 md:py-10 flex flex-col items-center justify-center z-10 relative border-t border-white/10">
           <div className="mb-4 md:mb-2 text-center pointer-events-auto relative z-40 shrink-0">
             <h3 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-3 drop-shadow-2xl">Our Creations</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
