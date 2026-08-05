@@ -714,26 +714,26 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE (CLEAN UI & FIXED GAP LAYOUT) ================= */}
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE (FULL SCREEN TAP FIXED) ================= */}
         <section 
-          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] min-h-screen pt-24 md:pt-32 pb-20 cursor-pointer select-none block"
+          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] pt-32 pb-24 cursor-pointer select-none block"
           onClick={handleScreenTap}
         >
           <div className="w-full max-w-7xl mx-auto flex flex-col items-center justify-start relative z-10">
             
-            {/* HEADER & COMBINED INSTRUCTIONS */}
+            {/* HEADER & INSTRUCTIONS */}
             <div className="text-center px-6 w-full max-w-4xl mx-auto pointer-events-none mb-12 md:mb-16">
               <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Architecture Pipeline</h3>
               <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)] mb-6" />
               
               <p className="text-slate-400 text-[13px] md:text-base max-w-2xl mx-auto leading-relaxed">
                 A structured engineering flowchart detailing every phase of my development process. <br className="hidden md:block" />
-                <span className="text-purple-400/80 italic">(Press arrow keys or tap sides of screen to navigate)</span>
+                <span className="text-purple-400/80 italic mt-1 md:mt-2 inline-block">(Press arrow keys or tap sides of screen to navigate)</span>
               </p>
             </div>
 
             {/* TIMELINE TRACK */}
-            <div className="relative h-24 md:h-28 w-full mb-8 md:mb-12 overflow-hidden flex items-center justify-center pointer-events-none">
+            <div className="relative h-20 md:h-24 w-full mb-8 md:mb-12 overflow-hidden flex items-center justify-center pointer-events-none">
               
               {/* SLIDING TRACK CONTAINER */}
               <div 
@@ -799,10 +799,10 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (FIXED UNIFORM GAP) */}
+            {/* DYNAMIC CONTENT BOX (TINANGGAL NA ANG CLICK BLOCKER DITO) */}
             <div 
-              className="w-full max-w-5xl mx-auto px-4 md:px-6 grid [grid-template-areas:'stack'] items-start cursor-default z-20 relative"
-              onClick={(e) => e.stopPropagation()} 
+              className="w-full max-w-5xl mx-auto px-4 md:px-6 grid [grid-template-areas:'stack'] items-start relative z-20"
+              /* Tinanggal na natin yung onClick={(e) => e.stopPropagation()} para gumana na ang full screen tap! */
             >
               {architecture.map((stack, idx) => {
                 const isActive = activeArchTab === idx;
@@ -816,19 +816,17 @@ export default function AiDeveloper() {
                   >
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
 
-                    {/* INALIS NA ANG NUMBERING DITO */}
                     <h4 className="text-sm md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10">
                       {stack.category} Stack
                     </h4>
                     
-                    {/* 4-COLUMN MOBILE GRID / AUTO-WRAP DESKTOP */}
-                    <div className="grid grid-cols-4 md:flex md:flex-wrap justify-items-center justify-center gap-x-2 gap-y-6 md:gap-10 pb-2">
+                    <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-10 pb-2">
                       {stack.items?.map((tool, j) => {
                         const isLearning = tool.name.toLowerCase().includes('(learning)');
                         const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
                         
                         return (
-                          <div key={j} className="flex flex-col items-center gap-2 md:gap-3 w-full group cursor-pointer">
+                          <div key={j} className="flex flex-col items-center gap-2 md:gap-3 w-[70px] sm:w-20 md:w-28 group">
                             
                             <div className={`w-14 h-14 sm:w-16 sm:h-16 md:w-28 md:h-28 rounded-2xl md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
                               {tool.customImage ? (
