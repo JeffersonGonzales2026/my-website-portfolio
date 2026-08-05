@@ -310,20 +310,19 @@ export default function AiDeveloper() {
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState(null);
 
-  // ================= GSAP ARCHITECTURE SCROLL LOGIC (100% PERFORMANCE FIXED) =================
+  // ================= GSAP ARCHITECTURE SCROLL LOGIC (PERFECT MATH & PERFORMANCE) =================
   const archSectionRef = useRef(null);
   const archTrackRef = useRef(null);
   const progressBarRef = useRef(null);
   
-  // WALA NANG USESTATE DITO! PURE REFS NA LANG PARA HINDI MAG-CRASH ANG BROWSER
   const boxRefs = useRef([]);
   const innerBoxRefs = useRef([]);
   const labelRefs = useRef([]);
   const contentRefs = useRef([]);
   
+  const activeArchTabRef = useRef(0);
   const [gapSize, setGapSize] = useState(400);
 
-  // Auto-adjust spacing on resize
   useEffect(() => {
     const handleResize = () => setGapSize(window.innerWidth < 768 ? 250 : 400);
     handleResize();
@@ -334,56 +333,80 @@ export default function AiDeveloper() {
   useGSAP(() => {
     if (!archSectionRef.current || !archTrackRef.current || architecture.length <= 1) return;
 
-    const getScrollAmount = () => (architecture.length - 1) * gapSize;
+    const scrollDistance = (architecture.length - 1) * gapSize;
+
+    // Default CSS state configuration using GSAP to ensure no flickering
+    architecture.forEach((_, i) => {
+      if (contentRefs.current[i]) {
+        gsap.set(contentRefs.current[i], {
+          autoAlpha: i === 0 ? 1 : 0,
+          y: i === 0 ? 0 : 20,
+          zIndex: i === 0 ? 10 : 0,
+          pointerEvents: i === 0 ? 'auto' : 'none'
+        });
+      }
+    });
 
     const tween = gsap.to(archTrackRef.current, {
-      x: () => -getScrollAmount(),
+      x: -scrollDistance,
       ease: "none"
     });
 
     ScrollTrigger.create({
       trigger: archSectionRef.current,
       start: "top top", 
-      end: () => `+=${getScrollAmount()}`, 
+      end: () => `+=${scrollDistance}`, 
       pin: true,
       animation: tween,
       scrub: 1, 
       invalidateOnRefresh: true,
       onUpdate: (self) => {
-        // 1. I-animate ang violet line nang direkta sa DOM
+        // Direct width update para sa violet bar
         if (progressBarRef.current) {
-          progressBarRef.current.style.width = `${self.progress * (architecture.length - 1) * gapSize}px`;
+          progressBarRef.current.style.width = `${self.progress * scrollDistance}px`;
         }
 
-        // 2. Kunin ang kasalukuyang tab
         const currentIndex = Math.min(Math.round(self.progress * (architecture.length - 1)), architecture.length - 1);
 
-        // 3. Direktang papalit-palitin ang kulay at display gamit ang FOR LOOP. Walang React Render!
-        for (let i = 0; i < architecture.length; i++) {
-          const isActive = i === currentIndex;
-          
-          if (boxRefs.current[i]) {
-            boxRefs.current[i].className = isActive 
-              ? "w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] border-purple-400 scale-125 shadow-[0_0_20px_rgba(168,85,247,0.8)]"
-              : "w-6 h-6 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 border-2 bg-[#02040a] border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]";
+        // Magpapalit lang ng styles kapag lumipat na sa bagong category
+        if (currentIndex !== activeArchTabRef.current) {
+          const oldIdx = activeArchTabRef.current;
+
+          // --- ANIMATE OUT (Patayin ang nakaraan) ---
+          if (contentRefs.current[oldIdx]) {
+            gsap.to(contentRefs.current[oldIdx], { autoAlpha: 0, y: 20, duration: 0.3, zIndex: 0, pointerEvents: 'none' });
           }
-          if (innerBoxRefs.current[i]) {
-            innerBoxRefs.current[i].className = isActive
-              ? "w-2 h-2 md:w-2.5 md:h-2.5 bg-purple-400 animate-ping"
-              : "w-2 h-2 md:w-2.5 md:h-2.5 bg-blue-400";
+          if (boxRefs.current[oldIdx]) {
+            boxRefs.current[oldIdx].classList.remove('border-purple-400', 'scale-125', 'shadow-[0_0_20px_rgba(168,85,247,0.8)]');
+            boxRefs.current[oldIdx].classList.add('border-blue-500', 'shadow-[0_0_15px_rgba(59,130,246,0.6)]');
           }
-          if (labelRefs.current[i]) {
-            labelRefs.current[i].className = isActive
-              ? "absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]"
-              : "absolute top-10 md:top-12 text-[10px] md:text-xs font-mono font-bold tracking-widest text-center w-48 transition-colors duration-300 text-blue-300/70";
+          if (innerBoxRefs.current[oldIdx]) {
+            innerBoxRefs.current[oldIdx].classList.remove('bg-purple-400', 'animate-ping');
+            innerBoxRefs.current[oldIdx].classList.add('bg-blue-400');
           }
-          if (contentRefs.current[i]) {
-            contentRefs.current[i].style.opacity = isActive ? "1" : "0";
-            contentRefs.current[i].style.visibility = isActive ? "visible" : "hidden";
-            contentRefs.current[i].style.transform = isActive ? "translateY(0px)" : "translateY(20px)";
-            contentRefs.current[i].style.pointerEvents = isActive ? "auto" : "none";
-            contentRefs.current[i].style.zIndex = isActive ? "10" : "0";
+          if (labelRefs.current[oldIdx]) {
+            labelRefs.current[oldIdx].classList.remove('text-purple-400', 'drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]');
+            labelRefs.current[oldIdx].classList.add('text-blue-300/70');
           }
+
+          // --- ANIMATE IN (Buhayin ang kasalukuyan) ---
+          if (contentRefs.current[currentIndex]) {
+            gsap.to(contentRefs.current[currentIndex], { autoAlpha: 1, y: 0, duration: 0.3, zIndex: 10, pointerEvents: 'auto' });
+          }
+          if (boxRefs.current[currentIndex]) {
+            boxRefs.current[currentIndex].classList.remove('border-blue-500', 'shadow-[0_0_15px_rgba(59,130,246,0.6)]');
+            boxRefs.current[currentIndex].classList.add('border-purple-400', 'scale-125', 'shadow-[0_0_20px_rgba(168,85,247,0.8)]');
+          }
+          if (innerBoxRefs.current[currentIndex]) {
+            innerBoxRefs.current[currentIndex].classList.remove('bg-blue-400');
+            innerBoxRefs.current[currentIndex].classList.add('bg-purple-400', 'animate-ping');
+          }
+          if (labelRefs.current[currentIndex]) {
+            labelRefs.current[currentIndex].classList.remove('text-blue-300/70');
+            labelRefs.current[currentIndex].classList.add('text-purple-400', 'drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]');
+          }
+
+          activeArchTabRef.current = currentIndex;
         }
       }
     });
@@ -761,22 +784,21 @@ export default function AiDeveloper() {
               <p className="md:hidden mt-4 text-[10px] text-purple-400 font-mono tracking-widest opacity-70 animate-pulse">(Scroll down to navigate timeline)</p>
             </div>
 
-            {/* GSAP HORIZONTAL TRACK */}
-            <div className="relative h-24 md:h-32 w-full mt-6 md:mt-10 shrink-0 overflow-hidden flex items-center">
-              
-              <div ref={archTrackRef} className="flex items-center px-[50vw] flex-nowrap w-max relative" style={{ gap: `${gapSize}px` }}>
+            {/* GSAP HORIZONTAL TRACK (PERFECT ABSOLUTE ALIGNMENT) */}
+            <div className="relative h-24 md:h-32 w-full mt-6 md:mt-10 shrink-0 overflow-hidden">
+              <div ref={archTrackRef} className="absolute left-[50vw] top-1/2 -translate-y-1/2 h-full flex items-center w-full">
                   
                   {/* SOLID BLUE BACKGROUND LINE */}
-                  <div className="absolute top-1/2 left-[50vw] h-[2px] bg-blue-900/50 shadow-[0_0_10px_rgba(59,130,246,0.3)] -translate-y-1/2 z-0" style={{ width: `${(architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
+                  <div className="absolute top-1/2 left-0 h-[2px] bg-blue-900/50 shadow-[0_0_10px_rgba(59,130,246,0.3)] -translate-y-1/2 z-0" style={{ width: `${(architecture.length > 0 ? architecture.length - 1 : 0) * gapSize}px` }} />
                   
                   {/* VIOLET PROGRESS LINE */}
-                  <div ref={progressBarRef} className="absolute top-1/2 left-[50vw] h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 origin-left" style={{ width: '0px' }} />
+                  <div ref={progressBarRef} className="absolute top-1/2 left-0 h-[2px] bg-purple-500 shadow-[0_0_20px_rgba(168,85,247,1)] -translate-y-1/2 z-10 origin-left" style={{ width: '0px' }} />
 
                   {architecture.map((stack, idx) => {
                     const isInitialActive = idx === 0;
 
                     return (
-                      <div key={idx} className="relative z-20 flex flex-col items-center shrink-0 w-8">
+                      <div key={idx} className="absolute top-1/2 -translate-y-1/2 flex flex-col items-center w-48 -ml-24 z-20" style={{ left: `${idx * gapSize}px` }}>
                         {/* BOX VIEW POINT */}
                         <div 
                           ref={el => boxRefs.current[idx] = el}
@@ -786,7 +808,7 @@ export default function AiDeveloper() {
                         >
                           <div 
                             ref={el => innerBoxRefs.current[idx] = el}
-                            className={`w-2 h-2 md:w-2.5 md:h-2.5 ${isInitialActive ? 'bg-purple-400 animate-ping' : 'bg-blue-400'}`} 
+                            className={`w-2 h-2 md:w-2.5 md:h-2.5 transition-colors ${isInitialActive ? 'bg-purple-400 animate-ping' : 'bg-blue-400'}`} 
                           />
                         </div>
 
@@ -805,23 +827,14 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (GRID STACK) - WALA NANG REACT LOGIC DITO, 100% STATIC KAYA WALANG MAG-CRASH */}
+            {/* DYNAMIC CONTENT BOX (GRID STACK) - GSAP ONLY (No CSS Transitions) */}
             <div className="w-full max-w-5xl mx-auto px-4 md:px-6 shrink-0 flex-1 mt-2 md:mt-4 pb-4 grid [grid-template-areas:'stack'] items-start md:items-center">
               {architecture.map((stack, idx) => {
-                const isInitialActive = idx === 0;
-                
                 return (
                   <div
                     key={idx}
                     ref={el => contentRefs.current[idx] = el}
-                    className="[grid-area:stack] w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative transition-all duration-500 ease-in-out"
-                    style={{
-                      opacity: isInitialActive ? 1 : 0,
-                      visibility: isInitialActive ? 'visible' : 'hidden',
-                      transform: isInitialActive ? 'translateY(0px)' : 'translateY(20px)',
-                      pointerEvents: isInitialActive ? 'auto' : 'none',
-                      zIndex: isInitialActive ? 10 : 0
-                    }}
+                    className="[grid-area:stack] w-full h-auto p-6 md:p-12 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-center relative"
                   >
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
 
