@@ -714,15 +714,15 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE (CLICK/TAP & 4-COLUMN MOBILE) ================= */}
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE (FIXED PC LAYOUT & 4-COLUMN MOBILE) ================= */}
         <section 
-          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] min-h-screen py-16 cursor-pointer select-none flex flex-col justify-center"
+          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] min-h-screen pt-24 md:pt-32 pb-20 cursor-pointer select-none"
           onClick={handleScreenTap}
         >
           <div className="w-full max-w-7xl mx-auto flex flex-col items-center relative z-10">
             
-            {/* HEADER & INSTRUCTIONS (Visible on both PC and Phone) */}
-            <div className="text-center px-4 w-full max-w-4xl mx-auto pointer-events-none mb-6 md:mb-8">
+            {/* HEADER & INSTRUCTIONS */}
+            <div className="text-center px-4 w-full max-w-4xl mx-auto pointer-events-none mb-6 md:mb-10">
               <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Architecture Pipeline</h3>
               <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)] mb-6" />
               
@@ -731,24 +731,24 @@ export default function AiDeveloper() {
               </p>
               
               {/* Universal Instruction Tag */}
-              <div className="mt-4 inline-block bg-purple-900/30 border border-purple-500/30 rounded-full px-4 py-1.5 backdrop-blur-sm">
-                <p className="text-purple-300 font-mono text-[9px] md:text-xs tracking-widest uppercase">
+              <div className="mt-5 inline-block bg-purple-900/30 border border-purple-500/30 rounded-full px-5 py-2 backdrop-blur-sm">
+                <p className="text-purple-300 font-mono text-[10px] md:text-xs tracking-widest uppercase">
                   Press arrow keys or click/tap sides of screen to navigate
                 </p>
               </div>
             </div>
 
-            {/* TAB COUNTER (No more Arrow Buttons) */}
+            {/* TAB COUNTER */}
             <div 
-              className="flex items-center justify-center mb-6 z-40 relative pointer-events-none"
+              className="flex items-center justify-center mb-6 md:mb-10 z-40 relative pointer-events-none"
             >
-              <div className="font-mono text-sm text-slate-400 font-bold bg-black/40 px-8 py-2 rounded-full border border-white/5 shadow-inner">
+              <div className="font-mono text-sm md:text-base text-slate-400 font-bold bg-black/40 px-8 py-2.5 rounded-full border border-white/5 shadow-inner">
                 <span className="text-purple-400">{String(activeArchTab + 1).padStart(2, '0')}</span> / {String(architecture.length).padStart(2, '0')}
               </div>
             </div>
 
             {/* TIMELINE TRACK */}
-            <div className="relative h-24 md:h-32 w-full mb-6 md:mb-10 overflow-hidden flex items-center justify-center pointer-events-none">
+            <div className="relative h-20 md:h-24 w-full mb-8 md:mb-12 overflow-hidden flex items-center justify-center pointer-events-none">
               
               {/* SLIDING TRACK CONTAINER */}
               <div 
@@ -777,7 +777,7 @@ export default function AiDeveloper() {
                         className="absolute top-1/2 flex flex-col items-center z-20 cursor-pointer group pointer-events-auto"
                         style={{ left: `${idx * gapSize}px`, transform: 'translate(-50%, -50%)' }}
                         onClick={(e) => {
-                          e.stopPropagation(); // Pinipigilan mag-trigger ang side tap kung ang mismong tuldok ang pinindot
+                          e.stopPropagation(); 
                           setActiveArchTab(idx);
                         }} 
                       >
@@ -814,9 +814,9 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (FIXED HEIGHT/COLLAPSE ISSUE FOR PC & 4-COLUMNS ON MOBILE) */}
+            {/* DYNAMIC CONTENT BOX (FIXED CUT-OFF ISSUE) */}
             <div 
-              className="w-full max-w-5xl mx-auto px-4 md:px-6 grid [grid-template-areas:'stack'] items-center cursor-default z-20 relative"
+              className="w-full max-w-5xl mx-auto px-4 md:px-6 grid [grid-template-areas:'stack'] items-start cursor-default z-20 relative"
               onClick={(e) => e.stopPropagation()} /* Pinipigilan ang side-tap kung pinindot/may highlight sa loob ng box */
             >
               {architecture.map((stack, idx) => {
@@ -845,7 +845,6 @@ export default function AiDeveloper() {
                         return (
                           <div key={j} className="flex flex-col items-center gap-2 md:gap-3 w-full group cursor-pointer">
                             
-                            {/* In-adjust na sukat para magkasya ang 4 sa mobile (w-14 h-14) */}
                             <div className={`w-14 h-14 sm:w-16 sm:h-16 md:w-28 md:h-28 rounded-2xl md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
                               {tool.customImage ? (
                                 <img src={tool.customImage} alt={cleanName} className="w-8 h-8 sm:w-10 sm:h-10 md:w-16 md:h-16 object-contain drop-shadow-md group-hover:scale-110 transition-transform" onError={(e) => e.target.style.display='none'} />
@@ -853,7 +852,6 @@ export default function AiDeveloper() {
                                 <Settings className={`w-7 h-7 sm:w-8 sm:h-8 md:w-16 md:h-16 group-hover:scale-110 transition-transform ${isLearning ? 'text-purple-500' : 'text-cyan-500'}`} />
                               )}
                               
-                              {/* Learning Badge - Pinaliit para sa Mobile */}
                               {isLearning && (
                                 <div className="absolute -bottom-2 md:-bottom-2.5 px-1.5 py-0.5 bg-purple-900 border border-purple-400 text-purple-200 text-[6px] md:text-[10px] rounded-full uppercase tracking-widest shadow-md whitespace-nowrap scale-90 md:scale-100">
                                   Learning
@@ -861,7 +859,6 @@ export default function AiDeveloper() {
                               )}
                             </div>
 
-                            {/* Label Text - Responsive Text Size */}
                             <span className="text-[9px] sm:text-[10px] md:text-sm font-semibold text-slate-300 text-center leading-tight break-words w-full px-1">
                               {cleanName}
                             </span>
