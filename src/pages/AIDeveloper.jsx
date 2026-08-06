@@ -155,7 +155,15 @@ const defaultWebExperiences = [
   "Glassmorphism",
   "Bento Grid Layouts",
   "Animated SVG",
-  "Responsive Design"
+  "Responsive Design",
+  "3D Web Experiences (Learning)",
+  "Three.js (Learning)",
+  "React Three Fiber (Learning)",
+  "Lottie Animations (Learning)",
+  "Accessibility (WCAG) (Learning)",
+  "Performance Optimization (Learning)",
+  "SEO Optimization (Learning)",
+  "Progressive Web Apps (Learning)"
 ];
 
 const defaultShowcaseProjects = [
@@ -329,8 +337,16 @@ export default function AiDeveloper() {
             setArchitecture(formattedArchitecture);
           }
 
-          if (data.modern_web_experiences?.length > 0) {
-            setWebExperiences(data.modern_web_experiences);
+          // FIX: Robust parser to handle strings OR objects from CMS correctly
+          if (data.modern_web_experiences && data.modern_web_experiences.length > 0) {
+            const formattedExperiences = data.modern_web_experiences.map(item => {
+              if (typeof item === 'string') return item;
+              return item.value || item.name || item.title || item.label || Object.values(item)[0] || '';
+            }).filter(Boolean);
+            setWebExperiences(formattedExperiences);
+          } else {
+            // Ito yung idinagdag natin na fallback!
+            setWebExperiences(defaultWebExperiences);
           }
           
           if (data.engineering_showcase?.length > 0) {
