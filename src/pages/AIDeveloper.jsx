@@ -1,7 +1,7 @@
 // src/pages/AiDeveloper.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Cpu, Layers, ArrowUp, CheckCircle2, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Cpu, Layers, ArrowUp, CheckCircle2, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // ================= CUSTOM ANIMATED COUNTER =================
@@ -123,8 +123,7 @@ const defaultAiEcosystem = [
   { name: "ChatGPT", role: "Primary planning, architecture, documentation, learning, and technical guidance.", imageSrc: "/images/chatgpt.png" },
   { name: "Claude", role: "Backend, Debugging, reasoning, architecture planning, code reviews, and structured writing.", imageSrc: "/images/claude.png" },
   { name: "Gemini", role: "Frontend, UI & UX, architecture planning, Alternative implementation ideas.", imageSrc: "/images/gemini.png" },
-  { name: "GitHub Copilot", role: "In-editor code completion, agent, and developer assistance.", imageSrc: "/images/copilot.png" },
-  { name: "OpenAI Codex", role: "AI software engineering agent for autonomous coding and development workflows.", imageSrc: "" }
+  { name: "GitHub Copilot", role: "In-editor code completion, agent, and developer assistance.", imageSrc: "/images/copilot.png" }
 ];
 
 const PRESET_PIPELINE_ARCHITECTURE = [
@@ -141,75 +140,7 @@ const PRESET_PIPELINE_ARCHITECTURE = [
     items: [
       { name: "ChatGPT", imageSrc: "/images/chatgpt.png" },
       { name: "Claude", imageSrc: "/images/claude.png" },
-      { name: "GitHub Issues", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
-      { name: "Notion", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" },
-      { name: "Kimi (Learning)", imageSrc: "/images/kimi.png" }
-    ]
-  },
-  {
-    category: "Architecture Design",
-    items: [
-      { name: "Excalidraw (Learning)", imageSrc: "" },
-      { name: "Draw.io (Learning)", imageSrc: "" },
-      { name: "Lucidchart (Learning)", imageSrc: "" },
-      { name: "Eraser.io (Learning)", imageSrc: "" }
-    ]
-  },
-  {
-    category: "Frontend Development",
-    items: [
-      { name: "React", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" },
-      { name: "Vite", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vite/vite-original.svg" },
-      { name: "Tailwind CSS", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" },
-      { name: "JavaScript (ES6+)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" },
-      { name: "HTML5", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" },
-      { name: "CSS3", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" },
-      { name: "Framer Motion", imageSrc: "" },
-      { name: "GSAP", imageSrc: "" }
-    ]
-  },
-  {
-    category: "Backend Development",
-    items: [
-      { name: "Node.js", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" },
-      { name: "JSON", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/json/json-original.svg" }
-    ]
-  },
-  {
-    category: "Database Design",
-    items: [
-      { name: "PostgreSQL", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg" },
-      { name: "Supabase", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" }
-    ]
-  },
-  {
-    category: "AI Integration",
-    items: [
-      { name: "GitHub Copilot", imageSrc: "/images/copilot.png" }
-    ]
-  },
-  {
-    category: "Testing & Debugging",
-    items: [
-      { name: "Chrome DevTools", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/chrome/chrome-original.svg" },
-      { name: "React Developer Tools", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" },
-      { name: "ESLint", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/eslint/eslint-original.svg" },
-      { name: "Prettier", imageSrc: "" }
-    ]
-  },
-  {
-    category: "Deployment",
-    items: [
-      { name: "Git", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" },
-      { name: "GitHub", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
-      { name: "Vercel", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" }
-    ]
-  },
-  {
-    category: "Monitoring & Maintenance",
-    items: [
-      { name: "GitHub", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" },
-      { name: "Vercel Analytics", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" }
+      { name: "GitHub Issues", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" }
     ]
   }
 ];
@@ -253,7 +184,7 @@ const defaultGithubProfile = {
 const aiWorkflowSteps = [
   "Idea", "Research", "Requirements Gathering", "Planning", "Architecture Design", "UI/UX Planning",
   "Prompt Engineering", "Prototype", "AI-Assisted Code Generation", "Manual Code Review", "Refactoring",
-  "Debugging", "Testing", "Optimization", "Documentation", "Version Control", "Deployment", "Maintenance", "Continuous Improvement"
+  "Debugging", "Testing", "Optimization", "Documentation", "Version Control", "Deployment", "Maintenance"
 ];
 
 const extractImageDeep = (item) => {
@@ -344,7 +275,7 @@ export default function AiDeveloper() {
     }
   };
 
-
+  // Fetch Supabase Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -366,8 +297,6 @@ export default function AiDeveloper() {
               return { ...ai, customImage: imgUrl };
             });
             setAiPartners(formattedPartners);
-          } else {
-            setAiPartners(defaultAiEcosystem);
           }
           
           if (Array.isArray(data.architecture_stack) && data.architecture_stack.length > 5) {
@@ -398,8 +327,6 @@ export default function AiDeveloper() {
               };
             });
             setArchitecture(formattedArchitecture);
-          } else {
-             setArchitecture(PRESET_PIPELINE_ARCHITECTURE);
           }
 
           if (data.modern_web_experiences?.length > 0) {
@@ -684,7 +611,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE (CLEAN UI & FIXED GAP LAYOUT) ================= */}
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE (4-COLUMN MOBILE & ANYWHERE TAP) ================= */}
         <section 
           className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] min-h-screen pt-24 md:pt-32 pb-20 cursor-pointer select-none block"
           onClick={handleScreenTap}
@@ -769,7 +696,7 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (FIXED UNIFORM GAP) */}
+            {/* DYNAMIC CONTENT BOX (4-COLUMNS ON MOBILE, ANYWHERE TAP ENABLED) */}
             <div 
               className="w-full max-w-5xl mx-auto px-4 md:px-6 grid [grid-template-areas:'stack'] items-start relative z-20"
             >
@@ -785,17 +712,20 @@ export default function AiDeveloper() {
                   >
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-40" />
 
+                    {/* INALIS NA ANG NUMBERING DITO */}
                     <h4 className="text-sm md:text-xl font-black text-purple-400 uppercase tracking-widest mb-6 md:mb-10">
                       {stack.category} Stack
                     </h4>
                     
-                    <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-10 pb-2">
+                    {/* 4-COLUMN MOBILE GRID / AUTO-WRAP DESKTOP */}
+                    <div className="grid grid-cols-4 md:flex md:flex-wrap justify-items-center justify-center gap-x-2 gap-y-6 md:gap-10 pb-2">
                       {stack.items?.map((tool, j) => {
                         const isLearning = tool.name.toLowerCase().includes('(learning)');
                         const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
                         
                         return (
-                          <div key={j} className="flex flex-col items-center gap-2 md:gap-3 w-[70px] sm:w-20 md:w-28 group cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                          /* HINDI NAKA-BLOCK ANG TAP DITO KAYA GAGANA KAHIT ITO ANG MAPINDOT SA SCREEN */
+                          <div key={j} className="flex flex-col items-center gap-2 md:gap-3 w-[70px] sm:w-20 md:w-28 group cursor-pointer">
                             
                             <div className={`w-14 h-14 sm:w-16 sm:h-16 md:w-28 md:h-28 rounded-2xl md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
                               {tool.customImage ? (
