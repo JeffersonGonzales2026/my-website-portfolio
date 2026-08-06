@@ -757,40 +757,43 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67.5 MODERN WEB EXPERIENCES (ORGANIZED GRID LAYOUT) ================= */}
+        {/* ================= 67.5 MODERN WEB EXPERIENCES (2-COLUMN COMPACT GRID - NO TRUNCATE) ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-6xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-10 md:mb-16">
-              <h3 className="text-3xl md:text-4xl font-black text-white mb-4">✨ Modern Web Experiences</h3>
+              <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Modern Web Experiences</h3>
               <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
               <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed">
                 Beyond functional code, I focus on crafting immersive, high-performance digital experiences that engage users through motion, aesthetics, and smooth interactivity.
               </p>
             </motion.div>
 
-            {/* GINAWA NATING ORGANIZED GRID (2-columns sa mobile, 3 sa tablet, 4 sa PC) */}
-            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} 
-              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
+            {/* 2 COLUMNS SA MOBILE (grid-cols-2), 3 SA TABLET, 4 SA PC */}
+            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
               {webExperiences.map((exp, idx) => {
-                const isLearning = exp.toLowerCase().includes('(learning)');
-                const cleanName = exp.replace(/\(learning\)/i, '').trim();
+                const expText = typeof exp === 'string' ? exp : String(exp || '');
+                if (!expText) return null;
+
+                const isLearning = expText.toLowerCase().includes('(learning)');
+                const cleanName = expText.replace(/\(learning\)/i, '').trim();
+
                 return (
-                  <motion.div key={idx} variants={cardPop} 
-                    className={`p-4 md:p-6 rounded-2xl border flex flex-col items-center justify-center text-center gap-2 backdrop-blur-sm transition-all hover:-translate-y-1 cursor-default shadow-lg h-full
-                    ${isLearning ? 'bg-purple-950/30 border-purple-500/30 text-purple-300 hover:border-purple-400 hover:shadow-[0_0_20px_rgba(168,85,247,0.2)]' : 'bg-cyan-950/20 border-cyan-500/30 text-cyan-300 hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]'}`}>
-                    
-                    {/* Icon Circle */}
-                    <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-1 md:mb-2
-                      ${isLearning ? 'bg-purple-900/40 text-purple-400' : 'bg-cyan-900/40 text-cyan-400'}`}>
-                      {isLearning ? <GraduationCap size={20} /> : <Sparkles size={20} />}
+                  <motion.div 
+                    key={idx} 
+                    variants={cardPop} 
+                    className={`w-full px-2.5 py-2 md:px-4 md:py-3 rounded-lg md:rounded-xl border flex items-center justify-between backdrop-blur-sm transition-all hover:-translate-y-1 cursor-default shadow-sm md:shadow-lg h-full min-h-[44px] ${isLearning ? 'bg-purple-950/20 border-purple-500/20 text-purple-300 hover:border-purple-400/50 hover:bg-purple-900/20' : 'bg-cyan-950/10 border-cyan-500/20 text-cyan-300 hover:border-cyan-400/50 hover:bg-cyan-900/10'}`}
+                  >
+                    <div className="flex items-center gap-1.5 md:gap-3 flex-1 pr-1">
+                      {isLearning ? <GraduationCap className="text-purple-500 shrink-0 w-3 h-3 md:w-4 md:h-4" /> : <Sparkles className="text-cyan-500 shrink-0 w-3 h-3 md:w-4 md:h-4" />}
+                      
+                      {/* TINANGGAL ANG TRUNCATE. Nilagyan ng leading-tight para maganda ang spacing kung 2 lines */}
+                      <span className="text-[10px] sm:text-[11px] md:text-sm font-semibold tracking-wide text-left leading-tight break-words">{cleanName}</span>
                     </div>
                     
-                    {/* Text Label */}
-                    <span className="text-[11px] md:text-sm font-bold tracking-wide leading-tight">{cleanName}</span>
-                    
-                    {/* Learning Badge */}
                     {isLearning && (
-                      <span className="mt-1 text-[9px] bg-purple-500/20 border border-purple-500/30 text-purple-400 px-1.5 py-0.5 rounded uppercase tracking-wider">Learning</span>
+                      <span className="ml-1 shrink-0 text-[6px] md:text-[9px] bg-purple-500/10 border border-purple-500/30 text-purple-400 px-1 md:px-2 py-0.5 rounded uppercase tracking-wider font-mono mt-0.5">
+                        Learn
+                      </span>
                     )}
                   </motion.div>
                 )
