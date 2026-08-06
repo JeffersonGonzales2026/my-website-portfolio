@@ -449,12 +449,12 @@ export default function AiDeveloper() {
       <div className="relative z-10 overflow-x-hidden">
 
         {/* ================= 59. HERO SECTION (LOWERED PADDING) ================= */}
-        <section className="relative pt-40 md:pt-48 pb-16 md:pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center">
+        <section className="relative pt-24 md:pt-48 pb-16 md:pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center">
           <div className="max-w-5xl mx-auto text-center relative w-full">
 
             {/* FIXED MOBILE HEADLINE */}
             <motion.h1 variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}
-              className="text-[32px] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
+              className="text-[32px] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8 mt-10">
               
               <span className="md:hidden block leading-[1.2]">
                 <span className="block whitespace-nowrap">Building the Future</span>
