@@ -4,13 +4,6 @@ import { motion, useInView, animate, useScroll, useTransform, AnimatePresence } 
 import { Cpu, Layers, ArrowUp, CheckCircle2, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-// GSAP IMPORTS (Restored for pinned horizontal scrolling)
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useGSAP } from '@gsap/react';
-
-gsap.registerPlugin(ScrollTrigger);
-
 // ================= CUSTOM ANIMATED COUNTER =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
   const ref = useRef(null);
@@ -34,7 +27,7 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
   return <span ref={ref} className="text-3xl md:text-4xl font-black text-white tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">0{suffix}</span>;
 };
 
-// ================= WAVE CARD COMPONENT (REVERTED TO GLASSY LOOK) =================
+// ================= WAVE CARD COMPONENT =================
 const WaveCard = ({ principle }) => {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -44,30 +37,30 @@ const WaveCard = ({ principle }) => {
 
   const scale = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.9, 1.1, 0.9]);
   const opacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0.4, 1, 0.4]);
-  const zIndex = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0, 10, 0]); 
+  const zIndex = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0, 10, 0]);
   
   const borderColor = useTransform(
-    scrollYProgress, 
-    [0.3, 0.5, 0.7], 
-    ['rgba(59, 130, 246, 0.1)', 'rgba(168, 85, 247, 1)', 'rgba(59, 130, 246, 0.1)'] 
+    scrollYProgress,
+    [0.3, 0.5, 0.7],
+    ['rgba(59, 130, 246, 0.1)', 'rgba(168, 85, 247, 1)', 'rgba(59, 130, 246, 0.1)']
   );
   
   const backgroundColor = useTransform(
-    scrollYProgress, 
-    [0.3, 0.5, 0.7], 
-    ['rgba(2, 6, 23, 0.2)', 'rgba(88, 28, 135, 0.25)', 'rgba(2, 6, 23, 0.2)'] 
+    scrollYProgress,
+    [0.3, 0.5, 0.7],
+    ['rgba(2, 6, 23, 0.2)', 'rgba(88, 28, 135, 0.25)', 'rgba(2, 6, 23, 0.2)']
   );
 
   const textColor = useTransform(
     scrollYProgress,
     [0.3, 0.5, 0.7],
-    ['#64748b', '#ffffff', '#64748b'] 
+    ['#64748b', '#ffffff', '#64748b']
   );
 
   const iconColor = useTransform(
     scrollYProgress,
     [0.3, 0.5, 0.7],
-    ['#3b82f6', '#a855f7', '#3b82f6'] 
+    ['#3b82f6', '#a855f7', '#3b82f6']
   );
 
   const boxShadow = useTransform(
@@ -77,7 +70,7 @@ const WaveCard = ({ principle }) => {
   );
 
   return (
-    <motion.div 
+    <motion.div
       ref={ref}
       style={{ scale, opacity, borderColor, backgroundColor, boxShadow, zIndex }}
       className="p-4 md:p-5 rounded-2xl border flex items-center gap-4 backdrop-blur-md w-full max-w-md mx-auto relative origin-center"
@@ -110,10 +103,10 @@ const staggerContainer = {
 
 const futuristicReveal = {
   hidden: { opacity: 0, y: 40, scale: 0.95 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    scale: 1, 
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
     transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
   }
 };
@@ -231,15 +224,7 @@ const defaultWebExperiences = [
   "Glassmorphism",
   "Bento Grid Layouts",
   "Animated SVG",
-  "Responsive Design",
-  "3D Web Experiences (Learning)",
-  "Three.js (Learning)",
-  "React Three Fiber (Learning)",
-  "Lottie Animations (Learning)",
-  "Accessibility (WCAG) (Learning)",
-  "Performance Optimization (Learning)",
-  "SEO Optimization (Learning)",
-  "Progressive Web Apps (Learning)"
+  "Responsive Design"
 ];
 
 const defaultShowcaseProjects = [
@@ -266,8 +251,8 @@ const defaultGithubProfile = {
 };
 
 const aiWorkflowSteps = [
-  "Idea", "Research", "Requirements Gathering", "Planning", "Architecture Design", "UI/UX Planning", 
-  "Prompt Engineering", "Prototype", "AI-Assisted Code Generation", "Manual Code Review", "Refactoring", 
+  "Idea", "Research", "Requirements Gathering", "Planning", "Architecture Design", "UI/UX Planning",
+  "Prompt Engineering", "Prototype", "AI-Assisted Code Generation", "Manual Code Review", "Refactoring",
   "Debugging", "Testing", "Optimization", "Documentation", "Version Control", "Deployment", "Maintenance", "Continuous Improvement"
 ];
 
@@ -330,7 +315,7 @@ export default function AiDeveloper() {
     setActiveArchTab(prev => (prev > 0 ? prev - 1 : prev));
   };
 
-  // Keyboard Arrow Keys Support (PC)
+  // Keyboard Arrow Keys Support
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowRight') {
@@ -358,6 +343,7 @@ export default function AiDeveloper() {
       handlePrevArch();
     }
   };
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -416,16 +402,8 @@ export default function AiDeveloper() {
              setArchitecture(PRESET_PIPELINE_ARCHITECTURE);
           }
 
-          // FIX: Robust parser to handle strings OR objects from CMS correctly
-          if (data.modern_web_experiences && data.modern_web_experiences.length > 0) {
-            const formattedExperiences = data.modern_web_experiences.map(item => {
-              if (typeof item === 'string') return item;
-              return item.value || item.name || item.title || item.label || Object.values(item)[0] || '';
-            }).filter(Boolean);
-            setWebExperiences(formattedExperiences);
-          } else {
-            // Ito yung idinagdag natin na fallback!
-            setWebExperiences(defaultWebExperiences);
+          if (data.modern_web_experiences?.length > 0) {
+            setWebExperiences(data.modern_web_experiences);
           }
           
           if (data.engineering_showcase?.length > 0) {
@@ -441,12 +419,9 @@ export default function AiDeveloper() {
 
         const { data: allResumes, error: resumeError } = await supabase.from('portfolio_resumes').select('*');
         if (allResumes && !resumeError && allResumes.length > 0) {
-          const aiResume = allResumes.find(res => res.title.toLowerCase().includes('ai') || res.title.toLowerCase().includes('developer') || res.title.toLowerCase().includes('engineer')) || allResumes[0]; 
+          const aiResume = allResumes.find(res => res.title.toLowerCase().includes('ai') || res.title.toLowerCase().includes('developer') || res.title.toLowerCase().includes('engineer')) || allResumes[0];
           setPageResume(aiResume);
         }
-
-        // Force a scrolltrigger refresh after data loads to prevent bugs
-        setTimeout(() => ScrollTrigger.refresh(), 500);
 
       } catch (err) {
         console.error('Error fetching AI Developer CMS data:', err.message);
@@ -562,7 +537,7 @@ export default function AiDeveloper() {
             </motion.div>
 
             {/* BUTTONS */}
-            <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.4 }} 
+            <motion.div variants={fadeSlideUp} initial="hidden" animate="visible" transition={{ delay: 0.4 }}
               className="flex flex-col sm:flex-row justify-center gap-4 relative z-20 mb-16 w-full sm:w-auto px-4 sm:px-0">
               <button onClick={() => scrollToSection('current-projects')} className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-black text-sm hover:opacity-90 transition-opacity shadow-[0_0_25px_rgba(6,182,212,0.4)] cursor-pointer">
                 View Projects
@@ -575,9 +550,9 @@ export default function AiDeveloper() {
 
             <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-16">
               {stats.map((stat, idx) => (
-                <motion.div 
-                  variants={cardPop} 
-                  key={idx} 
+                <motion.div
+                  variants={cardPop}
+                  key={idx}
                   className="p-5 rounded-2xl bg-black/60 border border-slate-800 backdrop-blur-md flex flex-col items-center justify-center hover:border-cyan-500/60 transition-colors group relative overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -590,11 +565,10 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 61. LEARNING PHILOSOPHY (CENTERED WAVE SCROLL WITH GLASSY LOOK) ================= */}
+        {/* ================= 61. LEARNING PHILOSOPHY ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/40 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
             
-            {/* CENTERED TEXT CONTENT */}
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="space-y-6 mb-12 z-20">
               <h3 className="text-3xl font-black text-white">Learning by Building.</h3>
               <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
@@ -606,7 +580,6 @@ export default function AiDeveloper() {
               </div>
             </motion.div>
 
-            {/* DYNAMIC SCROLL WAVE LIST */}
             <div className="w-full flex flex-col gap-3 py-10 relative z-10">
               {[
                 "Build real projects.", "Understand the code.", "Learn continuously.", "Solve business problems.",
@@ -620,7 +593,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW (CHAT UI OVERHAUL) ================= */}
+        {/* ================= 63 & 64. AI PHILOSOPHY & WORKFLOW ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
@@ -636,14 +609,12 @@ export default function AiDeveloper() {
               </div>
             </motion.div>
 
-            {/* AI CHAT UI INTERFACE */}
-            <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} 
+            <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }}
               className="lg:col-span-7 h-[550px] overflow-y-auto pr-2 border border-slate-800 bg-slate-950/80 p-6 rounded-2xl chat-scroll relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
               <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-[#02040a] to-transparent pointer-events-none z-10" />
               
               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-slate-800 pb-3"><Settings size={14} className="text-purple-400" /> AI Prompts Context Window</h4>
               
-              {/* USER PROMPT MESSAGE */}
               <div className="flex gap-3 mb-8 w-full max-w-[90%] ml-auto justify-end">
                 <div className="bg-slate-800/80 border border-slate-700 p-4 rounded-2xl rounded-tr-none text-sm text-slate-200 shadow-md">
                   <span className="block text-[10px] text-cyan-400 font-mono mb-1">User Prompt</span>
@@ -652,7 +623,6 @@ export default function AiDeveloper() {
                 <div className="w-8 h-8 rounded-full bg-cyan-900 border border-cyan-500 flex items-center justify-center text-xs font-bold text-cyan-400 shrink-0 shadow-inner">JG</div>
               </div>
 
-              {/* AI RESPONSE MESSAGE */}
               <div className="flex gap-3 w-full max-w-[95%]">
                 <div className="w-8 h-8 rounded-full bg-purple-900/30 border border-purple-500/50 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(168,85,247,0.3)] mt-1">
                   <Sparkles size={14} className="text-purple-400" />
@@ -681,7 +651,7 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 65. AI ECOSYSTEM (GRID LAYOUT REVERTED) ================= */}
+        {/* ================= 65. AI ECOSYSTEM ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
           <div className="max-w-7xl mx-auto">
             <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
@@ -698,7 +668,7 @@ export default function AiDeveloper() {
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 rounded-xl border border-slate-800 bg-black flex items-center justify-center relative overflow-hidden shrink-0 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.5)]">
                       {ai.customImage ? (
-                        <img src={ai.customImage} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10" 
+                        <img src={ai.customImage} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10"
                              onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                       ) : null}
                       <Settings size={20} className={`text-slate-700 absolute inset-0 m-auto z-0 ${ai.customImage ? 'hidden' : 'block'}`} />
@@ -714,14 +684,14 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67. DEVELOPMENT ARCHITECTURE (FULL SCREEN TAP FIXED) ================= */}
+        {/* ================= 67. DEVELOPMENT ARCHITECTURE (CLEAN UI & FIXED GAP LAYOUT) ================= */}
         <section 
-          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] pt-32 pb-24 cursor-pointer select-none block"
+          className="w-full relative z-30 border-t border-slate-900 bg-[#02040a] min-h-screen pt-24 md:pt-32 pb-20 cursor-pointer select-none block"
           onClick={handleScreenTap}
         >
           <div className="w-full max-w-7xl mx-auto flex flex-col items-center justify-start relative z-10">
             
-            {/* HEADER & INSTRUCTIONS */}
+            {/* HEADER & COMBINED INSTRUCTIONS */}
             <div className="text-center px-6 w-full max-w-4xl mx-auto pointer-events-none mb-12 md:mb-16">
               <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Development Architecture Pipeline</h3>
               <div className="w-16 h-1 bg-purple-500 rounded-full mx-auto shadow-[0_0_15px_rgba(168,85,247,0.5)] mb-6" />
@@ -733,7 +703,7 @@ export default function AiDeveloper() {
             </div>
 
             {/* TIMELINE TRACK */}
-            <div className="relative h-20 md:h-24 w-full mb-8 md:mb-12 overflow-hidden flex items-center justify-center pointer-events-none">
+            <div className="relative h-24 md:h-28 w-full mb-8 md:mb-12 overflow-hidden flex items-center justify-center pointer-events-none">
               
               {/* SLIDING TRACK CONTAINER */}
               <div 
@@ -799,10 +769,9 @@ export default function AiDeveloper() {
               </div>
             </div>
 
-            {/* DYNAMIC CONTENT BOX (TINANGGAL NA ANG CLICK BLOCKER DITO) */}
+            {/* DYNAMIC CONTENT BOX (FIXED UNIFORM GAP) */}
             <div 
               className="w-full max-w-5xl mx-auto px-4 md:px-6 grid [grid-template-areas:'stack'] items-start relative z-20"
-              /* Tinanggal na natin yung onClick={(e) => e.stopPropagation()} para gumana na ang full screen tap! */
             >
               {architecture.map((stack, idx) => {
                 const isActive = activeArchTab === idx;
@@ -826,7 +795,7 @@ export default function AiDeveloper() {
                         const cleanName = tool.name.replace(/\(learning\)/i, '').trim();
                         
                         return (
-                          <div key={j} className="flex flex-col items-center gap-2 md:gap-3 w-[70px] sm:w-20 md:w-28 group">
+                          <div key={j} className="flex flex-col items-center gap-2 md:gap-3 w-[70px] sm:w-20 md:w-28 group cursor-pointer" onClick={(e) => e.stopPropagation()}>
                             
                             <div className={`w-14 h-14 sm:w-16 sm:h-16 md:w-28 md:h-28 rounded-2xl md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
                               {tool.customImage ? (
@@ -858,49 +827,124 @@ export default function AiDeveloper() {
           </div>
         </section>
 
-        {/* ================= 67.5 MODERN WEB EXPERIENCES (2-COLUMN COMPACT GRID - NO TRUNCATE) ================= */}
+        {/* ================= 67.5 MODERN WEB EXPERIENCES ================= */}
         <section className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
-          <div className="max-w-6xl mx-auto">
-            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-10 md:mb-16">
-              <h3 className="text-3xl md:text-4xl font-black text-white mb-4">Modern Web Experiences</h3>
+          <div className="max-w-5xl mx-auto">
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
+              <h3 className="text-3xl md:text-4xl font-black text-white mb-4">✨ Modern Web Experiences</h3>
               <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
               <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed">
                 Beyond functional code, I focus on crafting immersive, high-performance digital experiences that engage users through motion, aesthetics, and smooth interactivity.
               </p>
             </motion.div>
 
-            {/* 2 COLUMNS SA MOBILE (grid-cols-2), 3 SA TABLET, 4 SA PC */}
-            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
+            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="flex flex-wrap justify-center gap-3 md:gap-4">
               {webExperiences.map((exp, idx) => {
-                const expText = typeof exp === 'string' ? exp : String(exp || '');
-                if (!expText) return null;
-
-                const isLearning = expText.toLowerCase().includes('(learning)');
-                const cleanName = expText.replace(/\(learning\)/i, '').trim();
-
+                const isLearning = exp.toLowerCase().includes('(learning)');
+                const cleanName = exp.replace(/\(learning\)/i, '').trim();
                 return (
-                  <motion.div 
-                    key={idx} 
-                    variants={cardPop} 
-                    className={`w-full px-2.5 py-2 md:px-4 md:py-3 rounded-lg md:rounded-xl border flex items-center justify-between backdrop-blur-sm transition-all hover:-translate-y-1 cursor-default shadow-sm md:shadow-lg h-full min-h-[44px] ${isLearning ? 'bg-purple-950/20 border-purple-500/20 text-purple-300 hover:border-purple-400/50 hover:bg-purple-900/20' : 'bg-cyan-950/10 border-cyan-500/20 text-cyan-300 hover:border-cyan-400/50 hover:bg-cyan-900/10'}`}
-                  >
-                    <div className="flex items-center gap-1.5 md:gap-3 flex-1 pr-1">
-                      {isLearning ? <GraduationCap className="text-purple-500 shrink-0 w-3 h-3 md:w-4 md:h-4" /> : <Sparkles className="text-cyan-500 shrink-0 w-3 h-3 md:w-4 md:h-4" />}
-                      
-                      {/* TINANGGAL ANG TRUNCATE. Nilagyan ng leading-tight para maganda ang spacing kung 2 lines */}
-                      <span className="text-[10px] sm:text-[11px] md:text-sm font-semibold tracking-wide text-left leading-tight break-words">{cleanName}</span>
-                    </div>
-                    
-                    {isLearning && (
-                      <span className="ml-1 shrink-0 text-[6px] md:text-[9px] bg-purple-500/10 border border-purple-500/30 text-purple-400 px-1 md:px-2 py-0.5 rounded uppercase tracking-wider font-mono mt-0.5">
-                        Learn
-                      </span>
-                    )}
+                  <motion.div key={idx} variants={cardPop} className={`px-4 py-2.5 rounded-xl border flex items-center gap-2 backdrop-blur-sm transition-all hover:-translate-y-1 cursor-default shadow-lg ${isLearning ? 'bg-purple-950/30 border-purple-500/30 text-purple-300 hover:border-purple-400 hover:shadow-[0_0_20px_rgba(168,85,247,0.2)]' : 'bg-cyan-950/20 border-cyan-500/30 text-cyan-300 hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]'}`}>
+                    {isLearning ? <GraduationCap size={14} className="text-purple-500" /> : <Sparkles size={14} className="text-cyan-500" />}
+                    <span className="text-xs md:text-sm font-bold tracking-wide">{cleanName}</span>
+                    {isLearning && <span className="ml-1 text-[9px] bg-purple-500/20 border border-purple-500/30 text-purple-400 px-1.5 py-0.5 rounded uppercase tracking-wider">Learning</span>}
                   </motion.div>
                 )
               })}
             </motion.div>
           </div>
+        </section>
+
+        {/* ================= 68. CURRENT PROJECTS (WORK PORTFOLIO) ================= */}
+        <section id="current-projects" className="py-24 px-6 relative border-t border-slate-900/80 bg-black/20">
+          <div className="max-w-7xl mx-auto">
+            <motion.div variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
+              <h3 className="text-3xl font-black text-white mb-4">Engineering Showcase</h3>
+              <div className="w-16 h-1 bg-cyan-500 rounded-full mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
+            </motion.div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {showcase.map((project) => {
+                if (project.type === "flagship") {
+                  return (
+                    <motion.div key={project.id} variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }}
+                      className="lg:col-span-2 p-8 rounded-3xl bg-slate-950/80 border border-slate-800 flex flex-col h-full relative overflow-hidden hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] transition-all group backdrop-blur-md">
+                      <div className="absolute top-4 right-4 px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] uppercase font-black tracking-wider rounded shadow-[0_0_10px_rgba(6,182,212,0.2)]">{project.badge}</div>
+                      <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2 block">{project.meta}</span>
+                      <h4 className="text-2xl font-black text-white mb-4 group-hover:text-cyan-300 transition-colors">{project.title}</h4>
+                      <p className="text-sm text-slate-300 leading-relaxed mb-6">{project.desc}</p>
+                      
+                      <h5 className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-3">Technologies Managed</h5>
+                      <div className="flex flex-wrap gap-2 mb-8">
+                        {project.tech.map((tech, i) => (
+                          <span key={i} className="px-2.5 py-1 rounded bg-black border border-slate-800 text-xs text-slate-300 font-medium group-hover:border-cyan-500/50 transition-colors">{tech}</span>
+                        ))}
+                      </div>
+                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-800">
+                         <span className="text-xs text-cyan-400 font-bold">Role: {project.role}</span>
+                         <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-xs text-white/80 hover:text-cyan-400 flex items-center gap-1 font-bold">{project.actionText} <ExternalLink size={14}/></a>
+                      </div>
+                    </motion.div>
+                  );
+                } else {
+                  return (
+                    <motion.div key={project.id} variants={fadeSlideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.2 }}
+                      className="p-6 rounded-3xl border border-dashed border-slate-700 bg-black/60 flex flex-col justify-between h-full opacity-80 hover:opacity-100 hover:border-purple-500/50 transition-all backdrop-blur-md">
+                      <div>
+                        <Layers className="text-purple-400 mb-4" size={28} />
+                        <h4 className="text-lg font-bold text-white mb-2">{project.title}</h4>
+                        <p className="text-xs text-slate-400 leading-relaxed">{project.desc}</p>
+                      </div>
+                      <div className="pt-6 border-t border-slate-800/60 text-[11px] text-purple-400/80 font-mono flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" /> {project.status}
+                      </div>
+                    </motion.div>
+                  );
+                }
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* ================= 69. GITHUB SYSTEM ================= */}
+        <section className="py-24 px-6 relative border-t border-slate-900 bg-black/50 backdrop-blur-md">
+          <motion.div variants={futuristicReveal} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+             <div className="flex flex-col sm:flex-row items-center gap-5 justify-between mb-6">
+                <div className="flex items-center gap-4">
+                   <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-white font-bold text-lg border border-slate-700 shadow-inner">JG</div>
+                   <div>
+                      <h4 className="text-base font-bold text-white flex items-center gap-2">
+                        {github.name}
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" className="text-slate-500"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+                      </h4>
+                      <p className="text-xs text-slate-500">github.com/{github.username}</p>
+                   </div>
+                </div>
+                <span className="text-[10px] px-2 py-1 border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 rounded uppercase font-mono shadow-[0_0_10px_rgba(6,182,212,0.2)]">{github.badgeText}</span>
+             </div>
+             
+             <div className="h-32 bg-black border border-slate-900 rounded-xl flex items-center justify-center text-xs text-slate-700 font-mono relative overflow-hidden p-2 md:p-4">
+                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(to right, #334155 1px, transparent 1px), linear-gradient(to bottom, #334155 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
+                
+                {github.username ? (
+                   <>
+                      <img
+                         src={`https://ghchart.rshah.org/06b6d4/${github.username}`}
+                         alt={`${github.username} GitHub Chart`}
+                         className="relative z-10 w-full h-full object-cover md:object-contain opacity-90 drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]"
+                         onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'block';
+                         }}
+                      />
+                      <span className="relative z-10 hidden text-zinc-500 animate-pulse">
+                         [Live Sync API Unavailable - Connection Retrying...]
+                      </span>
+                   </>
+                ) : (
+                   <span className="relative z-10">{github.matrixPlaceholder}</span>
+                )}
+             </div>
+          </motion.div>
         </section>
 
         {/* ================= 71. VISION STATEMENT ================= */}
@@ -909,9 +953,9 @@ export default function AiDeveloper() {
              <Quote size={40} className="text-purple-500/30 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
              <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Vision Statement</h2>
              <p className="text-base md:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto">
-                My long-term goal is to become a software engineer who combines creativity, business understanding, data analytics, automation, and artificial intelligence to build meaningful digital products. 
-                <br/><br/>
-                Rather than specializing in only one discipline, I aim to bridge multiple fields and create solutions that are technically sound, visually polished, data-informed, and genuinely valuable to businesses and communities.
+               My long-term goal is to become a software engineer who combines creativity, business understanding, data analytics, automation, and artificial intelligence to build meaningful digital products.
+               <br/><br/>
+               Rather than specializing in only one discipline, I aim to bridge multiple fields and create solutions that are technically sound, visually polished, data-informed, and genuinely valuable to businesses and communities.
              </p>
           </motion.div>
         </section>
@@ -964,7 +1008,7 @@ export default function AiDeveloper() {
                 
                 <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   className="px-8 py-4 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-white font-bold text-sm transition-colors flex items-center gap-2 backdrop-blur-md cursor-pointer relative z-20">
-                  <ArrowUp size={16} /> Back to Top 
+                  <ArrowUp size={16} /> Back to Top
                 </button>
               </div>
             </motion.div>
