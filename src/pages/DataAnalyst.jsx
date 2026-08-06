@@ -303,7 +303,7 @@ export default function DataAnalyst() {
             <div className="text-slate-300 space-y-5 text-sm md:text-[15px] leading-relaxed tracking-wide text-left mt-8">
               <p>Jefferson Gonzales is currently a Data Analyst Intern at S.P. Madrid, where he applies analytical thinking to support business operations.</p>
               <p>His responsibilities include collecting, organizing, cleaning, validating, and analyzing operational data before transforming it into reports and dashboards that help stakeholders make informed decisions.</p>
-              <p>Drawing from his background in graphic design, Jefferson also focuses on presenting analytical findings in clear, visually engaging, and user-friendly formats.</p>
+              <p>Throughout his internship, he has developed a proactive mindset, communicating clearly and collaborating effectively while remaining proactive rather than reactive. He triple-checks data and reports for accuracy and ensures that information is reliable before presenting it. He never hesitates to ask questions when unsure, continues to listen, learn, and improve, and stays focused and detail-oriented. He also understands the importance of the manual process before automating it and uses technology to solve problems while maintaining accuracy and efficiency.</p>
               <p>Beyond reporting, he is actively exploring workflow automation, business intelligence, and AI-assisted analytics to reduce repetitive work and improve organizational efficiency.</p>
             </div>
           </motion.div>
