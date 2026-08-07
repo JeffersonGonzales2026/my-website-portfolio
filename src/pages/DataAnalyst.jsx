@@ -5,7 +5,7 @@ import {
   BarChart3, PieChart, Database, FileSpreadsheet, Settings, Cpu, LineChart, 
   Table, CheckCircle2, ArrowRight, ArrowUp, ArrowDown, Briefcase, FileText, LayoutDashboard, 
   BrainCircuit, Code2, Quote, Download, ListChecks, TrendingUp, Network, Sigma,
-  X, ChevronLeft, ChevronRight, Maximize2
+  X, Maximize2
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 // import { useMobileBack } from '../hooks/useMobileBack';
@@ -101,18 +101,10 @@ export default function DataAnalyst() {
   const [showcase, setShowcase] = useState(defaultShowcaseData);
   const [ecosystem, setEcosystem] = useState(defaultToolsTechnologies);
   const [pageResume, setPageResume] = useState(null);
-
-  // ================= NEW STATES FOR REPORT MODALS & CAROUSEL =================
-  const [previewReport, setPreviewReport] = useState(null); // Moderate Preview Modal
+  
+  // MODAL STATES
+  const [previewReport, setPreviewReport] = useState(null); // Katamtamang Preview Modal
   const [fullReport, setFullReport] = useState(null); // Whole View Modal
-  const reportsScrollRef = useRef(null);
-
-  const scrollReports = (direction) => {
-    if (reportsScrollRef.current) {
-      const scrollAmount = window.innerWidth < 768 ? 200 : 400;
-      reportsScrollRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
-    }
-  };
 
   // ================= DYNAMIC CATEGORIZATION LOGIC =================
   const groupResponsibilities = (resps) => {
@@ -263,7 +255,7 @@ export default function DataAnalyst() {
       <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-lime-600/10 rounded-full blur-[150px] pointer-events-none z-0" />
 
       {/* ================= 1. HERO SECTION ================= */}
-      <section className="relative pt-35 pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center z-10">
+      <section className="relative pt-35 md:pt-65 pb-20 md:pb-30 px-6 min-h-[85vh] flex flex-col items-center justify-center z-10">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-5xl mx-auto text-center">
           
           <h1 className="text-[38px] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight mb-8">
@@ -282,8 +274,7 @@ export default function DataAnalyst() {
             <p>As a Data Analyst Intern, I continuously learn how data can improve operations, increase efficiency, and support strategic business decisions.</p>
           </div>
 
-          {/* ADDED: Button directing to Analytics Portfolio */}
-          <div className="flex justify-center mb-12">
+          <div className="flex justify-center mb-23 md:mb-12">
             <button 
               onClick={() => scrollToSection('analytics-portfolio')}
               className="px-8 py-3.5 rounded-full bg-emerald-500 text-slate-950 font-bold text-sm hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:-translate-y-1 flex items-center gap-2 cursor-pointer relative z-20"
@@ -314,10 +305,10 @@ export default function DataAnalyst() {
             <h3 className="text-2xl md:text-4xl font-black text-white">Professional Summary</h3>
             <div className="w-16 h-1 bg-emerald-500 rounded-full mx-auto" />
             <div className="text-slate-300 space-y-5 text-sm md:text-[15px] leading-relaxed tracking-wide text-left mt-8">
-              <p>Jefferson Gonzales is currently a Data Analyst Intern at S.P. Madrid, where he applies analytical thinking to support business operations.</p>
-              <p>His responsibilities include collecting, organizing, cleaning, validating, and analyzing operational data before transforming it into reports and dashboards that help stakeholders make informed decisions.</p>
-              <p>Drawing from his background in graphic design, Jefferson also focuses on presenting analytical findings in clear, visually engaging, and user-friendly formats.</p>
-              <p>Beyond reporting, he is actively exploring workflow automation, business intelligence, and AI-assisted analytics to reduce repetitive work and improve organizational efficiency.</p>
+              <p>Jefferson Gonzales is a hardworking, detail-oriented professional who recently completed a Data Analyst Internship at S.P. Madrid & Associates. Equipped with experience in data management, operational reporting, and analysis, he applies structured analytical thinking to support business operations and drive informed decision-making.</p>
+              <p>His core technical responsibilities encompass collecting, organizing, cleaning, validating, and reconciling complex operational datasets. Leveraging his background in graphic design, Jefferson transforms raw data into intuitive, visually engaging, and executive-ready dashboards, ensuring that findings are presented in clear and user-friendly formats.</p>
+              <p>Beyond standard reporting, he proactively optimizes organizational workflows by developing automation tools using AI-assisted engineering and vibe coding—significantly reducing manual repetitive tasks, increasing efficiency, and maintaining manual operational fallbacks in case automated systems fail.</p>
+              <p>Grounded in a commitment to continuous professional growth, Jefferson operates with strong work ethics: prioritizing proactive communication, listening attentively, maintaining deep focus, and triple-checking information to guarantee data accuracy. He is never hesitant to seek guidance when needed and collaborates effectively across teams to foster a culture of accuracy and operational excellence.</p>
             </div>
           </motion.div>
 
@@ -329,8 +320,6 @@ export default function DataAnalyst() {
                 <div className="absolute inset-0 bg-emerald-600/0 group-hover:bg-emerald-600/5 transition-colors duration-500 rounded-3xl z-0"/>
                 
                 <div className="relative z-10">
-                  
-                  {/* ALIGNED HEADER: Logo side-by-side on mobile and PC */}
                   <div className="flex flex-row items-center mb-8 gap-4 md:gap-5">
                     <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-slate-800 border border-slate-700 rounded-2xl flex items-center justify-center p-2 shadow-lg group-hover:border-emerald-500/30 transition-colors">
                       {role.customImage ? ( <img src={role.customImage} alt={role.company} className="w-full h-full object-contain" /> ) : ( <Briefcase size={32} className="text-emerald-500/50" /> )}
@@ -352,7 +341,6 @@ export default function DataAnalyst() {
                       Core Responsibilities
                     </h5>
                     
-                    {/* CATEGORIZED GROUPING */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {groupResponsibilities(role.responsibilities).map(([groupName, items], idx) => (
                         <div key={idx} className="bg-slate-800/20 p-5 rounded-2xl border border-slate-700/50 hover:bg-slate-800/40 transition-colors">
@@ -391,7 +379,43 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= 3. TECHNICAL COMPETENCIES (MASONRY LAYOUT) ================= */}
+      {/* ================= 2.5 INTERNSHIP CORE LEARNINGS ================= */}
+      <section className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-[#020617]">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h3 className="text-2xl md:text-4xl font-black text-white mb-4">Lessons from the Trenches</h3>
+            <div className="w-16 h-1 bg-emerald-500 rounded-full mx-auto" />
+            <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed">
+              Beyond formulas and dashboards, my internship experience has instilled in me these invaluable principles for thriving in a professional data environment.
+            </p>
+          </div>
+
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} className="flex flex-wrap justify-center gap-3 md:gap-4">
+            {[
+              "Good Communication",
+              "Proactive, Not Just Reactive",
+              "Triple Checking Everything",
+              "Information Must Be Accurate",
+              "Don't Be Afraid to Ask if Unsure",
+              "Listening is Knowledge",
+              "Never Stop Learning",
+              "Deep Focus on Work",
+              "Know Manual Work in case Automation Fails",
+              "Highly Detail-Oriented"
+            ].map((learning, idx) => (
+              <motion.div 
+                key={idx} 
+                className="px-4 py-2.5 md:px-5 md:py-3 rounded-xl border border-emerald-500/20 bg-slate-900/60 text-emerald-300 hover:border-emerald-400 hover:text-emerald-200 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] flex items-center gap-2 md:gap-3 backdrop-blur-md transition-all hover:-translate-y-1 cursor-default"
+              >
+                <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+                <span className="text-xs md:text-sm font-bold tracking-wide">{learning}</span>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ================= 3. TECHNICAL COMPETENCIES ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -430,7 +454,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= ANALYTICS PORTFOLIO (WITH ID FOR SCROLLING) ================= */}
+      {/* ================= ANALYTICS PORTFOLIO ================= */}
       <section id="analytics-portfolio" className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20 scroll-mt-24">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -476,39 +500,22 @@ export default function DataAnalyst() {
                 </motion.div>
               )}
 
-              {/* ================= REPORTS CAROUSEL IMPLEMENTATION ================= */}
+              {/* ================= REPORTS (EXCEL/APP ICON GRID VIEW) ================= */}
               {activeTab === 'reports' && (
-                <motion.div key="reports" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full relative px-2">
-                  
-                  {/* PC NAVIGATION ARROWS */}
-                  {showcase.reports?.length > 1 && (
-                    <div className="hidden md:flex justify-end gap-2 mb-4">
-                      <button onClick={() => scrollReports('left')} className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white hover:bg-emerald-600 hover:border-emerald-500 transition-all shadow-lg active:scale-95">
-                        <ChevronLeft size={20} />
-                      </button>
-                      <button onClick={() => scrollReports('right')} className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white hover:bg-emerald-600 hover:border-emerald-500 transition-all shadow-lg active:scale-95">
-                        <ChevronRight size={20} />
-                      </button>
-                    </div>
-                  )}
-
-                  {/* SWIPEABLE CAROUSEL CONTAINER WITH EXCEL ICONS */}
-                  <div 
-                    ref={reportsScrollRef} 
-                    className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-6 pb-6 px-4 md:px-0"
-                  >
+                <motion.div key="reports" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full relative">
+                  <div className="flex flex-wrap justify-center gap-6 md:gap-8 max-w-5xl mx-auto">
                     {showcase.reports?.length > 0 ? showcase.reports.map((item, idx) => (
                       <motion.div 
                         key={item.id || idx}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setPreviewReport(item)}
-                        className="shrink-0 snap-center w-28 sm:w-32 md:w-36 flex flex-col items-center gap-3 cursor-pointer group"
+                        className="w-24 sm:w-28 md:w-32 flex flex-col items-center gap-3 cursor-pointer group"
                       >
                         {/* THE EXCEL FOLDER ICON */}
-                        <div className="w-24 h-24 sm:w-28 sm:h-28 bg-slate-900 border border-slate-700 rounded-[2rem] flex flex-col items-center justify-center group-hover:border-[#39ff14]/50 group-hover:bg-[#39ff14]/5 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_20px_rgba(57,255,20,0.2)] relative overflow-hidden">
+                        <div className="w-full aspect-square bg-slate-900 border border-slate-700 rounded-3xl flex flex-col items-center justify-center group-hover:border-[#39ff14]/50 group-hover:bg-[#39ff14]/5 transition-all shadow-[0_0_15px_rgba(0,0,0,0.3)] group-hover:shadow-[0_0_20px_rgba(57,255,20,0.2)] relative overflow-hidden">
                           <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-40 group-hover:via-[#39ff14]" />
-                          <FileSpreadsheet size={40} className="text-emerald-500 group-hover:text-[#39ff14] transition-colors mb-1" />
+                          <FileSpreadsheet size={38} className="text-emerald-500 group-hover:text-[#39ff14] transition-colors mb-1" />
                           <span className="absolute top-2 right-2 text-[8px] font-black text-slate-500 uppercase tracking-widest group-hover:text-[#39ff14] transition-colors">XLSX</span>
                         </div>
                         {/* REPORT TITLE */}
@@ -595,7 +602,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= SOFTWARE ECOSYSTEM (3-COLUMN PC GRID) ================= */}
+      {/* ================= SOFTWARE ECOSYSTEM ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -643,7 +650,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= FUTURE ANALYTICS ROADMAP (WRITTEN FORMAT) ================= */}
+      {/* ================= FUTURE ANALYTICS ROADMAP ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-10">
@@ -755,45 +762,38 @@ export default function DataAnalyst() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }} 
               animate={{ scale: 1, opacity: 1, y: 0 }} 
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-slate-900 border border-slate-700 rounded-3xl p-6 md:p-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative shadow-[0_0_50px_rgba(16,185,129,0.15)] hide-scrollbar"
+              className="bg-slate-900 border border-slate-700 rounded-3xl p-6 md:p-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative shadow-[0_0_50px_rgba(16,185,129,0.15)] hide-scrollbar flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* CLOSE BUTTON */}
               <button 
                 onClick={() => setPreviewReport(null)}
-                className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-rose-500 transition-colors"
+                className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-rose-500 transition-colors z-10"
               >
                 <X size={18} />
               </button>
 
-              <div className="pr-10 mb-8 border-b border-slate-800 pb-6">
+              <div className="pr-10 mb-8 border-b border-slate-800 pb-6 flex justify-between items-start gap-4">
                 <h3 className="text-2xl md:text-3xl font-black text-white leading-tight">{previewReport.title || previewReport.report_title}</h3>
+                
+                {/* FREQUENCY SA TOP RIGHT */}
+                {previewReport.frequency && (
+                  <div className="shrink-0 flex flex-col items-end">
+                    <span className="text-[8px] text-slate-500 uppercase tracking-widest font-bold mb-1">Frequency</span>
+                    <span className="inline-block px-3 py-1 bg-[#39ff14]/10 border border-[#39ff14]/30 text-[#39ff14] text-[10px] font-black uppercase tracking-wider rounded shadow-[0_0_15px_rgba(57,255,20,0.2)] whitespace-nowrap">
+                      {previewReport.frequency}
+                    </span>
+                  </div>
+                )}
               </div>
 
-              <div className="space-y-8 mb-10">
+              <div className="space-y-8 mb-10 flex-grow">
                 {/* Objective - Label Neon */}
                 <div>
                   <span className="text-[10px] text-[#39ff14] uppercase tracking-widest font-black block mb-2 drop-shadow-[0_0_8px_rgba(57,255,20,0.6)]">Objective</span>
                   <p className="text-slate-200 font-medium leading-relaxed text-sm md:text-base">
                     {previewReport.objective || 'No objective provided.'}
                   </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                  {/* Frequency - Value Neon Badge */}
-                  <div>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-2">Frequency</span>
-                    <span className="inline-block px-3 py-1 bg-[#39ff14]/10 border border-[#39ff14]/30 text-[#39ff14] text-xs font-black uppercase tracking-wider rounded shadow-[0_0_15px_rgba(57,255,20,0.2)]">
-                      {previewReport.frequency || 'N/A'}
-                    </span>
-                  </div>
-
-                  {/* Visualization Used */}
-                  <div>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-2">Visualization Used</span>
-                    <p className="text-slate-300 text-sm font-medium">
-                      {previewReport.visualizations_used || previewReport.visualization || previewReport.format || 'Standard Data Tables & Charts'}
-                    </p>
-                  </div>
                 </div>
 
                 {/* Impact */}
@@ -806,16 +806,33 @@ export default function DataAnalyst() {
                   </div>
                 </div>
 
-                {/* Tools with Neon Green Icons */}
+                {/* Tools with Real Logo Support & Neon Fallback */}
                 <div>
                   <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-3">Tools & Systems Used</span>
                   <div className="flex flex-wrap gap-2 md:gap-3">
-                    {(previewReport.tools || previewReport.software || 'Microsoft Excel').split(',').map((tool, idx) => (
-                      <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-sm">
-                        <Settings size={14} className="text-[#39ff14]" />
-                        <span className="text-xs font-semibold text-slate-300">{tool.trim()}</span>
-                      </div>
-                    ))}
+                    {(previewReport.tools || previewReport.software || 'Microsoft Excel').split(',').map((tool, idx) => {
+                      const cleanToolName = tool.trim();
+                      // Auto-generates an image path based on the tool name (e.g., 'microsoft excel' -> '/images/icons/microsoftexcel.png')
+                      const iconFileName = cleanToolName.toLowerCase().replace(/[^a-z0-9]/g, '');
+                      
+                      return (
+                        <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-sm">
+                          <img 
+                            src={`/images/icons/${iconFileName}.png`} 
+                            alt={cleanToolName} 
+                            className="w-4 h-4 object-contain"
+                            onError={(e) => { 
+                              e.target.style.display = 'none'; 
+                              e.target.nextSibling.style.display = 'block'; 
+                            }} 
+                          />
+                          {/* Fallback Icon kapag wala pang totoong logo sa folder */}
+                          <Settings size={14} className="text-[#39ff14] hidden" />
+                          
+                          <span className="text-xs font-semibold text-slate-300">{cleanToolName}</span>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
@@ -826,7 +843,7 @@ export default function DataAnalyst() {
                   setFullReport(previewReport);
                   setPreviewReport(null);
                 }}
-                className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-sm transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] active:scale-95"
+                className="w-full mt-auto py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-sm transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] active:scale-95"
               >
                 <Maximize2 size={16} /> View Full Report Details
               </button>
@@ -924,10 +941,13 @@ export default function DataAnalyst() {
                     <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-2">Impact</span>
                     <p className="text-lime-300 font-medium text-sm leading-relaxed">{fullReport.impact || 'N/A'}</p>
                   </div>
+                  
+                  {/* INAYOS NA ANG VISUALIZATIONS USED PARA MAGPAKITA NG DATA */}
                   <div>
                     <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-2">Visualizations Used</span>
-                    <p className="text-slate-300 text-sm">{fullReport.visualizations_used || fullReport.visualization || 'N/A'}</p>
+                    <p className="text-slate-300 text-sm">{fullReport.visualizations_used || fullReport.visualizations || fullReport.visualization_used || fullReport.visualization || 'N/A'}</p>
                   </div>
+                  
                   <div>
                     <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-3">Tools / Software</span>
                     <div className="flex flex-wrap gap-2">
