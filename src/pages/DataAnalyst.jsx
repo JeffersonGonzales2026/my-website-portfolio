@@ -466,43 +466,60 @@ export default function DataAnalyst() {
               {activeTab === 'reports' && (
                 <motion.div key="reports" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {showcase.reports?.length > 0 ? showcase.reports.map(item => {
-                    const reportLink = item.file_url || item.pdf_url || item.link || item.url;
+                    const reportLink = item.file_url || item.pdf_url || item.link || item.url || item.report_url || item.preview_url || item.project_url;
+                    const formatType = item.format || item.type || item.file_type || item.delivery_type || 'Microsoft Excel Workbook';
 
                     return (
-                      <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-emerald-500/50 transition-colors flex flex-col justify-between relative z-20">
+                      <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-emerald-500/50 transition-colors flex flex-col justify-between relative z-20 shadow-xl">
                         <div>
-                          <div className="flex justify-between items-start mb-4">
-                            <div className="w-12 h-12 rounded-xl bg-lime-500/10 flex items-center justify-center text-lime-400 shrink-0">
+                          {/* HEADER TAGS */}
+                          <div className="flex justify-between items-start mb-4 gap-2">
+                            <div className="w-12 h-12 rounded-xl bg-lime-500/10 flex items-center justify-center text-lime-400 shrink-0 border border-lime-500/20">
                               <FileSpreadsheet size={24} />
                             </div>
-                            <span className="px-2.5 py-1 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-300 font-mono font-bold uppercase tracking-wider">
-                              {item.frequency || 'Report'}
-                            </span>
+                            <div className="flex flex-wrap gap-2 justify-end">
+                              {item.frequency && (
+                                <span className="px-2.5 py-1 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-300 font-mono font-bold uppercase tracking-wider">
+                                  {item.frequency}
+                                </span>
+                              )}
+                              <span className="px-2.5 py-1 bg-emerald-950/60 border border-emerald-500/30 rounded text-[10px] text-emerald-300 font-mono font-bold uppercase tracking-wider">
+                                {formatType}
+                              </span>
+                            </div>
                           </div>
 
                           <h4 className="text-xl font-bold text-white mb-2 leading-snug">{item.title}</h4>
                           <p className="text-sm text-slate-400 mb-6 leading-relaxed">{item.objective}</p>
 
-                          {/* RESPONSIVE METADATA LIST (Naka-stack sa Mobile para di magdikit) */}
-                          <div className="space-y-4 text-xs mb-8">
-                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-slate-800 pb-3 gap-1">
-                              <span className="text-slate-500 font-semibold shrink-0">Audience:</span>
-                              <span className="text-slate-200 sm:text-right font-medium leading-relaxed">{item.audience || 'N/A'}</span>
+                          {/* METADATA LIST (STACKED FOR PHONE & PC) */}
+                          <div className="space-y-4 text-xs mb-6">
+                            <div className="flex flex-col items-start border-b border-slate-800/80 pb-3 gap-1">
+                              <span className="text-slate-500 font-semibold">Audience:</span>
+                              <span className="text-slate-200 font-medium leading-relaxed">{item.audience || 'N/A'}</span>
                             </div>
 
-                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-slate-800 pb-3 gap-1">
-                              <span className="text-slate-500 font-semibold shrink-0">Data Source:</span>
-                              <span className="text-slate-200 sm:text-right font-medium leading-relaxed">{item.source || 'N/A'}</span>
+                            <div className="flex flex-col items-start border-b border-slate-800/80 pb-3 gap-1">
+                              <span className="text-slate-500 font-semibold">Data Source:</span>
+                              <span className="text-slate-200 font-medium leading-relaxed">{item.source || 'N/A'}</span>
                             </div>
 
-                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-slate-800 pb-3 gap-1">
-                              <span className="text-slate-500 font-semibold shrink-0">Key Finding:</span>
-                              <span className="text-emerald-400 sm:text-right font-semibold leading-relaxed sm:w-2/3">{item.findings || 'N/A'}</span>
+                            <div className="flex flex-col items-start border-b border-slate-800/80 pb-3 gap-1">
+                              <span className="text-slate-500 font-semibold">Key Finding:</span>
+                              <span className="text-emerald-400 font-semibold leading-relaxed">{item.findings || item.finding || 'N/A'}</span>
                             </div>
+
+                            {/* SAFELY SHOW TOOLS IF AVAILABLE FROM CMS */}
+                            {(item.tools || item.software) && (
+                              <div className="flex flex-col items-start border-b border-slate-800/80 pb-3 gap-1">
+                                <span className="text-slate-500 font-semibold">Tools & Systems:</span>
+                                <span className="text-slate-300 font-mono text-[11px] leading-relaxed">{item.tools || item.software}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
 
-                        {/* WORKING PREVIEW BUTTON */}
+                        {/* SMART PREVIEW / FORMAT BUTTON */}
                         <button 
                           type="button"
                           onClick={(e) => {
@@ -510,12 +527,12 @@ export default function DataAnalyst() {
                             if (reportLink) {
                               window.open(reportLink, '_blank', 'noopener,noreferrer');
                             } else {
-                              alert("Report file or preview link is currently unavailable for this item.");
+                              alert(`This report is generated as a "${formatType}". Direct file download or live preview link is restricted for confidential internal data.`);
                             }
                           }}
                           className="w-full py-3 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-bold hover:bg-emerald-600 hover:border-emerald-500 transition-all cursor-pointer active:scale-[0.98] shadow-md flex items-center justify-center gap-2 relative z-30"
                         >
-                          Preview Report
+                          {reportLink ? 'Preview Report' : `Format: ${formatType}`}
                         </button>
                       </div>
                     );
