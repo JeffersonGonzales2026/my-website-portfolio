@@ -1150,7 +1150,7 @@ export default function AdminDashboard() {
 
                 {activePortfolioTab === 'reports' && (
                   <div className="space-y-4 pt-2">
-                    <div className="flex justify-between items-center"><span className="text-[10px] font-mono text-zinc-500 uppercase font-black">&gt;_ Reports List Module</span><button onClick={() => setPortfolioReports([...portfolioReports, { id: Date.now(), title: "", context: "", objective: "", audience: "", frequency: "", source: "", format: "", viz: "", findings: "", recommendations: "", impact: "", tools: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 border border-zinc-800 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD REPORT</button></div>
+                    <div className="flex justify-between items-center"><span className="text-[10px] font-mono text-zinc-500 uppercase font-black">&gt;_ Reports List Module</span><button onClick={() => setPortfolioReports([...portfolioReports, { id: Date.now(), title: "", context: "", objective: "", audience: "", frequency: "", source: "", format: "", viz: "", findings: "", recommendations: "", impact: "", tools: "", tools_icons: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 border border-zinc-800 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD REPORT</button></div>
                     {portfolioReports.map((item, idx) => (
                       <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
                         <button onClick={() => handleRemoveArrayItem(portfolioReports, setPortfolioReports, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
@@ -1173,7 +1173,10 @@ export default function AdminDashboard() {
                           <input type="text" value={item.recommendations} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'recommendations', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400" placeholder="Recommendations" />
                           <input type="text" value={item.impact} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'impact', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Impact" />
                         </div>
-                        <input type="text" value={item.tools} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'tools', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-500" placeholder="Tools (Excel, Power Query)" />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                        <input type="text" value={item.tools} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'tools', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-300" placeholder="Tools (e.g. Excel, AnyDesk)" />
+                        <input type="text" value={item.tools_icons} onChange={(e) => handleUpdateArrayField(portfolioReports, setPortfolioReports, idx, 'tools_icons', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-cyan-400 font-mono" placeholder="Icon URLs (Comma separated links)" />
+                        </div>
                       </div>
                     ))}
                   </div>
