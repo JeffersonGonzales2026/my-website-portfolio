@@ -8,7 +8,6 @@ import {
   X, Maximize2
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-// import { useMobileBack } from '../hooks/useMobileBack';
 
 // ================= CUSTOM ANIMATED COUNTER COMPONENT =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -237,6 +236,40 @@ export default function DataAnalyst() {
     if (targetElement) {
       targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  };
+
+  // Helper function to map tool strings to actual image paths dynamically
+  const getToolIcon = (toolName) => {
+    const lowerName = toolName.toLowerCase();
+    
+    // First, check dynamic ecosystem state from Supabase
+    for (const cat of ecosystem) {
+      for (const t of cat.tools) {
+        if (lowerName.includes(t.name.toLowerCase())) {
+          return t.customImage || t.imageSrc;
+        }
+      }
+    }
+    
+    // Fallbacks corresponding to your Admin Dashboard structure
+    if (lowerName.includes('excel')) return '/images/excel.png';
+    if (lowerName.includes('power query')) return '/images/powerquery.png';
+    if (lowerName.includes('power bi') || lowerName.includes('powerbi')) return '/images/powerbi.png';
+    if (lowerName.includes('sql')) return '/images/sql.png';
+    if (lowerName.includes('python')) return '/images/python.png';
+    if (lowerName.includes('word')) return '/images/word.png';
+    if (lowerName.includes('powerpoint')) return '/images/powerpoint.png';
+    if (lowerName.includes('odbc')) return '/images/odbc.png';
+    if (lowerName.includes('supabase')) return '/images/supabase.png';
+    if (lowerName.includes('postgres')) return '/images/postgresql.png';
+    if (lowerName.includes('javascript')) return '/images/javascript.png';
+    if (lowerName.includes('react')) return '/images/react.png';
+    if (lowerName.includes('chatgpt')) return '/images/chatgpt.png';
+    if (lowerName.includes('claude')) return '/images/claude.png';
+    if (lowerName.includes('gemini')) return '/images/gemini.png';
+    if (lowerName.includes('copilot')) return '/images/copilot.png';
+    
+    return null; // Triggers fallback Neon Icon
   };
 
   const EmptyState = () => (
@@ -519,7 +552,7 @@ export default function DataAnalyst() {
                           <span className="absolute top-2 right-2 text-[8px] font-black text-slate-500 uppercase tracking-widest group-hover:text-[#39ff14] transition-colors">XLSX</span>
                         </div>
                         {/* REPORT TITLE */}
-                        <span className="text-xs md:text-sm font-semibold text-slate-300 text-center leading-tight group-hover:text-emerald-300 transition-colors line-clamp-3 px-1 w-full">
+                        <span className="text-xs md:text-sm font-semibold text-slate-300 text-center leading-tight group-hover:text-emerald-300 transition-colors line-clamp-3 px-1 w-full break-words">
                           {item.title || item.report_title}
                         </span>
                       </motion.div>
@@ -602,7 +635,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= SOFTWARE ECOSYSTEM ================= */}
+      {/* ================= SOFTWARE ECOSYSTEM (3-COLUMN PC GRID) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -650,7 +683,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= FUTURE ANALYTICS ROADMAP ================= */}
+      {/* ================= FUTURE ANALYTICS ROADMAP (WRITTEN FORMAT) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-10">
@@ -765,7 +798,6 @@ export default function DataAnalyst() {
               className="bg-slate-900 border border-slate-700 rounded-3xl p-6 md:p-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative shadow-[0_0_50px_rgba(16,185,129,0.15)] hide-scrollbar flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* CLOSE BUTTON */}
               <button 
                 onClick={() => setPreviewReport(null)}
                 className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-rose-500 transition-colors z-10"
@@ -773,12 +805,12 @@ export default function DataAnalyst() {
                 <X size={18} />
               </button>
 
-              <div className="pr-10 mb-8 border-b border-slate-800 pb-6 flex justify-between items-start gap-4">
-                <h3 className="text-2xl md:text-3xl font-black text-white leading-tight">{previewReport.title || previewReport.report_title}</h3>
+              <div className="pr-8 sm:pr-10 mb-8 border-b border-slate-800 pb-6 flex flex-col sm:flex-row justify-between items-start gap-4">
+                <h3 className="text-2xl md:text-3xl font-black text-white leading-tight break-words w-full">{previewReport.title || previewReport.report_title}</h3>
                 
                 {/* FREQUENCY SA TOP RIGHT */}
                 {previewReport.frequency && (
-                  <div className="shrink-0 flex flex-col items-end">
+                  <div className="shrink-0 flex flex-col items-start sm:items-end w-full sm:w-auto mt-2 sm:mt-0">
                     <span className="text-[8px] text-slate-500 uppercase tracking-widest font-bold mb-1">Frequency</span>
                     <span className="inline-block px-3 py-1 bg-[#39ff14]/10 border border-[#39ff14]/30 text-[#39ff14] text-[10px] font-black uppercase tracking-wider rounded shadow-[0_0_15px_rgba(57,255,20,0.2)] whitespace-nowrap">
                       {previewReport.frequency}
@@ -812,22 +844,23 @@ export default function DataAnalyst() {
                   <div className="flex flex-wrap gap-2 md:gap-3">
                     {(previewReport.tools || previewReport.software || 'Microsoft Excel').split(',').map((tool, idx) => {
                       const cleanToolName = tool.trim();
-                      // Auto-generates an image path based on the tool name (e.g., 'microsoft excel' -> '/images/icons/microsoftexcel.png')
-                      const iconFileName = cleanToolName.toLowerCase().replace(/[^a-z0-9]/g, '');
+                      const iconUrl = getToolIcon(cleanToolName);
                       
                       return (
                         <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-sm">
-                          <img 
-                            src={`/images/icons/${iconFileName}.png`} 
-                            alt={cleanToolName} 
-                            className="w-4 h-4 object-contain"
-                            onError={(e) => { 
-                              e.target.style.display = 'none'; 
-                              e.target.nextSibling.style.display = 'block'; 
-                            }} 
-                          />
-                          {/* Fallback Icon kapag wala pang totoong logo sa folder */}
-                          <Settings size={14} className="text-[#39ff14] hidden" />
+                          {iconUrl ? (
+                            <img 
+                              src={iconUrl} 
+                              alt={cleanToolName} 
+                              className="w-4 h-4 object-contain"
+                              onError={(e) => { 
+                                e.target.style.display = 'none'; 
+                                e.target.nextSibling.style.display = 'block'; 
+                              }} 
+                            />
+                          ) : null}
+                          {/* Fallback Icon kapag walang image */}
+                          <Settings size={14} className={`text-[#39ff14] ${iconUrl ? 'hidden' : 'block'}`} />
                           
                           <span className="text-xs font-semibold text-slate-300">{cleanToolName}</span>
                         </div>
@@ -873,7 +906,7 @@ export default function DataAnalyst() {
               {/* CLOSE BUTTON */}
               <button 
                 onClick={() => setFullReport(null)}
-                className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-rose-500 transition-colors z-10 sticky-close"
+                className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-rose-500 transition-colors z-10"
               >
                 <X size={20} />
               </button>
@@ -894,31 +927,27 @@ export default function DataAnalyst() {
                 {/* LEFT COLUMN */}
                 <div className="space-y-8">
                   <div>
-                    <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-2">Objective</span>
-                    <p className="text-slate-200 text-sm leading-relaxed">{fullReport.objective || 'N/A'}</p>
-                  </div>
-                  <div>
                     <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-2">Context Background</span>
                     <p className="text-slate-200 text-sm leading-relaxed">{fullReport.context_background || fullReport.context || 'N/A'}</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="p-4 bg-slate-800/40 rounded-xl border border-slate-700/50">
                       <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-1">Audience</span>
-                      <p className="text-emerald-300 font-semibold text-sm">{fullReport.audience || 'N/A'}</p>
+                      <p className="text-emerald-300 font-semibold text-sm break-words">{fullReport.audience || 'N/A'}</p>
                     </div>
                     <div className="p-4 bg-slate-800/40 rounded-xl border border-slate-700/50">
                       <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-1">Data Source</span>
-                      <p className="text-emerald-300 font-semibold text-sm">{fullReport.data_source || fullReport.source || 'N/A'}</p>
+                      <p className="text-emerald-300 font-semibold text-sm break-words">{fullReport.data_source || fullReport.source || 'N/A'}</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-2">Format</span>
-                      <span className="px-3 py-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">{fullReport.format || 'N/A'}</span>
+                      <span className="inline-block px-3 py-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">{fullReport.format || 'N/A'}</span>
                     </div>
                     <div>
                       <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-2">Frequency</span>
-                      <span className="px-3 py-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">{fullReport.frequency || 'N/A'}</span>
+                      <span className="inline-block px-3 py-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">{fullReport.frequency || 'N/A'}</span>
                     </div>
                   </div>
                 </div>
@@ -945,17 +974,34 @@ export default function DataAnalyst() {
                   {/* INAYOS NA ANG VISUALIZATIONS USED PARA MAGPAKITA NG DATA */}
                   <div>
                     <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-2">Visualizations Used</span>
-                    <p className="text-slate-300 text-sm">{fullReport.visualizations_used || fullReport.visualizations || fullReport.visualization_used || fullReport.visualization || 'N/A'}</p>
+                    <p className="text-slate-300 text-sm">{fullReport.visualizations_used || fullReport.visualizations || fullReport.visualization_used || fullReport.visualization || fullReport.viz || 'N/A'}</p>
                   </div>
                   
                   <div>
                     <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-3">Tools / Software</span>
-                    <div className="flex flex-wrap gap-2">
-                      {(fullReport.tools || fullReport.software || 'Microsoft Excel').split(',').map((tool, idx) => (
-                        <span key={idx} className="px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs font-semibold text-slate-300">
-                          {tool.trim()}
-                        </span>
-                      ))}
+                    <div className="flex flex-wrap gap-2 md:gap-3">
+                      {(fullReport.tools || fullReport.software || 'Microsoft Excel').split(',').map((tool, idx) => {
+                        const cleanToolName = tool.trim();
+                        const iconUrl = getToolIcon(cleanToolName);
+                        
+                        return (
+                          <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-sm">
+                            {iconUrl ? (
+                              <img 
+                                src={iconUrl} 
+                                alt={cleanToolName} 
+                                className="w-4 h-4 object-contain"
+                                onError={(e) => { 
+                                  e.target.style.display = 'none'; 
+                                  e.target.nextSibling.style.display = 'block'; 
+                                }} 
+                              />
+                            ) : null}
+                            <Settings size={14} className={`text-[#39ff14] ${iconUrl ? 'hidden' : 'block'}`} />
+                            <span className="text-xs font-semibold text-slate-300">{cleanToolName}</span>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
                 </div>
