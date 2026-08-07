@@ -781,8 +781,8 @@ export default function DataAnalyst() {
                 {/* FREQUENCY SA TOP RIGHT (FIXED FOR MOBILE & PC) */}
                 {previewReport.frequency && (
                   <div className="shrink-0 flex flex-col items-end">
-                    <span className="text-[8px] text-slate-500 uppercase tracking-widest font-bold mb-1">Frequency</span>
-                    <span className="inline-block px-3 py-1 bg-[#39ff14]/10 border border-[#39ff14]/30 text-[#39ff14] text-[10px] font-black uppercase tracking-wider rounded shadow-[0_0_15px_rgba(57,255,20,0.2)] whitespace-nowrap">
+                    {/* Tinanggal na natin yung span na may word na "Frequency" dito */}
+                    <span className="inline-block px-3 py-1 bg-[#39ff14]/10 border border-[#39ff14]/30 text-[#39ff14] text-[10px] font-black uppercase tracking-wider rounded shadow-[0_0_15px_rgba(57,255,20,0.2)] whitespace-nowrap mt-1.5">
                       {previewReport.frequency}
                     </span>
                   </div>
