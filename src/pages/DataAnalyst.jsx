@@ -775,12 +775,12 @@ export default function DataAnalyst() {
                 <X size={18} />
               </button>
 
-              <div className="pr-8 sm:pr-10 mb-8 border-b border-slate-800 pb-6 flex flex-col sm:flex-row justify-between items-start gap-4">
-                <h3 className="text-2xl md:text-3xl font-black text-white leading-tight break-words w-full">{previewReport.title || previewReport.report_title}</h3>
+              <div className="pr-10 sm:pr-12 mb-8 border-b border-slate-800 pb-6 flex flex-row justify-between items-start gap-4 mt-2">
+                <h3 className="text-2xl md:text-3xl font-black text-white leading-tight break-words">{previewReport.title || previewReport.report_title}</h3>
                 
-                {/* FREQUENCY SA TOP RIGHT */}
+                {/* FREQUENCY SA TOP RIGHT (FIXED FOR MOBILE & PC) */}
                 {previewReport.frequency && (
-                  <div className="shrink-0 flex flex-col items-start sm:items-end w-full sm:w-auto mt-2 sm:mt-0">
+                  <div className="shrink-0 flex flex-col items-end">
                     <span className="text-[8px] text-slate-500 uppercase tracking-widest font-bold mb-1">Frequency</span>
                     <span className="inline-block px-3 py-1 bg-[#39ff14]/10 border border-[#39ff14]/30 text-[#39ff14] text-[10px] font-black uppercase tracking-wider rounded shadow-[0_0_15px_rgba(57,255,20,0.2)] whitespace-nowrap">
                       {previewReport.frequency}
