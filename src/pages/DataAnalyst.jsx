@@ -8,6 +8,7 @@ import {
   X, Maximize2
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+// import { useMobileBack } from '../hooks/useMobileBack';
 
 // ================= CUSTOM ANIMATED COUNTER COMPONENT =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -100,8 +101,8 @@ export default function DataAnalyst() {
   const [showcase, setShowcase] = useState(defaultShowcaseData);
   const [ecosystem, setEcosystem] = useState(defaultToolsTechnologies);
   const [pageResume, setPageResume] = useState(null);
-  
-  // MODAL STATES
+
+  // NEW STATES FOR REPORT MODALS
   const [previewReport, setPreviewReport] = useState(null); // Katamtamang Preview Modal
   const [fullReport, setFullReport] = useState(null); // Whole View Modal
 
@@ -275,7 +276,7 @@ export default function DataAnalyst() {
   const EmptyState = () => (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full py-16 flex flex-col items-center justify-center text-slate-500 font-mono text-sm border border-dashed border-slate-700 bg-slate-900/30 rounded-2xl col-span-full">
       <Database size={32} className="mb-4 opacity-40 text-emerald-500" />
-      <p className="text-center px-4 max-w-md">Data currently being prepared and validated for showcase.</p>
+      <p className="text-center px-4 max-w-md">Case Studies Pending. Real-world project data is currently being prepared and validated for showcase.</p>
     </motion.div>
   );
 
@@ -307,7 +308,8 @@ export default function DataAnalyst() {
             <p>As a Data Analyst Intern, I continuously learn how data can improve operations, increase efficiency, and support strategic business decisions.</p>
           </div>
 
-          <div className="flex justify-center mb-23 md:mb-12">
+          {/* ADDED: Button directing to Analytics Portfolio */}
+          <div className="flex justify-center mb-12">
             <button 
               onClick={() => scrollToSection('analytics-portfolio')}
               className="px-8 py-3.5 rounded-full bg-emerald-500 text-slate-950 font-bold text-sm hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:-translate-y-1 flex items-center gap-2 cursor-pointer relative z-20"
@@ -338,10 +340,10 @@ export default function DataAnalyst() {
             <h3 className="text-2xl md:text-4xl font-black text-white">Professional Summary</h3>
             <div className="w-16 h-1 bg-emerald-500 rounded-full mx-auto" />
             <div className="text-slate-300 space-y-5 text-sm md:text-[15px] leading-relaxed tracking-wide text-left mt-8">
-              <p>Jefferson Gonzales is a hardworking, detail-oriented professional who recently completed a Data Analyst Internship at S.P. Madrid & Associates. Equipped with experience in data management, operational reporting, and analysis, he applies structured analytical thinking to support business operations and drive informed decision-making.</p>
-              <p>His core technical responsibilities encompass collecting, organizing, cleaning, validating, and reconciling complex operational datasets. Leveraging his background in graphic design, Jefferson transforms raw data into intuitive, visually engaging, and executive-ready dashboards, ensuring that findings are presented in clear and user-friendly formats.</p>
-              <p>Beyond standard reporting, he proactively optimizes organizational workflows by developing automation tools using AI-assisted engineering and vibe coding—significantly reducing manual repetitive tasks, increasing efficiency, and maintaining manual operational fallbacks in case automated systems fail.</p>
-              <p>Grounded in a commitment to continuous professional growth, Jefferson operates with strong work ethics: prioritizing proactive communication, listening attentively, maintaining deep focus, and triple-checking information to guarantee data accuracy. He is never hesitant to seek guidance when needed and collaborates effectively across teams to foster a culture of accuracy and operational excellence.</p>
+              <p>Jefferson Gonzales is currently a Data Analyst Intern at S.P. Madrid, where he applies analytical thinking to support business operations.</p>
+              <p>His responsibilities include collecting, organizing, cleaning, validating, and analyzing operational data before transforming it into reports and dashboards that help stakeholders make informed decisions.</p>
+              <p>Drawing from his background in graphic design, Jefferson also focuses on presenting analytical findings in clear, visually engaging, and user-friendly formats.</p>
+              <p>Beyond reporting, he is actively exploring workflow automation, business intelligence, and AI-assisted analytics to reduce repetitive work and improve organizational efficiency.</p>
             </div>
           </motion.div>
 
@@ -353,6 +355,8 @@ export default function DataAnalyst() {
                 <div className="absolute inset-0 bg-emerald-600/0 group-hover:bg-emerald-600/5 transition-colors duration-500 rounded-3xl z-0"/>
                 
                 <div className="relative z-10">
+                  
+                  {/* ALIGNED HEADER: Logo side-by-side on mobile and PC */}
                   <div className="flex flex-row items-center mb-8 gap-4 md:gap-5">
                     <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-slate-800 border border-slate-700 rounded-2xl flex items-center justify-center p-2 shadow-lg group-hover:border-emerald-500/30 transition-colors">
                       {role.customImage ? ( <img src={role.customImage} alt={role.company} className="w-full h-full object-contain" /> ) : ( <Briefcase size={32} className="text-emerald-500/50" /> )}
@@ -374,6 +378,7 @@ export default function DataAnalyst() {
                       Core Responsibilities
                     </h5>
                     
+                    {/* CATEGORIZED GROUPING */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {groupResponsibilities(role.responsibilities).map(([groupName, items], idx) => (
                         <div key={idx} className="bg-slate-800/20 p-5 rounded-2xl border border-slate-700/50 hover:bg-slate-800/40 transition-colors">
@@ -412,43 +417,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= 2.5 INTERNSHIP CORE LEARNINGS ================= */}
-      <section className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-[#020617]">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h3 className="text-2xl md:text-4xl font-black text-white mb-4">Lessons from the Trenches</h3>
-            <div className="w-16 h-1 bg-emerald-500 rounded-full mx-auto" />
-            <p className="text-slate-400 mt-6 text-sm max-w-2xl mx-auto leading-relaxed">
-              Beyond formulas and dashboards, my internship experience has instilled in me these invaluable principles for thriving in a professional data environment.
-            </p>
-          </div>
-
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} className="flex flex-wrap justify-center gap-3 md:gap-4">
-            {[
-              "Good Communication",
-              "Proactive, Not Just Reactive",
-              "Triple Checking Everything",
-              "Information Must Be Accurate",
-              "Don't Be Afraid to Ask if Unsure",
-              "Listening is Knowledge",
-              "Never Stop Learning",
-              "Deep Focus on Work",
-              "Know Manual Work in case Automation Fails",
-              "Highly Detail-Oriented"
-            ].map((learning, idx) => (
-              <motion.div 
-                key={idx} 
-                className="px-4 py-2.5 md:px-5 md:py-3 rounded-xl border border-emerald-500/20 bg-slate-900/60 text-emerald-300 hover:border-emerald-400 hover:text-emerald-200 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] flex items-center gap-2 md:gap-3 backdrop-blur-md transition-all hover:-translate-y-1 cursor-default"
-              >
-                <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
-                <span className="text-xs md:text-sm font-bold tracking-wide">{learning}</span>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ================= 3. TECHNICAL COMPETENCIES ================= */}
+      {/* ================= 3. TECHNICAL COMPETENCIES (MASONRY LAYOUT) ================= */}
       <section className="py-20 px-6 relative z-10 border-t border-slate-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -487,7 +456,7 @@ export default function DataAnalyst() {
         </div>
       </section>
 
-      {/* ================= ANALYTICS PORTFOLIO ================= */}
+      {/* ================= ANALYTICS PORTFOLIO (WITH ID FOR SCROLLING) ================= */}
       <section id="analytics-portfolio" className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20 scroll-mt-24">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -798,6 +767,7 @@ export default function DataAnalyst() {
               className="bg-slate-900 border border-slate-700 rounded-3xl p-6 md:p-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative shadow-[0_0_50px_rgba(16,185,129,0.15)] hide-scrollbar flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* CLOSE BUTTON */}
               <button 
                 onClick={() => setPreviewReport(null)}
                 className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-rose-500 transition-colors z-10"
@@ -906,7 +876,7 @@ export default function DataAnalyst() {
               {/* CLOSE BUTTON */}
               <button 
                 onClick={() => setFullReport(null)}
-                className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-rose-500 transition-colors z-10"
+                className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-rose-500 transition-colors z-10 sticky-close"
               >
                 <X size={20} />
               </button>
