@@ -4,8 +4,7 @@ import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
 import { 
   BarChart3, PieChart, Database, FileSpreadsheet, Settings, Cpu, LineChart, 
   Table, CheckCircle2, ArrowRight, ArrowUp, ArrowDown, Briefcase, FileText, LayoutDashboard, 
-  BrainCircuit, Code2, Quote, Download, ListChecks, TrendingUp, Network, Sigma,
-  X, Maximize2
+  BrainCircuit, Code2, Quote, Download, ListChecks, TrendingUp, Network, Sigma 
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 // import { useMobileBack } from '../hooks/useMobileBack';
@@ -101,10 +100,6 @@ export default function DataAnalyst() {
   const [showcase, setShowcase] = useState(defaultShowcaseData);
   const [ecosystem, setEcosystem] = useState(defaultToolsTechnologies);
   const [pageResume, setPageResume] = useState(null);
-
-  // NEW STATES FOR REPORT MODALS
-  const [previewReport, setPreviewReport] = useState(null); // Katamtamang Preview Modal
-  const [fullReport, setFullReport] = useState(null); // Whole View Modal
 
   // ================= DYNAMIC CATEGORIZATION LOGIC =================
   const groupResponsibilities = (resps) => {
@@ -239,40 +234,6 @@ export default function DataAnalyst() {
     }
   };
 
-  // Helper function to map tool strings to actual image paths dynamically
-  const getToolIcon = (toolName) => {
-    const lowerName = toolName.toLowerCase();
-    
-    // First, check dynamic ecosystem state from Supabase
-    for (const cat of ecosystem) {
-      for (const t of cat.tools) {
-        if (lowerName.includes(t.name.toLowerCase())) {
-          return t.customImage || t.imageSrc;
-        }
-      }
-    }
-    
-    // Fallbacks corresponding to your Admin Dashboard structure
-    if (lowerName.includes('excel')) return '/images/excel.png';
-    if (lowerName.includes('power query')) return '/images/powerquery.png';
-    if (lowerName.includes('power bi') || lowerName.includes('powerbi')) return '/images/powerbi.png';
-    if (lowerName.includes('sql')) return '/images/sql.png';
-    if (lowerName.includes('python')) return '/images/python.png';
-    if (lowerName.includes('word')) return '/images/word.png';
-    if (lowerName.includes('powerpoint')) return '/images/powerpoint.png';
-    if (lowerName.includes('odbc')) return '/images/odbc.png';
-    if (lowerName.includes('supabase')) return '/images/supabase.png';
-    if (lowerName.includes('postgres')) return '/images/postgresql.png';
-    if (lowerName.includes('javascript')) return '/images/javascript.png';
-    if (lowerName.includes('react')) return '/images/react.png';
-    if (lowerName.includes('chatgpt')) return '/images/chatgpt.png';
-    if (lowerName.includes('claude')) return '/images/claude.png';
-    if (lowerName.includes('gemini')) return '/images/gemini.png';
-    if (lowerName.includes('copilot')) return '/images/copilot.png';
-    
-    return null; // Triggers fallback Neon Icon
-  };
-
   const EmptyState = () => (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full py-16 flex flex-col items-center justify-center text-slate-500 font-mono text-sm border border-dashed border-slate-700 bg-slate-900/30 rounded-2xl col-span-full">
       <Database size={32} className="mb-4 opacity-40 text-emerald-500" />
@@ -309,7 +270,7 @@ export default function DataAnalyst() {
           </div>
 
           {/* ADDED: Button directing to Analytics Portfolio */}
-          <div className="flex justify-center mb-12">
+          <div className="flex justify-center mb-23 md:mb-12">
             <button 
               onClick={() => scrollToSection('analytics-portfolio')}
               className="px-8 py-3.5 rounded-full bg-emerald-500 text-slate-950 font-bold text-sm hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:-translate-y-1 flex items-center gap-2 cursor-pointer relative z-20"
@@ -342,7 +303,7 @@ export default function DataAnalyst() {
             <div className="text-slate-300 space-y-5 text-sm md:text-[15px] leading-relaxed tracking-wide text-left mt-8">
               <p>Jefferson Gonzales is currently a Data Analyst Intern at S.P. Madrid, where he applies analytical thinking to support business operations.</p>
               <p>His responsibilities include collecting, organizing, cleaning, validating, and analyzing operational data before transforming it into reports and dashboards that help stakeholders make informed decisions.</p>
-              <p>Drawing from his background in graphic design, Jefferson also focuses on presenting analytical findings in clear, visually engaging, and user-friendly formats.</p>
+              <p>Throughout his internship, he has developed a proactive mindset, communicating clearly and collaborating effectively while remaining proactive rather than reactive. He triple-checks data and reports for accuracy and ensures that information is reliable before presenting it. He never hesitates to ask questions when unsure, continues to listen, learn, and improve, and stays focused and detail-oriented. He also understands the importance of the manual process before automating it and uses technology to solve problems while maintaining accuracy and efficiency.</p>
               <p>Beyond reporting, he is actively exploring workflow automation, business intelligence, and AI-assisted analytics to reduce repetitive work and improve organizational efficiency.</p>
             </div>
           </motion.div>
@@ -378,7 +339,7 @@ export default function DataAnalyst() {
                       Core Responsibilities
                     </h5>
                     
-                    {/* CATEGORIZED GROUPING */}
+                    {/* CATEGORIZED GROUPING (Alternative B) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {groupResponsibilities(role.responsibilities).map(([groupName, items], idx) => (
                         <div key={idx} className="bg-slate-800/20 p-5 rounded-2xl border border-slate-700/50 hover:bg-slate-800/40 transition-colors">
@@ -502,31 +463,24 @@ export default function DataAnalyst() {
                 </motion.div>
               )}
 
-              {/* ================= REPORTS (EXCEL/APP ICON GRID VIEW) ================= */}
               {activeTab === 'reports' && (
-                <motion.div key="reports" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full relative">
-                  <div className="flex flex-wrap justify-center gap-6 md:gap-8 max-w-5xl mx-auto">
-                    {showcase.reports?.length > 0 ? showcase.reports.map((item, idx) => (
-                      <motion.div 
-                        key={item.id || idx}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setPreviewReport(item)}
-                        className="w-24 sm:w-28 md:w-32 flex flex-col items-center gap-3 cursor-pointer group"
-                      >
-                        {/* THE EXCEL FOLDER ICON */}
-                        <div className="w-full aspect-square bg-slate-900 border border-slate-700 rounded-3xl flex flex-col items-center justify-center group-hover:border-[#39ff14]/50 group-hover:bg-[#39ff14]/5 transition-all shadow-[0_0_15px_rgba(0,0,0,0.3)] group-hover:shadow-[0_0_20px_rgba(57,255,20,0.2)] relative overflow-hidden">
-                          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-40 group-hover:via-[#39ff14]" />
-                          <FileSpreadsheet size={38} className="text-emerald-500 group-hover:text-[#39ff14] transition-colors mb-1" />
-                          <span className="absolute top-2 right-2 text-[8px] font-black text-slate-500 uppercase tracking-widest group-hover:text-[#39ff14] transition-colors">XLSX</span>
-                        </div>
-                        {/* REPORT TITLE */}
-                        <span className="text-xs md:text-sm font-semibold text-slate-300 text-center leading-tight group-hover:text-emerald-300 transition-colors line-clamp-3 px-1 w-full break-words">
-                          {item.title || item.report_title}
-                        </span>
-                      </motion.div>
-                    )) : <EmptyState />}
-                  </div>
+                <motion.div key="reports" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {showcase.reports?.length > 0 ? showcase.reports.map(item => (
+                    <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-emerald-500/50 transition-colors">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="w-12 h-12 rounded-xl bg-lime-500/10 flex items-center justify-center text-lime-400"><FileSpreadsheet size={24} /></div>
+                        <span className="px-2 py-1 bg-slate-800 rounded text-[10px] text-slate-400">{item.frequency}</span>
+                      </div>
+                      <h4 className="text-xl font-bold text-white mb-2">{item.title}</h4>
+                      <p className="text-sm text-slate-400 mb-6">{item.objective}</p>
+                      <div className="space-y-3 text-xs mb-6">
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Audience</span><span className="text-slate-300">{item.audience}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Data Source</span><span className="text-slate-300">{item.source}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Key Finding</span><span className="text-emerald-300 font-semibold text-right w-2/3">{item.findings}</span></div>
+                      </div>
+                      <button className="w-full py-2 rounded-lg bg-slate-800 text-white text-xs font-bold hover:bg-emerald-600 transition-colors">Preview Report</button>
+                    </div>
+                  )) : <EmptyState />}
                 </motion.div>
               )}
 
@@ -749,238 +703,6 @@ export default function DataAnalyst() {
           </motion.div>
         </div>
       </section>
-
-      {/* ================= 1. KATAMTAMANG PREVIEW MODAL ================= */}
-      <AnimatePresence>
-        {previewReport && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#020617]/90 backdrop-blur-sm p-4 md:p-6"
-            onClick={() => setPreviewReport(null)}
-          >
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 20 }} 
-              animate={{ scale: 1, opacity: 1, y: 0 }} 
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-slate-900 border border-slate-700 rounded-3xl p-6 md:p-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative shadow-[0_0_50px_rgba(16,185,129,0.15)] hide-scrollbar flex flex-col"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* CLOSE BUTTON */}
-              <button 
-                onClick={() => setPreviewReport(null)}
-                className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-rose-500 transition-colors z-10"
-              >
-                <X size={18} />
-              </button>
-
-              <div className="pr-8 sm:pr-10 mb-8 border-b border-slate-800 pb-6 flex flex-col sm:flex-row justify-between items-start gap-4">
-                <h3 className="text-2xl md:text-3xl font-black text-white leading-tight break-words w-full">{previewReport.title || previewReport.report_title}</h3>
-                
-                {/* FREQUENCY SA TOP RIGHT */}
-                {previewReport.frequency && (
-                  <div className="shrink-0 flex flex-col items-start sm:items-end w-full sm:w-auto mt-2 sm:mt-0">
-                    <span className="text-[8px] text-slate-500 uppercase tracking-widest font-bold mb-1">Frequency</span>
-                    <span className="inline-block px-3 py-1 bg-[#39ff14]/10 border border-[#39ff14]/30 text-[#39ff14] text-[10px] font-black uppercase tracking-wider rounded shadow-[0_0_15px_rgba(57,255,20,0.2)] whitespace-nowrap">
-                      {previewReport.frequency}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-8 mb-10 flex-grow">
-                {/* Objective - Label Neon */}
-                <div>
-                  <span className="text-[10px] text-[#39ff14] uppercase tracking-widest font-black block mb-2 drop-shadow-[0_0_8px_rgba(57,255,20,0.6)]">Objective</span>
-                  <p className="text-slate-200 font-medium leading-relaxed text-sm md:text-base">
-                    {previewReport.objective || 'No objective provided.'}
-                  </p>
-                </div>
-
-                {/* Impact */}
-                <div>
-                  <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-2">Business Impact</span>
-                  <div className="p-4 md:p-5 rounded-xl bg-emerald-950/20 border border-emerald-500/20">
-                    <p className="text-emerald-100 text-sm leading-relaxed">
-                      {previewReport.impact || previewReport.findings || previewReport.finding || 'Improved operational workflows and enhanced reporting accuracy.'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Tools with Real Logo Support & Neon Fallback */}
-                <div>
-                  <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-3">Tools & Systems Used</span>
-                  <div className="flex flex-wrap gap-2 md:gap-3">
-                    {(previewReport.tools || previewReport.software || 'Microsoft Excel').split(',').map((tool, idx) => {
-                      const cleanToolName = tool.trim();
-                      const iconUrl = getToolIcon(cleanToolName);
-                      
-                      return (
-                        <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-sm">
-                          {iconUrl ? (
-                            <img 
-                              src={iconUrl} 
-                              alt={cleanToolName} 
-                              className="w-4 h-4 object-contain"
-                              onError={(e) => { 
-                                e.target.style.display = 'none'; 
-                                e.target.nextSibling.style.display = 'block'; 
-                              }} 
-                            />
-                          ) : null}
-                          {/* Fallback Icon kapag walang image */}
-                          <Settings size={14} className={`text-[#39ff14] ${iconUrl ? 'hidden' : 'block'}`} />
-                          
-                          <span className="text-xs font-semibold text-slate-300">{cleanToolName}</span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* ACTION BUTTON TO OPEN FULL VIEW */}
-              <button 
-                onClick={() => {
-                  setFullReport(previewReport);
-                  setPreviewReport(null);
-                }}
-                className="w-full mt-auto py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-sm transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] active:scale-95"
-              >
-                <Maximize2 size={16} /> View Full Report Details
-              </button>
-
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ================= 2. WHOLE VIEW / FULL REPORT MODAL ================= */}
-      <AnimatePresence>
-        {fullReport && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[110] flex items-center justify-center bg-[#020617]/95 backdrop-blur-md p-4 md:p-6"
-            onClick={() => setFullReport(null)}
-          >
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 20 }} 
-              animate={{ scale: 1, opacity: 1, y: 0 }} 
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-slate-900 border border-emerald-500/30 rounded-3xl p-6 md:p-10 w-full max-w-5xl h-[90vh] overflow-y-auto relative shadow-[0_0_80px_rgba(16,185,129,0.15)] hide-scrollbar flex flex-col"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* CLOSE BUTTON */}
-              <button 
-                onClick={() => setFullReport(null)}
-                className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-rose-500 transition-colors z-10 sticky-close"
-              >
-                <X size={20} />
-              </button>
-
-              <div className="mb-8 border-b border-slate-800 pb-6 pr-12 flex items-start gap-4">
-                <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-center justify-center shrink-0 text-emerald-400">
-                  <FileSpreadsheet size={28} />
-                </div>
-                <div>
-                  <span className="text-[10px] text-emerald-500 uppercase tracking-widest font-black block mb-1">Full Report Overview</span>
-                  <h3 className="text-2xl md:text-4xl font-black text-white leading-tight">{fullReport.title || fullReport.report_title}</h3>
-                </div>
-              </div>
-
-              {/* FULL CMS DATA GRID */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 flex-grow">
-                
-                {/* LEFT COLUMN */}
-                <div className="space-y-8">
-                  <div>
-                    <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-2">Context Background</span>
-                    <p className="text-slate-200 text-sm leading-relaxed">{fullReport.context_background || fullReport.context || 'N/A'}</p>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="p-4 bg-slate-800/40 rounded-xl border border-slate-700/50">
-                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-1">Audience</span>
-                      <p className="text-emerald-300 font-semibold text-sm break-words">{fullReport.audience || 'N/A'}</p>
-                    </div>
-                    <div className="p-4 bg-slate-800/40 rounded-xl border border-slate-700/50">
-                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-1">Data Source</span>
-                      <p className="text-emerald-300 font-semibold text-sm break-words">{fullReport.data_source || fullReport.source || 'N/A'}</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-2">Format</span>
-                      <span className="inline-block px-3 py-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">{fullReport.format || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-2">Frequency</span>
-                      <span className="inline-block px-3 py-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">{fullReport.frequency || 'N/A'}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* RIGHT COLUMN */}
-                <div className="space-y-8">
-                  <div>
-                    <span className="text-xs text-[#39ff14] uppercase tracking-widest font-bold block mb-2 drop-shadow-[0_0_5px_rgba(57,255,20,0.5)]">Key Findings</span>
-                    <div className="p-4 rounded-xl bg-[#39ff14]/5 border border-[#39ff14]/20">
-                      <p className="text-slate-200 text-sm leading-relaxed">{fullReport.key_findings || fullReport.findings || 'N/A'}</p>
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-xs text-emerald-400 uppercase tracking-widest font-bold block mb-2">Recommendations</span>
-                    <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-                      <p className="text-slate-200 text-sm leading-relaxed">{fullReport.recommendations || 'N/A'}</p>
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-2">Impact</span>
-                    <p className="text-lime-300 font-medium text-sm leading-relaxed">{fullReport.impact || 'N/A'}</p>
-                  </div>
-                  
-                  {/* INAYOS NA ANG VISUALIZATIONS USED PARA MAGPAKITA NG DATA */}
-                  <div>
-                    <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-2">Visualizations Used</span>
-                    <p className="text-slate-300 text-sm">{fullReport.visualizations_used || fullReport.visualizations || fullReport.visualization_used || fullReport.visualization || fullReport.viz || 'N/A'}</p>
-                  </div>
-                  
-                  <div>
-                    <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-3">Tools / Software</span>
-                    <div className="flex flex-wrap gap-2 md:gap-3">
-                      {(fullReport.tools || fullReport.software || 'Microsoft Excel').split(',').map((tool, idx) => {
-                        const cleanToolName = tool.trim();
-                        const iconUrl = getToolIcon(cleanToolName);
-                        
-                        return (
-                          <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-sm">
-                            {iconUrl ? (
-                              <img 
-                                src={iconUrl} 
-                                alt={cleanToolName} 
-                                className="w-4 h-4 object-contain"
-                                onError={(e) => { 
-                                  e.target.style.display = 'none'; 
-                                  e.target.nextSibling.style.display = 'block'; 
-                                }} 
-                              />
-                            ) : null}
-                            <Settings size={14} className={`text-[#39ff14] ${iconUrl ? 'hidden' : 'block'}`} />
-                            <span className="text-xs font-semibold text-slate-300">{cleanToolName}</span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
     </div>
   );
