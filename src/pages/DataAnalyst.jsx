@@ -465,22 +465,61 @@ export default function DataAnalyst() {
 
               {activeTab === 'reports' && (
                 <motion.div key="reports" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {showcase.reports?.length > 0 ? showcase.reports.map(item => (
-                    <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-emerald-500/50 transition-colors">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="w-12 h-12 rounded-xl bg-lime-500/10 flex items-center justify-center text-lime-400"><FileSpreadsheet size={24} /></div>
-                        <span className="px-2 py-1 bg-slate-800 rounded text-[10px] text-slate-400">{item.frequency}</span>
+                  {showcase.reports?.length > 0 ? showcase.reports.map(item => {
+                    const reportLink = item.file_url || item.pdf_url || item.link || item.url;
+
+                    return (
+                      <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-emerald-500/50 transition-colors flex flex-col justify-between relative z-20">
+                        <div>
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="w-12 h-12 rounded-xl bg-lime-500/10 flex items-center justify-center text-lime-400 shrink-0">
+                              <FileSpreadsheet size={24} />
+                            </div>
+                            <span className="px-2.5 py-1 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-300 font-mono font-bold uppercase tracking-wider">
+                              {item.frequency || 'Report'}
+                            </span>
+                          </div>
+
+                          <h4 className="text-xl font-bold text-white mb-2 leading-snug">{item.title}</h4>
+                          <p className="text-sm text-slate-400 mb-6 leading-relaxed">{item.objective}</p>
+
+                          {/* RESPONSIVE METADATA LIST (Naka-stack sa Mobile para di magdikit) */}
+                          <div className="space-y-4 text-xs mb-8">
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-slate-800 pb-3 gap-1">
+                              <span className="text-slate-500 font-semibold shrink-0">Audience:</span>
+                              <span className="text-slate-200 sm:text-right font-medium leading-relaxed">{item.audience || 'N/A'}</span>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-slate-800 pb-3 gap-1">
+                              <span className="text-slate-500 font-semibold shrink-0">Data Source:</span>
+                              <span className="text-slate-200 sm:text-right font-medium leading-relaxed">{item.source || 'N/A'}</span>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-slate-800 pb-3 gap-1">
+                              <span className="text-slate-500 font-semibold shrink-0">Key Finding:</span>
+                              <span className="text-emerald-400 sm:text-right font-semibold leading-relaxed sm:w-2/3">{item.findings || 'N/A'}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* WORKING PREVIEW BUTTON */}
+                        <button 
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (reportLink) {
+                              window.open(reportLink, '_blank', 'noopener,noreferrer');
+                            } else {
+                              alert("Report file or preview link is currently unavailable for this item.");
+                            }
+                          }}
+                          className="w-full py-3 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-bold hover:bg-emerald-600 hover:border-emerald-500 transition-all cursor-pointer active:scale-[0.98] shadow-md flex items-center justify-center gap-2 relative z-30"
+                        >
+                          Preview Report
+                        </button>
                       </div>
-                      <h4 className="text-xl font-bold text-white mb-2">{item.title}</h4>
-                      <p className="text-sm text-slate-400 mb-6">{item.objective}</p>
-                      <div className="space-y-3 text-xs mb-6">
-                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Audience</span><span className="text-slate-300">{item.audience}</span></div>
-                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Data Source</span><span className="text-slate-300">{item.source}</span></div>
-                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Key Finding</span><span className="text-emerald-300 font-semibold text-right w-2/3">{item.findings}</span></div>
-                      </div>
-                      <button className="w-full py-2 rounded-lg bg-slate-800 text-white text-xs font-bold hover:bg-emerald-600 transition-colors">Preview Report</button>
-                    </div>
-                  )) : <EmptyState />}
+                    );
+                  }) : <EmptyState />}
                 </motion.div>
               )}
 
