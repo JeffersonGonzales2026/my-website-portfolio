@@ -955,28 +955,35 @@ export default function DataAnalyst() {
                   <div>
                     <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-3">Tools / Software</span>
                     <div className="flex flex-wrap gap-2 md:gap-3">
-                      {(fullReport.tools || fullReport.software || 'Microsoft Excel').split(',').map((tool, idx) => {
-                        const cleanToolName = tool.trim();
-                        const iconUrl = getToolIcon(cleanToolName);
-                        
-                        return (
-                          <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-sm">
-                            {iconUrl ? (
-                              <img 
-                                src={iconUrl} 
-                                alt={cleanToolName} 
-                                className="w-4 h-4 object-contain"
-                                onError={(e) => { 
-                                  e.target.style.display = 'none'; 
-                                  e.target.nextSibling.style.display = 'block'; 
-                                }} 
-                              />
-                            ) : null}
-                            <Settings size={14} className={`text-[#39ff14] ${iconUrl ? 'hidden' : 'block'}`} />
-                            <span className="text-xs font-semibold text-slate-300">{cleanToolName}</span>
-                          </div>
-                        )
-                      })}
+                      {(() => {
+                        // Hahatiin natin ang mga tool names at ang mga icon URLs
+                        const toolsArray = (fullReport.tools || fullReport.software || 'Microsoft Excel').split(',');
+                        const iconsArray = fullReport.tools_icons ? fullReport.tools_icons.split(',') : [];
+
+                        return toolsArray.map((tool, idx) => {
+                          const cleanToolName = tool.trim();
+                          // Kung may inilagay kang link sa CMS, yun ang gagamitin. Kung wala, gagamitin ang auto-detect.
+                          const iconUrl = (iconsArray[idx] && iconsArray[idx].trim()) ? iconsArray[idx].trim() : getToolIcon(cleanToolName);
+                          
+                          return (
+                            <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-sm">
+                              {iconUrl ? (
+                                <img 
+                                  src={iconUrl} 
+                                  alt={cleanToolName} 
+                                  className="w-4 h-4 object-contain"
+                                  onError={(e) => { 
+                                    e.target.style.display = 'none'; 
+                                    e.target.nextSibling.style.display = 'block'; 
+                                  }} 
+                                />
+                              ) : null}
+                              <Settings size={14} className={`text-[#39ff14] ${iconUrl ? 'hidden' : 'block'}`} />
+                              <span className="text-xs font-semibold text-slate-300">{cleanToolName}</span>
+                            </div>
+                          );
+                        });
+                      })()}
                     </div>
                   </div>
                 </div>
