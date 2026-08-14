@@ -151,8 +151,9 @@ export default function BeyondTheCode() {
                   </h4>
                   <ul className="space-y-4 text-sm text-slate-300">
                     <li className="flex items-center gap-2"><Play size={16} className="text-red-400"/> Slam Dunk</li>
-                    <li className="flex items-center gap-2"><Skull size={16} className="text-red-400"/> One Piece 🏴‍☠️</li>
-                    <li className="flex items-center gap-2"><Skull size={16} className="text-red-400"/> High&Low</li>
+                    <li className="flex items-center gap-2"><Play size={16} className="text-red-400"/> One Piece 🏴‍☠️</li>
+                    <li className="flex items-center gap-2"><Play size={16} className="text-red-400"/> High&Low</li>
+                    <li className="flex items-center gap-2"><Play size={16} className="text-red-400"/> Fliptop Rap Battle</li>
                   </ul>
                 </div>
 
