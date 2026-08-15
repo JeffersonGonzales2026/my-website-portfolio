@@ -1070,7 +1070,7 @@ export default function DataAnalyst() {
                         
                         <span 
                           className="text-4xl text-[#39ff14] drop-shadow-[0_0_8px_rgba(57,255,20,0.8)] mt-1"
-                          style={{ fontFamily: "'DSEG7 Classic', monospace" }}
+                          style={{ fontFamily: "'DigitalClock', monospace" }}
                         >
                           {fullAutomation.timeSaved ? fullAutomation.timeSaved.replace(/[A-Za-z]/g, '').trim() : "0"}
                         </span>
@@ -1168,7 +1168,10 @@ export default function DataAnalyst() {
 
       {/* IDAGDAG MO ITO DITO PARA SA DIGITAL FONT */}
       <style>{`
-        @import url('https://fonts.cdnfonts.com/css/ds-digital');
+        @font-face {
+          font-family: 'DigitalClock';
+          src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/dseg7/dseg7-classic/DSEG7Classic-Bold.woff2') format('woff2');
+        }
       `}</style>
 
     </div>
