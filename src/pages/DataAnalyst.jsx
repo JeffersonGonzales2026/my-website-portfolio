@@ -102,18 +102,13 @@ export default function DataAnalyst() {
   const [ecosystem, setEcosystem] = useState(defaultToolsTechnologies);
   const [pageResume, setPageResume] = useState(null);
 
-  // NEW STATES FOR REPORT & AUTOMATION MODALS
-  const [previewReport, setPreviewReport] = useState(null); 
-  const [fullReport, setFullReport] = useState(null); 
-  const [fullAutomation, setFullAutomation] = useState(null); 
+  // NEW STATES FOR REPORT MODALS
+  const [previewReport, setPreviewReport] = useState(null); // Katamtamang Preview Modal
+  const [fullReport, setFullReport] = useState(null); // Whole View Modal
 
-  // ============== IDAGDAG ITO PARA MA-FORCE LOAD ANG DIGITAL FONT ==============
-  useEffect(() => {
-    const fontLink = document.createElement('link');
-    fontLink.href = 'https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.css';
-    fontLink.rel = 'stylesheet';
-    document.head.appendChild(fontLink);
-  }, []);
+  // NEW STATES FOR AUTOMATION MODALS
+  const [previewAutomation, setPreviewAutomation] = useState(null);
+  const [fullAutomation, setFullAutomation] = useState(null);
 
   // ================= DYNAMIC CATEGORIZATION LOGIC =================
   const groupResponsibilities = (resps) => {
@@ -1074,8 +1069,8 @@ export default function DataAnalyst() {
                         <Clock size={20} className="text-[#39ff14] animate-pulse" />
                         
                         <span 
-                          className="text-5xl text-[#39ff14] drop-shadow-[0_0_12px_rgba(57,255,20,0.8)] mt-1 tracking-widest"
-                          style={{ fontFamily: "'DSEG7 Classic', monospace", fontStyle: "italic", fontWeight: "bold" }}
+                          className="text-4xl text-[#39ff14] drop-shadow-[0_0_8px_rgba(57,255,20,0.8)] mt-1"
+                          style={{ fontFamily: "'DSEG7 Classic', monospace" }}
                         >
                           {fullAutomation.timeSaved ? fullAutomation.timeSaved.replace(/[A-Za-z]/g, '').trim() : "0"}
                         </span>
