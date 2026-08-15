@@ -1184,26 +1184,41 @@ export default function AdminDashboard() {
 
                 {activePortfolioTab === 'automations' && (
                   <div className="space-y-4 pt-2">
-                    <div className="flex justify-between items-center"><span className="text-[10px] font-mono text-zinc-500 uppercase font-black">&gt;_ Automations List Module</span><button onClick={() => setPortfolioAutomations([...portfolioAutomations, { id: Date.now(), name: "", problem: "", currentProcess: "", painPoints: "", objectives: "", steps: "", tech: "", ai: "", timeSaved: "", errorReduction: "", productivity: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 border border-zinc-800 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD AUTOMATION</button></div>
+                    <div className="flex justify-between items-center"><span className="text-[10px] font-mono text-zinc-500 uppercase font-black">&gt;_ Automations List Module</span><button onClick={() => setPortfolioAutomations([...portfolioAutomations, { id: Date.now(), name: "", problem: "", currentProcess: "", objectives: "", steps: "", tech: "", tech_icons: "", ai: "", ai_icons: "", timeSaved: "", productivity: "", thumbnail: "", githubLink: "" }])} className="px-2 py-0.5 text-[9px] bg-zinc-900 border border-zinc-800 text-white rounded cursor-pointer hover:bg-zinc-800"><Plus size={10}/> ADD AUTOMATION</button></div>
                     {portfolioAutomations.map((item, idx) => (
                       <div key={item.id || idx} className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/30 space-y-2 text-xs relative">
                         <button onClick={() => handleRemoveArrayItem(portfolioAutomations, setPortfolioAutomations, idx)} className="absolute top-2 right-2 text-zinc-600 hover:text-red-400 cursor-pointer"><Trash2 size={14}/></button>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pr-6">
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pr-6">
                           <input type="text" value={item.name} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'name', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-white" placeholder="Automation System Name" />
+                          <input type="text" value={item.thumbnail} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'thumbnail', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-cyan-400 font-mono" placeholder="Thumbnail / GIF URL Link" />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           <input type="text" value={item.problem} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'problem', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Core Problem Statement" />
                           <input type="text" value={item.objectives} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'objectives', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Objectives" />
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           <input type="text" value={item.currentProcess} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'currentProcess', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-rose-400" placeholder="Before (Current Process)" />
                           <input type="text" value={item.steps} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'steps', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-emerald-400" placeholder="After (Steps)" />
-                          <input type="text" value={item.painPoints} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'painPoints', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-rose-400" placeholder="Pain Points" />
                         </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                          <input type="text" value={item.timeSaved} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'timeSaved', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Time Saved" />
-                          <input type="text" value={item.productivity} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'productivity', e.target.value)} className="bg-zinc-950 border border-zinc-900 rounded-lg p-1.5 text-xs text-lime-400" placeholder="Productivity" />
-                          <input type="text" value={item.errorReduction} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'errorReduction', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Error Reduction" />
-                          <input type="text" value={item.tech} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'tech', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-400" placeholder="Tech Used" />
-                          <input type="text" value={item.ai} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'ai', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-purple-400" placeholder="AI Used" />
+
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                          <input type="text" value={item.timeSaved} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'timeSaved', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Time Saved (e.g. 2 Hours)" />
+                          <input type="text" value={item.productivity} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'productivity', e.target.value)} className="bg-zinc-950 border border-zinc-900 p-1.5 rounded text-lime-400" placeholder="Productivity Impact" />
+                          <input type="text" value={item.githubLink} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'githubLink', e.target.value)} className="col-span-2 bg-zinc-950 border border-zinc-900 p-1.5 rounded text-blue-400 font-mono" placeholder="GitHub Repository Link" />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 pt-2 border-t border-zinc-800/50">
+                          <div>
+                            <input type="text" value={item.tech} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'tech', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-zinc-300 mb-1" placeholder="Tech Used (e.g. Python, Excel)" />
+                            <input type="text" value={item.tech_icons} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'tech_icons', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-cyan-400 font-mono" placeholder="Tech Icon URLs (Comma separated)" />
+                          </div>
+                          <div>
+                            <input type="text" value={item.ai} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'ai', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-purple-400 mb-1" placeholder="AI Used (e.g. ChatGPT, Claude)" />
+                            <input type="text" value={item.ai_icons} onChange={(e) => handleUpdateArrayField(portfolioAutomations, setPortfolioAutomations, idx, 'ai_icons', e.target.value)} className="w-full bg-zinc-950 border border-zinc-900 p-1.5 rounded text-purple-400 font-mono" placeholder="AI Icon URLs (Comma separated)" />
+                          </div>
                         </div>
                       </div>
                     ))}
