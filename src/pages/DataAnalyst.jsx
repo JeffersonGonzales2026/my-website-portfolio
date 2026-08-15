@@ -463,19 +463,30 @@ export default function DataAnalyst() {
       {/* ================= ANALYTICS PORTFOLIO (WITH ID FOR SCROLLING) ================= */}
       <section id="analytics-portfolio" className="py-20 px-6 relative z-10 border-t border-slate-800/50 bg-slate-900/20 scroll-mt-24">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-10">
             <h3 className="text-2xl md:text-4xl font-black text-white mb-4">Analytics Portfolio</h3>
             <div className="w-16 h-1 bg-emerald-500 rounded-full mx-auto mb-6" />
-            <p className="text-slate-400 max-w-2xl mx-auto text-sm">A structured showcase of dashboards, reporting, automations, and analytical case studies.</p>
+            {/* Tinanggal ang word na 'case studies' sa text */}
+            <p className="text-slate-400 max-w-2xl mx-auto text-sm">A structured showcase of interactive dashboards, detailed reporting, and workflow automations.</p>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2 mb-12">
-            {['dashboards', 'reports', 'automations', 'caseStudies', 'projects'].map((tab) => (
-              <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all capitalize ${activeTab === tab ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'}`}>
-                {tab.replace(/([A-Z])/g, ' $1').trim()}
-              </button>
-            ))}
+          {/* BAGONG MODERN TABS LAYOUT (Kasya sa mobile, iisang linya) */}
+          <div className="flex justify-center mb-12 px-2">
+            <div className="inline-flex bg-slate-900/60 p-1.5 rounded-full border border-slate-800 max-w-full overflow-x-auto hide-scrollbar">
+              {['dashboards', 'reports', 'automations'].map((tab) => (
+                <button 
+                  key={tab} 
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-5 sm:px-8 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all capitalize whitespace-nowrap shrink-0 ${
+                    activeTab === tab 
+                    ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]' 
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="min-h-[400px]">
@@ -561,41 +572,6 @@ export default function DataAnalyst() {
                       </motion.div>
                     )) : <EmptyState />}
                   </div>
-                </motion.div>
-              )}
-
-              {activeTab === 'caseStudies' && (
-                <motion.div key="caseStudies" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 gap-6">
-                   {showcase.caseStudies?.length > 0 ? showcase.caseStudies.map(item => (
-                     <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-emerald-500/50 transition-colors">
-                        <div className="flex items-center gap-3 mb-4">
-                           <BrainCircuit className="text-emerald-400" size={24}/>
-                           <h4 className="text-lg font-bold text-white">Analytical Case Study</h4>
-                        </div>
-                        <h5 className="text-base text-slate-300 mb-4 font-semibold">Problem: {item.problem}</h5>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                          <div className="p-3 bg-slate-800/50 rounded-lg"><span className="text-slate-400 font-bold block mb-1">Analysis:</span><span className="text-slate-300">{item.analysis}</span></div>
-                          <div className="p-3 bg-slate-800/50 rounded-lg"><span className="text-lime-400 font-bold block mb-1">Insights:</span><span className="text-slate-300">{item.insights}</span></div>
-                          <div className="p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/20"><span className="text-emerald-400 font-bold block mb-1">Business Impact:</span><span className="text-emerald-100">{item.impact}</span></div>
-                        </div>
-                      </div>
-                   )) : <EmptyState />}
-                </motion.div>
-              )}
-
-              {activeTab === 'projects' && (
-                <motion.div key="projects" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                   {showcase.projects?.length > 0 ? showcase.projects.map(item => (
-                     <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-6 flex flex-col hover:border-emerald-500/50 transition-colors group">
-                        <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider mb-2">{item.industry}</span>
-                        <h4 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">{item.name}</h4>
-                        <p className="text-sm text-slate-400 mb-6">{item.overview}</p>
-                        <div className="mt-auto pt-4 border-t border-slate-800">
-                           <span className="text-xs text-slate-500 block mb-2">Tools Used:</span>
-                           <div className="flex gap-2"><span className="px-2 py-1 bg-slate-800 text-[10px] text-emerald-400 border border-emerald-500/20 rounded">{item.tools}</span></div>
-                        </div>
-                     </div>
-                   )) : <EmptyState />}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -1081,6 +1057,18 @@ export default function DataAnalyst() {
                       <p className="text-emerald-300 font-bold text-sm">{fullAutomation.productivity || 'N/A'}</p>
                     </div>
                   </div>
+                  {/* GitHub View Only Link */}
+                  {fullAutomation.githubLink && (
+                    <div className="pt-4">
+                      <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-2">Repository</span>
+                      <a href={fullAutomation.githubLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-5 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-slate-200 text-sm font-bold transition-all hover:-translate-y-0.5">
+                        <Code2 size={20} />
+                        View Source Code (Protected)
+                        <ArrowRight size={14} className="ml-1 opacity-50" />
+                      </a>
+                      <p className="text-[10px] text-slate-500 mt-2 font-mono">Note: Repository security measures are active to prevent direct downloads.</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* RIGHT COLUMN */}
@@ -1141,19 +1129,6 @@ export default function DataAnalyst() {
                       </div>
                     </div>
                   </div>
-
-                  {/* GitHub View Only Link */}
-                  {fullAutomation.githubLink && (
-                    <div className="pt-4">
-                      <span className="text-xs text-slate-500 uppercase tracking-widest font-bold block mb-2">Repository</span>
-                      <a href={fullAutomation.githubLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-5 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-slate-200 text-sm font-bold transition-all hover:-translate-y-0.5">
-                        <Code2 size={20} />
-                        View Source Code (Protected)
-                        <ArrowRight size={14} className="ml-1 opacity-50" />
-                      </a>
-                      <p className="text-[10px] text-slate-500 mt-2 font-mono">Note: Repository security measures are active to prevent direct downloads.</p>
-                    </div>
-                  )}
                 </div>
               </div>
             </motion.div>
