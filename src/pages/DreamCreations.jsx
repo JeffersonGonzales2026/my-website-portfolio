@@ -5,6 +5,7 @@ import { Settings, PenTool, Layout, Image as ImageIcon, MonitorSmartphone, Build
 import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
 import { useMobileBack } from '../hooks/useMobileBack';
+import { offlineProjects } from '../data/offlineArchive';
 
 // GSAP IMPORTS
 import gsap from 'gsap';
@@ -48,12 +49,27 @@ const BookPage = React.forwardRef((props, ref) => {
 });
 
 const featuredClients = [
-  { id: 1, name: "Responsive Health", industry: "Insurance & Healthcare", icon: <HeartPulse size={32} /> },
-  { id: 2, name: "Real Estate Partners", industry: "Property Development", icon: <Building2 size={32} /> },
-  { id: 3, name: "Rich Ams Global", industry: "E-Commerce", icon: <ShoppingBag size={32} /> },
-  { id: 4, name: "CapCut Creators", industry: "Digital Media", icon: <MonitorPlay size={32} /> },
-  { id: 5, name: "Tech Startups", industry: "SaaS & Technology", icon: <Globe size={32} /> },
-  { id: 6, name: "Corporate B2B", industry: "Consulting & Finance", icon: <Briefcase size={32} /> },
+  { id: 1, name: "Responsive Health and Insurance Brokers, Inc.", industry: "Insurance Agency & Brokerage", customImage: "/images/clients/responsive-health.png", icon: <HeartPulse size={32} /> },
+  { id: 2, name: "Capcut (Designer Creator Program)", industry: "Software Development", customImage: "/images/clients/capcut.png", icon: <MonitorPlay size={32} /> },
+  { id: 3, name: "Memorialize", industry: "Graphic Design & Creative Services", customImage: "/images/clients/memorialize.png", icon: <Palette size={32} /> },
+  { id: 4, name: "CCAS", industry: "Digital Printing Services", customImage: "/images/clients/ccas.png", icon: <Printer size={32} /> },
+  { id: 5, name: "J.P. Geonzon", industry: "Construction", customImage: "/images/clients/jp-geonzon.png", icon: <Building2 size={32} /> },
+  { id: 6, name: "RichAms Global, Ltd.", industry: "Apparel & Fashion", customImage: "/images/clients/richams-global.png", icon: <Shirt size={32} /> },
+  { id: 7, name: "Ka-Feeta Moto Vlogs", industry: "Media & Entertainment", customImage: "/images/clients/kafeeta.png", icon: <Video size={32} /> },
+  { id: 8, name: "DFE Clo. Apparel", industry: "Apparel & Fashion", customImage: "/images/clients/dfe-clo.png", icon: <Shirt size={32} /> },
+  { id: 9, name: "GodsKing Royalty", industry: "Apparel & Fashion", customImage: "/images/clients/godsking.png", icon: <Shirt size={32} /> },
+  { id: 10, name: "Mango Hey Hey", industry: "Food & Beverage", customImage: "/images/clients/mango-hey-hey.png", icon: <ShoppingBag size={32} /> },
+  { id: 11, name: "Hiraya Cafe", industry: "Food & Beverage", customImage: "/images/clients/hiraya-cafe.png", icon: <ShoppingBag size={32} /> },
+  { id: 12, name: "Blast TV/Tap Go TV", industry: "Media & Entertainment", customImage: "/images/clients/blast-tv.png", icon: <MonitorPlay size={32} /> },
+  { id: 13, name: "GigaTech", industry: "Information Technology (IT)", customImage: "/images/clients/gigatech.png", icon: <Database size={32} /> },
+  { id: 14, name: "Duralco", industry: "Building Materials & Construction Products", customImage: "/images/clients/duralco.png", icon: <Building2 size={32} /> },
+  { id: 15, name: "Optimo", industry: "Construction Chemicals Manufacturing", customImage: "/images/clients/optimo.png", icon: <Box size={32} /> },
+  { id: 16, name: "MOCASA", industry: "Financial Technology (FinTech)", customImage: "/images/clients/mocasa.png", icon: <Briefcase size={32} /> },
+  { id: 17, name: "BPC Lending Inc.", industry: "Financial Services", customImage: "/images/clients/bpc-lending.png", icon: <Briefcase size={32} /> },
+  { id: 18, name: "Tritan Ventures Inc.", industry: "Consumer Goods", customImage: "/images/clients/tritan-ventures.png", icon: <ShoppingBag size={32} /> },
+  { id: 19, name: "FilipCoin", industry: "Financial Technology (FinTech)", customImage: "/images/clients/filipcoin.png", icon: <Briefcase size={32} /> },
+  { id: 20, name: "A&C Image Graphics Advertising Corp.", industry: "Digital Printing Services", customImage: "/images/clients/ac-image.png", icon: <Printer size={32} /> },
+  { id: 21, name: "Love's Studio", industry: "Photography & Videography", customImage: "/images/clients/loves-studio.png", icon: <Camera size={32} /> }
 ];
 
 const creationsCategories = [
@@ -234,28 +250,82 @@ export default function DreamCreations() {
 
   const [activeCreationPopup, setActiveCreationPopup] = useState(null);
   const [activePortfolioSubtitle, setActivePortfolioSubtitle] = useState(null);
-  const [projects, setProjects] = useState([]); 
+  const [projects, setProjects] = useState(offlineProjects);
 
   const [reviews, setReviews] = useState([
     {
-      id: "temp-mr-king",
+      id: "3e6b42c7",
       client_name: "Mr. King",
-      company: "GodsKing Royalty",
+      company: "Owner | GodsKing Royalty",
       project_type: "Streetwear Graphics",
       rating: 5,
       feedback: "Designs is very impressive and unique.",
-      face_image_url: "/images/King.jpg"
+      face_image_url: "/images/reviews/mr-king.jpg"
     },
     {
-      id: "temp-memorialize-client",
+      id: "96ecf8e8",
       client_name: "Memorialize Client",
-      company: "Memorialize",
+      company: "Client | Memorialize",
       project_type: "Watercolor Portrait",
       rating: 5,
       feedback: "Oh my goodness!!!! Im extremely happy with how it turned out!! Thank you so much… Im sure there will be lots of tears when my Mom opens this!!!",
-      face_image_url: "/images/MClient1.png"
+      face_image_url: "/images/reviews/memorialize-client.png"
+    },
+    {
+      id: "640ca5af",
+      client_name: "Mr. Tak",
+      company: "Owner | DFE Clorhing",
+      project_type: "Streetwear Graphics",
+      rating: 5,
+      feedback: "It looks great, and it's very well-crafted.",
+      face_image_url: "/images/reviews/mr-tak.jpg"
+    },
+    {
+      id: "7f6ce0a5",
+      client_name: "Mr. Arjay Jongko",
+      company: "Chat Support & Marketing | RJR Cosmetic Trading Inc.",
+      project_type: "Story Designs",
+      rating: 5,
+      feedback: "Thank you, Mr. Jefferson Gonzales, for editing my graduation photo and incorporating my work experience. I'm very satisfied with the result. I only gave you a simple idea, and you immediately understood the layout I wanted. Salute to you, brother! Wishing you many more clients to come. God bless!",
+      face_image_url: "/images/reviews/arjay-jongko.webp"
+    },
+    {
+      id: "6daab4af",
+      client_name: "Mr. Ezekiel Alondata",
+      company: "Store Manager & Owner | EZ Computer & Laptop Repair Services",
+      project_type: "Logo & Tarpaulin",
+      rating: 5,
+      feedback: "I am very happy with the logo design for EZ CCTV Montalban. The minimalist style, clean typography, and camera icon perfectly capture the professional image of the business. Excellent work and highly recommended!",
+      face_image_url: "/images/reviews/ezekiel.png"
+    },
+    {
+      id: "9b806292",
+      client_name: "Ms. Evanjelen Geonzon",
+      company: "Co-Owner & General Manager | J.P. Geonzon Corporation",
+      project_type: "Company Profile",
+      rating: 5,
+      feedback: "Thank you for creating our company profile. It has made it much easier for us to access our documents. Great job! Thank you, and we look forward to working with you again.",
+      face_image_url: "/images/reviews/evanjelen.png"
+    },
+    {
+      id: "f172cc32",
+      client_name: "Ms. Myrna Guzman",
+      company: "Franchise Owner | Mango Hey Hey",
+      project_type: "Motion Graphics & Social Media Campaigns",
+      rating: 5,
+      feedback: "Catchy and memorable hook..good visual and instantly likable to watch..keep it up and highly recommended the designer of this work.",
+      face_image_url: "/images/reviews/myrna.jpg"
+    },
+    {
+      id: "d899daae",
+      client_name: "Ms. Euveh Grace",
+      company: "Owner | CCAS Printing Services",
+      project_type: "Shirt Designs",
+      rating: 5,
+      feedback: "\"You have a true gift for turning a simple thought into a stunning picture.\"\"Your design style is so fresh and clean.\"\"Every piece you make has such a unique and professional look.\"  Thank you so Much Jeff for being a part of CCAS printing services.",
+      face_image_url: "/images/reviews/euveh.jpg"
     }
-  ]); 
+  ]);
 
   const [bannerUrl, setBannerUrl] = useState("/Logo Banner.png");
   const [founderPhoto, setFounderPhoto] = useState("");
@@ -1027,7 +1097,20 @@ export default function DreamCreations() {
                   </div>
                   <p className="text-sm text-white/80 leading-relaxed mb-8 flex-grow italic select-none">"{testimonial.feedback}"</p>
                   <div className="flex items-center gap-4 mt-auto pointer-events-none">
-                    {testimonial.face_image_url ? ( <img src={testimonial.face_image_url} alt={testimonial.client_name} className="w-10 h-10 rounded-full object-cover border border-white/10" /> ) : ( <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 border border-white/5">{testimonial.client_name.charAt(0)}</div> )}
+                    {testimonial.face_image_url ? ( 
+                      <img 
+                        src={testimonial.face_image_url} 
+                        alt={testimonial.client_name} 
+                        className="w-10 h-10 rounded-full object-cover border border-white/10" 
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          // Gamitin ang parehong placeholder natin sa team section
+                          e.target.src = "/images/default-avatar.png";
+                        }}
+                      /> 
+                    ) : ( 
+                      <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 border border-white/5">{testimonial.client_name.charAt(0)}</div> 
+                    )}
                     <div>
                       <h4 className="text-sm font-bold text-white leading-tight">{testimonial.client_name}</h4>
                       <p className="text-[10px] text-white/50">{testimonial.project_type} • {testimonial.company}</p>
@@ -1044,18 +1127,12 @@ export default function DreamCreations() {
 
       {/* ================= UNIFIED PORTFOLIO DIRECTORY ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 min-h-screen">
-        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6">
+        <div className="flex flex-col items-center md:items-start mb-12 gap-6">
           <div className="text-center md:text-left">
             <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Archive</h3>
             <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto md:mx-0" />
-            <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are pulled directly from our live CMS.</p>
+            <p className="text-sm text-white/60 mt-4">Explore our specific visual solutions. These works are available even offline.</p>
           </div>
-          <button 
-            onClick={() => openPortfolioGallery('All Projects')} 
-            className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold hover:bg-black/40 hover:text-[#1095d2] hover:border-[#1095d2]/30 transition-all cursor-pointer relative z-20"
-          >
-            View Full Archive
-          </button>
         </div>
 
         <div className="space-y-16 relative z-20">
