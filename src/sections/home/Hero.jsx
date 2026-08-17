@@ -171,18 +171,22 @@ export default function Hero({ homeData }) {
         >
           <motion.div style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }} className="w-[75%] sm:w-[60%] lg:w-full max-w-[420px] aspect-[4/5] relative flex items-end justify-center cursor-default">
             
-            {homeData?.profile_image_url && (
-              <img 
-                src={homeData.profile_image_url} 
-                alt="Jefferson Gonzales" 
-                className="w-full h-full object-cover object-top pointer-events-none drop-shadow-2xl relative z-10"
-                style={{ 
-                  transform: 'translateZ(0px)', 
-                  WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)', 
-                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)' 
-                }}
-              />
-            )}
+            <img 
+              /* Kung may Supabase data, gagamitin niya yun. Kung wala, gagamitin niya ang nasa local folder mo. */
+              src={homeData?.profile_image_url || "/images/profile.jpg"} 
+              alt="Jefferson Gonzales" 
+              className="w-full h-full object-cover object-top pointer-events-none drop-shadow-2xl relative z-10"
+              style={{ 
+                transform: 'translateZ(0px)', 
+                WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)', 
+                maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)' 
+              }}
+              onError={(e) => {
+                /* Double protection: Kung mali ang Supabase link, babalik ulit sa local image */
+                e.target.onerror = null;
+                e.target.src = "Home/1 Hero Section/Hero Picture.png";
+              }}
+            />
 
             {/* --- 6 ICONS EXPLODING FROM CENTER CHEST (Based on red arrows) --- */}
             {/* 
