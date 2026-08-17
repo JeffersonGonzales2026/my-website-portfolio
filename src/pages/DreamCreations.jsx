@@ -1319,18 +1319,22 @@ export default function DreamCreations() {
           </div>
         </div>
 
-      {/* ================= PAGE RESUME DOWNLOAD ================= */}
-      {pageResume && (
-        <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center border-t border-white/10 mt-10">
-          <motion.a href={pageResume.file_url || pageResume.pdf_url} target="_blank" rel="noopener noreferrer" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} whileHover={{ scale: 1.02 }} className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-[#1095d2]/20 to-black/40 border border-[#1095d2]/30 hover:border-[#1095d2] transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(16,149,210,0.15)] hover:shadow-[0_0_30px_rgba(16,149,210,0.3)]">
-            <div className="w-12 h-12 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0"><Download size={20} /></div>
-            <div className="text-left">
-              <span className="text-[10px] text-white/50 uppercase tracking-widest block font-semibold mb-0.5">Download Professional Resume</span>
-              <span className="text-sm md:text-base font-bold text-white group-hover:text-[#1095d2] transition-colors block">{pageResume.title || 'Dream Creations Resume'}</span>
+      {/* ================= RESUME DOWNLOAD ================= */}
+        <div className="py-16 relative z-10 flex justify-center px-4">
+          <a 
+            href="/resume/Graphic_Artist_Resume.pdf" 
+            download="Jefferson_Gonzales_Graphic_Artist_Resume.pdf"
+            className="group relative flex items-center gap-6 p-6 md:px-8 rounded-2xl bg-[#0a192f]/40 border border-[#1095d2]/30 hover:border-[#1095d2] hover:bg-[#1095d2]/10 transition-all duration-300 shadow-[0_0_15px_rgba(16,149,210,0.1)]"
+          >
+            <div className="w-12 h-12 rounded-full bg-[#1095d2]/20 flex items-center justify-center text-[#1095d2] group-hover:scale-110 transition-transform duration-300">
+              <Download size={24} />
             </div>
-          </motion.a>
-        </section>
-      )}
+            <div className="text-left">
+              <p className="text-[10px] md:text-xs font-bold text-white/50 tracking-wider mb-1 uppercase">Download Professional Resume</p>
+              <h4 className="text-base md:text-xl font-bold text-white group-hover:text-[#1095d2] transition-colors">Graphic Artist Resume</h4>
+            </div>
+          </a>
+        </div>
 
       {/* ================= TRANSITION TO THE NEXT JOURNEY ================= */}
       <section className="w-full relative border-t border-white/10 mt-16 pt-32 pb-32 px-6 overflow-hidden z-10 flex flex-col items-center text-center">
