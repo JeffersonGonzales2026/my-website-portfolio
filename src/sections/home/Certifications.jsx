@@ -1,7 +1,7 @@
 // src/sections/home/Certifications.jsx
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Award, ExternalLink, ShieldCheck } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Award, ExternalLink, ShieldCheck, X, ZoomIn, ZoomOut } from 'lucide-react';
 
 const defaultCertifications = [
   {
@@ -39,6 +39,10 @@ export default function Certifications({ homeData }) {
     ? homeData.certifications 
     : defaultCertifications;
 
+  // 1. IDAGDAG ITO: State para sa Lightbox
+  const [selectedCert, setSelectedCert] = useState(null);
+  const [isZoomed, setIsZoomed] = useState(false);
+
   if (certs.length === 0) return null;
 
   return (
@@ -67,19 +71,21 @@ export default function Certifications({ homeData }) {
                 <img 
                   src={cert.image_url} 
                   alt={cert.title} 
-                  // Nagdagdag tayo ng cursor-pointer dito para maging kamay ang mouse pag tinapat
                   className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 cursor-pointer"
                   
-                  // Ito ang magbubukas ng picture sa bagong tab kapag kinlick!
-                  onClick={(e) => window.open(e.target.src, '_blank')}
+                  // 2. PALITAN ANG ONCLICK NITO:
+                  onClick={() => {
+                    // Kukunin nito ang source ng image (local man o Supabase) para ipasa sa Modal
+                    const imgSrc = cert.image_url; 
+                    setSelectedCert(imgSrc);
+                    setIsZoomed(false); // Reset zoom pagkabukas
+                  }}
                   
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = defaultCertifications[index]?.image_url || "/images/cert-placeholder.jpg";
                   }}
                 />
-                {/* Subtle gradient overlay to blend into the card */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent pointer-events-none" />
               </div>
             )}
 
@@ -125,6 +131,62 @@ export default function Certifications({ homeData }) {
           </motion.div>
         ))}
       </div>
+      {/* ================= LIGHTBOX MODAL ================= */}
+      <AnimatePresence>
+        {selectedCert && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-8"
+            // Kapag nag-click ka sa madilim na background, mag-e-exit ang modal
+            onClick={() => {
+              setSelectedCert(null);
+              setIsZoomed(false);
+            }}
+          >
+            {/* Close / Exit Button */}
+            <button 
+              className="absolute top-6 right-6 sm:top-10 sm:right-10 z-50 p-2 bg-white/10 hover:bg-red-500 rounded-full text-white transition-colors"
+              onClick={() => {
+                setSelectedCert(null);
+                setIsZoomed(false);
+              }}
+            >
+              <X size={24} />
+            </button>
+
+            {/* Image Container (Gumagamit ng overflow-auto para maka-scroll kapag naka-zoom) */}
+            <div 
+              className={`relative w-full h-full flex items-center justify-center overflow-auto ${isZoomed ? 'items-start justify-start md:items-center md:justify-center' : ''}`}
+              // Pinipigilan nitong mag-close ang modal kapag sa mismong picture ka pumindot
+              onClick={(e) => e.stopPropagation()} 
+            >
+              <motion.img
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0.8 }}
+                src={selectedCert}
+                alt="Certificate Fullscreen"
+                // Kapag kinlick ang picture, mag-to-toggle ang zoom state
+                onClick={() => setIsZoomed(!isZoomed)}
+                className={`transition-all duration-300 ${
+                  isZoomed 
+                    ? 'min-w-[150vw] sm:min-w-[150%] md:min-w-[120%] h-auto cursor-zoom-out' 
+                    : 'max-w-full max-h-full object-contain cursor-zoom-in shadow-2xl'
+                }`}
+              />
+            </div>
+            
+            {/* Zoom Instruction/Hint */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/60 text-white/90 px-4 py-2 rounded-full text-sm font-medium pointer-events-none">
+              {isZoomed ? <ZoomOut size={16} /> : <ZoomIn size={16} />}
+              <span>{isZoomed ? "Click to Zoom Out" : "Click to Zoom In"}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </section>
   );
 }

@@ -1227,6 +1227,7 @@ export default function DreamCreations() {
       </section>
 
       {/* ================= SOFTWARE EXPERTISE ================= */}
+
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 mt-10">
         <div className="mb-12 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Software Expertise</h3>
@@ -1237,17 +1238,7 @@ export default function DreamCreations() {
           {softwareList.map((tool, index) => (
             <motion.div key={tool.id} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: index * 0.05 }} className="flex flex-col items-center gap-3 w-24 sm:w-28 group">
               <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-white/5 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 overflow-hidden bg-black/40 hover:border-[#1095d2]/40">
-                <img 
-                    src={software.icon} 
-                    alt={software.name} 
-                    // Panatilihin mo rito yung orihinal na className na ginamit mo
-                    className="w-10 h-10 object-contain" 
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      // Fallback icon kung sakaling walang internet o nawawala ang file
-                      e.target.src = "/images/software-placeholder.png"; 
-                    }}
-                  />
+                <img src={tool.imageSrc} alt={tool.name} className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
               </div>
               <span className="text-[10px] md:text-xs text-center font-semibold text-white/60 group-hover:text-white transition-colors">{tool.name}</span>
             </motion.div>
