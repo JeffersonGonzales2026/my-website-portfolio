@@ -935,7 +935,20 @@ export default function DreamCreations() {
                 <div className="absolute inset-0 bg-gradient-to-br from-[#1095d2]/20 to-transparent opacity-50" />
                 <div className="flex gap-5 relative z-10">
                   <div className="w-24 h-24 rounded-2xl bg-black/50 border border-white/10 overflow-hidden shrink-0 flex items-center justify-center">
-                    {member.photo ? ( <img src={member.photo} alt={member.name} className="w-full h-full object-cover" onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }} /> ) : ( <UserCheck size={32} className="text-white/20" /> )}
+                    {member.photo ? ( 
+                      <img 
+                        src={member.photo} 
+                        alt={member.name} 
+                        className="w-full h-full object-cover" 
+                        onError={(e) => { 
+                          e.target.onerror = null;
+                          // Papalitan natin ng local fallback image
+                          e.target.src = "/iDreamCreations/3 Creators/Dex Profile Picture.jpg"; 
+                        }} 
+                      /> 
+                    ) : ( 
+                      <UserCheck size={32} className="text-white/20" /> 
+                    )}
                   </div>
                   <div className="flex flex-col justify-center">
                     <div className="flex items-center gap-2 mb-1">
