@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import HTMLFlipBook from 'react-pageflip';
 import { useMobileBack } from '../hooks/useMobileBack';
 import { offlineProjects } from '../data/offlineArchive';
+import { offlinePhotography } from '../data/offlinePhotography';
 
 // GSAP IMPORTS
 import gsap from 'gsap';
@@ -88,15 +89,14 @@ const creationsCategories = [
 ];
 
 const softwareExpertise = [
-  { id: 1, name: "Photoshop", imageSrc: "/images/photoshop.png" },
-  { id: 2, name: "Illustrator", imageSrc: "/images/illustrator.png" },
-  { id: 3, name: "Premiere Pro", imageSrc: "/images/premiere.png" },
-  { id: 4, name: "After Effects", imageSrc: "/images/aftereffects.png" },
-  { id: 5, name: "Canva", imageSrc: "/images/canva.png" },
-  { id: 6, name: "CapCut", imageSrc: "/images/capcut.png" },
-  { id: 7, name: "Microsoft Office", imageSrc: "/images/msoffice.png" },
-  { id: 8, name: "WordPress", imageSrc: "/images/wordpress.png" },
-  { id: 9, name: "AI Design Tools", imageSrc: "/images/ai-tools.png" },
+  { id: 1, name: "Photoshop", icon: "/images/photoshop.png" },
+  { id: 2, name: "Illustrator", icon: "/images/illustrator.png" },
+  { id: 3, name: "Premiere Pro", icon: "/images/premiere.png" },
+  { id: 4, name: "After Effects", icon: "/images/aftereffects.png" },
+  { id: 5, name: "Canva", icon: "/images/canva.png" },
+  { id: 6, name: "CapCut", icon: "/images/capcut.png" },
+  { id: 7, name: "Microsoft Office", icon: "/images/msoffice.png" },
+  { id: 8, name: "AI Design Tools", imageSrc: "/images/ai-tools.png" },
 ];
 
 const creativeProcess = [
@@ -335,7 +335,7 @@ export default function DreamCreations() {
   const [softwareList, setSoftwareList] = useState(softwareExpertise);
   const [clientsList, setClientsList] = useState(featuredClients);
 
-  const [photographyShots, setPhotographyShots] = useState([]);
+  const [photographyShots, setPhotographyShots] = useState(offlinePhotography);
   const [isPhotographyOpen, setIsPhotographyOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
 
@@ -1237,7 +1237,17 @@ export default function DreamCreations() {
           {softwareList.map((tool, index) => (
             <motion.div key={tool.id} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: index * 0.05 }} className="flex flex-col items-center gap-3 w-24 sm:w-28 group">
               <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-white/5 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 overflow-hidden bg-black/40 hover:border-[#1095d2]/40">
-                <img src={tool.imageSrc} alt={tool.name} className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
+                <img 
+                    src={software.icon} 
+                    alt={software.name} 
+                    // Panatilihin mo rito yung orihinal na className na ginamit mo
+                    className="w-10 h-10 object-contain" 
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      // Fallback icon kung sakaling walang internet o nawawala ang file
+                      e.target.src = "/images/software-placeholder.png"; 
+                    }}
+                  />
               </div>
               <span className="text-[10px] md:text-xs text-center font-semibold text-white/60 group-hover:text-white transition-colors">{tool.name}</span>
             </motion.div>
@@ -1277,17 +1287,37 @@ export default function DreamCreations() {
         </div>
       </section>
 
-      {/* ================= PRICING / PROJECT INVESTMENT ================= */}
-      <section className="max-w-4xl mx-auto w-full px-6 py-24 z-10 relative text-center mt-10 border-t border-white/10">
-        <div className="mb-12"><h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Project Investment</h3><div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" /></div>
-        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="p-10 md:p-14 rounded-3xl border border-[#1095d2]/20 bg-gradient-to-b from-[#1095d2]/10 to-black/40 backdrop-blur-md relative overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-[#1095d2]/20 blur-[80px] -z-10 pointer-events-none" />
-          <div className="w-16 h-16 rounded-full bg-[#1095d2]/20 text-[#1095d2] flex items-center justify-center mx-auto mb-6"><Calculator size={32} /></div>
-          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">Custom Tailored <span className="text-[#1095d2]">Quotations</span></h2>
-          <p className="text-base text-white/70 mb-8 max-w-xl mx-auto">Every dream is unique. Rather than offering rigid pricing tiers, we provide tailored quotations based exactly on your specific project requirements, timeline, and requested deliverables. Let's discuss your vision.</p>
-          <button onClick={() => window.location.href = '/contact'} className="px-8 py-4 rounded-xl bg-[#1095d2] text-white font-bold text-sm hover:bg-[#0c7ab0] transition-colors shadow-[0_0_20px_rgba(16,149,210,0.4)] hover:shadow-[0_0_30px_rgba(16,149,210,0.6)] group cursor-pointer relative z-20">Request a Quote</button>
-        </motion.div>
-      </section>
+      {/* ================= PROJECT INVESTMENT ================= */}
+        <div className="py-24 relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4">Project Investment</h2>
+            <div className="w-20 h-1 bg-[#1095d2] rounded-full mx-auto" />
+          </div>
+
+          <div className="max-w-4xl mx-auto bg-gradient-to-b from-[#0a192f] to-black/80 border border-white/5 rounded-3xl p-8 md:p-16 text-center shadow-[0_0_50px_rgba(16,149,210,0.05)]">
+            <div className="w-16 h-16 bg-[#1095d2]/20 rounded-full flex items-center justify-center mx-auto mb-8">
+              <Calculator size={32} className="text-[#1095d2]" />
+            </div>
+            
+            <h3 className="text-3xl md:text-5xl font-extrabold text-white mb-6">
+              Custom Tailored <span className="text-[#1095d2]">Quotations</span>
+            </h3>
+            
+            <p className="text-sm md:text-base text-white/70 max-w-2xl mx-auto leading-relaxed mb-10">
+              Every dream is unique. Rather than offering rigid pricing tiers, we provide tailored
+              quotations based exactly on your specific project requirements, timeline, and
+              requested deliverables. Let's discuss your vision.
+            </p>
+            
+            {/* Siguraduhing tama ang link nito papunta sa Contact page mo */}
+            <a 
+              href="/contact" 
+              className="inline-block px-8 py-3 bg-[#1095d2] text-white font-bold rounded-xl hover:bg-[#0d7eb5] hover:shadow-[0_0_20px_rgba(16,149,210,0.4)] transition-all duration-300"
+            >
+              Request a Quote
+            </a>
+          </div>
+        </div>
 
       {/* ================= PAGE RESUME DOWNLOAD ================= */}
       {pageResume && (
@@ -1600,7 +1630,15 @@ export default function DreamCreations() {
                 const mappedY = `${((shot.y || 0) / 50) * 45}vh`;
                 return (
                   <motion.div key={shot.id || idx} drag dragConstraints={{ left: -1000, right: 1000, top: -1000, bottom: 1000 }} initial={{ opacity: 0, scale: 0.5, x: 0, y: 0, rotate: 0 }} animate={{ opacity: 1, scale: 1, x: mappedX, y: mappedY, rotate: shot.rot || 0 }} transition={{ type: "spring", damping: 20, stiffness: 100, delay: idx * 0.05 }} whileHover={{ scale: 1.15, rotate: 0, zIndex: 50, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9)" }} whileTap={{ scale: 1.15, zIndex: 50 }} className="absolute p-2 pb-8 md:p-3 md:pb-10 bg-[#f8f8f8] shadow-[0_15px_35px_rgba(0,0,0,0.6)] cursor-grab active:cursor-grabbing rounded-sm pointer-events-auto" onClick={() => setSelectedPhoto(shot.url)} style={{ zIndex: 10 + idx }}>
-                    <img src={shot.url} alt={shot.title || "Shot"} className="w-28 h-28 sm:w-48 sm:h-48 md:w-64 md:h-64 object-cover pointer-events-none filter contrast-[0.9] sepia-[0.2]" />
+                    <img 
+                      src={shot.url} 
+                      alt={shot.title || "Shot"} 
+                      className="w-28 h-28 sm:w-40 sm:h-40 md:w-56 md:h-56 object-cover rounded-sm shadow-[0_0_15px_rgba(0,0,0,0.8)] pointer-events-none" 
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/images/photo-placeholder.jpg"; // Local fallback
+                      }}
+                    />
                     <p className="absolute bottom-2 md:bottom-3 left-0 w-full text-center text-black/60 font-mono text-[9px] sm:text-[10px] md:text-xs font-bold pointer-events-none truncate px-2">{shot.title || "Captured Dream"}</p>
                   </motion.div>
                 );
