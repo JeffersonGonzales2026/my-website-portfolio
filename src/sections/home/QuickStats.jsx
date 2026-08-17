@@ -4,11 +4,11 @@ import { motion, useInView, animate } from 'framer-motion';
 
 const defaultStatsData = [
   { num: 10, suffix: "+", label: "Years of Experience" },
-  { num: 15, suffix: "+", label: "Professional Roles" },
-  { num: 20, suffix: "+", label: "Companies Worked With" },
-  { num: 200, suffix: "+", label: "Projects Completed" },
-  { num: 10, suffix: "+", label: "Industries Served" },
-  { num: 25, suffix: "+", label: "Learning Technologies" },
+  { num: 5, suffix: "+", label: "Professional Roles" },
+  { num: 25, suffix: "+", label: "Companies Worked With" },
+  { num: 2500, suffix: "+", label: "Projects Completed" },
+  { num: 20, suffix: "+", label: "Industries Served" },
+  { num: 100, suffix: "+", label: "Learning Technologies" },
 ];
 
 // Sub-component handling the performance-optimized layout engine

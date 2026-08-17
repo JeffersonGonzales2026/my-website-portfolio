@@ -260,7 +260,7 @@ export default function DreamCreations() {
   const [bannerUrl, setBannerUrl] = useState("/Logo Banner.png");
   const [founderPhoto, setFounderPhoto] = useState("");
   const [founderExp, setFounderExp] = useState(10);
-  const [founderProjects, setFounderProjects] = useState(200);
+  const [founderProjects, setFounderProjects] = useState(2000);
   const [teamList, setTeamList] = useState(teamMembers);
   const [softwareList, setSoftwareList] = useState(softwareExpertise);
   const [clientsList, setClientsList] = useState(featuredClients);
@@ -741,7 +741,16 @@ export default function DreamCreations() {
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 flex flex-col items-center pointer-events-none"
             >
               <motion.div animate={{ y: [-15, 15, -15], rotate: [-3, 3, -3] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
-                <img src="/images/moon.png" alt="Dream Creations Moon" className="w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]" />
+                <img 
+                  /* Palitan ang link sa ibaba ng totoong online/Supabase link mo */
+                  src="httpshttps://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786958435490_c5kfc.png" 
+                  alt="Dream Creations Moon" 
+                  className="w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-[0_0_50px_rgba(16,149,210,0.6)]" 
+                  onError={(e) => { 
+                    e.target.onerror = null; 
+                    e.target.src = "/DreamCreations/1 Hero Section/moon.png"; // Sasalo kapag nawalan ng internet
+                  }}
+                />
               </motion.div>
             </motion.div>
 
@@ -852,13 +861,35 @@ export default function DreamCreations() {
       {/* ================= MEET THE FOUNDER SECTION ================= */}
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="flex justify-center mb-16">
-          <img src={bannerUrl} alt="Dream Creations Brand Banner" className="w-full max-w-5xl h-auto drop-shadow-[0_0_30px_rgba(16,149,210,0.3)] rounded-3xl border border-white/5 bg-black/40 p-2 md:p-4" />
+          <img 
+            src={bannerUrl} 
+            alt="Dream Creations Brand Banner" 
+            className="w-full max-w-5xl h-auto drop-shadow-[0_0_30px_rgba(16,149,210,0.3)] rounded-3xl border border-white/5 bg-black/40 p-2 md:p-4" 
+            onError={(e) => {
+              e.target.onerror = null;
+              // Siguraduhing nasa public folder mo ang "Logo Banner.png" o palitan ng tamang local path
+              e.target.src = "/DreamCreations/2 Founder/DC Banner.png"; 
+            }}
+          />
         </motion.div>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="lg:col-span-5 flex justify-center">
             <div className="relative w-full max-w-md aspect-square rounded-3xl border border-white/10 bg-black/40 overflow-hidden flex items-center justify-center group">
                <div className="absolute inset-0 bg-gradient-to-tr from-[#1095d2]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-               {founderPhoto ? ( <img src={founderPhoto} alt="Jefferson Gonzales" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" /> ) : ( <div className="w-32 h-32 rounded-full border border-[#1095d2]/50 bg-black/50 flex items-center justify-center text-4xl font-bold text-white shadow-[0_0_30px_rgba(16,149,210,0.3)] z-10 group-hover:scale-105 transition-transform duration-500">JG</div> )}
+               {founderPhoto ? ( 
+                 <img 
+                   src={founderPhoto} 
+                   alt="Jefferson Gonzales" 
+                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                   onError={(e) => {
+                     e.target.onerror = null;
+                     // Siguraduhing may picture ka na naka-save sa public/images/profile.jpg
+                     e.target.src = "/DreamCreations/2 Founder/Founder.png"; 
+                   }}
+                 /> 
+               ) : ( 
+                 <div className="w-32 h-32 rounded-full border border-[#1095d2]/50 bg-black/50 flex items-center justify-center text-4xl font-bold text-white shadow-[0_0_30px_rgba(16,149,210,0.3)] z-10 group-hover:scale-105 transition-transform duration-500">JG</div> 
+               )}
                <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 z-10">
                  <p className="text-[#1095d2] text-xs font-bold uppercase tracking-wider mb-1">Owner & Team Manager</p>
                  <h4 className="text-white font-bold text-lg">Jefferson Gonzales</h4>
@@ -1502,7 +1533,17 @@ export default function DreamCreations() {
       <motion.div className="fixed top-0 left-0 w-16 h-16 z-[9999] pointer-events-none drop-shadow-[0_20px_20px_rgba(16,149,210,0.6)]" style={{ x: smoothX, y: smoothY, rotateX: rotateX, rotateY: rotateY, rotateZ: rotateZ, perspective: 800 }}>
         <motion.div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-4 h-6 bg-gradient-to-t from-transparent via-orange-500 to-yellow-300 rounded-full blur-[2px] z-0" animate={{ y: [0, 10], scale: [1, 1.5], opacity: [0.8, 0] }} transition={{ duration: 0.3, repeat: Infinity, ease: "easeOut" }} />
         <motion.div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/40 rounded-full blur-md z-0" animate={{ y: [0, 20], scale: [1, 3], opacity: [0.4, 0] }} transition={{ duration: 0.6, repeat: Infinity, ease: "easeOut", delay: 0.1 }} />
-        <img src="/images/spaceship.png" alt="Spaceship Cursor" className="w-full h-full object-contain relative z-10" />
+        
+        <img 
+          /* Palitan ang link sa ibaba ng totoong online/Supabase link mo */
+          src="https://yung-online-link-ng-spaceship-mo-dito.pnghttps://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786958438239_m404w.png" 
+          alt="Spaceship Cursor" 
+          className="w-full h-full object-contain relative z-10" 
+          onError={(e) => { 
+            e.target.onerror = null; 
+            e.target.src = "/DreamCreations/1 Hero Section/spaceship.png"; // Sasalo kapag nawalan ng internet
+          }}
+        />
       </motion.div>
 
     </div>

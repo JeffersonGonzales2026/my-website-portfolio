@@ -3,8 +3,41 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Award, ExternalLink, ShieldCheck } from 'lucide-react';
 
+const defaultCertifications = [
+  {
+    title: "Certificate of Completion: Van-Aralan Basic Computer Literacy Training",
+    issuer: "TESDA / MUNICIPALITY OF RODRIGUEZ, RIZAL",
+    date: "Jan 2017",
+    link: "",
+    image_url: "/Home/3 Certificates/TESDA Certificate.jpg" // Local Fallback Path
+  },
+  {
+    title: "Academic Excellence Award: Top 1 in Class",
+    issuer: "KASIGLAHAN VILLAGE SENIOR HIGH SCHOOL / DEPED",
+    date: "Nov 2018",
+    link: "",
+    image_url: "/Home/3 Certificates/Top 1 in Class.jpg" // Local Fallback Path
+  },
+  {
+    title: "Engineering Seminar: Innovate & Elevate",
+    issuer: "ICCT COLLEGES - COLLEGE OF ENGINEERING & DIGITAL TECHNOLOGY",
+    date: "Mar 2024",
+    link: "",
+    image_url: "/Home/3 Certificates/Engineering Seminar.png" // Local Fallback Path
+  },
+  {
+    title: "Certificate of Participation: The Rudiments and Basic Principles of Database Administration and Design",
+    issuer: "ICCT COLLEGES - SAN MATEO",
+    date: "Oct 2024",
+    link: "",
+    image_url: "/Home/3 Certificates/Database  Certificate.png" // Local Fallback Path
+  }
+];
+
 export default function Certifications({ homeData }) {
-  const certs = homeData?.certifications || [];
+  const certs = (homeData?.certifications && homeData.certifications.length > 0) 
+    ? homeData.certifications 
+    : defaultCertifications;
 
   if (certs.length === 0) return null;
 
@@ -35,6 +68,12 @@ export default function Certifications({ homeData }) {
                   src={cert.image_url} 
                   alt={cert.title} 
                   className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                  onError={(e) => {
+                    // Ensures if the Supabase image fails, it searches for a local match
+                    e.target.onerror = null;
+                    // We attempt to map it back to a local file path based on index
+                    e.target.src = defaultCertifications[index]?.image_url || "/images/cert-placeholder.jpg";
+                  }}
                 />
                 {/* Subtle gradient overlay to blend into the card */}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent pointer-events-none" />

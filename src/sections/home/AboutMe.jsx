@@ -13,9 +13,15 @@ export default function AboutMe() {
       */}
       <div className="absolute top-0 left-0 w-full lg:w-[60%] h-full -z-10 opacity-30 pointer-events-none">
         <img 
+          /* Sinusubukan muna niyang i-load ang galing sa internet (Unsplash o Supabase) */
           src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop" 
           alt="Professional Workspace" 
           className="w-full h-full object-cover grayscale mix-blend-luminosity"
+          onError={(e) => {
+            /* Fallback: Kapag walang internet o broken ang link, kukunin niya ang local image mo */
+            e.target.onerror = null;
+            e.target.src = "Home/2 About Me/About Me BG.png"; 
+          }}
         />
         {/* Gradients para mawala ang hard edges / box look */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#050508]/80 to-[#050508]" />
