@@ -67,11 +67,14 @@ export default function Certifications({ homeData }) {
                 <img 
                   src={cert.image_url} 
                   alt={cert.title} 
-                  className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                  // Nagdagdag tayo ng cursor-pointer dito para maging kamay ang mouse pag tinapat
+                  className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 cursor-pointer"
+                  
+                  // Ito ang magbubukas ng picture sa bagong tab kapag kinlick!
+                  onClick={(e) => window.open(e.target.src, '_blank')}
+                  
                   onError={(e) => {
-                    // Ensures if the Supabase image fails, it searches for a local match
                     e.target.onerror = null;
-                    // We attempt to map it back to a local file path based on index
                     e.target.src = defaultCertifications[index]?.image_url || "/images/cert-placeholder.jpg";
                   }}
                 />
