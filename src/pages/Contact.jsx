@@ -32,7 +32,7 @@ const iconMap = {
 const staticPlatforms = [
   { id: 'email', name: 'Email', username: 'jeffersonguzmangonzales03@gmail.com', link: 'mailto:jeffersonguzmangonzales03@gmail.com', status: 'active' },
   { id: 'github', name: 'GitHub', username: 'Jefferson Gonzales', link: 'https://github.com/jeffersongonzales', status: 'active' },
-  { id: 'linkedin', name: 'LinkedIn', username: 'jefferson Gonzales', link: 'www.linkedin.com/in/jefferson-gonzales-aa8735209', status: 'active' },
+  { id: 'linkedin', name: 'LinkedIn', username: 'jefferson Gonzales', link: 'https://www.linkedin.com/in/jefferson-gonzales-aa8735209', status: 'active' },
   { id: 'facebook', name: 'Facebook', username: 'Jefferson Guzman Gonzales', link: 'https://www.facebook.com/jefferson.gonzales.1276', status: 'active' },
   { id: 'instagram', name: 'Instagram', username: '@jeff.creates', link: 'https://instagram.com/jeff.creates', status: 'future' },
   { id: 'tiktok', name: 'TikTok', username: '@jeff.tiktok', link: 'https://tiktok.com/@jeff.tiktok', status: 'future' },
