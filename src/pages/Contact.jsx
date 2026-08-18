@@ -73,9 +73,26 @@ export default function Contact() {
   const [portfolioUrl, setPortfolioUrl] = useState("/Jefferson_Gonzales_Portfolio.pdf");
 
   // ================= NEW: CMS RESUMES & DROPDOWN STATE =================
-  const [cmsResumes, setCmsResumes] = useState([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  useMobileBack(isDropdownOpen, () => setIsDropdownOpen(false));
+  const [cmsResumes, setCmsResumes] = useState([
+  { 
+    id: 1, 
+    title: "Data Analyst Resume", 
+    file_url: "/resume/Data_Analyst_Resume.pdf" 
+  },
+  { 
+    id: 2, 
+    title: "AI-Assisted Full-Stack Developer", 
+    file_url: "/resume/AI_Developer_Resume.pdf" 
+  },
+  { 
+    id: 3, 
+    title: "Dream Creations Portfolio", 
+    file_url: "/resume/Dream_Creations_Portfolio.pdf" 
+  }
+]);
+
+const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+useMobileBack(isDropdownOpen, () => setIsDropdownOpen(false));
 
   // Fetch only Document Links (Resume & Portfolio) from live cloud database instance
   useEffect(() => {

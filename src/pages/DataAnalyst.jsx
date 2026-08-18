@@ -34,62 +34,449 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
 
 // ================= DEFAULT LOCAL DATA BASELINES =================
 const defaultQuickStats = [
-  { label: "Years in Analytics", value: 1, suffix: "+" },
-  { label: "Dashboards Built", value: 12, suffix: "" },
-  { label: "Reports Created", value: 45, suffix: "" },
-  { label: "Automation Projects", value: 8, suffix: "" },
-  { label: "Processes Improved", value: 15, suffix: "" },
-  { label: "Hours Saved", value: 120, suffix: "+" }
+  { label: "Years in Analytics", value: 1, suffix: "" },
+  { label: "Dashboards Built", value: 1, suffix: "" },
+  { label: "Reports Created", value: 10, suffix: "+" },
+  { label: "Automation Projects", value: 3, suffix: "+" },
+  { label: "Processes Improved", value: 3, suffix: "+" },
+  { label: "Hours Saved", value: 8, suffix: "+" }
 ];
 
 const defaultRolesData = [
   {
     id: 1,
-    statusBadge: "Current Role",
+    statusBadge: "CURRENT ROLE",
     title: "Data Analyst Intern",
     company: "S.P. Madrid",
+    customImage: "/images/spm-logo.png", // Added a local fallback path
     responsibilities: [
-      "Data Cleaning", "Data Validation", "Data Reconciliation", "Operational Reporting", 
-      "Executive Reporting", "Dashboard Preparation", "Power Query", "ODBC Connectivity", 
-      "Excel Automation", "Workflow Documentation", "Data Accuracy Verification", 
-      "Automation Planning", "Cross-functional Collaboration", "Continuous Improvement", "AI-assisted Productivity"
+      "Data Cleaning", "Data Validation", "Data Reconciliation", "Data Accuracy Verification",
+      "Operational Reporting", "Executive Reporting", "Dashboard Preparation", 
+      "Power Query", "ODBC Connectivity", "Automations", "Automation Planning", 
+      "Workflow Documentation", "Cross-functional Collaboration", "Continuous Improvement", "AI-assisted Productivity"
     ],
     impact: [
-      "Support business reporting.", "Improve data consistency.", "Reduce manual processing.",
-      "Assist in decision-making.", "Create reusable reporting solutions.", "Prepare business-ready dashboards.",
-      "Promote efficient workflows.", "Support process optimization."
+      "Support business reporting", "Improve data consistency", "Reduce manual processing",
+      "Assist in decision-making", "Create reusable reporting solutions", "Prepare business-ready dashboards",
+      "Promote efficient workflows", "Support process optimization"
     ]
   }
 ];
 
 const defaultTechnicalSkills = [
-  { category: "Data Analysis", icon: Table, skills: ["Microsoft Excel", "Power Query", "Advanced Formulas", "Data Cleaning", "Data Validation", "Conditional Formatting", "Data Consolidation", "Lookup Functions", "Dynamic Arrays", "Dashboard Design", "Data Modeling", "Business Reporting"] },
-  { category: "Data Visualization", icon: PieChart, skills: ["Executive Reports", "Data Storytelling", "Power BI (Learning)", "Tableau (Learning)", "Looker Studio (Learning)", "KPI Dashboards (Learning)"] },
-  { category: "Programming", icon: Code2, skills: ["Python", "Automation Scripting", "OpenPyXL", "Pandas (Learning)", "NumPy (Learning)", "Matplotlib (Learning)", "Plotly (Learning)", "JavaScript (Learning)"] },
-  { category: "Database", icon: Database, skills: ["Database Administration", "ODBC", "SQL (Learning)", "PostgreSQL (Learning)", "MySQL (Learning)", "Window Functions (Learning)", "CTEs (Learning)", "Views (Learning)", "Stored Procedures (Learning)", "Database Design (Learning)"] },
-  { category: "Data Engineering", icon: Network, skills: ["ETL / ELT (Learning)", "Data Pipelines (Learning)", "Data Integration (Learning)", "REST APIs (Learning)", "JSON (Learning)", "API Integration (Learning)", "Data Warehousing (Learning)"] },
-  { category: "Statistics", icon: Sigma, skills: ["Descriptive Statistics (Learning)", "Correlation Analysis (Learning)", "Hypothesis Testing (Learning)", "Regression Analysis (Learning)", "Forecasting (Learning)", "A/B Testing (Learning)"] },
-  { category: "Cloud", icon: Cpu, skills: ["Microsoft Azure (Learning)", "Google Cloud Platform (Learning)", "Amazon Web Services (Learning)"] },
-  { category: "AI & Analytics", icon: BrainCircuit, skills: ["ChatGPT", "Claude", "Gemini", "Prompt Engineering", "AI-Assisted Data Analysis", "LLM Fundamentals (Learning)", "Retrieval-Augmented Generation (Learning)"] },
-  { category: "Development Tools", icon: Settings, skills: ["Git", "GitHub", "Visual Studio Code", "Jupyter Notebook (Learning)"] }
+  { 
+    category: "Data Analysis", 
+    icon: Table, 
+    skills: ["Microsoft Excel", "Power Query", "Advanced Formulas", "Dynamic Arrays", "Data Cleaning", "Data Validation", "Data Consolidation", "Lookup Functions", "Dashboard Design", "Business Reporting", "Pivot Tables", "Data Transformation (Learning)", "Power Pivot (Learning)", "INDEX-MATCH (Learning)", "Data Profiling (Learning)"] 
+  },
+  { 
+    category: "Data Visualization", 
+    icon: PieChart, 
+    skills: ["Executive Reports", "Data Storytelling", "Power BI (Learning)", "Tableau (Learning)", "Looker Studio (Learning)", "KPI Dashboards (Learning)"] 
+  },
+  { 
+    category: "Business Intelligence", 
+    icon: LineChart, 
+    skills: ["Report Automation", "Executive Reporting (Learning)", "Decision Support (Learning)", "Business Metrics (Learning)", "KPI Development (Learning)", "Performance Analysis (Learning)", "Trend Analysis (Learning)", "Interactive Dashboards (Learning)", "Business Insights (Learning)"] 
+  },
+  { 
+    category: "Database", 
+    icon: Database, 
+    skills: ["Database Administration", "ODBC", "SQL (Learning)", "PostgreSQL (Learning)", "MySQL (Learning)", "Window Functions (Learning)", "Common Table Expressions (CTEs) (Learning)", "Views (Learning)", "Stored Procedures (Learning)", "Database Design (Learning)"] 
+  },
+  { 
+    category: "Programming", 
+    icon: Code2, 
+    skills: ["Python", "Automation Scripting", "OpenPyXL", "Pandas (Learning)", "NumPy (Learning)", "Matplotlib (Learning)", "Plotly (Learning)", "JavaScript (Learning)"] 
+  },
+  { 
+    category: "Data Engineering", 
+    icon: Network, 
+    skills: ["ETL / ELT (Learning)", "Data Pipelines (Learning)", "Data Integration (Learning)", "REST APIs (Learning)", "JSON (Learning)", "API Integration (Learning)", "Data Warehousing (Learning)"] 
+  },
+  { 
+    category: "Statistics", 
+    icon: Sigma, 
+    skills: ["Descriptive Statistics (Learning)", "Correlation Analysis (Learning)", "Hypothesis Testing (Learning)", "Regression Analysis (Learning)", "Forecasting (Learning)", "A/B Testing (Learning)"] 
+  },
+  { 
+    category: "Cloud", 
+    icon: Cpu, 
+    skills: ["Microsoft Azure (Learning)", "Google Cloud Platform (GCP) (Learning)", "Amazon Web Services (AWS) (Learning)"] 
+  },
+  { 
+    category: "AI & Analytics", 
+    icon: BrainCircuit, 
+    skills: ["ChatGPT", "Claude", "Gemini", "Prompt Engineering", "AI-Assisted Data Analysis", "LLM Fundamentals (Learning)", "Retrieval-Augmented Generation (RAG) (Learning)"] 
+  },
+  { 
+    category: "Development Tools", 
+    icon: Settings, 
+    skills: ["Git", "GitHub", "Visual Studio Code", "Jupyter Notebook (Learning)"] 
+  }
 ];
 
 const defaultToolsTechnologies = [
   { 
     category: "Office Productivity", 
     tools: [
-      { name: "Microsoft Excel", imageSrc: "/images/excel.png" },
-      { name: "Microsoft Word", imageSrc: "/images/word.png" },
-      { name: "Microsoft PowerPoint", imageSrc: "/images/powerpoint.png" }
+      { name: "MS Excel", imageSrc: "/images/excel.png" },
+      { name: "MS Word", imageSrc: "/images/word.png" },
+      { name: "Microsoft PowerPoint", imageSrc: "/images/powerpoint.png" },
+      { name: "Microsoft Outlook (Learning)", imageSrc: "/images/outlook.png" }
     ] 
   },
-  { category: "Data Analysis", tools: [{ name: "Power Query", imageSrc: "/images/powerquery.png" }, { name: "Power BI", imageSrc: "/images/powerbi.png" }, { name: "ODBC", imageSrc: "/images/odbc.png" }] },
-  { category: "Databases", tools: [{ name: "Supabase", imageSrc: "/images/supabase.png" }, { name: "SQL", imageSrc: "/images/sql.png" }, { name: "PostgreSQL", imageSrc: "/images/postgresql.png" }] },
-  { category: "Programming", tools: [{ name: "Python", imageSrc: "/images/python.png" }, { name: "JavaScript", imageSrc: "/images/javascript.png" }, { name: "React", imageSrc: "/images/react.png" }] },
-  { category: "AI Assistance", tools: [{ name: "ChatGPT", imageSrc: "/images/chatgpt.png" }, { name: "Claude", imageSrc: "/images/claude.png" }, { name: "Gemini", imageSrc: "/images/gemini.png" }, { name: "GitHub Copilot", imageSrc: "/images/copilot.png" }] }
+  { 
+    category: "Business Intelligence", 
+    tools: [
+      { name: "Microsoft Power BI (Learning)", imageSrc: "/images/powerbi.png" },
+      { name: "Tableau (Learning)", imageSrc: "/images/tableau.png" },
+      { name: "Looker Studio (Learning)", imageSrc: "/images/looker.png" }
+    ] 
+  },
+  { 
+    category: "Database", 
+    tools: [
+      { name: "ODBC", imageSrc: "/images/odbc.png" },
+      { name: "Supabase", imageSrc: "/images/supabase.png" },
+      { name: "PostgreSQL", imageSrc: "/images/postgresql.png" },
+      { name: "MySQL", imageSrc: "/images/mysql.png" },
+      { name: "SQL Server (Learning)", imageSrc: "/images/sqlserver.png" }
+    ] 
+  },
+  { 
+    category: "Programming", 
+    tools: [
+      { name: "Python", imageSrc: "/images/python.png" },
+      { name: "Visual Studio Code", imageSrc: "/images/vscode.png" },
+      { name: "Jupyter Notebook (Learning)", imageSrc: "/images/jupyter.png" }
+    ] 
+  },
+  { 
+    category: "Data Engineering", 
+    tools: [
+      { name: "Apache Airflow (Learning)", imageSrc: "/images/airflow.png" },
+      { name: "dbt (Learning)", imageSrc: "/images/dbt.png" },
+      { name: "Apache Spark (Learning)", imageSrc: "/images/spark.png" }
+    ] 
+  },
+  { 
+    category: "Cloud", 
+    tools: [
+      { name: "Microsoft Azure (Learning)", imageSrc: "/images/azure.png" },
+      { name: "Google Cloud Platform (Learning)", imageSrc: "/images/gcp.png" },
+      { name: "Amazon Web Services (Learning)", imageSrc: "/images/aws.png" }
+    ] 
+  },
+  { 
+    category: "Data Visualization", 
+    tools: [
+      { name: "Plotly (Learning)", imageSrc: "/images/plotly.png" },
+      { name: "Matplotlib (Learning)", imageSrc: "/images/matplotlib.png" }
+    ] 
+  },
+  { 
+    category: "AI Assistance", 
+    tools: [
+      { name: "ChatGPT", imageSrc: "/images/chatgpt.png" },
+      { name: "Claude", imageSrc: "/images/claude.png" },
+      { name: "Gemini", imageSrc: "/images/gemini.png" },
+      { name: "GitHub Copilot", imageSrc: "/images/copilot.png" }
+    ] 
+  },
+  { 
+    category: "Version Control", 
+    tools: [
+      { name: "Git", imageSrc: "/images/git.png" },
+      { name: "GitHub", imageSrc: "/images/github.png" }
+    ] 
+  },
+  { 
+    category: "API & Development", 
+    tools: [
+      { name: "Postman (Learning)", imageSrc: "/images/postman.png" },
+      { name: "Insomnia (Learning)", imageSrc: "/images/insomnia.png" }
+    ] 
+  },
+  { 
+    category: "Project Management", 
+    tools: [
+      { name: "Trello", imageSrc: "/images/trello.png" },
+      { name: "Notion", imageSrc: "/images/notion.png" },
+      { name: "Jira (Learning)", imageSrc: "/images/jira.png" }
+    ] 
+  },
+  { 
+    category: "Automation", 
+    tools: [
+      { name: "Zapier (Learning)", imageSrc: "/images/zapier.png" },
+      { name: "n8n (Learning)", imageSrc: "/images/n8n.png" }
+    ] 
+  }
 ];
 
-const defaultShowcaseData = { dashboards: [], reports: [], automations: [], caseStudies: [], projects: [] };
+const defaultShowcaseData = { 
+  dashboards: [
+    {
+      id: "1785500522425",
+      name: "Case Studies Pending. Real-world project data is currently being prepared and validated for showcase.",
+      status: "IN PREPARATION",
+      department: "",
+      industry: "",
+      purpose: "",
+      software: "TBA",
+      kpis: ["TBA"],
+      impact: "TBA",
+      thumbnail: "" 
+    }
+  ], 
+  reports: [
+    {
+      id: "1785500528041",
+      viz: "Structured Excel data tables, advanced sorting and filtering, status tracking, hierarchical account assignment, worklist monitoring, standardized import templates, and account placement tracking.",
+      title: "Endorsement Process Report - Business Loan",
+      tools: "Microsoft Excel, AnyDesk, System 1, System 2, CMS Import Manager, Lark, Lark Drive",
+      format: "Microsoft Excel Workbook",
+      impact: "Improved endorsement accuracy, reduced manual errors, maintained an updated worklist, and supported efficient account distribution.",
+      source: "Endorsement emails & MS Excel Database",
+      context: "Managed the Bank endorsement process by retrieving endorsed accounts from email, analyzing new endorsements accounts using advanced Excel formulas, importing updated data into System 1 and System 2, and maintaining Excel trackers and Google Drive worklists, under the supervision of a Senior Data Analyst.",
+      audience: "Operations Team, Collection Supervisors, Campaign Managers",
+      findings: "Identified newly endorsed, and duplicate accounts before import and worklist updates.",
+      frequency: "Daily",
+      objective: "Managed Bank  Endorsements, validated accounts using advanced Excel, performed system imports, and maintained worklists under the supervision of a Senior Data Analyst.",
+      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099338740_9y1zi.webp,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png",
+      recommendations: "Automate repetitive Excel tasks, such as formatting, account validation, and worklist preparation, to improve processing efficiency and reduce manual effort."
+    },
+    {
+      id: "1786101489980",
+      viz: "Structured data tables, Excel filters, sorting, XLOOKUP and VLOOKUP comparisons, status tracking, worklist monitoring, pullout tracking, protected worksheets, standardized upload templates.",
+      title: "Amount to Update (ATU) Report - Business Loan",
+      tools: "Microsoft Excel,System 1, System 2, CMS Import Manager",
+      format: "Microsoft Excel Workbook",
+      impact: "Improved accuracy of account updates, reduced manual reconciliation errors, maintained consistent information across multiple systems, standardized daily update processes, and supported efficient campaign operations.",
+      source: "Daily email, MS Excel worklists, MS Excel Database",
+      context: "Daily account updates are received through email and compared against previous worklists to identify pullouts, reactivations, and account changes. Validated updates are prepared for batch uploads and synchronized across System 1 and System 2, and shared worklists to ensure operational data remains accurate and consistent.",
+      audience: "Operations Team, Collection Supervisors, Campaign Managers",
+      findings: "Identified pullout and reactivated accounts, validated account status changes, detected worklist differences from previous reports, updated Amount to Update values, synchronized pushback amounts and specific statuses, and prepared validated records for system uploads.",
+      frequency: "Daily",
+      objective: "Monitor account updates, identify pullout and reactivation records, update account information, and synchronize changes across operational systems to maintain accurate campaign data. under the supervision of a Senior Data Analyst.",
+      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png",
+      recommendations: "Automate repetitive Excel tasks, such as worklist comparison, pullout identification, XLOOKUP/VLOOKUP validation, template preparation, and status synchronization, to improve processing efficiency, reduce manual effort, and minimize reconciliation errors."
+    },
+    {
+      id: "1786105044647",
+      viz: "Structured Excel data tables, filters, sorting, lookup functions (XLOOKUP/VLOOKUP), duplicate checking, data validation, and consolidated reporting tables.",
+      title: "Consolidated Field Result Report",
+      tools: "Microsoft Excel,Lark Drive",
+      format: "Microsoft Excel Workbook",
+      impact: "Improved historical data organization, enhanced record accuracy, reduced manual consolidation effort, and provided a reliable dataset for operational analysis and decision-making.",
+      source: "Field Collection Records (2022–2026), Internal Operational Records",
+      context: "Historical field collection data from multiple years required consolidation into a unified dataset. Records were reviewed, filtered, and validated using Excel functions to identify active accounts, match Account Names, and eliminate inconsistencies before producing a clean operational report.",
+      audience: "Operations Team, Collection Supervisors, Campaign Managers",
+      findings: "Consolidated historical field collection records, identified active accounts, validated Account Name assignments, detected inconsistent records, and produced a standardized dataset for operational reporting.",
+      frequency: "As Needed",
+      objective: "Consolidate field collection results from multiple historical datasets into a single structured report by validating account records, identifying active accounts, and organizing information for operational analysis and reporting. under the supervision of a Senior Data Analyst.",
+      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png",
+      recommendations: "Automate data consolidation, lookup validation, duplicate detection, and record matching to improve processing efficiency, reduce manual effort, and maintain consistent historical reporting."
+    },
+    {
+      id: "1786106550313",
+      viz: "Structured Excel data tables, advanced filtering, sorting, XLOOKUP/VLOOKUP validation, account matching, contact validation, and standardized import templates.",
+      title: "Import Contact Data from Field Result",
+      tools: "Microsoft Excel,Lark Drive",
+      format: "Microsoft Excel Workbook",
+      impact: "Improved contact data accuracy, reduced manual data preparation, standardized contact imports, and supported more reliable operational records.",
+      source: "Field ollection results, MS Excel Databases, Historical account records",
+      context: "Field collection results contained large volumes of account and contact information that required filtering, validation, and consolidation before being imported into the operational system. Account numbers were used to verify active records and ensure contact information was accurately matched to the appropriate accounts.",
+      audience: "Operations Team, Collection Supervisors, Campaign Managers",
+      findings: "Identified active accounts, validated contact information using account numbers, filtered duplicate or inactive records, and prepared accurate contact data.",
+      frequency: "As Needed",
+      objective: "Prepare and validate contact information from field collection results by identifying active accounts, verifying account records, and organizing contact data for import into the operational system. under the supervision of a Senior Data Analyst.",
+      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png",
+      recommendations: "Automate contact validation, account matching, duplicate detection, and import template preparation to improve processing efficiency, reduce manual effort, and ensure data consistency before system imports."
+    },
+    {
+      id: "1786106948736",
+      viz: "Structured Excel data tables, payment reconciliation tables, filtered account records, conditional formatting, comparison results, lookup-based validation, payment calculation columns, ROUNDUP validation, and status/error identification using filters.",
+      title: "Payment Update - Cards",
+      tools: "Microsoft Excel, ODBC, UiPath, Anydesk, Google Sheets, Lark Drive, Bank Portal.",
+      format: "Microsoft Excel Workbook",
+      impact: "Improved payment data accuracy, reduced manual reconciliation effort, ensured validated payment updates, and supported timely and reliable operational reporting.",
+      source: "Bank Portal using UIPath and Anydesk, GoogleSheet, LarkDrive, ODBC-Connected Excel Workbook (Database)",
+      context: "Payment records were extracted from the bank portal using UiPath automation through remote access and processed in Excel using SUMIF. The results were compared with the previous Excel file using comparison operators, then validated using an ODBC-connected Excel database, lookup functions, percentage calculations, ROUNDUP, and fill handle. Final payment amounts were checked, data errors were cleaned, and the report was validated before sending it to Seniors and updating Lark Drive.",
+      audience: "Operations Team, Collection Supervisors, Campaign Managers",
+      findings: "Extracted and reconciled bank payment records, identified payment updates and discrepancies through comparison with previous records, validated payment amounts and calculations, and identified errors requiring correction before final reporting.",
+      frequency: "Weekly",
+      objective: "Extract and reconcile payment records from bank-generated data to support monitoring, payment validation, and operational reporting. under the supervision of a Senior Data Analyst.",
+      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787622802.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786712912223_catha.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099338740_9y1zi.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786713502792_cyey3.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786713520204_yownp.png",
+      recommendations: "Automate payment extraction, reconciliation, calculation, and validation to reduce repetitive Excel work, minimize manual errors, and improve the efficiency of daily payment reporting."
+    },
+    {
+      id: "1786713880318",
+      viz: "Structured Excel data tables, filtered account records, payment tracking columns, XLOOKUP/SUMIF results, payment-date validation, status classification, principal calculation tables, ROUNDUP comparison, and exception filtering.",
+      title: "Payment Update - Personal Loan",
+      tools: "Microsoft Excel, ODBC, Google Sheets, Lark Drive",
+      format: "Microsoft Excel Workbook",
+      impact: "Improved accuracy of Personal Loan payment monitoring, maintained updated account and payment records, strengthened validation of principal and payment amounts, and supported reliable operational reporting.",
+      source: "Google Sheets, LarkDrive, Updated Payments Excel File, ODBC-Connected Excel Workbook Database",
+      context: "Personal Loan accounts were updated in the Monitoring file by identifying new accounts, matching payment records using account numbers, and calculating payments using SUMIF and XLOOKUP. Weekly payment amounts and dates were validated and formatted, followed by status classification based on Due Dates and payment amounts. values were then matched from the Database and validated against the Amount and Discount Rate.",
+      audience: "Operations Team, Collection Supervisors, Campaign Managers",
+      findings: "Identified and updated new Personal Loan accounts, matched weekly payment amounts and dates, validated payment records against the payment database, classified accounts and identified Amount discrepancies requiring further review.",
+      frequency: "Weekly",
+      objective: "Update and validate Personal Loan payment records by matching account numbers with payment data, determining account status, and validating payment amounts for accurate monitoring.  under the supervision of a Senior Data Analyst.",
+      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787622802.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786713502792_cyey3.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png",
+      recommendations: "Automate account matching, weekly payment consolidation, payment-date validation, status classification, principal calculations, and exception identification to reduce repetitive Excel work and improve the efficiency and consistency of payment monitoring."
+    },
+    {
+      id: "1786722712441",
+      viz: "Structured Excel audit tables, filtered records, conditional formatting, lookup-based validation, comparison columns, status validation, principal calculations, ROUNDUP comparisons, date validation, and exception filtering.",
+      title: "Data Quality & Compliance Audit Report – Cards & Personal Loan",
+      tools: "Microsoft Excel, ODBC, Google Sheets, Lark",
+      format: "Microsoft Excel Workbook & Lark Drive",
+      impact: "Improved data accuracy at both the input and reporting levels, reduced recurring data errors, strengthened compliance with business rules, improved communication with collectors/agents, and supported more reliable operational monitoring and reporting.",
+      source: "Google Sheet, Lark Drive, Monitoring Excel, Excel Database",
+      context: "Records and collector/agent inputs were audited against established business rules. The process involved reviewing entries in Lark Drive and Google Sheets, analyzing data using advanced Excel formulas to identify potential errors, validating classifications, account status, payments, amounts, discount rates, Face Amounts, dates, and source-of-contact information. Identified errors were communicated to the concerned collector/agent through Lark and Lark Drive, with instructions to correct or update the records.",
+      audience: "Operations Team, Collection Supervisors, Campaign Managers",
+      findings: "Identified potential errors and inconsistencies in collector/agent inputs, classifications, account statuses, payment records, principal calculations, discount rates, Face Amounts, dates, and source-of-contact information. Advanced Excel formulas were used to analyze records and identify data requiring further verification or correction.",
+      frequency: "Daily",
+      objective: "Audit records and collector/agent inputs against established business rules to identify data errors, validate account information, and ensure accurate and compliant operational records. under the supervision of a Senior Data Analyst.",
+      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787622802.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786713502792_cyey3.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png",
+      recommendations: "Automate recurring business-rule checks and Excel-based validation to identify potential errors before submission, while maintaining direct feedback and correction procedures with collectors/agents to improve data quality at the source."
+    },
+    {
+      id: "1786724849501",
+      viz: "Structured Excel tables, filtered records, sorting, classification columns, numbering, rule-based templates, status filtering, and account-number lookup/checking.",
+      title: "Certification Request Report",
+      tools: "Microsoft Excel, Google Sheets, Lark",
+      format: "Microsoft Excel Workbook",
+      impact: "Improved organization and accuracy of certification requests, standardized request preparation across multiple rules, reduced manual sorting and classification effort, and supported timely submission of certification files.",
+      source: "Google sheets, Lark Drive",
+      context: "Certification request records were reviewed and prepared from the Lark Drive and Google Sheets. Records with existing Remarks or invalid Leaders Approval values were removed, then requests were classified according to Payment Type, Type of Certificate, Level, and Certification Status. Separate Excel templates were created for each certification rule, validated, numbered, and prepared for submission. The corresponding file names were then recorded in the Certification Request Drive before the completed files were sent separately to the designated recipient.",
+      audience: "Operations Team, Collection Supervisors, Campaign Managers, Certification/Processing Team",
+      findings: "Identified and organized certification requests according to payment types, certificate types, and applicable levels. Records were prioritized based on Certification Status, checked for required information, and assigned the appropriate request template and file name.",
+      frequency: "Weekly",
+      objective: "Prepare and organize BPI certification requests according to payment type, certificate type, collection level, and certification status while ensuring records meet established request rules before submission. under the supervision of a Senior Data Analyst.",
+      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786713502792_cyey3.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png",
+      recommendations: "Standardize certification request templates and automate rule-based classification, filtering, numbering, and file-name generation to reduce repetitive preparation work and minimize errors when assigning requests to the appropriate certification category."
+    },
+    {
+      id: "1786726022755",
+      viz: "Structured tracking tables, filtered account records, delivery-status fields, tracking-number records, and consolidated shipment information.",
+      title: "Delivery Tracking Report",
+      tools: "Microsoft Excel, Lark Drive,  PDF, Tracking Website",
+      format: "Lark Sheet",
+      impact: "Improved visibility of account-related deliveries, centralized shipment tracking information, reduced the need to manually search individual records, and supported timely monitoring of delivery status.",
+      source: "Shipment PDF files, Microsoft Excel account records, Tracking Website, Lark Drive",
+      context: "Shipment information was received through PDF files containing account tracking numbers. Tracking numbers were extracted from the documents and used to check delivery status through the LBC tracking website. Account information such as the account name was obtained from the provided Excel records, then consolidated with the information and recorded in Lark Drive for operational tracking.",
+      audience: "Operations Team, Collection Supervisors, Campaign Managers",
+      findings: "Consolidated tracking numbers with corresponding account information and updated delivery statuses based on tracking results, providing a centralized view of shipment progress for operational monitoring.",
+      frequency: "As needed",
+      objective: "Track the delivery status of shipped accounts and consolidate shipment information with account details for operational monitoring.  under the supervision of a Senior Data Analyst.",
+      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/untitled-1.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786727586823_0ipbw.png",
+      recommendations: "Standardize the tracking template and automate the consolidation of tracking numbers, account information, and delivery-status updates where possible to reduce repetitive manual encoding and improve tracking efficiency."
+    },
+    {
+      id: "1786727968190",
+      viz: "Structured Excel data tables, filters, XLOOKUP/VLOOKUP results, account matching, campaign classification, touchpoint categorization, payment-type classification, date-based account status classification, and exception filtering.",
+      title: "Payment List Personal Loan 3 Campaigns",
+      tools: "Microsoft Excel, ODBC, Lark, System 1",
+      format: "Microsoft Excel Workbook",
+      impact: "Improved accuracy and consistency of payment records, reduced manual account-matching effort, standardized payment-list preparation across multiple Personal Loan campaigns, and provided organized payment data for operational processing and monitoring.",
+      source: "Lark Base, Confirmed Data, EPA List, Database, Pullout Database, Worklists Excel, System 1, Lark Drive",
+      context: "Payment records were extracted from the Monthly Confirmed Data and filtered based on the current month and applicable Personal Loan campaigns. Account numbers were matched against internal and Pullout databases using XLOOKUP to retrieve Account Codes, Placement, and other account information. Records were cleaned, standardized, classified by campaign, touchpoint, payment type, and account status, then validated against available databases and System 1 when necessary. Separate standardized payment lists were prepared for 3 Personal Loan Campaigns.",
+      audience: "Operations Team, Collection Supervisors, Campaign Managers",
+      findings: "Consolidated monthly payment records for 3 Personal Loan Campaigns, matched accounts with internal databases, identified Account Codes and placements, standardized campaign and touchpoint classifications, classified payment types, removed invalid or incomplete records, and categorized accounts based on endorsement dates as Fresh Endorsement, Existing Accounts, or other applicable classifications.",
+      frequency: "Weekly",
+      objective: "Consolidate and validate Personal Loan payment records for campaigns, match account information with internal databases, classify accounts and payment types, and prepare standardized payment lists for operational processing.  under the supervision of a Senior Data Analyst.",
+      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787622802.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png",
+      recommendations: "Automate account matching, campaign and touchpoint standardization, payment-type classification, endorsement-date lookup, and exception filtering to reduce repetitive manual processing and improve the consistency of monthly payment-list preparation."
+    },
+    {
+      id: "1786728858165",
+      viz: "Structured Excel tables, filtered collection records, Power Query transformations, positive/negative status classification, account-level activity tracking, placement-based grouping, payment summaries, collection-result categorization, and consolidated monitoring worksheets.",
+      title: "Collection Efforts Personal Loan 3 Campaigns Report",
+      tools: "Microsoft Excel, ODBC, Lark, System 1, Power Query",
+      format: "Microsoft Excel Workbook",
+      impact: "Improved visibility of collection activities across multiple channels, standardized account-level monitoring, reduced manual consolidation effort, improved consistency of collection records, and supported campaign monitoring and operational decision-making.",
+      source: "System 1, Monthly Lark Base, Field Result files, Callouts files, Skiptrace records, Excel databases, Pullout Database, and payment records.",
+      context: "Collection activity data from calls, skiptracing, field visits, and payments were consolidated and matched against account records to monitor collection efforts for Personal Loan accounts. Account information was validated using database lookups, while collection results, contact dates, visitation results, payment details, and reasons for non-payment were incorporated into standardized collection templates.",
+      audience: "Operations Team, Collection Supervisors, Campaign Managers",
+      findings: "Consolidated collection activities across calls, skiptracing, field visits, and payments; classified accounts based on positive and negative collection results; identified contact and visitation outcomes; matched payment information to account records; categorized accounts according to 3 campaigns placement; and identified reasons for non-payment from recent collection records.",
+      frequency: "Weekly",
+      objective: "Consolidate and monitor collection efforts across calls, skiptracing, field visits, and payments for Personal Loan accounts under the 3 campaigns.  under the supervision of a Senior Data Analyst.",
+      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787622802.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/untitled-2.png",
+      recommendations: "Standardize collection-result classifications and templates, automate account matching and data consolidation, maintain updated collection records, reconcile payment and collection data, and standardize non-payment classifications for consistent and accurate monitoring."
+    },
+    {
+      id: "1786730418597",
+      viz: "Structured Excel tables, filtering, sorting, data cleaning, attendance-date updates, and record consolidation.",
+      title: "Daily Attendance Personal Loan 3 Campaigns Report",
+      tools: "Microsoft Excel, Lark",
+      format: "Microsoft Excel Workbook",
+      impact: "Maintained accurate and up-to-date attendance records, improved consistency of daily reporting, and reduced errors before submission.",
+      source: "Attendance Template, Lark Drive, Lark",
+      context: "An attendance template was received through Lark and updated using the latest attendance information from Lark Drive. The records were reviewed and cleaned for accuracy and consistency before the finalized attendance file was submitted back through Lark.",
+      audience: "Operations Team, Collection Supervisors, Campaign Managers",
+      findings: "Updated and consolidated daily attendance records for the 3 campaigns while identifying and cleaning inconsistent or incomplete entries before submission.",
+      frequency: "Daily",
+      objective: "Update, clean, and consolidate daily attendance records for Personal Loan 3 campaigns.  under the supervision of a Senior Data Analyst.",
+      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png",
+      recommendations: "Standardize the attendance template and automate repetitive updates and data-cleaning steps to improve accuracy and reduce manual processing."
+    }
+  ], 
+  automations: [
+    {
+      id: "1785500534377",
+      name: "Excel File Comparison Tool",
+      problem: "Bank-returned reports contained revisions that were difficult to identify manually, while existing Excel comparison tools online were not specifically tailored to the company's specific data classifications and workflow.",
+      objectives: "Develop a company-specific comparison tool that identifies structural and cell-level changes according to the organization's reporting requirements.",
+      currentProcess: "Manually compare the original report with the bank-revised report and identify changes based on company-specific classifications.",
+      steps: "Upload original and revised files → automatically compare data and structure → identify changes → highlight revisions → generate a detailed comparison report.",
+      tech: "VS Code, Python, Streamlit, Pandas, OpenPyXL, NumPy",
+      tech_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1785515378284_tf06x.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788360639.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784426987_9n3yi.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784426399_o5kj0.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784423930_9h59f.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/numpy-logo-png_seeklogo-398690.png",
+      ai: "Claude, Gemini, OpenAI Codex, GitHub Copilot",
+      ai_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788569385.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788645402.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1785763616844_h4xi1.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788774161.png",
+      timeSaved: "2",
+      productivity: "Faster identification and review of bank revisions.",
+      githubLink: "https://github.com/JeffersonGonzales2026/Excel-File-Comparison-Tool.git",
+      thumbnail: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786779412452_g8710.png"
+    },
+    {
+      id: "1786783563378",
+      name: "Agent Code & Name Automation",
+      problem: "During manual audits, identifying the collector responsible for each error required repeatedly navigating large Lark Sheets to find the agent code, locating the corresponding agent name in another sheet, and manually preparing error notifications. This became especially time-consuming when handling a large volume of errors.",
+      objectives: "Automate agent identification and error reporting by matching account numbers and agent codes, then generating a ready-to-send output.",
+      currentProcess: "Review each error → scroll through multiple Lark Sheet columns → find the agent code → search another Lark Sheet for the agent name → manually format the account number, agent name, and error → send each result to the Lark group chat.",
+      steps: "Upload Excel with Account Number & Agent Code + error PDF → automatically match accounts → identify agent names → generate formatted results with @Agent Name, account number, and error details → copy and paste the results directly into the Lark group chat.",
+      tech: "VS Code, Python, Streamlit, Pandas, PDF Parsing, Excel, PDF Generation",
+      tech_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1785515378284_tf06x.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788360639.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784426987_9n3yi.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784426399_o5kj0.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784776183_yg99u.svg, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/untitled-1.png",
+      ai: "Claude, Gemini, OpenAI Codex, GitHub Copilot",
+      ai_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788569385.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788645402.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1785763616844_h4xi1.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788774161.png",
+      timeSaved: "2",
+      productivity: "Significantly faster error-to-agent identification and bulk reporting.",
+      githubLink: "https://github.com/JeffersonGonzales2026/AgentCdNmAuto.git",
+      thumbnail: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786783744734_yeqnc.png"
+    },
+    {
+      id: "1786785508008",
+      name: "Payment & Date Automation",
+      problem: "Updating weekly payment amounts and payment dates required repetitive Excel lookups and manual processing between payment files and the monitoring tracker.",
+      objectives: "Automate the matching and updating of payment amounts and dates by account number while organizing payments into weekly columns.",
+      currentProcess: "Copy payment data → match account numbers → use XLOOKUP/SUMIF → update weekly payment amounts and dates → correct date formats → repeat for multiple weeks.",
+      steps: "Upload payment file and tracker → select source and target columns → automatically match account numbers → organize payments by calendar week → populate payment amounts and dates → generate updated tracker.",
+      tech: "VS Code, Python, Streamlit, Pandas, OpenPyXL, Microsoft Excel",
+      tech_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1785515378284_tf06x.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788360639.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784426987_9n3yi.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784426399_o5kj0.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784423930_9h59f.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png",
+      ai: "Claude, Gemini, OpenAI Codex, GitHub Copilot",
+      ai_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788569385.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788645402.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1785763616844_h4xi1.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788774161.png",
+      timeSaved: "2",
+      productivity: "Faster processing of weekly payment records and tracker updates.",
+      githubLink: "https://github.com/JeffersonGonzales2026/PL-PYTS-DATE-AUTO.git",
+      thumbnail: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786785716053_uj9ev.png"
+    }
+  ], 
+  caseStudies: [], 
+  projects: [] 
+};
 
 export default function DataAnalyst() {
   const [activeTab, setActiveTab] = useState('dashboards');
@@ -100,7 +487,11 @@ export default function DataAnalyst() {
   const [techSkills, setTechSkills] = useState(defaultTechnicalSkills);
   const [showcase, setShowcase] = useState(defaultShowcaseData);
   const [ecosystem, setEcosystem] = useState(defaultToolsTechnologies);
-  const [pageResume, setPageResume] = useState(null);
+  const [pageResume, setPageResume] = useState({
+  title: "Data Analyst Resume",
+  file_url: "/resume/Data_Analyst_Resume.pdf",
+  pdf_url: "/resume/Data_Analyst_Resume.pdf"
+});
 
   // NEW STATES FOR REPORT MODALS
   const [previewReport, setPreviewReport] = useState(null); // Katamtamang Preview Modal
@@ -125,7 +516,8 @@ export default function DataAnalyst() {
         groups["Data Processing & Integrity"].push(r);
       } else if (lower.includes('report') || lower.includes('dashboard')) {
         groups["Reporting & Dashboards"].push(r);
-      } else if (lower.includes('query') || lower.includes('odbc') || lower.includes('automat') || lower.includes('ai')) {
+      } else if (lower.includes('query') || lower.includes('odbc') || lower.includes('automat')) {
+        // Removed the 'ai' trigger so it correctly routes to Strategy
         groups["Technical & Automation"].push(r);
       } else {
         groups["Strategy & Collaboration"].push(r);
@@ -363,7 +755,19 @@ export default function DataAnalyst() {
                   {/* ALIGNED HEADER: Logo side-by-side on mobile and PC */}
                   <div className="flex flex-row items-center mb-8 gap-4 md:gap-5">
                     <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-slate-800 border border-slate-700 rounded-2xl flex items-center justify-center p-2 shadow-lg group-hover:border-emerald-500/30 transition-colors">
-                      {role.customImage ? ( <img src={role.customImage} alt={role.company} className="w-full h-full object-contain" /> ) : ( <Briefcase size={32} className="text-emerald-500/50" /> )}
+                      {role.customImage ? ( 
+                        <img 
+                          src={role.customImage} 
+                          alt={role.company} 
+                          className="w-full h-full object-contain rounded-xl"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/images/spm-logo.png"; // Fallback offline logo
+                          }} 
+                        /> 
+                      ) : ( 
+                        <Briefcase size={32} className="text-emerald-500/50" /> 
+                      )}
                     </div>
                     <div>
                       <div className="mb-1 md:mb-2">
@@ -496,18 +900,31 @@ export default function DataAnalyst() {
                   {showcase.dashboards?.length > 0 ? showcase.dashboards.map(item => (
                     <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden flex flex-col group hover:border-emerald-500/50 transition-colors">
                       <div className="h-48 bg-slate-800 relative flex items-center justify-center overflow-hidden">
-                         <LayoutDashboard size={40} className="text-slate-700 group-hover:text-emerald-500/20 transition-colors" />
+                         {item.thumbnail ? (
+                           <img src={item.thumbnail} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                         ) : (
+                           <LayoutDashboard size={40} className="text-slate-700 group-hover:text-emerald-500/20 transition-colors" />
+                         )}
                          <div className="absolute top-4 right-4 px-2 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] uppercase font-bold rounded">{item.status}</div>
                       </div>
                       <div className="p-6 flex flex-col flex-grow">
-                        <span className="text-xs text-emerald-400 font-bold mb-1">{item.department} • {item.industry}</span>
+                        
+                        {/* SMART FORMATTING FOR DEPARTMENT & INDUSTRY */}
+                        <span className="text-xs text-emerald-400 font-bold mb-1">
+                          {item.department || item.industry 
+                            ? [item.department, item.industry].filter(Boolean).join(' • ') 
+                            : '•'}
+                        </span>
+                        
                         <h4 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">{item.name}</h4>
-                        <p className="text-sm text-slate-400 mb-4">{item.purpose}</p>
-                        <div className="grid grid-cols-2 gap-4 mb-4 text-xs">
+                        {item.purpose && <p className="text-sm text-slate-400 mb-4">{item.purpose}</p>}
+                        
+                        <div className="grid grid-cols-2 gap-4 mb-4 text-xs mt-auto">
                           <div><span className="text-slate-500 block">Software:</span><span className="text-slate-300">{item.software}</span></div>
                           <div><span className="text-slate-500 block">KPIs Tracked:</span><span className="text-slate-300">{item.kpis.join(", ")}</span></div>
                         </div>
-                        <div className="mt-auto pt-4 border-t border-slate-800 flex justify-between items-center">
+                        
+                        <div className="mt-4 pt-4 border-t border-slate-800 flex justify-between items-center">
                           <span className="text-xs text-lime-400 font-semibold">Impact: {item.impact}</span>
                           <button className="text-xs text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1">View Details <ArrowRight size={14} /></button>
                         </div>
@@ -666,30 +1083,29 @@ export default function DataAnalyst() {
       </section>
 
       {/* ================= PAGE RESUME DOWNLOAD ================= */}
-      {pageResume && (
-        <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center border-t border-slate-800/50 bg-slate-900/20">
-          <motion.a
-            href={pageResume.file_url || pageResume.pdf_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ scale: 1.02 }}
-            className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-slate-900 border border-emerald-500/30 hover:border-emerald-500 transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(16,185,129,0.1)] hover:shadow-[0_0_30px_rgba(16,185,129,0.25)]"
-          >
-            <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
-              <Download size={20} />
-            </div>
-            <div className="text-left">
-              <span className="text-[10px] text-slate-400 uppercase tracking-widest block font-semibold mb-0.5">Download Professional Resume</span>
-              <span className="text-sm md:text-base font-bold text-white group-hover:text-emerald-400 transition-colors block">
-                {pageResume.title || 'Data Analyst Resume'}
-              </span>
-            </div>
-          </motion.a>
-        </section>
-      )}
+      <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center border-t border-slate-800/50 bg-slate-900/20">
+        <motion.a
+          href={pageResume?.file_url || pageResume?.pdf_url || "/resume/Data_Analyst_Resume.pdf"}
+          download="Jefferson_Gonzales_Data_Analyst_Resume.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          whileHover={{ scale: 1.02 }}
+          className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-slate-900 border border-emerald-500/30 hover:border-emerald-500 transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(16,185,129,0.1)] hover:shadow-[0_0_30px_rgba(16,185,129,0.25)]"
+        >
+          <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+            <Download size={20} />
+          </div>
+          <div className="text-left">
+            <span className="text-[10px] text-slate-400 uppercase tracking-widest block font-semibold mb-0.5">Download Professional Resume</span>
+            <span className="text-sm md:text-base font-bold text-white group-hover:text-emerald-400 transition-colors block">
+              {pageResume?.title || 'Data Analyst Resume'}
+            </span>
+          </div>
+        </motion.a>
+      </section>
 
       {/* ================= TRANSITION TO THE NEXT JOURNEY ================= */}
       <section className="w-full relative border-t border-slate-800 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">
@@ -872,116 +1288,77 @@ export default function DataAnalyst() {
               </div>
 
               {/* FULL CMS DATA GRID */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 flex-grow">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 flex-grow mt-6">
                 
                 {/* LEFT COLUMN */}
                 <div className="flex flex-col gap-6">
                   <div>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-2">Core Problem</span>
-                    <p className="text-slate-200 text-sm leading-relaxed">{fullAutomation.problem || 'N/A'}</p>
+                    <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-2">Context & Background</span>
+                    <p className="text-slate-200 text-sm leading-relaxed">{fullReport.context || 'N/A'}</p>
                   </div>
                   <div>
-                    <span className="text-[10px] text-[#39ff14] uppercase tracking-widest font-black block mb-2 drop-shadow-[0_0_5px_rgba(57,255,20,0.5)]">Objectives</span>
+                    <span className="text-[10px] text-[#39ff14] uppercase tracking-widest font-black block mb-2 drop-shadow-[0_0_5px_rgba(57,255,20,0.5)]">Objective</span>
                     <div className="p-4 sm:p-5 rounded-xl bg-[#39ff14]/5 border border-[#39ff14]/20">
-                      <p className="text-slate-200 text-sm leading-relaxed">{fullAutomation.objectives || 'N/A'}</p>
+                      <p className="text-slate-200 text-sm leading-relaxed">{fullReport.objective || 'N/A'}</p>
                     </div>
                   </div>
                   
                   {/* METRICS GRID */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
-                    
-                    {/* Time Saved Box */}
                     <div className="p-5 bg-slate-800/40 rounded-xl border border-slate-700/50 flex flex-col justify-center items-center text-center">
-                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-4">Time Saved</span>
-                      <div className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-[#050f08] border-2 border-slate-800 rounded-xl shadow-[inset_0_0_20px_rgba(0,0,0,1)]">
-                        <Clock size={24} className="text-[#39ff14] animate-pulse" />
-                        <span 
-                          className="text-4xl text-[#39ff14] drop-shadow-[0_0_8px_rgba(57,255,20,0.8)] mt-1"
-                          style={{ fontFamily: "'DS-Digital', sans-serif" }}
-                        >
-                          {fullAutomation.timeSaved ? fullAutomation.timeSaved.replace(/[A-Za-z]/g, '').trim() : "0"}
-                        </span>
-                      </div>
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-2">Audience</span>
+                      <p className="text-[#39ff14] font-bold text-sm leading-relaxed">{fullReport.audience || 'N/A'}</p>
                     </div>
-
-                    {/* Productivity Boost Box */}
                     <div className="p-5 bg-slate-800/40 rounded-xl border border-slate-700/50 text-center flex flex-col justify-center">
-                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-3">Productivity Boost</span>
-                      <p className="text-[#39ff14] font-bold text-sm leading-relaxed">{fullAutomation.productivity || 'N/A'}</p>
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-2">Format</span>
+                      <p className="text-[#39ff14] font-bold text-sm leading-relaxed">{fullReport.format || 'N/A'}</p>
                     </div>
-
                   </div>
                 </div>
 
                 {/* RIGHT COLUMN */}
                 <div className="flex flex-col gap-6">
                   <div className="space-y-4">
-                     <h5 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-800 pb-2">Workflow Transformation</h5>
-                     <div className="p-4 sm:p-5 rounded-xl border border-rose-500/20 bg-rose-500/5">
-                        <span className="text-rose-400 font-bold block mb-2 uppercase text-[10px]">Before (Manual):</span>
-                        <span className="text-slate-300 text-sm leading-relaxed">{fullAutomation.currentProcess}</span>
-                     </div>
+                     <h5 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-800 pb-2">Business Impact & Findings</h5>
                      <div className="p-4 sm:p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/10">
-                        <span className="text-emerald-400 font-bold block mb-2 uppercase text-[10px]">After (Automated):</span>
-                        <span className="text-emerald-100 text-sm leading-relaxed">{fullAutomation.steps}</span>
+                        <span className="text-emerald-400 font-bold block mb-2 uppercase text-[10px]">Findings:</span>
+                        <span className="text-emerald-100 text-sm leading-relaxed">{fullReport.findings || 'N/A'}</span>
+                     </div>
+                     <div className="p-4 sm:p-5 rounded-xl border border-rose-500/20 bg-rose-500/5">
+                        <span className="text-rose-400 font-bold block mb-2 uppercase text-[10px]">Impact:</span>
+                        <span className="text-slate-300 text-sm leading-relaxed">{fullReport.impact || 'N/A'}</span>
                      </div>
                   </div>
 
-                  {/* TECH & AI USED */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-800">
-                    <div>
-                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-3">Tech Used</span>
-                      <div className="flex flex-wrap gap-2">
-                        {(() => {
-                          const toolsArray = (fullAutomation.tech || '').split(',').filter(Boolean);
-                          const iconsArray = fullAutomation.tech_icons ? fullAutomation.tech_icons.split(',') : [];
-                          return toolsArray.map((tool, idx) => {
-                            const cleanToolName = tool.trim();
-                            const iconUrl = (iconsArray[idx] && iconsArray[idx].trim()) ? iconsArray[idx].trim() : getToolIcon(cleanToolName);
-                            return (
-                              <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-sm">
-                                {iconUrl && <img src={iconUrl} alt={cleanToolName} className="w-4 h-4 object-contain" onError={(e) => e.target.style.display = 'none'} />}
-                                {!iconUrl && <Settings size={14} className="text-cyan-400" />}
-                                <span className="text-xs font-semibold text-slate-300">{cleanToolName}</span>
-                              </div>
-                            );
-                          });
-                        })()}
-                      </div>
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-3">AI Used</span>
-                      <div className="flex flex-wrap gap-2">
-                        {(() => {
-                          const aiArray = (fullAutomation.ai || '').split(',').filter(Boolean);
-                          const iconsArray = fullAutomation.ai_icons ? fullAutomation.ai_icons.split(',') : [];
-                          return aiArray.map((aiTool, idx) => {
-                            const cleanAIName = aiTool.trim();
-                            const iconUrl = (iconsArray[idx] && iconsArray[idx].trim()) ? iconsArray[idx].trim() : getToolIcon(cleanAIName);
-                            return (
-                              <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-sm">
-                                {iconUrl && <img src={iconUrl} alt={cleanAIName} className="w-4 h-4 object-contain" onError={(e) => e.target.style.display = 'none'} />}
-                                {!iconUrl && <BrainCircuit size={14} className="text-purple-400" />}
-                                <span className="text-xs font-semibold text-slate-300">{cleanAIName}</span>
-                              </div>
-                            );
-                          });
-                        })()}
-                      </div>
+                  {/* TECH USED */}
+                  <div className="pt-4 border-t border-slate-800">
+                    <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-3">Tech & Tools Used</span>
+                    <div className="flex flex-wrap gap-2">
+                      {(() => {
+                        const toolsArray = (fullReport.tools || fullReport.software || '').split(',').filter(Boolean);
+                        const iconsArray = fullReport.tools_icons ? fullReport.tools_icons.split(',') : [];
+                        return toolsArray.map((tool, idx) => {
+                          const cleanToolName = tool.trim();
+                          const iconUrl = (iconsArray[idx] && iconsArray[idx].trim()) ? iconsArray[idx].trim() : getToolIcon(cleanToolName);
+                          return (
+                            <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-sm">
+                              {iconUrl && <img src={iconUrl} alt={cleanToolName} className="w-4 h-4 object-contain" onError={(e) => e.target.style.display = 'none'} />}
+                              {!iconUrl && <Settings size={14} className="text-cyan-400" />}
+                              <span className="text-xs font-semibold text-slate-300">{cleanToolName}</span>
+                            </div>
+                          );
+                        });
+                      })()}
                     </div>
                   </div>
 
-                  {/* GitHub View Only Link */}
-                  {fullAutomation.githubLink && (
+                  {/* RECOMMENDATIONS */}
+                  {fullReport.recommendations && (
                     <div className="pt-4 border-t border-slate-800">
-                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-2">Repository</span>
-                      <a href={fullAutomation.githubLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-5 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-slate-200 text-sm font-bold transition-all hover:-translate-y-0.5 w-full sm:w-auto justify-center">
-                        <Code2 size={18} />
-                        View Source Code (Protected)
-                        <ArrowRight size={14} className="ml-1 opacity-50" />
-                      </a>
-                      <p className="text-[9px] text-slate-500 mt-2 font-mono">Note: Repository security measures are active to prevent direct downloads.</p>
+                      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-2">Recommendations</span>
+                      <p className="text-slate-300 text-sm leading-relaxed italic border-l-2 border-emerald-500 pl-3">
+                        {fullReport.recommendations}
+                      </p>
                     </div>
                   )}
                 </div>

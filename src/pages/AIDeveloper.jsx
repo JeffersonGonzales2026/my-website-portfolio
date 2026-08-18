@@ -123,16 +123,25 @@ const defaultAiEcosystem = [
   { name: "ChatGPT", role: "Primary planning, architecture, documentation, learning, and technical guidance.", imageSrc: "/images/chatgpt.png" },
   { name: "Claude", role: "Backend, Debugging, reasoning, architecture planning, code reviews, and structured writing.", imageSrc: "/images/claude.png" },
   { name: "Gemini", role: "Frontend, UI & UX, architecture planning, Alternative implementation ideas.", imageSrc: "/images/gemini.png" },
-  { name: "GitHub Copilot", role: "In-editor code completion, agent, and developer assistance.", imageSrc: "/images/copilot.png" }
+  { name: "GitHub Copilot", role: "In-editor code completion, agent, and developer assistance.", imageSrc: "/images/copilot.png" },
+  { name: "OpenAI Codex", role: "AI software engineering agent for autonomous coding and development workflows.", imageSrc: "/images/codex.png" },
+  { name: "Kimi (Learning)", role: "Long-context AI assistant for code analysis, architecture planning, documentation, and technical reasoning.", imageSrc: "/images/kimi.png" },
+  { name: "Cursor (Learning)", role: "AI-first IDE for coding, debugging, refactoring, and project-wide development.", imageSrc: "/images/cursor.png" },
+  { name: "Hugging Face (Learning)", role: "Open-source platform for AI models, datasets, and machine learning development.", imageSrc: "/images/huggingface.png" },
+  { name: "Ollama (Learning)", role: "Local LLM runtime for private AI development and testing.", imageSrc: "/images/ollama.png" },
+  { name: "n8n (Learning)", role: "Workflow automation platform for AI agents, APIs, and business process integration.", imageSrc: "/images/n8n.png" },
+  { name: "LangChain (Learning)", role: "Framework for building AI agents and Retrieval-Augmented Generation (RAG) applications.", imageSrc: "/images/langchain.png" }
 ];
 
 const PRESET_PIPELINE_ARCHITECTURE = [
   {
     category: "Planning",
     items: [
-      { name: "Notion", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg" },
-      { name: "Trello", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/trello/trello-plain.svg" },
-      { name: "Jira (Learning)", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jira/jira-original.svg" }
+      { name: "Notion", imageSrc: "/images/notion.png" },
+      { name: "Trello", imageSrc: "/images/trello.png" },
+      { name: "Jira (Learning)", imageSrc: "/images/jira.png" },
+      { name: "Miro (Learning)", imageSrc: "/images/miro.png" },
+      { name: "Whimsical (Learning)", imageSrc: "/images/whimsical.png" }
     ]
   },
   {
@@ -140,7 +149,115 @@ const PRESET_PIPELINE_ARCHITECTURE = [
     items: [
       { name: "ChatGPT", imageSrc: "/images/chatgpt.png" },
       { name: "Claude", imageSrc: "/images/claude.png" },
-      { name: "GitHub Issues", imageSrc: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" }
+      { name: "GitHub Issues", imageSrc: "/images/github.png" },
+      { name: "Notion", imageSrc: "/images/notion.png" },
+      { name: "Kimi (Learning)", imageSrc: "/images/kimi.png" }
+    ]
+  },
+  {
+    category: "Architecture Design",
+    items: [
+      { name: "Excalidraw (Learning)", imageSrc: "/images/excalidraw.png" },
+      { name: "Draw.io (Learning)", imageSrc: "/images/drawio.png" },
+      { name: "Lucidchart (Learning)", imageSrc: "/images/lucidchart.png" },
+      { name: "Eraser.io (Learning)", imageSrc: "/images/eraser.png" }
+    ]
+  },
+  {
+    category: "UI/UX Design",
+    items: [
+      { name: "Lucide React", imageSrc: "/images/lucide.png" },
+      { name: "Glassmorphism", imageSrc: "/images/glassmorphism.png" },
+      { name: "Bento Grid", imageSrc: "/images/bento.png" },
+      { name: "Responsive Design", imageSrc: "/images/responsive.png" },
+      { name: "ReactBits.dev (Learning)", imageSrc: "/images/reactbits.png" },
+      { name: "MotionSites.ai (Learning)", imageSrc: "/images/motionsites.png" },
+      { name: "Figma (Learning)", imageSrc: "/images/figma.png" },
+      { name: "Penpot (Learning)", imageSrc: "/images/penpot.png" }
+    ]
+  },
+  {
+    category: "Frontend Development",
+    items: [
+      { name: "React", imageSrc: "/images/react.png" },
+      { name: "Vite", imageSrc: "/images/vite.png" },
+      { name: "Tailwind CSS", imageSrc: "/images/tailwind.png" },
+      { name: "JavaScript (ES6+)", imageSrc: "/images/javascript.png" },
+      { name: "HTML5", imageSrc: "/images/html.png" },
+      { name: "CSS3", imageSrc: "/images/css.png" },
+      { name: "Framer Motion", imageSrc: "/images/framer.png" },
+      { name: "GSAP", imageSrc: "/images/gsap.png" },
+      { name: "ScrollTrigger", imageSrc: "/images/scrolltrigger.png" },
+      { name: "React PageFlip", imageSrc: "/images/pageflip.png" },
+      { name: "REST API Integration", imageSrc: "/images/api.png" }
+    ]
+  },
+  {
+    category: "Backend Development",
+    items: [
+      { name: "Node.js", imageSrc: "/images/nodejs.png" },
+      { name: "JSON", imageSrc: "/images/json.png" },
+      { name: "Express.js (Learning)", imageSrc: "/images/express.png" },
+      { name: "REST API (Learning)", imageSrc: "/images/api.png" },
+      { name: "JWT Authentication (Learning)", imageSrc: "/images/jwt.png" },
+      { name: "Postman (Learning)", imageSrc: "/images/postman.png" },
+      { name: "Bruno (Learning)", imageSrc: "/images/bruno.png" }
+    ]
+  },
+  {
+    category: "Database Design",
+    items: [
+      { name: "PostgreSQL", imageSrc: "/images/postgresql.png" },
+      { name: "Supabase", imageSrc: "/images/supabase.png" },
+      { name: "Prisma ORM (Learning)", imageSrc: "/images/prisma.png" },
+      { name: "Drizzle ORM (Learning)", imageSrc: "/images/drizzle.png" }
+    ]
+  },
+  {
+    category: "AI Integration",
+    items: [
+      { name: "GitHub Copilot", imageSrc: "/images/copilot.png" },
+      { name: "OpenAI API (Learning)", imageSrc: "/images/openai.png" },
+      { name: "Claude API (Learning)", imageSrc: "/images/claude-api.png" },
+      { name: "Google AI Studio (Learning)", imageSrc: "/images/google-ai.png" },
+      { name: "Cursor (Learning)", imageSrc: "/images/cursor.png" },
+      { name: "LangChain (Learning)", imageSrc: "/images/langchain.png" },
+      { name: "Ollama (Learning)", imageSrc: "/images/ollama.png" },
+      { name: "Hugging Face (Learning)", imageSrc: "/images/huggingface.png" },
+      { name: "n8n (Learning)", imageSrc: "/images/n8n.png" }
+    ]
+  },
+  {
+    category: "Testing & Debugging",
+    items: [
+      { name: "Chrome DevTools", imageSrc: "/images/chrome.png" },
+      { name: "React Developer Tools", imageSrc: "/images/react.png" },
+      { name: "ESLint", imageSrc: "/images/eslint.png" },
+      { name: "Prettier", imageSrc: "/images/prettier.png" },
+      { name: "Postman (Learning)", imageSrc: "/images/postman.png" },
+      { name: "Bruno (Learning)", imageSrc: "/images/bruno.png" }
+    ]
+  },
+  {
+    category: "Deployment",
+    items: [
+      { name: "Git", imageSrc: "/images/git.png" },
+      { name: "GitHub", imageSrc: "/images/github.png" },
+      { name: "Vercel", imageSrc: "/images/vercel.png" },
+      { name: "Netlify (Learning)", imageSrc: "/images/netlify.png" },
+      { name: "Railway (Learning)", imageSrc: "/images/railway.png" },
+      { name: "Render (Learning)", imageSrc: "/images/render.png" },
+      { name: "Cloudflare (Learning)", imageSrc: "/images/cloudflare.png" }
+    ]
+  },
+  {
+    category: "Monitoring & Maintenance",
+    items: [
+      { name: "GitHub", imageSrc: "/images/github.png" },
+      { name: "Vercel Analytics", imageSrc: "/images/vercel.png" },
+      { name: "Sentry (Learning)", imageSrc: "/images/sentry.png" },
+      { name: "Google Analytics (Learning)", imageSrc: "/images/google-analytics.png" },
+      { name: "UptimeRobot (Learning)", imageSrc: "/images/uptimerobot.png" }
     ]
   }
 ];
@@ -170,22 +287,33 @@ const defaultShowcaseProjects = [
   {
     id: 1,
     type: "flagship",
-    badge: "In Progress",
-    meta: "Flagship Software v1",
+    badge: "VERSION 1.0",
+    meta: "ACTIVE DEVELOPMENT",
     title: "Personal Portfolio Website",
-    desc: "A premium, custom-architected portfolio platform built entirely from scratch to showcase graphic design archives, data analytics systems, and modular web software while serving as an active production codebase.",
-    tech: ["React", "Vite", "Tailwind", "CSS", "Git", "GitHub", "VS Code", "AI Assistant Workflow"],
+    desc: "A premium, custom-architected portfolio platform built entirely from scratch to showcase graphic design archives, data analytics projects, and modern web applications while demonstrating my approach to software engineering, AI-assisted development, and scalable application design.",
+    tech: [
+      "React", "Vite", "Tailwind CSS", "JavaScript", "HTML5", "CSS3", 
+      "Node.js", "Express.js", "PostgreSQL", "Supabase", "Git", 
+      "GitHub", "VS Code", "AntiGravity IDE", "AI-Assisted Development Workflow"
+    ],
     role: "AI-assisted Product Architect",
     actionText: "Inspect Source",
-    link: "https://github.com"
+    link: "https://github.com/JeffersonGonzales2026" // Feel free to update this to your specific repo link!
+  },
+  {
+    id: 2,
+    type: "planned",
+    title: "Future AI Automation Pipelines",
+    desc: "Planned automation projects focused on integrating AI, APIs, workflow automation, and business process optimization. Future implementations will explore document processing, intelligent routing, and scalable automation workflows.",
+    status: "STATUS: PLANNED"
   }
 ];
 
 const defaultGithubProfile = {
   name: "Jefferson Gonzales",
-  username: "jeffersongonzales",
-  profileUrl: "https://github.com",
-  badgeText: "Live Sync Standard ready",
+  username: "jeffersongonzales", // Your actual GitHub username
+  profileUrl: "https://github.com/jeffersongonzales", // Make sure this goes to your actual profile
+  badgeText: "Live Sync Ready",
   matrixPlaceholder: "[Simulated GitHub Contribution Matrix Grid Placeholder]"
 };
 
@@ -232,7 +360,11 @@ export default function AiDeveloper() {
   const [webExperiences, setWebExperiences] = useState(defaultWebExperiences);
   const [showcase, setShowcase] = useState(defaultShowcaseProjects);
   const [github, setGithub] = useState(defaultGithubProfile);
-  const [pageResume, setPageResume] = useState(null);
+  const [pageResume, setPageResume] = useState({
+  title: "AI-Assisted Full-Stack Developer",
+  file_url: "/resume/AI_Developer_Resume.pdf",
+  pdf_url: "/resume/AI_Developer_Resume.pdf"
+});
 
   // ================= 67. DEVELOPMENT ARCHITECTURE (MANUAL, KEYBOARD, & SCREEN CLICK/TAP LOGIC) =================
   const [activeArchTab, setActiveArchTab] = useState(0);
@@ -924,31 +1056,29 @@ export default function AiDeveloper() {
           </motion.div>
         </section>
 
-        {/* ================= PAGE RESUME DOWNLOAD ================= */}
-        {pageResume && (
-          <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center border-t border-slate-900/80 bg-black/20">
-            <motion.a
-              href={pageResume.file_url || pageResume.pdf_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.02 }}
-              className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-cyan-500/10 to-slate-900 border border-cyan-500/30 hover:border-cyan-500 transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(6,182,212,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.25)]"
-            >
-              <div className="w-12 h-12 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
-                <Download size={20} />
-              </div>
-              <div className="text-left">
-                <span className="text-[10px] text-slate-400 uppercase tracking-widest block font-semibold mb-0.5">Download Professional Resume</span>
-                <span className="text-sm md:text-base font-bold text-white group-hover:text-cyan-400 transition-colors block">
-                  {pageResume.title || 'AI Developer Resume'}
-                </span>
-              </div>
-            </motion.a>
-          </section>
-        )}
+       {/* ================= PAGE RESUME DOWNLOAD ================= */}
+<section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center border-t border-violet-900/30 bg-violet-950/10">
+  <motion.a
+    href={pageResume?.file_url || pageResume?.pdf_url || "/resume/AI_Developer_Resume.pdf"}
+    target="_blank"
+    rel="noopener noreferrer"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    whileHover={{ scale: 1.02 }}
+    className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-violet-500/10 to-slate-900 border border-violet-500/30 hover:border-violet-500 transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(139,92,246,0.1)] hover:shadow-[0_0_30px_rgba(139,92,246,0.25)]"
+  >
+    <div className="w-12 h-12 rounded-full bg-violet-500/20 text-violet-400 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+      <Download size={20} />
+    </div>
+    <div className="text-left">
+      <span className="text-[10px] text-slate-400 uppercase tracking-widest block font-semibold mb-0.5">Download Professional Resume</span>
+      <span className="text-sm md:text-base font-bold text-white group-hover:text-violet-400 transition-colors block">
+        {pageResume?.title || 'AI-Assisted Full-Stack Developer'}
+      </span>
+    </div>
+  </motion.a>
+</section>
 
         {/* ================= 72. TRANSITION TO CONTACT ================= */}
         <section className="w-full relative border-t border-slate-900 mt-16 pt-32 pb-24 px-6 overflow-hidden z-10">

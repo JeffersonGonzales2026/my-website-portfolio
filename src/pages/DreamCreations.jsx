@@ -89,14 +89,14 @@ const creationsCategories = [
 ];
 
 const softwareExpertise = [
-  { id: 1, name: "Photoshop", icon: "/images/photoshop.png" },
-  { id: 2, name: "Illustrator", icon: "/images/illustrator.png" },
-  { id: 3, name: "Premiere Pro", icon: "/images/premiere.png" },
-  { id: 4, name: "After Effects", icon: "/images/aftereffects.png" },
-  { id: 5, name: "Canva", icon: "/images/canva.png" },
-  { id: 6, name: "CapCut", icon: "/images/capcut.png" },
-  { id: 7, name: "Microsoft Office", icon: "/images/msoffice.png" },
-  { id: 8, name: "AI Design Tools", imageSrc: "/images/ai-tools.png" },
+  { id: 1, name: "Photoshop", imageSrc: "/images/software/photoshop.png" },
+  { id: 2, name: "Illustrator", imageSrc: "/images/software/illustrator.png" },
+  { id: 3, name: "Premiere Pro", imageSrc: "/images/software/premiere.png" },
+  { id: 4, name: "After Effects", imageSrc: "/images/software/aftereffects.png" },
+  { id: 5, name: "Canva", imageSrc: "/images/software/canva.png" },
+  { id: 6, name: "CapCut", imageSrc: "/images/software/capcut.png" },
+  { id: 7, name: "Microsoft Office", imageSrc: "/images/software/msoffice.png" },
+  { id: 8, name: "AI Design Tools", imageSrc: "/images/software/ai-tools.png" },
 ];
 
 const creativeProcess = [
@@ -404,7 +404,11 @@ export default function DreamCreations() {
   const onPageFlip = (e) => { setFlipbookCurrentPage(e.data); };
   const getFlipbookUrl = (pageIndex, prefix = 'page-', ext = 'jpg') => `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/${prefix}${pageIndex}.${ext}`;
 
-  const [pageResume, setPageResume] = useState(null);
+  const [pageResume, setPageResume] = useState({
+  title: "Dream Creations Portfolio",
+  file_url: "/resume/Dream_Creations_Portfolio.pdf",
+  pdf_url: "/resume/Dream_Creations_Portfolio.pdf"
+});
   const [randomGlowIndex, setRandomGlowIndex] = useState(null);
 
   useEffect(() => {
@@ -1227,7 +1231,6 @@ export default function DreamCreations() {
       </section>
 
       {/* ================= SOFTWARE EXPERTISE ================= */}
-
       <section className="max-w-7xl mx-auto w-full px-6 py-20 z-10 relative border-t border-white/10 mt-10">
         <div className="mb-12 text-center md:text-left">
           <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-4">Software Expertise</h3>
@@ -1238,7 +1241,17 @@ export default function DreamCreations() {
           {softwareList.map((tool, index) => (
             <motion.div key={tool.id} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: index * 0.05 }} className="flex flex-col items-center gap-3 w-24 sm:w-28 group">
               <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-white/5 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 overflow-hidden bg-black/40 hover:border-[#1095d2]/40">
-                <img src={tool.imageSrc} alt={tool.name} className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
+                <img 
+                  src={tool.imageSrc || tool.icon} // Supports both property names just in case Supabase returns 'icon'
+                  alt={tool.name} 
+                  className="w-10 h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity" 
+                  onError={(e) => {
+                    e.target.onerror = null; // Prevents infinite loop if local image is also missing
+                    // Smart fallback: formats "Premiere Pro" to "premiere-pro.png"
+                    const formattedName = tool.name.toLowerCase().replace(/\s+/g, '-');
+                    e.target.src = `/images/software/${formattedName}.png`;
+                  }}
+                />
               </div>
               <span className="text-[10px] md:text-xs text-center font-semibold text-white/60 group-hover:text-white transition-colors">{tool.name}</span>
             </motion.div>
@@ -1310,22 +1323,29 @@ export default function DreamCreations() {
           </div>
         </div>
 
-      {/* ================= RESUME DOWNLOAD ================= */}
-        <div className="py-16 relative z-10 flex justify-center px-4">
-          <a 
-            href="/resume/Graphic_Artist_Resume.pdf" 
-            download="Jefferson_Gonzales_Graphic_Artist_Resume.pdf"
-            className="group relative flex items-center gap-6 p-6 md:px-8 rounded-2xl bg-[#0a192f]/40 border border-[#1095d2]/30 hover:border-[#1095d2] hover:bg-[#1095d2]/10 transition-all duration-300 shadow-[0_0_15px_rgba(16,149,210,0.1)]"
-          >
-            <div className="w-12 h-12 rounded-full bg-[#1095d2]/20 flex items-center justify-center text-[#1095d2] group-hover:scale-110 transition-transform duration-300">
-              <Download size={24} />
-            </div>
-            <div className="text-left">
-              <p className="text-[10px] md:text-xs font-bold text-white/50 tracking-wider mb-1 uppercase">Download Professional Resume</p>
-              <h4 className="text-base md:text-xl font-bold text-white group-hover:text-[#1095d2] transition-colors">Graphic Artist Resume</h4>
-            </div>
-          </a>
-        </div>
+      {/* ================= PAGE PORTFOLIO / RESUME DOWNLOAD ================= */}
+<section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center border-t border-blue-900/30 bg-blue-950/10">
+  <motion.a
+    href={pageResume?.file_url || pageResume?.pdf_url || "/resume/Dream_Creations_Portfolio.pdf"}
+    target="_blank"
+    rel="noopener noreferrer"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    whileHover={{ scale: 1.02 }}
+    className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-blue-500/10 to-slate-900 border border-blue-500/30 hover:border-blue-500 transition-all group backdrop-blur-md cursor-pointer relative z-20 shadow-[0_0_20px_rgba(59,130,246,0.1)] hover:shadow-[0_0_30px_rgba(59,130,246,0.25)]"
+  >
+    <div className="w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+      <Download size={20} />
+    </div>
+    <div className="text-left">
+      <span className="text-[10px] text-slate-400 uppercase tracking-widest block font-semibold mb-0.5">Download Studio Portfolio</span>
+      <span className="text-sm md:text-base font-bold text-white group-hover:text-blue-400 transition-colors block">
+        {pageResume?.title || 'Graphic Artist Resume'}
+      </span>
+    </div>
+  </motion.a>
+</section>
 
       {/* ================= TRANSITION TO THE NEXT JOURNEY ================= */}
       <section className="w-full relative border-t border-white/10 mt-16 pt-32 pb-32 px-6 overflow-hidden z-10 flex flex-col items-center text-center">
