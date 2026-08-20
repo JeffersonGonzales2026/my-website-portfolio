@@ -1,0 +1,43 @@
+================================================================================
+FILE PATH LIST
+================================================================================
+
+Selected Folder:
+C:\Users\Jeffe\Documents\Projects\My-Portfolio-Website\public\Data Analyst\2 Analytics Portfolio\2 Reports
+
+Total Files: 14
+
+================================================================================
+
+================================================================================
+[ROOT FOLDER]
+================================================================================
+
+/DreamCreations/Anydesk.webp
+
+/DreamCreations/Bank Portal.png
+
+/DreamCreations/CMS Import Manager.png
+
+/DreamCreations/Google Sheets.png
+
+/DreamCreations/Lark Drive.png
+
+/DreamCreations/Lark.png
+
+/DreamCreations/Microsoft Excel.webp
+
+/DreamCreations/ODBC.png
+
+/DreamCreations/PDF.png
+
+/DreamCreations/Power Query.png
+
+/DreamCreations/System 1.png
+
+/DreamCreations/System 2.png
+
+/DreamCreations/Tracking Website.png
+
+/DreamCreations/UiPath.png
+

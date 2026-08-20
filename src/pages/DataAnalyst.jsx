@@ -48,7 +48,7 @@ const defaultRolesData = [
     statusBadge: "CURRENT ROLE",
     title: "Data Analyst Intern",
     company: "S.P. Madrid",
-    customImage: "/images/spm-logo.png", // Added a local fallback path
+    customImage: "Data Analyst/1 Experience/SPM Logo.jpeg", // Added a local fallback path
     responsibilities: [
       "Data Cleaning", "Data Validation", "Data Reconciliation", "Data Accuracy Verification",
       "Operational Reporting", "Executive Reporting", "Dashboard Preparation", 
@@ -120,97 +120,97 @@ const defaultToolsTechnologies = [
   { 
     category: "Office Productivity", 
     tools: [
-      { name: "MS Excel", imageSrc: "/images/excel.png" },
-      { name: "MS Word", imageSrc: "/images/word.png" },
-      { name: "Microsoft PowerPoint", imageSrc: "/images/powerpoint.png" },
-      { name: "Microsoft Outlook (Learning)", imageSrc: "/images/outlook.png" }
+      { name: "MS Excel", imageSrc: "Data Analyst/3 Software Ecosystem/1783787178293.png" },
+      { name: "MS Word", imageSrc: "Data Analyst/3 Software Ecosystem/1783787301785.png" },
+      { name: "Microsoft PowerPoint", imageSrc: "Data Analyst/3 Software Ecosystem/microsoft-powerpoint-logo-png_seeklogo-653447.png" },
+      { name: "Microsoft Outlook (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515381422_yog9r.webp" }
     ] 
   },
   { 
     category: "Business Intelligence", 
     tools: [
-      { name: "Microsoft Power BI (Learning)", imageSrc: "/images/powerbi.png" },
-      { name: "Tableau (Learning)", imageSrc: "/images/tableau.png" },
-      { name: "Looker Studio (Learning)", imageSrc: "/images/looker.png" }
+      { name: "Microsoft Power BI (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515380926_p2g4s.webp" },
+      { name: "Tableau (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515380364_q0jac.png" },
+      { name: "Looker Studio (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/looker-studio-logo-png_seeklogo-617989.png" }
     ] 
   },
   { 
     category: "Database", 
     tools: [
-      { name: "ODBC", imageSrc: "/images/odbc.png" },
-      { name: "Supabase", imageSrc: "/images/supabase.png" },
-      { name: "PostgreSQL", imageSrc: "/images/postgresql.png" },
-      { name: "MySQL", imageSrc: "/images/mysql.png" },
-      { name: "SQL Server (Learning)", imageSrc: "/images/sqlserver.png" }
+      { name: "ODBC", imageSrc: "Data Analyst/3 Software Ecosystem/1783787622802.png" },
+      { name: "Supabase", imageSrc: "Data Analyst/3 Software Ecosystem/1783787728900.png" },
+      { name: "PostgreSQL", imageSrc: "Data Analyst/3 Software Ecosystem/Postgresql_elephant.svg.webp" },
+      { name: "MySQL", imageSrc: "Data Analyst/3 Software Ecosystem/1785515379321_qq6ll.png" },
+      { name: "SQL Server (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515378794_a23m0.png" }
     ] 
   },
   { 
     category: "Programming", 
     tools: [
-      { name: "Python", imageSrc: "/images/python.png" },
-      { name: "Visual Studio Code", imageSrc: "/images/vscode.png" },
-      { name: "Jupyter Notebook (Learning)", imageSrc: "/images/jupyter.png" }
+      { name: "Python", imageSrc: "Data Analyst/3 Software Ecosystem/1783788360639.png" },
+      { name: "Visual Studio Code", imageSrc: "Data Analyst/3 Software Ecosystem/1785515378284_tf06x.webp" },
+      { name: "Jupyter Notebook (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515377772_5tgcs.webp" }
     ] 
   },
   { 
     category: "Data Engineering", 
     tools: [
-      { name: "Apache Airflow (Learning)", imageSrc: "/images/airflow.png" },
-      { name: "dbt (Learning)", imageSrc: "/images/dbt.png" },
-      { name: "Apache Spark (Learning)", imageSrc: "/images/spark.png" }
+      { name: "Apache Airflow (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515377249_67btt.png" },
+      { name: "dbt (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/dbt-logo-png_seeklogo-431111.png" },
+      { name: "Apache Spark (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515376265_uuwr8.webp" }
     ] 
   },
   { 
     category: "Cloud", 
     tools: [
-      { name: "Microsoft Azure (Learning)", imageSrc: "/images/azure.png" },
-      { name: "Google Cloud Platform (Learning)", imageSrc: "/images/gcp.png" },
-      { name: "Amazon Web Services (Learning)", imageSrc: "/images/aws.png" }
+      { name: "Microsoft Azure (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515375434_6rf24.webp" },
+      { name: "Google Cloud Platform (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515374914_zkspd.png" },
+      { name: "Amazon Web Services (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515373995_9stgt.webp" }
     ] 
   },
   { 
     category: "Data Visualization", 
     tools: [
-      { name: "Plotly (Learning)", imageSrc: "/images/plotly.png" },
-      { name: "Matplotlib (Learning)", imageSrc: "/images/matplotlib.png" }
+      { name: "Plotly (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515372962_imt46.png" },
+      { name: "Matplotlib (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515372413_e9cxr.png" }
     ] 
   },
   { 
     category: "AI Assistance", 
     tools: [
-      { name: "ChatGPT", imageSrc: "/images/chatgpt.png" },
-      { name: "Claude", imageSrc: "/images/claude.png" },
-      { name: "Gemini", imageSrc: "/images/gemini.png" },
-      { name: "GitHub Copilot", imageSrc: "/images/copilot.png" }
+      { name: "ChatGPT", imageSrc: "Data Analyst/3 Software Ecosystem/1783788491981.png" },
+      { name: "Claude", imageSrc: "Data Analyst/3 Software Ecosystem/1783788569385.png" },
+      { name: "Gemini", imageSrc: "Data Analyst/3 Software Ecosystem/1783788645402.webp" },
+      { name: "GitHub Copilot", imageSrc: "Data Analyst/3 Software Ecosystem/1783788774161.png" }
     ] 
   },
   { 
     category: "Version Control", 
     tools: [
-      { name: "Git", imageSrc: "/images/git.png" },
-      { name: "GitHub", imageSrc: "/images/github.png" }
+      { name: "Git", imageSrc: "Data Analyst/3 Software Ecosystem/1785515369896_6zhvz.webp" },
+      { name: "GitHub", imageSrc: "Data Analyst/3 Software Ecosystem/github-white-icon.webp" }
     ] 
   },
   { 
     category: "API & Development", 
     tools: [
-      { name: "Postman (Learning)", imageSrc: "/images/postman.png" },
-      { name: "Insomnia (Learning)", imageSrc: "/images/insomnia.png" }
+      { name: "Postman (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/free-postman-logo-icon-svg-download-png-2945092.webp" },
+      { name: "Insomnia (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515367287_hj98a.png" }
     ] 
   },
   { 
     category: "Project Management", 
     tools: [
-      { name: "Trello", imageSrc: "/images/trello.png" },
-      { name: "Notion", imageSrc: "/images/notion.png" },
-      { name: "Jira (Learning)", imageSrc: "/images/jira.png" }
+      { name: "Trello", imageSrc: "Data Analyst/3 Software Ecosystem/1785515362039_7p00b.png" },
+      { name: "Notion", imageSrc: "Data Analyst/3 Software Ecosystem/1785515353266_ktyft.png" },
+      { name: "Jira (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515334878_6un5e.webp" }
     ] 
   },
   { 
     category: "Automation", 
     tools: [
-      { name: "Zapier (Learning)", imageSrc: "/images/zapier.png" },
-      { name: "n8n (Learning)", imageSrc: "/images/n8n.png" }
+      { name: "Zapier (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785756489729_yvxk2.png" },
+      { name: "n8n (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1783867915185.png" }
     ] 
   }
 ];
@@ -244,7 +244,7 @@ const defaultShowcaseData = {
       findings: "Identified newly endorsed, and duplicate accounts before import and worklist updates.",
       frequency: "Daily",
       objective: "Managed Bank  Endorsements, validated accounts using advanced Excel, performed system imports, and maintained worklists under the supervision of a Senior Data Analyst.",
-      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099338740_9y1zi.webp,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png",
+      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/Anydesk.webp,Data Analyst/2 Analytics Portfolio/2 Reports/System.png,Data Analyst/2 Analytics Portfolio/2 Reports/System.png,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png",
       recommendations: "Automate repetitive Excel tasks, such as formatting, account validation, and worklist preparation, to improve processing efficiency and reduce manual effort."
     },
     {
@@ -260,7 +260,7 @@ const defaultShowcaseData = {
       findings: "Identified pullout and reactivated accounts, validated account status changes, detected worklist differences from previous reports, updated Amount to Update values, synchronized pushback amounts and specific statuses, and prepared validated records for system uploads.",
       frequency: "Daily",
       objective: "Monitor account updates, identify pullout and reactivation records, update account information, and synchronize changes across operational systems to maintain accurate campaign data. under the supervision of a Senior Data Analyst.",
-      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png",
+      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/System.png,Data Analyst/2 Analytics Portfolio/2 Reports/System.png,Data Analyst/2 Analytics Portfolio/2 Reports/System.png,",
       recommendations: "Automate repetitive Excel tasks, such as worklist comparison, pullout identification, XLOOKUP/VLOOKUP validation, template preparation, and status synchronization, to improve processing efficiency, reduce manual effort, and minimize reconciliation errors."
     },
     {
@@ -276,7 +276,7 @@ const defaultShowcaseData = {
       findings: "Consolidated historical field collection records, identified active accounts, validated Account Name assignments, detected inconsistent records, and produced a standardized dataset for operational reporting.",
       frequency: "As Needed",
       objective: "Consolidate field collection results from multiple historical datasets into a single structured report by validating account records, identifying active accounts, and organizing information for operational analysis and reporting. under the supervision of a Senior Data Analyst.",
-      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png",
+      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png",
       recommendations: "Automate data consolidation, lookup validation, duplicate detection, and record matching to improve processing efficiency, reduce manual effort, and maintain consistent historical reporting."
     },
     {
@@ -292,14 +292,14 @@ const defaultShowcaseData = {
       findings: "Identified active accounts, validated contact information using account numbers, filtered duplicate or inactive records, and prepared accurate contact data.",
       frequency: "As Needed",
       objective: "Prepare and validate contact information from field collection results by identifying active accounts, verifying account records, and organizing contact data for import into the operational system. under the supervision of a Senior Data Analyst.",
-      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png,https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png",
+      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png",
       recommendations: "Automate contact validation, account matching, duplicate detection, and import template preparation to improve processing efficiency, reduce manual effort, and ensure data consistency before system imports."
     },
     {
       id: "1786106948736",
       viz: "Structured Excel data tables, payment reconciliation tables, filtered account records, conditional formatting, comparison results, lookup-based validation, payment calculation columns, ROUNDUP validation, and status/error identification using filters.",
       title: "Payment Update - Cards",
-      tools: "Microsoft Excel, ODBC, UiPath, Anydesk, Google Sheets, Lark Drive, Bank Portal.",
+      tools: "Microsoft Excel, ODBC, UiPath, Anydesk, Google Sheets, Lark Drive, Bank Portal",
       format: "Microsoft Excel Workbook",
       impact: "Improved payment data accuracy, reduced manual reconciliation effort, ensured validated payment updates, and supported timely and reliable operational reporting.",
       source: "Bank Portal using UIPath and Anydesk, GoogleSheet, LarkDrive, ODBC-Connected Excel Workbook (Database)",
@@ -308,7 +308,7 @@ const defaultShowcaseData = {
       findings: "Extracted and reconciled bank payment records, identified payment updates and discrepancies through comparison with previous records, validated payment amounts and calculations, and identified errors requiring correction before final reporting.",
       frequency: "Weekly",
       objective: "Extract and reconcile payment records from bank-generated data to support monitoring, payment validation, and operational reporting. under the supervision of a Senior Data Analyst.",
-      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787622802.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786712912223_catha.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099338740_9y1zi.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786713502792_cyey3.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786713520204_yownp.png",
+      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/ODBC.png,Data Analyst/2 Analytics Portfolio/2 Reports/UiPath.pngData Analyst/2 Analytics Portfolio/2 Reports/Anydesk.webp,Data Analyst/2 Analytics Portfolio/2 Reports/Google Sheets.png,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png,Data Analyst/2 Analytics Portfolio/2 Reports/Bank Portal.png",
       recommendations: "Automate payment extraction, reconciliation, calculation, and validation to reduce repetitive Excel work, minimize manual errors, and improve the efficiency of daily payment reporting."
     },
     {
@@ -324,7 +324,7 @@ const defaultShowcaseData = {
       findings: "Identified and updated new Personal Loan accounts, matched weekly payment amounts and dates, validated payment records against the payment database, classified accounts and identified Amount discrepancies requiring further review.",
       frequency: "Weekly",
       objective: "Update and validate Personal Loan payment records by matching account numbers with payment data, determining account status, and validating payment amounts for accurate monitoring.  under the supervision of a Senior Data Analyst.",
-      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787622802.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786713502792_cyey3.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png",
+      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/ODBC.png,Data Analyst/2 Analytics Portfolio/2 Reports/Google Sheets.png,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png",
       recommendations: "Automate account matching, weekly payment consolidation, payment-date validation, status classification, principal calculations, and exception identification to reduce repetitive Excel work and improve the efficiency and consistency of payment monitoring."
     },
     {
@@ -340,7 +340,7 @@ const defaultShowcaseData = {
       findings: "Identified potential errors and inconsistencies in collector/agent inputs, classifications, account statuses, payment records, principal calculations, discount rates, Face Amounts, dates, and source-of-contact information. Advanced Excel formulas were used to analyze records and identify data requiring further verification or correction.",
       frequency: "Daily",
       objective: "Audit records and collector/agent inputs against established business rules to identify data errors, validate account information, and ensure accurate and compliant operational records. under the supervision of a Senior Data Analyst.",
-      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787622802.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786713502792_cyey3.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png",
+      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/ODBC.png,Data Analyst/2 Analytics Portfolio/2 Reports/Google Sheets.png,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png",
       recommendations: "Automate recurring business-rule checks and Excel-based validation to identify potential errors before submission, while maintaining direct feedback and correction procedures with collectors/agents to improve data quality at the source."
     },
     {
@@ -356,7 +356,7 @@ const defaultShowcaseData = {
       findings: "Identified and organized certification requests according to payment types, certificate types, and applicable levels. Records were prioritized based on Certification Status, checked for required information, and assigned the appropriate request template and file name.",
       frequency: "Weekly",
       objective: "Prepare and organize BPI certification requests according to payment type, certificate type, collection level, and certification status while ensuring records meet established request rules before submission. under the supervision of a Senior Data Analyst.",
-      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786713502792_cyey3.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png",
+      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/Google Sheets.png,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png",
       recommendations: "Standardize certification request templates and automate rule-based classification, filtering, numbering, and file-name generation to reduce repetitive preparation work and minimize errors when assigning requests to the appropriate certification category."
     },
     {
@@ -372,7 +372,7 @@ const defaultShowcaseData = {
       findings: "Consolidated tracking numbers with corresponding account information and updated delivery statuses based on tracking results, providing a centralized view of shipment progress for operational monitoring.",
       frequency: "As needed",
       objective: "Track the delivery status of shipped accounts and consolidate shipment information with account details for operational monitoring.  under the supervision of a Senior Data Analyst.",
-      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/untitled-1.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786727586823_0ipbw.png",
+      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png,Data Analyst/2 Analytics Portfolio/2 Reports/PDF.png,Data Analyst/2 Analytics Portfolio/2 Reports/Tracking Website.png",
       recommendations: "Standardize the tracking template and automate the consolidation of tracking numbers, account information, and delivery-status updates where possible to reduce repetitive manual encoding and improve tracking efficiency."
     },
     {
@@ -388,7 +388,7 @@ const defaultShowcaseData = {
       findings: "Consolidated monthly payment records for 3 Personal Loan Campaigns, matched accounts with internal databases, identified Account Codes and placements, standardized campaign and touchpoint classifications, classified payment types, removed invalid or incomplete records, and categorized accounts based on endorsement dates as Fresh Endorsement, Existing Accounts, or other applicable classifications.",
       frequency: "Weekly",
       objective: "Consolidate and validate Personal Loan payment records for campaigns, match account information with internal databases, classify accounts and payment types, and prepare standardized payment lists for operational processing.  under the supervision of a Senior Data Analyst.",
-      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787622802.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png",
+      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/ODBC.png,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png,Data Analyst/2 Analytics Portfolio/2 Reports/System.png",
       recommendations: "Automate account matching, campaign and touchpoint standardization, payment-type classification, endorsement-date lookup, and exception filtering to reduce repetitive manual processing and improve the consistency of monthly payment-list preparation."
     },
     {
@@ -404,7 +404,7 @@ const defaultShowcaseData = {
       findings: "Consolidated collection activities across calls, skiptracing, field visits, and payments; classified accounts based on positive and negative collection results; identified contact and visitation outcomes; matched payment information to account records; categorized accounts according to 3 campaigns placement; and identified reasons for non-payment from recent collection records.",
       frequency: "Weekly",
       objective: "Consolidate and monitor collection efforts across calls, skiptracing, field visits, and payments for Personal Loan accounts under the 3 campaigns.  under the supervision of a Senior Data Analyst.",
-      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787622802.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099792356_b6jql.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/untitled-2.png",
+      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/ODBC.png,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png,Data Analyst/2 Analytics Portfolio/2 Reports/System.png,Data Analyst/2 Analytics Portfolio/2 Reports/Power Query.png",
       recommendations: "Standardize collection-result classifications and templates, automate account matching and data consolidation, maintain updated collection records, reconcile payment and collection data, and standardize non-payment classifications for consistent and accurate monitoring."
     },
     {
@@ -420,7 +420,7 @@ const defaultShowcaseData = {
       findings: "Updated and consolidated daily attendance records for the 3 campaigns while identifying and cleaning inconsistent or incomplete entries before submission.",
       frequency: "Daily",
       objective: "Update, clean, and consolidate daily attendance records for Personal Loan 3 campaigns.  under the supervision of a Senior Data Analyst.",
-      tools_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786099335517_oa8lb.png",
+      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png",
       recommendations: "Standardize the attendance template and automate repetitive updates and data-cleaning steps to improve accuracy and reduce manual processing."
     }
   ], 
@@ -433,13 +433,13 @@ const defaultShowcaseData = {
       currentProcess: "Manually compare the original report with the bank-revised report and identify changes based on company-specific classifications.",
       steps: "Upload original and revised files → automatically compare data and structure → identify changes → highlight revisions → generate a detailed comparison report.",
       tech: "VS Code, Python, Streamlit, Pandas, OpenPyXL, NumPy",
-      tech_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1785515378284_tf06x.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788360639.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784426987_9n3yi.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784426399_o5kj0.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784423930_9h59f.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/numpy-logo-png_seeklogo-398690.png",
+      tech_icons: "Data Analyst/2 Analytics Portfolio/3 Automation/Tools/VS Code.webp,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/Python.png,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/Streamlit.png,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/Pandas.png,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/OpenPyXL.png,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/NumPy.png",
       ai: "Claude, Gemini, OpenAI Codex, GitHub Copilot",
-      ai_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788569385.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788645402.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1785763616844_h4xi1.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788774161.png",
+      ai_icons: "Data Analyst/2 Analytics Portfolio/3 Automation/AI/Claude.png,Data Analyst/2 Analytics Portfolio/3 Automation/AI/Gemini.webp,Data Analyst/2 Analytics Portfolio/3 Automation/AI/OpenAI Codex.webp,Data Analyst/2 Analytics Portfolio/3 Automation/AI/GitHub Copilot.png",
       timeSaved: "2",
       productivity: "Faster identification and review of bank revisions.",
       githubLink: "https://github.com/JeffersonGonzales2026/Excel-File-Comparison-Tool.git",
-      thumbnail: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786779412452_g8710.png"
+      thumbnail: "Data Analyst/2 Analytics Portfolio/3 Automation/Icon/Comparison Tool.png"
     },
     {
       id: "1786783563378",
@@ -448,14 +448,14 @@ const defaultShowcaseData = {
       objectives: "Automate agent identification and error reporting by matching account numbers and agent codes, then generating a ready-to-send output.",
       currentProcess: "Review each error → scroll through multiple Lark Sheet columns → find the agent code → search another Lark Sheet for the agent name → manually format the account number, agent name, and error → send each result to the Lark group chat.",
       steps: "Upload Excel with Account Number & Agent Code + error PDF → automatically match accounts → identify agent names → generate formatted results with @Agent Name, account number, and error details → copy and paste the results directly into the Lark group chat.",
-      tech: "VS Code, Python, Streamlit, Pandas, PDF Parsing, Excel, PDF Generation",
-      tech_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1785515378284_tf06x.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788360639.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784426987_9n3yi.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784426399_o5kj0.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784776183_yg99u.svg, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/untitled-1.png",
+      tech: "VS Code, Python, Streamlit, Pandas, PDF Parsing, Microsoft Excel, PDF Generation",
+      tech_icons: "Data Analyst/2 Analytics Portfolio/3 Automation/Tools/VS Code.webp,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/Python.png,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/Streamlit.png,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/Pandas.png,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/PDF Parsing.svg,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/PDF Generation.png",
       ai: "Claude, Gemini, OpenAI Codex, GitHub Copilot",
-      ai_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788569385.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788645402.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1785763616844_h4xi1.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788774161.png",
+      ai_icons: "Data Analyst/2 Analytics Portfolio/3 Automation/AI/Claude.png,Data Analyst/2 Analytics Portfolio/3 Automation/AI/Gemini.webp,Data Analyst/2 Analytics Portfolio/3 Automation/AI/OpenAI Codex.webp,Data Analyst/2 Analytics Portfolio/3 Automation/AI/GitHub Copilot.png",
       timeSaved: "2",
       productivity: "Significantly faster error-to-agent identification and bulk reporting.",
       githubLink: "https://github.com/JeffersonGonzales2026/AgentCdNmAuto.git",
-      thumbnail: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786783744734_yeqnc.png"
+      thumbnail: "Data Analyst/2 Analytics Portfolio/3 Automation/Icon/Agent Automation.png"
     },
     {
       id: "1786785508008",
@@ -465,13 +465,13 @@ const defaultShowcaseData = {
       currentProcess: "Copy payment data → match account numbers → use XLOOKUP/SUMIF → update weekly payment amounts and dates → correct date formats → repeat for multiple weeks.",
       steps: "Upload payment file and tracker → select source and target columns → automatically match account numbers → organize payments by calendar week → populate payment amounts and dates → generate updated tracker.",
       tech: "VS Code, Python, Streamlit, Pandas, OpenPyXL, Microsoft Excel",
-      tech_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1785515378284_tf06x.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788360639.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784426987_9n3yi.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784426399_o5kj0.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786784423930_9h59f.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783787178293.png",
+      tech_icons: "Data Analyst/2 Analytics Portfolio/3 Automation/Tools/VS Code.webp,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/Python.png,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/Streamlit.png,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/Pandas.png,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/OpenPyXL.png,Data Analyst/2 Analytics Portfolio/3 Automation/Tools/Microsoft Excel.webp",
       ai: "Claude, Gemini, OpenAI Codex, GitHub Copilot",
-      ai_icons: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788569385.png, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788645402.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1785763616844_h4xi1.webp, https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1783788774161.png",
+      ai_icons: "Data Analyst/2 Analytics Portfolio/3 Automation/AI/Claude.png,Data Analyst/2 Analytics Portfolio/3 Automation/AI/Gemini.webp,Data Analyst/2 Analytics Portfolio/3 Automation/AI/OpenAI Codex.webp,Data Analyst/2 Analytics Portfolio/3 Automation/AI/GitHub Copilot.png",
       timeSaved: "2",
       productivity: "Faster processing of weekly payment records and tracker updates.",
       githubLink: "https://github.com/JeffersonGonzales2026/PL-PYTS-DATE-AUTO.git",
-      thumbnail: "https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/1786785716053_uj9ev.png"
+      thumbnail: "Data Analyst/2 Analytics Portfolio/3 Automation/Icon/Payment & Date Automation.png"
     }
   ], 
   caseStudies: [], 
@@ -489,8 +489,8 @@ export default function DataAnalyst() {
   const [ecosystem, setEcosystem] = useState(defaultToolsTechnologies);
   const [pageResume, setPageResume] = useState({
   title: "Data Analyst Resume",
-  file_url: "/resume/Data_Analyst_Resume.pdf",
-  pdf_url: "/resume/Data_Analyst_Resume.pdf"
+  file_url: "/Contacts/Gonzales_Jefferson_Data_Analyst.pdf",
+  pdf_url: "/Contacts/Gonzales_Jefferson_Data_Analyst.pdf"
 });
 
   // NEW STATES FOR REPORT MODALS

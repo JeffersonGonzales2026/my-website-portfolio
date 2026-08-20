@@ -120,144 +120,144 @@ const defaultDeveloperStats = [
 ];
 
 const defaultAiEcosystem = [
-  { name: "ChatGPT", role: "Primary planning, architecture, documentation, learning, and technical guidance.", imageSrc: "/images/chatgpt.png" },
-  { name: "Claude", role: "Backend, Debugging, reasoning, architecture planning, code reviews, and structured writing.", imageSrc: "/images/claude.png" },
-  { name: "Gemini", role: "Frontend, UI & UX, architecture planning, Alternative implementation ideas.", imageSrc: "/images/gemini.png" },
-  { name: "GitHub Copilot", role: "In-editor code completion, agent, and developer assistance.", imageSrc: "/images/copilot.png" },
-  { name: "OpenAI Codex", role: "AI software engineering agent for autonomous coding and development workflows.", imageSrc: "/images/codex.png" },
-  { name: "Kimi (Learning)", role: "Long-context AI assistant for code analysis, architecture planning, documentation, and technical reasoning.", imageSrc: "/images/kimi.png" },
-  { name: "Cursor (Learning)", role: "AI-first IDE for coding, debugging, refactoring, and project-wide development.", imageSrc: "/images/cursor.png" },
-  { name: "Hugging Face (Learning)", role: "Open-source platform for AI models, datasets, and machine learning development.", imageSrc: "/images/huggingface.png" },
-  { name: "Ollama (Learning)", role: "Local LLM runtime for private AI development and testing.", imageSrc: "/images/ollama.png" },
-  { name: "n8n (Learning)", role: "Workflow automation platform for AI agents, APIs, and business process integration.", imageSrc: "/images/n8n.png" },
-  { name: "LangChain (Learning)", role: "Framework for building AI agents and Retrieval-Augmented Generation (RAG) applications.", imageSrc: "/images/langchain.png" }
+  { name: "ChatGPT", role: "Primary planning, architecture, documentation, learning, and technical guidance.", imageSrc: "/AI Developer/1 AI Ecosystem/1783788491981.png" },
+  { name: "Claude", role: "Backend, Debugging, reasoning, architecture planning, code reviews, and structured writing.", imageSrc: "/AI Developer/1 AI Ecosystem/1783788569385.png" },
+  { name: "Gemini", role: "Frontend, UI & UX, architecture planning, Alternative implementation ideas.", imageSrc: "/AI Developer/1 AI Ecosystem/1783788645402.webp" },
+  { name: "GitHub Copilot", role: "In-editor code completion, agent, and developer assistance.", imageSrc: "/AI Developer/1 AI Ecosystem/1783788774161.png" },
+  { name: "OpenAI Codex", role: "AI software engineering agent for autonomous coding and development workflows.", imageSrc: "/AI Developer/1 AI Ecosystem/1785763616844_h4xi1.webp" },
+  { name: "Kimi (Learning)", role: "Long-context AI assistant for code analysis, architecture planning, documentation, and technical reasoning.", imageSrc: "/AI Developer/1 AI Ecosystem/kimi-logo-2025.png" },
+  { name: "Cursor (Learning)", role: "AI-first IDE for coding, debugging, refactoring, and project-wide development.", imageSrc: "/AI Developer/1 AI Ecosystem/1785760674668_l30j1.png" },
+  { name: "Hugging Face (Learning)", role: "Open-source platform for AI models, datasets, and machine learning development.", imageSrc: "/AI Developer/1 AI Ecosystem/hugging-face-emoji-logo-1.png" },
+  { name: "Ollama (Learning)", role: "Local LLM runtime for private AI development and testing.", imageSrc: "/AI Developer/1 AI Ecosystem/1785763615655_fkuol.png" },
+  { name: "n8n (Learning)", role: "Workflow automation platform for AI agents, APIs, and business process integration.", imageSrc: "/AI Developer/1 AI Ecosystem/1783867915185.png" },
+  { name: "LangChain (Learning)", role: "Framework for building AI agents and Retrieval-Augmented Generation (RAG) applications.", imageSrc: "/AI Developer/1 AI Ecosystem/1785763610663_3u4go.png" }
 ];
 
 const PRESET_PIPELINE_ARCHITECTURE = [
   {
     category: "Planning",
     items: [
-      { name: "Notion", imageSrc: "/images/notion.png" },
-      { name: "Trello", imageSrc: "/images/trello.png" },
-      { name: "Jira (Learning)", imageSrc: "/images/jira.png" },
-      { name: "Miro (Learning)", imageSrc: "/images/miro.png" },
-      { name: "Whimsical (Learning)", imageSrc: "/images/whimsical.png" }
+      { name: "Notion", imageSrc: "AI Developer/2 Development Architecture/1785515353266_ktyft.png" },
+      { name: "Trello", imageSrc: "AI Developer/2 Development Architecture/1785515362039_7p00b.png" },
+      { name: "Jira (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785515334878_6un5e.webp" },
+      { name: "Miro (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822431305_ontm7.png" },
+      { name: "Whimsical (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822440877_7o0eb.jfif" }
     ]
   },
   {
     category: "Requirements Analysis",
     items: [
-      { name: "ChatGPT", imageSrc: "/images/chatgpt.png" },
-      { name: "Claude", imageSrc: "/images/claude.png" },
-      { name: "GitHub Issues", imageSrc: "/images/github.png" },
-      { name: "Notion", imageSrc: "/images/notion.png" },
-      { name: "Kimi (Learning)", imageSrc: "/images/kimi.png" }
+      { name: "ChatGPT", imageSrc: "AI Developer/2 Development Architecture/1783788491981.png" },
+      { name: "Claude", imageSrc: "AI Developer/2 Development Architecture/1783788569385.png" },
+      { name: "GitHub Issues", imageSrc: "AI Developer/2 Development Architecture/github-white-icon.webp" },
+      { name: "Notion", imageSrc: "AI Developer/2 Development Architecture/1785515353266_ktyft.png" },
+      { name: "Kimi (Learning)", imageSrc: "AI Developer/2 Development Architecture/kimi-logo-2025.png" }
     ]
   },
   {
     category: "Architecture Design",
     items: [
-      { name: "Excalidraw (Learning)", imageSrc: "/images/excalidraw.png" },
-      { name: "Draw.io (Learning)", imageSrc: "/images/drawio.png" },
-      { name: "Lucidchart (Learning)", imageSrc: "/images/lucidchart.png" },
-      { name: "Eraser.io (Learning)", imageSrc: "/images/eraser.png" }
+      { name: "Excalidraw (Learning)", imageSrc: "AI Developer/2 Development Architecture/excalidraw-logo-png_seeklogo-548100.png" },
+      { name: "Draw.io (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785823070623_qi2li.png" },
+      { name: "Lucidchart (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822430873_jzxtl.png" },
+      { name: "Eraser.io (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822440069_0m33a.png" }
     ]
   },
   {
     category: "UI/UX Design",
     items: [
-      { name: "Lucide React", imageSrc: "/images/lucide.png" },
-      { name: "Glassmorphism", imageSrc: "/images/glassmorphism.png" },
-      { name: "Bento Grid", imageSrc: "/images/bento.png" },
-      { name: "Responsive Design", imageSrc: "/images/responsive.png" },
-      { name: "ReactBits.dev (Learning)", imageSrc: "/images/reactbits.png" },
-      { name: "MotionSites.ai (Learning)", imageSrc: "/images/motionsites.png" },
-      { name: "Figma (Learning)", imageSrc: "/images/figma.png" },
-      { name: "Penpot (Learning)", imageSrc: "/images/penpot.png" }
+      { name: "Lucide React", imageSrc: "AI Developer/2 Development Architecture/1785822430149_sm0im.png" },
+      { name: "Glassmorphism", imageSrc: "AI Developer/2 Development Architecture/1785822429723_e98de.png" },
+      { name: "Bento Grid", imageSrc: "AI Developer/2 Development Architecture/1785822429282_exvjz.png" },
+      { name: "Responsive Design", imageSrc: "AI Developer/2 Development Architecture/1785822439589_tdumw.png" },
+      { name: "ReactBits.dev (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822428861_twnfx.png" },
+      { name: "MotionSites.ai (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822439155_7ea8m.webp" },
+      { name: "Figma (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822438714_klswr.webp" },
+      { name: "Penpot (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822423094_mcpxs.png" }
     ]
   },
   {
     category: "Frontend Development",
     items: [
-      { name: "React", imageSrc: "/images/react.png" },
-      { name: "Vite", imageSrc: "/images/vite.png" },
-      { name: "Tailwind CSS", imageSrc: "/images/tailwind.png" },
-      { name: "JavaScript (ES6+)", imageSrc: "/images/javascript.png" },
-      { name: "HTML5", imageSrc: "/images/html.png" },
-      { name: "CSS3", imageSrc: "/images/css.png" },
-      { name: "Framer Motion", imageSrc: "/images/framer.png" },
-      { name: "GSAP", imageSrc: "/images/gsap.png" },
-      { name: "ScrollTrigger", imageSrc: "/images/scrolltrigger.png" },
-      { name: "React PageFlip", imageSrc: "/images/pageflip.png" },
-      { name: "REST API Integration", imageSrc: "/images/api.png" }
+      { name: "React", imageSrc: "AI Developer/2 Development Architecture/1783866552668.webp" },
+      { name: "Vite", imageSrc: "AI Developer/2 Development Architecture/1783866648346.webp" },
+      { name: "Tailwind CSS", imageSrc: "AI Developer/2 Development Architecture/1783867163902.webp" },
+      { name: "JavaScript (ES6+)", imageSrc: "AI Developer/2 Development Architecture/1783867177036.png" },
+      { name: "HTML5", imageSrc: "AI Developer/2 Development Architecture/1783867189152.webp" },
+      { name: "CSS3", imageSrc: "AI Developer/2 Development Architecture/1783867198014.webp" },
+      { name: "Framer Motion", imageSrc: "AI Developer/2 Development Architecture/1785822428295_e1ga1.png" },
+      { name: "GSAP", imageSrc: "AI Developer/2 Development Architecture/1785822438268_i2rcr.webp" },
+      { name: "ScrollTrigger", imageSrc: "AI Developer/2 Development Architecture/1785822437822_s4jup.png" },
+      { name: "React PageFlip", imageSrc: "AI Developer/2 Development Architecture/1785822427623_zzfv5.png" },
+      { name: "REST API Integration", imageSrc: "AI Developer/2 Development Architecture/1785822426809_u9vbn.png" }
     ]
   },
   {
     category: "Backend Development",
     items: [
-      { name: "Node.js", imageSrc: "/images/nodejs.png" },
-      { name: "JSON", imageSrc: "/images/json.png" },
-      { name: "Express.js (Learning)", imageSrc: "/images/express.png" },
-      { name: "REST API (Learning)", imageSrc: "/images/api.png" },
-      { name: "JWT Authentication (Learning)", imageSrc: "/images/jwt.png" },
-      { name: "Postman (Learning)", imageSrc: "/images/postman.png" },
-      { name: "Bruno (Learning)", imageSrc: "/images/bruno.png" }
+      { name: "Node.js", imageSrc: "AI Developer/2 Development Architecture/1783867886032.svg" },
+      { name: "JSON", imageSrc: "AI Developer/2 Development Architecture/1785822436746_lx2jf.webp" },
+      { name: "Express.js (Learning)", imageSrc: "AI Developer/2 Development Architecture/1783867893209.png" },
+      { name: "REST API (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822426809_u9vbn.png" },
+      { name: "JWT Authentication (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822421881_1a9os.png" },
+      { name: "Postman (Learning)", imageSrc: "AI Developer/2 Development Architecture/free-postman-logo-icon-svg-download-png-2945092.webp" },
+      { name: "Bruno (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822425097_utnz8.png" }
     ]
   },
   {
     category: "Database Design",
     items: [
-      { name: "PostgreSQL", imageSrc: "/images/postgresql.png" },
-      { name: "Supabase", imageSrc: "/images/supabase.png" },
-      { name: "Prisma ORM (Learning)", imageSrc: "/images/prisma.png" },
-      { name: "Drizzle ORM (Learning)", imageSrc: "/images/drizzle.png" }
+      { name: "PostgreSQL", imageSrc: "AI Developer/2 Development Architecture/1783788257058.svg" },
+      { name: "Supabase", imageSrc: "AI Developer/2 Development Architecture/1783787728900.png" },
+      { name: "Prisma ORM (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822436275_o1xu1.png" },
+      { name: "Drizzle ORM (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822421404_e9scm.png" }
     ]
   },
   {
     category: "AI Integration",
     items: [
-      { name: "GitHub Copilot", imageSrc: "/images/copilot.png" },
-      { name: "OpenAI API (Learning)", imageSrc: "/images/openai.png" },
-      { name: "Claude API (Learning)", imageSrc: "/images/claude-api.png" },
-      { name: "Google AI Studio (Learning)", imageSrc: "/images/google-ai.png" },
-      { name: "Cursor (Learning)", imageSrc: "/images/cursor.png" },
-      { name: "LangChain (Learning)", imageSrc: "/images/langchain.png" },
-      { name: "Ollama (Learning)", imageSrc: "/images/ollama.png" },
-      { name: "Hugging Face (Learning)", imageSrc: "/images/huggingface.png" },
-      { name: "n8n (Learning)", imageSrc: "/images/n8n.png" }
+      { name: "GitHub Copilot", imageSrc: "AI Developer/2 Development Architecture/1783788774161.png" },
+      { name: "OpenAI API (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822420840_tdgcd.png" },
+      { name: "Claude API (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822419983_y2e8c.png" },
+      { name: "Google AI Studio (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822419552_co2l3.png" },
+      { name: "Cursor (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785760674668_l30j1.png" },
+      { name: "LangChain (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785763610663_3u4go.png" },
+      { name: "Ollama (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785763615655_fkuol.png" },
+      { name: "Hugging Face (Learning)", imageSrc: "AI Developer/2 Development Architecture/hugging-face-emoji-logo-1.png" },
+      { name: "n8n (Learning)", imageSrc: "AI Developer/2 Development Architecture/1783867915185.png" }
     ]
   },
   {
     category: "Testing & Debugging",
     items: [
-      { name: "Chrome DevTools", imageSrc: "/images/chrome.png" },
-      { name: "React Developer Tools", imageSrc: "/images/react.png" },
-      { name: "ESLint", imageSrc: "/images/eslint.png" },
-      { name: "Prettier", imageSrc: "/images/prettier.png" },
-      { name: "Postman (Learning)", imageSrc: "/images/postman.png" },
-      { name: "Bruno (Learning)", imageSrc: "/images/bruno.png" }
+      { name: "Chrome DevTools", imageSrc: "AI Developer/2 Development Architecture/1785822418909_g73uj.png" },
+      { name: "React Developer Tools", imageSrc: "AI Developer/2 Development Architecture/1783866552668.webp" },
+      { name: "ESLint", imageSrc: "AI Developer/2 Development Architecture/1785822435775_8b3x1.webp" },
+      { name: "Prettier", imageSrc: "AI Developer/2 Development Architecture/1785822435351_77wg8.png" },
+      { name: "Postman (Learning)", imageSrc: "AI Developer/2 Development Architecture/free-postman-logo-icon-svg-download-png-2945092.webp" },
+      { name: "Bruno (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822425097_utnz8.png" }
     ]
   },
   {
     category: "Deployment",
     items: [
-      { name: "Git", imageSrc: "/images/git.png" },
-      { name: "GitHub", imageSrc: "/images/github.png" },
-      { name: "Vercel", imageSrc: "/images/vercel.png" },
-      { name: "Netlify (Learning)", imageSrc: "/images/netlify.png" },
-      { name: "Railway (Learning)", imageSrc: "/images/railway.png" },
-      { name: "Render (Learning)", imageSrc: "/images/render.png" },
-      { name: "Cloudflare (Learning)", imageSrc: "/images/cloudflare.png" }
+      { name: "Git", imageSrc: "AI Developer/2 Development Architecture/1785515369896_6zhvz.webp" },
+      { name: "GitHub", imageSrc: "AI Developer/2 Development Architecture/github-white-icon.webp" },
+      { name: "Vercel", imageSrc: "AI Developer/2 Development Architecture/1785822434901_wh7yk.png" },
+      { name: "Netlify (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822434450_uzbrx.webp" },
+      { name: "Railway (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822418475_996i8.png" },
+      { name: "Render (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822416504_eikzc.png" },
+      { name: "Cloudflare (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822434033_t2tz5.png" }
     ]
   },
   {
     category: "Monitoring & Maintenance",
     items: [
-      { name: "GitHub", imageSrc: "/images/github.png" },
-      { name: "Vercel Analytics", imageSrc: "/images/vercel.png" },
-      { name: "Sentry (Learning)", imageSrc: "/images/sentry.png" },
-      { name: "Google Analytics (Learning)", imageSrc: "/images/google-analytics.png" },
-      { name: "UptimeRobot (Learning)", imageSrc: "/images/uptimerobot.png" }
+      { name: "GitHub", imageSrc: "AI Developer/2 Development Architecture/github-white-icon.webp" },
+      { name: "Vercel Analytics", imageSrc: "AI Developer/2 Development Architecture/1785822434901_wh7yk.png" },
+      { name: "Sentry (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822433622_7h83s.jfif" },
+      { name: "Google Analytics (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822433197_bmscy.svg" },
+      { name: "UptimeRobot (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822431972_qpkch.svg" }
     ]
   }
 ];
@@ -362,8 +362,8 @@ export default function AiDeveloper() {
   const [github, setGithub] = useState(defaultGithubProfile);
   const [pageResume, setPageResume] = useState({
   title: "AI-Assisted Full-Stack Developer",
-  file_url: "/resume/AI_Developer_Resume.pdf",
-  pdf_url: "/resume/AI_Developer_Resume.pdf"
+  file_url: "/Contacts/AI_Developer_Resume.pdf",
+  pdf_url: "/Contacts/AI_Developer_Resume.pdf"
 });
 
   // ================= 67. DEVELOPMENT ARCHITECTURE (MANUAL, KEYBOARD, & SCREEN CLICK/TAP LOGIC) =================

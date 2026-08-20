@@ -1,0 +1,170 @@
+================================================================================
+FILE PATH LIST
+================================================================================
+
+Selected Folder:
+C:\Users\Jeffe\Documents\Projects\My-Portfolio-Website\public\Data Analyst
+
+Total Files: 65
+
+================================================================================
+
+================================================================================
+[1 Experience]
+================================================================================
+
+/DreamCreations/1 Experience/1783775800330.jpeg
+
+
+================================================================================
+[2 Analytics Portfolio\2 Reports]
+================================================================================
+
+/DreamCreations/2 Analytics Portfolio/2 Reports/1783784634403.webp
+
+/DreamCreations/2 Analytics Portfolio/2 Reports/1783787622802.png
+
+/DreamCreations/2 Analytics Portfolio/2 Reports/1786099335517_oa8lb.png
+
+/DreamCreations/2 Analytics Portfolio/2 Reports/1786099338740_9y1zi.webp
+
+/DreamCreations/2 Analytics Portfolio/2 Reports/1786099792356_b6jql.png
+
+/DreamCreations/2 Analytics Portfolio/2 Reports/1786712912223_catha.png
+
+/DreamCreations/2 Analytics Portfolio/2 Reports/1786713502792_cyey3.png
+
+/DreamCreations/2 Analytics Portfolio/2 Reports/1786713520204_yownp.png
+
+/DreamCreations/2 Analytics Portfolio/2 Reports/1786727586823_0ipbw.png
+
+/DreamCreations/2 Analytics Portfolio/2 Reports/untitled-1.png
+
+/DreamCreations/2 Analytics Portfolio/2 Reports/untitled-2.png
+
+
+================================================================================
+[2 Analytics Portfolio\3 Automation\AI]
+================================================================================
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/AI/1783788569385.png
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/AI/1783788645402.webp
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/AI/1783788774161.png
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/AI/1785763616844_h4xi1.webp
+
+
+================================================================================
+[2 Analytics Portfolio\3 Automation\Icon]
+================================================================================
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/Icon/1786779412452_g8710.png
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/Icon/1786783744734_yeqnc.png
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/Icon/1786785716053_uj9ev.png
+
+
+================================================================================
+[2 Analytics Portfolio\3 Automation\Tools]
+================================================================================
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/Tools/1783784634403.webp
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/Tools/1783788360639.png
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/Tools/1783788774161.png
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/Tools/1785515378284_tf06x.webp
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/Tools/1786784423930_9h59f.png
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/Tools/1786784426399_o5kj0.png
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/Tools/1786784426987_9n3yi.png
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/Tools/1786784776183_yg99u.svg
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/Tools/numpy-logo-png_seeklogo-398690.png
+
+/DreamCreations/2 Analytics Portfolio/3 Automation/Tools/untitled-1.png
+
+
+================================================================================
+[3 Software Ecosystem]
+================================================================================
+
+/DreamCreations/3 Software Ecosystem/1783787178293.png
+
+/DreamCreations/3 Software Ecosystem/1783787301785.png
+
+/DreamCreations/3 Software Ecosystem/1783787622802.png
+
+/DreamCreations/3 Software Ecosystem/1783787728900.png
+
+/DreamCreations/3 Software Ecosystem/1783788257058.svg
+
+/DreamCreations/3 Software Ecosystem/1783788360639.png
+
+/DreamCreations/3 Software Ecosystem/1783788491981.png
+
+/DreamCreations/3 Software Ecosystem/1783788569385.png
+
+/DreamCreations/3 Software Ecosystem/1783788645402.webp
+
+/DreamCreations/3 Software Ecosystem/1783788774161.png
+
+/DreamCreations/3 Software Ecosystem/1783867915185.png
+
+/DreamCreations/3 Software Ecosystem/1785515334878_6un5e.webp
+
+/DreamCreations/3 Software Ecosystem/1785515353266_ktyft.png
+
+/DreamCreations/3 Software Ecosystem/1785515362039_7p00b.png
+
+/DreamCreations/3 Software Ecosystem/1785515367287_hj98a.png
+
+/DreamCreations/3 Software Ecosystem/1785515369896_6zhvz.webp
+
+/DreamCreations/3 Software Ecosystem/1785515372413_e9cxr.png
+
+/DreamCreations/3 Software Ecosystem/1785515372962_imt46.png
+
+/DreamCreations/3 Software Ecosystem/1785515373995_9stgt.webp
+
+/DreamCreations/3 Software Ecosystem/1785515374914_zkspd.png
+
+/DreamCreations/3 Software Ecosystem/1785515375434_6rf24.webp
+
+/DreamCreations/3 Software Ecosystem/1785515376265_uuwr8.webp
+
+/DreamCreations/3 Software Ecosystem/1785515377249_67btt.png
+
+/DreamCreations/3 Software Ecosystem/1785515377772_5tgcs.webp
+
+/DreamCreations/3 Software Ecosystem/1785515378284_tf06x.webp
+
+/DreamCreations/3 Software Ecosystem/1785515378794_a23m0.png
+
+/DreamCreations/3 Software Ecosystem/1785515379321_qq6ll.png
+
+/DreamCreations/3 Software Ecosystem/1785515380364_q0jac.png
+
+/DreamCreations/3 Software Ecosystem/1785515380926_p2g4s.webp
+
+/DreamCreations/3 Software Ecosystem/1785515381422_yog9r.webp
+
+/DreamCreations/3 Software Ecosystem/1785516258862_zoz81.svg
+
+/DreamCreations/3 Software Ecosystem/1785756489729_yvxk2.png
+
+/DreamCreations/3 Software Ecosystem/dbt-logo-png_seeklogo-431111.png
+
+/DreamCreations/3 Software Ecosystem/free-postman-logo-icon-svg-download-png-2945092.webp
+
+/DreamCreations/3 Software Ecosystem/looker-studio-logo-png_seeklogo-617989.png
+
+/DreamCreations/3 Software Ecosystem/microsoft-powerpoint-logo-png_seeklogo-653447.png
+

@@ -50,27 +50,27 @@ const BookPage = React.forwardRef((props, ref) => {
 });
 
 const featuredClients = [
-  { id: 1, name: "Responsive Health and Insurance Brokers, Inc.", industry: "Insurance Agency & Brokerage", customImage: "/images/clients/responsive-health.png", icon: <HeartPulse size={32} /> },
-  { id: 2, name: "Capcut (Designer Creator Program)", industry: "Software Development", customImage: "/images/clients/capcut.png", icon: <MonitorPlay size={32} /> },
-  { id: 3, name: "Memorialize", industry: "Graphic Design & Creative Services", customImage: "/images/clients/memorialize.png", icon: <Palette size={32} /> },
-  { id: 4, name: "CCAS", industry: "Digital Printing Services", customImage: "/images/clients/ccas.png", icon: <Printer size={32} /> },
-  { id: 5, name: "J.P. Geonzon", industry: "Construction", customImage: "/images/clients/jp-geonzon.png", icon: <Building2 size={32} /> },
-  { id: 6, name: "RichAms Global, Ltd.", industry: "Apparel & Fashion", customImage: "/images/clients/richams-global.png", icon: <Shirt size={32} /> },
-  { id: 7, name: "Ka-Feeta Moto Vlogs", industry: "Media & Entertainment", customImage: "/images/clients/kafeeta.png", icon: <Video size={32} /> },
-  { id: 8, name: "DFE Clo. Apparel", industry: "Apparel & Fashion", customImage: "/images/clients/dfe-clo.png", icon: <Shirt size={32} /> },
-  { id: 9, name: "GodsKing Royalty", industry: "Apparel & Fashion", customImage: "/images/clients/godsking.png", icon: <Shirt size={32} /> },
-  { id: 10, name: "Mango Hey Hey", industry: "Food & Beverage", customImage: "/images/clients/mango-hey-hey.png", icon: <ShoppingBag size={32} /> },
-  { id: 11, name: "Hiraya Cafe", industry: "Food & Beverage", customImage: "/images/clients/hiraya-cafe.png", icon: <ShoppingBag size={32} /> },
-  { id: 12, name: "Blast TV/Tap Go TV", industry: "Media & Entertainment", customImage: "/images/clients/blast-tv.png", icon: <MonitorPlay size={32} /> },
-  { id: 13, name: "GigaTech", industry: "Information Technology (IT)", customImage: "/images/clients/gigatech.png", icon: <Database size={32} /> },
-  { id: 14, name: "Duralco", industry: "Building Materials & Construction Products", customImage: "/images/clients/duralco.png", icon: <Building2 size={32} /> },
-  { id: 15, name: "Optimo", industry: "Construction Chemicals Manufacturing", customImage: "/images/clients/optimo.png", icon: <Box size={32} /> },
-  { id: 16, name: "MOCASA", industry: "Financial Technology (FinTech)", customImage: "/images/clients/mocasa.png", icon: <Briefcase size={32} /> },
-  { id: 17, name: "BPC Lending Inc.", industry: "Financial Services", customImage: "/images/clients/bpc-lending.png", icon: <Briefcase size={32} /> },
-  { id: 18, name: "Tritan Ventures Inc.", industry: "Consumer Goods", customImage: "/images/clients/tritan-ventures.png", icon: <ShoppingBag size={32} /> },
-  { id: 19, name: "FilipCoin", industry: "Financial Technology (FinTech)", customImage: "/images/clients/filipcoin.png", icon: <Briefcase size={32} /> },
-  { id: 20, name: "A&C Image Graphics Advertising Corp.", industry: "Digital Printing Services", customImage: "/images/clients/ac-image.png", icon: <Printer size={32} /> },
-  { id: 21, name: "Love's Studio", industry: "Photography & Videography", customImage: "/images/clients/loves-studio.png", icon: <Camera size={32} /> }
+  { id: 1, name: "Responsive Health and Insurance Brokers, Inc.", industry: "Insurance Agency & Brokerage", customImage: "/DreamCreations/4 Dreamers/1783692239509.png", icon: <HeartPulse size={32} /> },
+  { id: 2, name: "Capcut (Designer Creator Program)", industry: "Software Development", customImage: "/DreamCreations/4 Dreamers/1783689337408.png", icon: <MonitorPlay size={32} /> },
+  { id: 3, name: "Memorialize", industry: "Graphic Design & Creative Services", customImage: "/DreamCreations/4 Dreamers/1783696171293.png", icon: <Palette size={32} /> },
+  { id: 4, name: "CCAS", industry: "Digital Printing Services", customImage: "/DreamCreations/4 Dreamers/1783696547141.png", icon: <Printer size={32} /> },
+  { id: 5, name: "J.P. Geonzon", industry: "Construction", customImage: "/DreamCreations/4 Dreamers/1783696899114.png", icon: <Building2 size={32} /> },
+  { id: 6, name: "RichAms Global, Ltd.", industry: "Apparel & Fashion", customImage: "/DreamCreations/4 Dreamers/1783702454009.webp", icon: <Shirt size={32} /> },
+  { id: 7, name: "Ka-Feeta Moto Vlogs", industry: "Media & Entertainment", customImage: "/DreamCreations/4 Dreamers/1783703362192.png", icon: <Video size={32} /> },
+  { id: 8, name: "DFE Clo. Apparel", industry: "Apparel & Fashion", customImage: "/DreamCreations/4 Dreamers/1783703689958.png", icon: <Shirt size={32} /> },
+  { id: 9, name: "GodsKing Royalty", industry: "Apparel & Fashion", customImage: "/DreamCreations/4 Dreamers/1783703963580.jpg", icon: <Shirt size={32} /> },
+  { id: 10, name: "Mango Hey Hey", industry: "Food & Beverage", customImage: "/DreamCreations/4 Dreamers/1783704273302.png", icon: <ShoppingBag size={32} /> },
+  { id: 11, name: "Hiraya Cafe", industry: "Food & Beverage", customImage: "/DreamCreations/4 Dreamers/1783704355568.jpg", icon: <ShoppingBag size={32} /> },
+  { id: 12, name: "Blast TV/Tap Go TV", industry: "Media & Entertainment", customImage: "/DreamCreations/4 Dreamers/1783705060302.webp", icon: <MonitorPlay size={32} /> },
+  { id: 13, name: "GigaTech", industry: "Information Technology (IT)", customImage: "/DreamCreations/4 Dreamers/1783705275534.png", icon: <Database size={32} /> },
+  { id: 14, name: "Duralco", industry: "Building Materials & Construction Products", customImage: "/DreamCreations/4 Dreamers/1783706081352.png", icon: <Building2 size={32} /> },
+  { id: 15, name: "Optimo", industry: "Construction Chemicals Manufacturing", customImage: "/DreamCreations/4 Dreamers/1783706205086.png", icon: <Box size={32} /> },
+  { id: 16, name: "MOCASA", industry: "Financial Technology (FinTech)", customImage: "/DreamCreations/4 Dreamers/1783706272481.png", icon: <Briefcase size={32} /> },
+  { id: 17, name: "BPC Lending Inc.", industry: "Financial Services", customImage: "/DreamCreations/4 Dreamers/1783706464895.jpg", icon: <Briefcase size={32} /> },
+  { id: 18, name: "Tritan Ventures Inc.", industry: "Consumer Goods", customImage: "/DreamCreations/4 Dreamers/1783706654043.png", icon: <ShoppingBag size={32} /> },
+  { id: 19, name: "FilipCoin", industry: "Financial Technology (FinTech)", customImage: "/DreamCreations/4 Dreamers/1783706925048.jpg", icon: <Briefcase size={32} /> },
+  { id: 20, name: "A&C Image Graphics Advertising Corp.", industry: "Digital Printing Services", customImage: "/DreamCreations/4 Dreamers/1783707117305.jpg", icon: <Printer size={32} /> },
+  { id: 21, name: "Love's Studio", industry: "Photography & Videography", customImage: "/DreamCreations/4 Dreamers/1783707252661.png", icon: <Camera size={32} /> }
 ];
 
 const creationsCategories = [
@@ -89,14 +89,13 @@ const creationsCategories = [
 ];
 
 const softwareExpertise = [
-  { id: 1, name: "Photoshop", imageSrc: "/images/software/photoshop.png" },
-  { id: 2, name: "Illustrator", imageSrc: "/images/software/illustrator.png" },
-  { id: 3, name: "Premiere Pro", imageSrc: "/images/software/premiere.png" },
-  { id: 4, name: "After Effects", imageSrc: "/images/software/aftereffects.png" },
-  { id: 5, name: "Canva", imageSrc: "/images/software/canva.png" },
-  { id: 6, name: "CapCut", imageSrc: "/images/software/capcut.png" },
-  { id: 7, name: "Microsoft Office", imageSrc: "/images/software/msoffice.png" },
-  { id: 8, name: "AI Design Tools", imageSrc: "/images/software/ai-tools.png" },
+  { id: 1, name: "Photoshop", imageSrc: "/DreamCreations/8 Software Expertise/1783688629095.webp" },
+  { id: 2, name: "Illustrator", imageSrc: "/DreamCreations/8 Software Expertise/1783689105596.png" },
+  { id: 3, name: "Premiere Pro", imageSrc: "/DreamCreations/8 Software Expertise/Premiere_Pro.webp" },
+  { id: 4, name: "After Effects", imageSrc: "/DreamCreations/8 Software Expertise/After_Effects.webp" },
+  { id: 5, name: "Canva", imageSrc: "/DreamCreations/8 Software Expertise/1783689238519.png" },
+  { id: 6, name: "CapCut", imageSrc: "/DreamCreations/8 Software Expertise/1783689337408.png" },
+  { id: 7, name: "Microsoft Office", imageSrc: "/DreamCreations/8 Software Expertise/1783689448459.png" },
 ];
 
 const creativeProcess = [
@@ -119,7 +118,7 @@ const teamMembers = [
   {
     id: 1,
     name: "Dexter Joy D. Bautista",
-    photo: "/images/dexter.jpg", 
+    photo: "/DreamCreations/3 Creators/Dex Profile Picture.jpg", 
     positions: ["Multimedia Designer", "Graphic Designer", "Portrait Artist"],
     bio: "A Graphic Designer who loves turning ideas into visually striking and meaningful designs. Creativity is more than just a skill for me, it's my lifestyle. From sketching as a hobby to crafting unique, eye-catching visuals, I bring originality and heart into every task.",
     skills: ["Package Design", "UI/UX Design", "Brand Identity", "Photo Manipulation"],
@@ -260,7 +259,7 @@ export default function DreamCreations() {
       project_type: "Streetwear Graphics",
       rating: 5,
       feedback: "Designs is very impressive and unique.",
-      face_image_url: "/images/reviews/mr-king.jpg"
+      face_image_url: "/DreamCreations/5 Client Feedback/1785390722071_mo9ub.jpg"
     },
     {
       id: "96ecf8e8",
@@ -269,7 +268,7 @@ export default function DreamCreations() {
       project_type: "Watercolor Portrait",
       rating: 5,
       feedback: "Oh my goodness!!!! Im extremely happy with how it turned out!! Thank you so much… Im sure there will be lots of tears when my Mom opens this!!!",
-      face_image_url: "/images/reviews/memorialize-client.png"
+      face_image_url: "/DreamCreations/5 Client Feedback/1785390951754_zcykg.png"
     },
     {
       id: "640ca5af",
@@ -278,7 +277,7 @@ export default function DreamCreations() {
       project_type: "Streetwear Graphics",
       rating: 5,
       feedback: "It looks great, and it's very well-crafted.",
-      face_image_url: "/images/reviews/mr-tak.jpg"
+      face_image_url: "/DreamCreations/5 Client Feedback/1785393552668_lygyc.jpg"
     },
     {
       id: "7f6ce0a5",
@@ -287,7 +286,7 @@ export default function DreamCreations() {
       project_type: "Story Designs",
       rating: 5,
       feedback: "Thank you, Mr. Jefferson Gonzales, for editing my graduation photo and incorporating my work experience. I'm very satisfied with the result. I only gave you a simple idea, and you immediately understood the layout I wanted. Salute to you, brother! Wishing you many more clients to come. God bless!",
-      face_image_url: "/images/reviews/arjay-jongko.webp"
+      face_image_url: "/DreamCreations/5 Client Feedback/1785394775747_oaydd.webp"
     },
     {
       id: "6daab4af",
@@ -296,7 +295,7 @@ export default function DreamCreations() {
       project_type: "Logo & Tarpaulin",
       rating: 5,
       feedback: "I am very happy with the logo design for EZ CCTV Montalban. The minimalist style, clean typography, and camera icon perfectly capture the professional image of the business. Excellent work and highly recommended!",
-      face_image_url: "/images/reviews/ezekiel.png"
+      face_image_url: "/DreamCreations/5 Client Feedback/1785395430339_wc60b.png"
     },
     {
       id: "9b806292",
@@ -305,7 +304,7 @@ export default function DreamCreations() {
       project_type: "Company Profile",
       rating: 5,
       feedback: "Thank you for creating our company profile. It has made it much easier for us to access our documents. Great job! Thank you, and we look forward to working with you again.",
-      face_image_url: "/images/reviews/evanjelen.png"
+      face_image_url: "/DreamCreations/5 Client Feedback/1783696899114.png"
     },
     {
       id: "f172cc32",
@@ -314,7 +313,7 @@ export default function DreamCreations() {
       project_type: "Motion Graphics & Social Media Campaigns",
       rating: 5,
       feedback: "Catchy and memorable hook..good visual and instantly likable to watch..keep it up and highly recommended the designer of this work.",
-      face_image_url: "/images/reviews/myrna.jpg"
+      face_image_url: "/DreamCreations/5 Client Feedback/1785732540075_63jx0.jpg"
     },
     {
       id: "d899daae",
@@ -323,7 +322,7 @@ export default function DreamCreations() {
       project_type: "Shirt Designs",
       rating: 5,
       feedback: "\"You have a true gift for turning a simple thought into a stunning picture.\"\"Your design style is so fresh and clean.\"\"Every piece you make has such a unique and professional look.\"  Thank you so Much Jeff for being a part of CCAS printing services.",
-      face_image_url: "/images/reviews/euveh.jpg"
+      face_image_url: "/DreamCreations/5 Client Feedback/1785832361429_nfcdj.jpg"
     }
   ]);
 
@@ -406,8 +405,8 @@ export default function DreamCreations() {
 
   const [pageResume, setPageResume] = useState({
   title: "Dream Creations Portfolio",
-  file_url: "/resume/Dream_Creations_Portfolio.pdf",
-  pdf_url: "/resume/Dream_Creations_Portfolio.pdf"
+  file_url: "/Contacts/Gonzales_Jefferson_Graphic Artist.pdf",
+  pdf_url: "/Contacts/Gonzales_Jefferson_Graphic Artist.pdf"
 });
   const [randomGlowIndex, setRandomGlowIndex] = useState(null);
 

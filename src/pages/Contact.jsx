@@ -8,6 +8,11 @@ import {
 import { supabase } from '../lib/supabase';
 import { useMobileBack } from '../hooks/useMobileBack';
 
+// ▼▼▼ 1. ADD THIS LINE RIGHT HERE ▼▼▼
+import emailjs from '@emailjs/browser'; 
+// ▲▲▲ =========================== ▲▲▲
+
+
 // Map textual platform IDs safely back to your exact beautiful custom inline SVGs
 const iconMap = {
   email: <Mail size={20} />,
@@ -77,17 +82,17 @@ export default function Contact() {
   { 
     id: 1, 
     title: "Data Analyst Resume", 
-    file_url: "/resume/Data_Analyst_Resume.pdf" 
+    file_url: "/Contacts/Gonzales_Jefferson_Data_Analyst.pdf" 
   },
   { 
     id: 2, 
     title: "AI-Assisted Full-Stack Developer", 
-    file_url: "/resume/AI_Developer_Resume.pdf" 
+    file_url: "/Contacts/AI_Developer_Resume.pdf" 
   },
   { 
     id: 3, 
     title: "Dream Creations Portfolio", 
-    file_url: "/resume/Dream_Creations_Portfolio.pdf" 
+    file_url: "/Contacts/Gonzales_Jefferson_Graphic_Artist.pdf" 
   }
 ]);
 
@@ -153,7 +158,7 @@ useMobileBack(isDropdownOpen, () => setIsDropdownOpen(false));
     e.preventDefault();
     setStatus('loading');
     setErrors({});
-   
+
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = 'Full Name is required.';
     if (!formData.email.trim() || !/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Valid Email is required.';
@@ -168,6 +173,7 @@ useMobileBack(isDropdownOpen, () => setIsDropdownOpen(false));
     }
 
     try {
+      // 1. Save to Supabase (Database)
       const { error } = await supabase
         .from('contact_messages')
         .insert([
@@ -184,12 +190,31 @@ useMobileBack(isDropdownOpen, () => setIsDropdownOpen(false));
 
       if (error) throw error;
 
+      // 2. Send Email via EmailJS (Email Notification)
+      await emailjs.send(
+        'service_m90932k',         // Your connected Gmail Service ID
+        'template_fcu1p8a',   // PASTE MO DITO ANG TEMPLATE ID MO (e.g., template_xxxxx)
+        {
+          name: formData.name,
+          email: formData.email,
+          company: formData.company || 'Not provided',
+          country: formData.country || 'N/A',
+          phone: formData.phone || 'N/A',
+          subject: formData.subject,
+          service: formData.service || 'Not specified',
+          budget: formData.budget || 'Not specified',
+          message: formData.message,
+        },
+        'teBVOF7ipY27pLMmV'        // Your Public Key
+      );
+
+      // 3. Update UI on Success
       setStatus('success');
       setFormData({ name: '', email: '', company: '', phone: '', country: '', subject: '', service: '', budget: '', timeline: '', message: '', privacy: false });
       setTimeout(() => setStatus('idle'), 5000);
 
     } catch (error) {
-      console.error('Supabase submission execution crash:', error.message);
+      console.error('Submission execution crash:', error.message);
       setStatus('database_error');
     }
   };
