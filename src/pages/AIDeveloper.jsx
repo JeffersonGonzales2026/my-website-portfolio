@@ -257,7 +257,8 @@ const PRESET_PIPELINE_ARCHITECTURE = [
       { name: "Vercel Analytics", imageSrc: "AI Developer/2 Development Architecture/1785822434901_wh7yk.png" },
       { name: "Sentry (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822433622_7h83s.jfif" },
       { name: "Google Analytics (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822433197_bmscy.svg" },
-      { name: "UptimeRobot (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822431972_qpkch.svg" }
+      { name: "UptimeRobot (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822431972_qpkch.svg" },
+      { name: "EmailJS", imageSrc: "AI Developer/2 Development Architecture/logo.png" }
     ]
   }
 ];
