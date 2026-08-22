@@ -170,7 +170,6 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    useEffect(() => {
   const initializeAdmin = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
