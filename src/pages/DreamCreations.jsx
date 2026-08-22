@@ -620,8 +620,20 @@ export default function DreamCreations() {
           }
         }
 
+        // =========================================================================
+        // 🛑 HARDCODED ARCHIVE TOGGLE (PANSAMANTALA)
+        // =========================================================================
+        // Naka-comment out muna ang Supabase fetch para gamitin ang "offlineProjects" na naka-hardcode 
+        // mula sa src/data/offlineArchive.js. 
+        // Kapag gusto mong ibalik sa Supabase, tanggalin lang ang "/*" at "*/" sa ibaba.
+        
+        /*
         const { data: projectData } = await supabase.from('portfolio_projects').select('*').order('created_at', { ascending: false });
-        setProjects(projectData || []);
+        if (projectData && projectData.length > 0) {
+          setProjects(projectData);
+        }
+        */
+        // =========================================================================
 
         const { data: reviewData } = await supabase.from('client_reviews').select('*').order('created_at', { ascending: false });
         if (reviewData && reviewData.length > 0) {
