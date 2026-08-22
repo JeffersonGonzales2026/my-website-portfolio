@@ -429,12 +429,35 @@ export default function AdminDashboard() {
 
   // EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE (Dream Creations)
   const handleDropdownPipelineUpload = async (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length === 0) return;
+    const rawFiles = Array.from(e.target.files);
+    if (rawFiles.length === 0) return;
 
     if (!bulkPipelineCat || !bulkPipelineSub) {
       alert("⚠️ OPS, TEKA LANG BOSS:\nPaki-pili muna ang Category at Subtitle sa dropdown bago mag-click ng Upload button!");
       e.target.value = null; 
+      return;
+    }
+
+    // ==========================================
+    // 🛡️ UPLOAD SECURITY: SIZE & TYPE VALIDATION
+    // ==========================================
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit per file
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml', 'video/mp4', 'video/webm'];
+
+    const files = rawFiles.filter(file => {
+      if (file.size > MAX_FILE_SIZE) {
+        alert(`⚠️ SECURITY: File "${file.name}" exceeds the 10MB limit.`);
+        return false;
+      }
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        alert(`⚠️ SECURITY: File "${file.name}" is a restricted format. Only JPG, PNG, WEBP, SVG, and MP4 are allowed.`);
+        return false;
+      }
+      return true;
+    });
+
+    if (files.length === 0) {
+      e.target.value = null; // Reset input if all files were rejected
       return;
     }
 

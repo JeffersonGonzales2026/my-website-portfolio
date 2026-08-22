@@ -1168,7 +1168,7 @@ export default function DreamCreations() {
                       {isVideo(coverImage) ? (
                         <video key={coverImage} src={`${coverImage}#t=0.1`} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                       ) : (
-                        <img key={coverImage} src={coverImage} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                        <img key={coverImage} src={coverImage} alt={subtitle} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                       )}
                       <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
                       <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
@@ -1465,7 +1465,7 @@ export default function DreamCreations() {
                           isVideo(project.featured_image_url) ? (
                             <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
                           ) : (
-                            <img src={project.featured_image_url} alt={project.title} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
+                            <img src={project.featured_image_url} alt={project.title} loading="lazy" decoding="async" className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
                           )
                         ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
                         
@@ -1647,6 +1647,8 @@ export default function DreamCreations() {
                     <img 
                       src={shot.url} 
                       alt={shot.title || "Shot"} 
+                      loading="lazy"
+                      decoding="async"
                       className="w-28 h-28 sm:w-40 sm:h-40 md:w-56 md:h-56 object-cover rounded-sm shadow-[0_0_15px_rgba(0,0,0,0.8)] pointer-events-none" 
                       onError={(e) => {
                         e.target.onerror = null;

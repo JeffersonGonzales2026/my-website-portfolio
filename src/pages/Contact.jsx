@@ -12,7 +12,6 @@ import { useMobileBack } from '../hooks/useMobileBack';
 import emailjs from '@emailjs/browser'; 
 // ▲▲▲ =========================== ▲▲▲
 
-
 // Map textual platform IDs safely back to your exact beautiful custom inline SVGs
 const iconMap = {
   email: <Mail size={20} />,
@@ -64,6 +63,7 @@ const staggerContainer = {
 };
 
 export default function Contact() {
+  const [cooldown, setCooldown] = useState(0);
   const [formData, setFormData] = useState({
     name: '', email: '', company: '', phone: '', country: '', subject: '',
     service: '', budget: '', timeline: '', message: '', privacy: false
@@ -156,6 +156,13 @@ useMobileBack(isDropdownOpen, () => setIsDropdownOpen(false));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 1. SPAM PROTECTION: Stop them immediately if cooldown is active
+    if (cooldown > 0) {
+      alert(`Please wait ${cooldown} seconds before sending another message.`);
+      return;
+    }
+
     setStatus('loading');
     setErrors({});
 
@@ -190,10 +197,10 @@ useMobileBack(isDropdownOpen, () => setIsDropdownOpen(false));
 
       if (error) throw error;
 
-      // 2. Send Email via EmailJS (Email Notification)
+      // 2. Send Email via EmailJS
       await emailjs.send(
-        'service_m90932k',         // Your connected Gmail Service ID
-        'template_fcu1p8a',   // PASTE MO DITO ANG TEMPLATE ID MO (e.g., template_xxxxx)
+        'service_m90932k',         
+        'template_fcu1p8a',   
         {
           name: formData.name,
           email: formData.email,
@@ -205,12 +212,21 @@ useMobileBack(isDropdownOpen, () => setIsDropdownOpen(false));
           budget: formData.budget || 'Not specified',
           message: formData.message,
         },
-        'teBVOF7ipY27pLMmV'        // Your Public Key
+        'teBVOF7ipY27pLMmV'        
       );
 
-      // 3. Update UI on Success
+      // 3. Update UI on Success & START TIMER
       setStatus('success');
       setFormData({ name: '', email: '', company: '', phone: '', country: '', subject: '', service: '', budget: '', timeline: '', message: '', privacy: false });
+      
+      setCooldown(60);
+      const timer = setInterval(() => {
+        setCooldown((prev) => {
+          if (prev <= 1) clearInterval(timer);
+          return prev - 1;
+        });
+      }, 1000);
+
       setTimeout(() => setStatus('idle'), 5000);
 
     } catch (error) {
@@ -348,10 +364,10 @@ useMobileBack(isDropdownOpen, () => setIsDropdownOpen(false));
                 </div>
 
                 <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <button type="submit" disabled={status === 'loading'}
+                  <button type="submit" disabled={status === 'loading' || cooldown > 0}
                     className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white text-black font-bold text-sm hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                     {status === 'loading' ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                    {status === 'loading' ? 'Sending Message...' : 'Send Message'}
+                    {status === 'loading' ? 'Sending Message...' : cooldown > 0 ? `Wait ${cooldown}s` : 'Send Message'}
                   </button>
 
                   <AnimatePresence mode="wait">
