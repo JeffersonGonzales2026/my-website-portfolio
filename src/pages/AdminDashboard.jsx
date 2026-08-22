@@ -172,7 +172,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const initializeAdmin = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      const ADMIN_EMAIL = "jeffersonguzmangonzales03@gmail.com"; 
+      const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL; 
 
       if (!session || session.user.email !== ADMIN_EMAIL) {
         await supabase.auth.signOut();

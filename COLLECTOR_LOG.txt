@@ -1,0 +1,93 @@
+================================================================================
+MY-PORTFOLIO-WEBSITE TEXT/CODE COLLECTOR
+================================================================================
+
+Python script location:
+C:\Users\Jeffe\Documents\Projects\My-Portfolio-Website\collect_website_text.py
+
+Project folder:
+C:\Users\Jeffe\Documents\Projects\My-Portfolio-Website
+
+Output file will be:
+C:\Users\Jeffe\Documents\Projects\My-Portfolio-Website\WEBSITE_ALL_TEXT.txt
+
+Log file will be:
+C:\Users\Jeffe\Documents\Projects\My-Portfolio-Website\COLLECTOR_LOG.txt
+
+Testing file creation...
+[OK] Successfully created output file.
+
+Scanning project...
+
+
+[OK] Found 46 text/code files.
+
+Creating WEBSITE_ALL_TEXT.txt...
+
+[1/46] .gitignore
+[2/46] bulk-rename.cjs
+[3/46] eslint.config.js
+[4/46] index.html
+[5/46] package-lock.json
+[6/46] package.json
+[7/46] public\AI Developer\FILE_PATH_LIST.txt
+[8/46] public\Data Analyst\2 Analytics Portfolio\2 Reports\FILE_PATH_LIST.txt
+[9/46] public\Data Analyst\FILE_PATH_LIST.txt
+[10/46] public\DreamCreations\7 Photography\FILE_PATH_LIST.txt
+[11/46] public\DreamCreations\FILE_PATH_LIST.txt
+[12/46] README.md
+[13/46] src\App.css
+[14/46] src\App.jsx
+[15/46] src\components\Footer.jsx
+[16/46] src\components\Navbar.jsx
+[17/46] src\components\ScrollToTop.jsx
+[18/46] src\components\TechStack.jsx
+[19/46] src\data\offlineArchive.js
+[20/46] src\data\offlinePhotography.js
+[21/46] src\data\portfolioData.js
+[22/46] src\hooks\useMobileBack.js
+[23/46] src\index.css
+[24/46] src\layouts\MainLayout.jsx
+[25/46] src\layouts\PublicLayout.jsx
+[26/46] src\lib\supabase.js
+[27/46] src\main.jsx
+[28/46] src\pages\AdminDashboard.jsx
+[29/46] src\pages\AdminLogin.jsx
+[30/46] src\pages\AIDeveloper.jsx
+[31/46] src\pages\Contact.jsx
+[32/46] src\pages\DataAnalyst.jsx
+[33/46] src\pages\DreamCreations.jsx
+[34/46] src\pages\Home.jsx
+[35/46] src\sections\home\AboutMe.jsx
+[36/46] src\sections\home\BeyondTheCode.jsx
+[37/46] src\sections\home\CareerTimeline.jsx
+[38/46] src\sections\home\Certifications.jsx
+[39/46] src\sections\home\Hero.jsx
+[40/46] src\sections\home\JourneySelector.jsx
+[41/46] src\sections\home\QuickStats.jsx
+[42/46] src\sections\home\SkillsOverview.jsx
+[43/46] src\vercel.json
+[44/46] tailwind.config.js
+[45/46] vercel.json
+[46/46] vite.config.js
+
+================================================================================
+COMPLETE
+================================================================================
+
+Files collected : 46
+Output file     : C:\Users\Jeffe\Documents\Projects\My-Portfolio-Website\WEBSITE_ALL_TEXT.txt
+Output exists   : True
+Output size     : 904,490 bytes
+
+Security exclusions:
+  - .env files
+  - node_modules
+  - .git
+  - dist/build
+  - binary files
+
+TXT FILE:
+C:\Users\Jeffe\Documents\Projects\My-Portfolio-Website\WEBSITE_ALL_TEXT.txt
+
+================================================================================
