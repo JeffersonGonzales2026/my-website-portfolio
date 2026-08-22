@@ -170,21 +170,22 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const initializeAdmin = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL; 
+    useEffect(() => {
+  const initializeAdmin = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
 
-      if (!session || session.user.email !== ADMIN_EMAIL) {
-        await supabase.auth.signOut();
-        navigate('/admin/login');
-        return;
-      }
+    if (!session || session.user.email !== ADMIN_EMAIL) {
+      await supabase.auth.signOut();
+      navigate('/admin/login');
+      return;
+    }
 
-      await loadCloudData();
-      setIsLoading(false);
-    };
-    initializeAdmin();
-  }, [navigate]);
+    await loadCloudData();
+    setIsLoading(false);
+  };
+  initializeAdmin();
+}, [navigate]);
 
   // HOME ENGINE
   const [homeHeroPhoto, setHomeHeroPhoto] = useState("/images/profile.jpg");
@@ -333,9 +334,10 @@ export default function AdminDashboard() {
           photography_shots: dreamPhotography 
         }).eq('id', 1);
 
-        await supabase.from('client_reviews').delete().neq('client_name', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
+        // Safe Upsert for Client Reviews (No bulk table deletion)
         if (dreamFeedback.length > 0) {
           const cleanReviews = dreamFeedback.map(r => ({
+            ...(r.id && { id: r.id }),
             client_name: r.client_name || "",
             company: r.company || "",
             project_type: r.project_type || "",
@@ -343,22 +345,22 @@ export default function AdminDashboard() {
             feedback: r.feedback || "",
             face_image_url: r.face_image_url || ""
           }));
-          await supabase.from('client_reviews').insert(cleanReviews);
+          await supabase.from('client_reviews').upsert(cleanReviews, { onConflict: 'id' });
         }
 
-        await supabase.from('portfolio_projects').delete().neq('title', 'XYZ_CLEAN_ALL_ROWS_DIRECT');
+        // Safe Upsert for Portfolio Projects (No bulk table deletion)
         if (dreamArchive.length > 0) {
-          const cleanArchives = dreamArchive.map((p, i) => ({
+          const cleanArchives = dreamArchive.map((p) => ({
+            ...(p.id && { id: p.id }),
             category: p.category || "",
             subtitle: p.subtitle || "",
             title: p.title || "",
             client_name: p.client_name || "", 
             description: p.description || "", 
             featured_image_url: p.featured_image_url || "",
-            video_url: p.video_url || "",
-            created_at: new Date(Date.now() - i * 1000).toISOString()
+            video_url: p.video_url || ""
           }));
-          const { error: archiveError } = await supabase.from('portfolio_projects').insert(cleanArchives);
+          const { error: archiveError } = await supabase.from('portfolio_projects').upsert(cleanArchives, { onConflict: 'id' });
           if (archiveError) throw archiveError;
         }
 
@@ -428,36 +430,14 @@ export default function AdminDashboard() {
   };
 
   // EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE (Dream Creations)
+  // EXCLUSIVE EXPLICIT BULK IMPORT PIPELINE (Dream Creations)
   const handleDropdownPipelineUpload = async (e) => {
-    const rawFiles = Array.from(e.target.files);
-    if (rawFiles.length === 0) return;
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
 
     if (!bulkPipelineCat || !bulkPipelineSub) {
       alert("⚠️ OPS, TEKA LANG BOSS:\nPaki-pili muna ang Category at Subtitle sa dropdown bago mag-click ng Upload button!");
       e.target.value = null; 
-      return;
-    }
-
-    // ==========================================
-    // 🛡️ UPLOAD SECURITY: SIZE & TYPE VALIDATION
-    // ==========================================
-    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit per file
-    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml', 'video/mp4', 'video/webm'];
-
-    const files = rawFiles.filter(file => {
-      if (file.size > MAX_FILE_SIZE) {
-        alert(`⚠️ SECURITY: File "${file.name}" exceeds the 10MB limit.`);
-        return false;
-      }
-      if (!ALLOWED_TYPES.includes(file.type)) {
-        alert(`⚠️ SECURITY: File "${file.name}" is a restricted format. Only JPG, PNG, WEBP, SVG, and MP4 are allowed.`);
-        return false;
-      }
-      return true;
-    });
-
-    if (files.length === 0) {
-      e.target.value = null; // Reset input if all files were rejected
       return;
     }
 
@@ -472,21 +452,35 @@ export default function AdminDashboard() {
         const dotIndex = rawFileName.lastIndexOf('.');
         const nameCleaned = dotIndex !== -1 ? rawFileName.substring(0, dotIndex) : rawFileName;
         
+        // Clean display title
         const beautyTitle = nameCleaned
           .replace(/[-_]+/g, ' ') 
           .replace(/\s+/g, ' ')   
           .trim();
 
-        const storageCleanName = `${Date.now()}_pipeline_${rawFileName.replace(/\s+/g, '').toLowerCase()}`;
+        // Sanitize file name for safe cloud storage pathing
+        const sanitizedFileName = rawFileName
+          .replace(/[^a-zA-Z0-9.-]/g, '_')
+          .toLowerCase();
+
+        const storageCleanName = `${Date.now()}_pipeline_${sanitizedFileName}`;
         
-        const { error: storageError } = await supabase.storage.from('portfolio_media').upload(storageCleanName, file);
+        // Upload directly to Supabase storage bucket without size/type restrictions
+        const { error: storageError } = await supabase.storage
+          .from('portfolio_media')
+          .upload(storageCleanName, file);
+
         if (storageError) throw storageError;
 
-        const { data: { publicUrl } } = supabase.storage.from('portfolio_media').getPublicUrl(storageCleanName);
+        const { data: { publicUrl } } = supabase.storage
+          .from('portfolio_media')
+          .getPublicUrl(storageCleanName);
 
         const isVideo = file.type.includes('video') || file.name.match(/\.(mp4|webm|mov|ogg)$/i);
 
-        await supabase.from('media_library').insert([{ file_name: rawFileName, file_url: publicUrl, type: isVideo ? 'video' : 'image' }]);
+        await supabase.from('media_library').insert([
+          { file_name: rawFileName, file_url: publicUrl, type: isVideo ? 'video' : 'image' }
+        ]);
 
         currentArchiveStack.unshift({
           category: bulkPipelineCat,
@@ -500,12 +494,13 @@ export default function AdminDashboard() {
 
         importedSuccess++;
       } catch (err) {
-        console.error("Pipeline broadcast exception node crash loop:", err);
+        console.error("Pipeline upload error:", err);
+        alert(`Upload Error for "${file.name}": ${err.message}`);
       }
     }
 
     setDreamArchive(currentArchiveStack);
-    e.target.value = null; 
+    e.target.value = null; // Reset input element
     alert(`🟢 PIPELINE SUCCESS!\nNa-upload at nagawaan ng card ang ${importedSuccess} asset para sa subtitle na "${bulkPipelineSub}".\n\n⚠️ HUWAG KALIMUTAN: Pindot po sa malaking "SAVE MODULE" sa pinakataas para pumasok ito sa live site website natin!`);
   };
 

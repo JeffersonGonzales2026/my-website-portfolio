@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 // import { useMobileBack } from '../hooks/useMobileBack';
+import { useNavigate } from 'react-router-dom';
 
 // ================= CUSTOM ANIMATED COUNTER COMPONENT =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -480,6 +481,7 @@ const defaultShowcaseData = {
 
 export default function DataAnalyst() {
   const [activeTab, setActiveTab] = useState('dashboards');
+  const navigate = useNavigate();
   const containerRef = useRef(null);
 
   const [stats, setStats] = useState(defaultQuickStats);
@@ -1127,7 +1129,7 @@ export default function DataAnalyst() {
             </p>
             
             <div className="flex flex-wrap items-center justify-center gap-4">
-              <button onClick={() => window.location.href = '/ai-developer'}
+              <button onClick={() => navigate('/ai-developer')}
                 className="px-8 py-4 rounded-xl bg-cyan-500 text-slate-950 font-bold text-sm hover:bg-cyan-400 transition-colors shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] flex items-center gap-2 cursor-pointer relative z-20">
                 Continue as AI Developer <ArrowRight size={16} />
               </button>

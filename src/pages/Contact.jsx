@@ -66,7 +66,8 @@ export default function Contact() {
   const [cooldown, setCooldown] = useState(0);
   const [formData, setFormData] = useState({
     name: '', email: '', company: '', phone: '', country: '', subject: '',
-    service: '', budget: '', timeline: '', message: '', privacy: false
+    service: '', budget: '', timeline: '', message: '', privacy: false,
+    honeypot: ''
   });
  
   const [status, setStatus] = useState('idle');
@@ -154,23 +155,43 @@ useMobileBack(isDropdownOpen, () => setIsDropdownOpen(false));
     }
   };
 
+  // 📍 LOCATE handleSubmit IN src/pages/Contact.jsx:
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 1. SPAM PROTECTION: Stop them immediately if cooldown is active
+    // 🛡️ 1. SPAM BOT TRAP: Abort if hidden bot field is filled
+    if (formData.honeypot) {
+      setStatus('success');
+      setFormData({ name: '', email: '', company: '', phone: '', country: '', subject: '', service: '', budget: '', timeline: '', message: '', privacy: false, honeypot: '' });
+      setTimeout(() => setStatus('idle'), 5000);
+      return;
+    }
+
     if (cooldown > 0) {
       alert(`Please wait ${cooldown} seconds before sending another message.`);
       return;
     }
 
+    // 🧹 2. TRIM WHITESPACE
+    const cleanName = formData.name.trim();
+    const cleanEmail = formData.email.trim();
+    const cleanCompany = formData.company.trim();
+    const cleanPhone = formData.phone.trim();
+    const cleanCountry = formData.country.trim();
+    const cleanSubject = formData.subject.trim();
+    const cleanService = formData.service.trim();
+    const cleanBudget = formData.budget.trim();
+    const cleanMessage = formData.message.trim();
+
     setStatus('loading');
     setErrors({});
 
+    // 🔍 3. VALIDATE SANITIZED VALUES
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = 'Full Name is required.';
-    if (!formData.email.trim() || !/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Valid Email is required.';
-    if (!formData.subject.trim()) newErrors.subject = 'Subject is required.';
-    if (!formData.message.trim() || formData.message.length < 20) newErrors.message = 'Message must be at least 20 characters.';
+    if (!cleanName) newErrors.name = 'Full Name is required.';
+    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) newErrors.email = 'Valid Email is required.';
+    if (!cleanSubject) newErrors.subject = 'Subject is required.';
+    if (!cleanMessage || cleanMessage.length < 20) newErrors.message = 'Message must be at least 20 characters.';
     if (!formData.privacy) newErrors.privacy = 'You must agree to the Privacy Policy.';
 
     if (Object.keys(newErrors).length > 0) {
@@ -180,44 +201,43 @@ useMobileBack(isDropdownOpen, () => setIsDropdownOpen(false));
     }
 
     try {
-      // 1. Save to Supabase (Database)
+      // 4. SAVE CLEAN DATA TO SUPABASE
       const { error } = await supabase
         .from('contact_messages')
         .insert([
           {
-            sender_name: formData.name,
-            sender_email: formData.email,
-            company: formData.company || null,
-            subject: formData.subject,
-            service_interested: formData.service || null,
-            message: formData.message,
+            sender_name: cleanName,
+            sender_email: cleanEmail,
+            company: cleanCompany || null,
+            subject: cleanSubject,
+            service_interested: cleanService || null,
+            message: cleanMessage,
             status: 'unread'
           }
         ]);
 
       if (error) throw error;
 
-      // 2. Send Email via EmailJS
+      // 5. SEND CLEAN DATA TO EMAILJS
       await emailjs.send(
         'service_m90932k',         
         'template_fcu1p8a',   
         {
-          name: formData.name,
-          email: formData.email,
-          company: formData.company || 'Not provided',
-          country: formData.country || 'N/A',
-          phone: formData.phone || 'N/A',
-          subject: formData.subject,
-          service: formData.service || 'Not specified',
-          budget: formData.budget || 'Not specified',
-          message: formData.message,
+          name: cleanName,
+          email: cleanEmail,
+          company: cleanCompany || 'Not provided',
+          country: cleanCountry || 'N/A',
+          phone: cleanPhone || 'N/A',
+          subject: cleanSubject,
+          service: cleanService || 'Not specified',
+          budget: cleanBudget || 'Not specified',
+          message: cleanMessage,
         },
         'teBVOF7ipY27pLMmV'        
       );
 
-      // 3. Update UI on Success & START TIMER
       setStatus('success');
-      setFormData({ name: '', email: '', company: '', phone: '', country: '', subject: '', service: '', budget: '', timeline: '', message: '', privacy: false });
+      setFormData({ name: '', email: '', company: '', phone: '', country: '', subject: '', service: '', budget: '', timeline: '', message: '', privacy: false, honeypot: '' });
       
       setCooldown(60);
       const timer = setInterval(() => {
@@ -271,7 +291,19 @@ useMobileBack(isDropdownOpen, () => setIsDropdownOpen(false));
             <div className="p-6 md:p-10 rounded-3xl bg-white/[0.02] border border-white/10 shadow-2xl backdrop-blur-md relative overflow-hidden">
               <h3 className="text-2xl font-bold text-white mb-8">Send a Message</h3>
 
+              {/* 📍 LOCATE IN JSX (around line 233): */}
               <form onSubmit={handleSubmit} className="space-y-6">
+
+                {/* 🟢 PASTE THIS HIDDEN FIELD RIGHT HERE: */}
+                <input
+                  type="text"
+                  name="honeypot"
+                  value={formData.honeypot}
+                  onChange={handleChange}
+                  style={{ display: 'none' }}
+                  tabIndex="-1"
+                  autoComplete="off"
+                />
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>

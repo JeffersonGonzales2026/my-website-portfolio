@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, animate, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Cpu, Layers, ArrowUp, CheckCircle2, GraduationCap, Settings, ExternalLink, Quote, Mail, Download, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 
 // ================= CUSTOM ANIMATED COUNTER =================
 const AnimatedCounter = ({ value, suffix = "" }) => {
@@ -353,6 +354,7 @@ const extractImageDeep = (item) => {
 };
 
 export default function AiDeveloper() {
+  const navigate = useNavigate();
   const containerRef = useRef(null);
 
   const [stats, setStats] = useState(defaultDeveloperStats);
@@ -1096,7 +1098,7 @@ export default function AiDeveloper() {
               </p>
               
               <div className="flex flex-wrap items-center justify-center gap-4">
-                <button onClick={() => window.location.href = '/contact'}
+                <button onClick={() => navigate('/contact')}
                   className="px-8 py-4 rounded-xl bg-white text-black font-black text-sm hover:bg-slate-200 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] flex items-center gap-2 cursor-pointer relative z-20">
                   Contact Us <Mail size={16} />
                 </button>

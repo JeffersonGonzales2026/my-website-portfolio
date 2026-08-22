@@ -7,6 +7,7 @@ import HTMLFlipBook from 'react-pageflip';
 import { useMobileBack } from '../hooks/useMobileBack';
 import { offlineProjects } from '../data/offlineArchive';
 import { offlinePhotography } from '../data/offlinePhotography';
+import { useNavigate } from 'react-router-dom';
 
 // GSAP IMPORTS
 import gsap from 'gsap';
@@ -168,6 +169,7 @@ const isVideo = (url) => {
 };
 
 export default function DreamCreations() {
+  const navigate = useNavigate();
   const containerRef = useRef(null);
   const teamScrollRef = useRef(null);
   const flipBookRef = useRef(null); 
@@ -1168,7 +1170,7 @@ export default function DreamCreations() {
                       {isVideo(coverImage) ? (
                         <video key={coverImage} src={`${coverImage}#t=0.1`} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" autoPlay loop muted playsInline preload="metadata" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                       ) : (
-                        <img key={coverImage} src={coverImage} alt={subtitle} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+                        <img key={coverImage} src={coverImage} alt={subtitle} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700 pointer-events-none" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                       )}
                       <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-[#1095d2]/20 hidden" />
                       <div className="absolute inset-0 bg-black/60 group-hover:bg-black/30 transition-colors duration-300" />
@@ -1313,12 +1315,9 @@ export default function DreamCreations() {
             </p>
             
             {/* Siguraduhing tama ang link nito papunta sa Contact page mo */}
-            <a 
-              href="/contact" 
-              className="inline-block px-8 py-3 bg-[#1095d2] text-white font-bold rounded-xl hover:bg-[#0d7eb5] hover:shadow-[0_0_20px_rgba(16,149,210,0.4)] transition-all duration-300"
-            >
+            <button onClick={() => navigate('/contact')} className="inline-block px-8 py-3 bg-[#1095d2] text-white font-bold rounded-xl hover:bg-[#0d7eb5] hover:shadow-[0_0_20px_rgba(16,149,210,0.4)] transition-all duration-300">
               Request a Quote
-            </a>
+            </button>
           </div>
         </div>
 
@@ -1358,7 +1357,7 @@ export default function DreamCreations() {
               <p>The next chapter introduces my journey into Data Analytics, where structured logic, reporting, and dashboarding converge with creative problem-solving.</p>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-              <button onClick={() => window.location.href = '/data-analyst'} className="w-full sm:w-auto px-8 py-4 rounded-xl bg-emerald-500 text-black font-bold text-sm hover:bg-emerald-400 transition-colors shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 cursor-pointer relative z-20">Continue as Data Analyst <ArrowRight size={16} /></button>
+              <button onClick={() => navigate('/data-analyst')} className="w-full sm:w-auto px-8 py-4 rounded-xl bg-emerald-500 text-black font-bold text-sm hover:bg-emerald-400 transition-colors shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 cursor-pointer relative z-20">Continue as Data Analyst <ArrowRight size={16} /></button>
               <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-sm transition-colors flex items-center justify-center gap-2 backdrop-blur-md cursor-pointer relative z-20"><ArrowUp size={16} /> Back to Top</button>
             </div>
           </motion.div>
@@ -1465,7 +1464,7 @@ export default function DreamCreations() {
                           isVideo(project.featured_image_url) ? (
                             <video key={project.featured_image_url} src={`${project.featured_image_url}#t=0.1`} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" autoPlay loop muted playsInline preload="metadata" />
                           ) : (
-                            <img src={project.featured_image_url} alt={project.title} loading="lazy" decoding="async" className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
+                            <img src={project.featured_image_url} alt={project.title} className="w-full h-auto block object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none" /> 
                           )
                         ) : ( <div className="w-full aspect-square flex items-center justify-center bg-black/40 text-white/20"><ImagePlaceholder size={32} /></div> )}
                         
@@ -1647,8 +1646,6 @@ export default function DreamCreations() {
                     <img 
                       src={shot.url} 
                       alt={shot.title || "Shot"} 
-                      loading="lazy"
-                      decoding="async"
                       className="w-28 h-28 sm:w-40 sm:h-40 md:w-56 md:h-56 object-cover rounded-sm shadow-[0_0_15px_rgba(0,0,0,0.8)] pointer-events-none" 
                       onError={(e) => {
                         e.target.onerror = null;
