@@ -1664,11 +1664,12 @@ const [visiblePhotoCount, setVisiblePhotoCount] = useState(getInitialBatchSize()
               {/* Dynamic Height based on batches */}
               <div className="relative w-full" style={{ height: `${Math.ceil(visiblePhotoCount / getInitialBatchSize()) * 100}vh` }}>
                 {photographyShots.slice(0, visiblePhotoCount).map((shot, idx) => {
-                  const batchSize = getInitialBatchSize();
+                  // DITO BINAGO ANG BILANG PARA SIKSIK SA MOBILE
+                  const batchSize = typeof window !== 'undefined' && window.innerWidth > 768 ? 24 : 18; 
                   const batchIndex = Math.floor(idx / batchSize);
                   const idxInBatch = idx % batchSize;
                   
-                  // HYBRID LOGIC: Divide screen into zones so there are no empty gaps
+                  // GRID LOGIC
                   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
                   const cols = isMobile ? 3 : 6;
                   const rows = Math.ceil(batchSize / cols);
@@ -1682,19 +1683,18 @@ const [visiblePhotoCount, setVisiblePhotoCount] = useState(getInitialBatchSize()
                   const baseX = (col * cellWidth) + (cellWidth / 2);
                   const baseY = (row * cellHeight) + (cellHeight / 2);
 
-                  // MASSIVE STABLE OFFSETS: Destroys the grid look to make it messy
+                  // MASSIVE STABLE OFFSETS
                   const offsetX = ((idx * 37) % cellWidth) - (cellWidth / 2);
                   const offsetY = ((idx * 43) % cellHeight) - (cellHeight / 2);
 
-                  // BOUNDARY CLAMPING: Prevents cut-offs at the edges of the screen
+                  // BOUNDARY CLAMPING: Sagad sa gilid (5 to 95) para mas aesthetic ang kalat!
                   let finalX = baseX + offsetX;
-                  finalX = Math.max(15, Math.min(85, finalX)); // Strictly keep between 15vw and 85vw
+                  finalX = Math.max(5, Math.min(95, finalX)); 
 
                   let localY = baseY + offsetY;
-                  localY = Math.max(15, Math.min(85, localY)); // Keep away from extreme top/bottom
+                  localY = Math.max(5, Math.min(95, localY)); 
                   const finalY = localY + (batchIndex * 100);
 
-                  // EXTREME ROTATION: -45 to +45 degrees for a realistic thrown/messy look
                   const rotation = shot.rot || (((idx * 53) % 90) - 45);
 
                   const leftPos = `${finalX}vw`;
@@ -1718,10 +1718,11 @@ const [visiblePhotoCount, setVisiblePhotoCount] = useState(getInitialBatchSize()
                         zIndex: 10 + idx 
                       }}
                     >
+                      {/* DITO INAYOS ANG PUTOL: Tinanggal ang square size constraint at ginawang dynamic max-width/max-height para ma-preserve ang aspect ratio! */}
                       <img 
                         src={shot.url} 
                         alt={shot.title || "Shot"} 
-                        className="w-28 h-28 sm:w-40 sm:h-40 md:w-56 md:h-56 object-cover rounded-sm shadow-[0_0_15px_rgba(0,0,0,0.8)] pointer-events-none" 
+                        className="w-auto h-auto max-h-[140px] max-w-[35vw] sm:max-h-[180px] sm:max-w-[30vw] md:max-h-[220px] md:max-w-[20vw] rounded-sm shadow-[0_0_15px_rgba(0,0,0,0.8)] pointer-events-none" 
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = "/images/photo-placeholder.jpg"; 
