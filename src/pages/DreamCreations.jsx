@@ -339,6 +339,7 @@ export default function DreamCreations() {
   const [photographyShots, setPhotographyShots] = useState(offlinePhotography);
   const [isPhotographyOpen, setIsPhotographyOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [visiblePhotoCount, setVisiblePhotoCount] = useState(8); // Controls how many photos are shown initially
 
   const [isFlipbookOpen, setIsFlipbookOpen] = useState(false);
   const [flipbookPage, setFlipbookCurrentPage] = useState(0); 
@@ -353,6 +354,7 @@ export default function DreamCreations() {
     setPreviewImage(null);
     setIsPhotographyOpen(false);
     setIsFlipbookOpen(false);
+    setVisiblePhotoCount(8);
   });
 
   // ================= GSAP DOM REFRESHER =================
@@ -1644,17 +1646,17 @@ export default function DreamCreations() {
         {isPhotographyOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.5 } }} className="fixed inset-0 z-[400] flex flex-col items-center justify-between bg-[#050508]/90 backdrop-blur-xl overflow-hidden pointer-events-auto">
             <div className="absolute inset-0 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16, 149, 210, 0.15), transparent 70%)' }} />
-            <button onClick={() => setIsPhotographyOpen(false)} className="absolute top-6 right-6 md:top-8 md:right-8 z-[500] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 backdrop-blur-md pointer-events-auto"><X size={20} className="md:w-6 md:h-6" /></button>
+            <button onClick={() => { setIsPhotographyOpen(false); setVisiblePhotoCount(8); }} className="absolute top-6 right-6 md:top-8 md:right-8 z-[500] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 backdrop-blur-md pointer-events-auto"><X size={20} className="md:w-6 md:h-6" /></button>
             <div className="absolute top-6 left-6 md:top-8 md:left-8 z-[500] pointer-events-auto">
               <h2 className="text-xl md:text-3xl font-black text-white tracking-widest uppercase drop-shadow-md">Captured Dreams</h2>
               <p className="text-[#1095d2] font-mono text-[10px] md:text-xs mt-0.5 drop-shadow-md">Select a polaroid to view full frame.</p>
             </div>
             <div className="absolute inset-0 w-full h-full flex items-center justify-center z-10 overflow-hidden pointer-events-none">
-              {photographyShots.map((shot, idx) => {
+              {photographyShots.slice(0, visiblePhotoCount).map((shot, idx) => {
                 const mappedX = `${((shot.x || 0) / 100) * 45}vw`;
                 const mappedY = `${((shot.y || 0) / 50) * 45}vh`;
                 return (
-                  <motion.div key={shot.id || idx} drag dragConstraints={{ left: -1000, right: 1000, top: -1000, bottom: 1000 }} initial={{ opacity: 0, scale: 0.5, x: 0, y: 0, rotate: 0 }} animate={{ opacity: 1, scale: 1, x: mappedX, y: mappedY, rotate: shot.rot || 0 }} transition={{ type: "spring", damping: 20, stiffness: 100, delay: idx * 0.05 }} whileHover={{ scale: 1.15, rotate: 0, zIndex: 50, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9)" }} whileTap={{ scale: 1.15, zIndex: 50 }} className="absolute p-2 pb-8 md:p-3 md:pb-10 bg-[#f8f8f8] shadow-[0_15px_35px_rgba(0,0,0,0.6)] cursor-grab active:cursor-grabbing rounded-sm pointer-events-auto" onClick={() => setSelectedPhoto(shot.url)} style={{ zIndex: 10 + idx }}>
+                  <motion.div key={shot.id || idx} drag dragConstraints={{ left: -1000, right: 1000, top: -1000, bottom: 1000 }} initial={{ opacity: 1, scale: 1, x: mappedX, y: mappedY, rotate: shot.rot || 0 }} animate={{ opacity: 1, scale: 1, x: mappedX, y: mappedY, rotate: shot.rot || 0 }} transition={{ type: "spring", damping: 20, stiffness: 100, delay: idx * 0.05 }} whileHover={{ scale: 1.15, rotate: 0, zIndex: 50, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9)" }} whileTap={{ scale: 1.15, zIndex: 50 }} className="absolute p-2 pb-8 md:p-3 md:pb-10 bg-[#f8f8f8] shadow-[0_15px_35px_rgba(0,0,0,0.6)] cursor-grab active:cursor-grabbing rounded-sm pointer-events-auto" onClick={() => setSelectedPhoto(shot.url)} style={{ zIndex: 10 + idx }}>
                     <img 
                       src={shot.url} 
                       alt={shot.title || "Shot"} 
@@ -1669,6 +1671,16 @@ export default function DreamCreations() {
                 );
               })}
               {photographyShots.length === 0 && ( <div className="text-white/40 text-xs font-mono py-12 pointer-events-auto">No photography shots added yet.</div> )}
+              {visiblePhotoCount < photographyShots.length && (
+                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[500] pointer-events-auto">
+                  <button 
+                    onClick={() => setVisiblePhotoCount(prev => prev + 6)} 
+                    className="px-6 py-3 rounded-full bg-[#1095d2] hover:bg-[#0d7eb5] text-white font-bold text-sm shadow-[0_0_20px_rgba(16,149,210,0.5)] transition-colors cursor-pointer"
+                  >
+                    See More
+                  </button>
+                </div>
+              )}
             </div>
             <AnimatePresence>
               {selectedPhoto && (
