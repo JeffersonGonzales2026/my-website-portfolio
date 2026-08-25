@@ -1468,7 +1468,11 @@ const [visiblePhotoCount, setVisiblePhotoCount] = useState(getInitialBatchSize()
               )}
 
               {activePortfolioSubtitle !== 'Company Profiles' && activePortfolioSubtitle !== 'Brochures' ? (
-                <div className="columns-2 sm:columns-3 lg:columns-4 gap-0.5 space-y-0.5 block">
+                <div className={`gap-0.5 space-y-0.5 block ${
+                  visualProjects.length > 0 && visualProjects.length % 4 !== 0 && visualProjects.length % 4 !== 3 
+                    ? 'columns-2 sm:columns-3 lg:columns-3' 
+                    : 'columns-2 sm:columns-3 lg:columns-4'
+                }`}>
                   {visualProjects.length > 0 ? (
                     visualProjects.map((project) => (
                       <div 
