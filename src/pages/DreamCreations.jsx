@@ -1741,14 +1741,13 @@ const [visiblePhotoCount, setVisiblePhotoCount] = useState(getInitialBatchSize()
               <div className="fixed bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#020617] via-[#050b14]/80 to-transparent z-[500] pointer-events-none flex items-end justify-center pb-8">
                 <button 
                   onClick={() => {
-                    setVisiblePhotoCount(prev => prev + getInitialBatchSize());
-                    setTimeout(() => {
-                      const container = document.getElementById('photography-scroll-container');
-                      if (container) container.scrollBy({ top: window.innerHeight * 0.9, behavior: 'smooth' });
-                    }, 100);
-                  }} 
-                  className="text-white/80 hover:text-[#1095d2] font-bold text-sm md:text-base tracking-widest uppercase transition-colors pointer-events-auto cursor-pointer flex flex-col items-center gap-2 drop-shadow-[0_0_15px_rgba(16,149,210,0.8)]"
-                >
+                    {/* SEE MORE - Text with Faded Black/Blue Shadow Background */}
+                    {visiblePhotoCount < photographyShots.length && (
+                      <div className="fixed bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#020617] via-[#050b14]/80 to-transparent z-[500] pointer-events-none flex items-end justify-center pb-8">
+                        <button 
+                          onClick={() => setVisiblePhotoCount(prev => prev + getInitialBatchSize())} 
+                            className="text-white/80 hover:text-[#1095d2] font-bold text-sm md:text-base tracking-widest uppercase transition-colors pointer-events-auto cursor-pointer flex flex-col items-center gap-2 drop-shadow-[0_0_15px_rgba(16,149,210,0.8)]"
+                        >
                   <span>See More</span>
                   <span className="text-xl animate-bounce leading-none text-[#1095d2]">↓</span>
                 </button>
