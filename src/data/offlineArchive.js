@@ -134,30 +134,6 @@ export const offlineProjects = [
     { id: "71bca3be-3f35-4b3e-9845-745d25102ede", title: "10 Hiraya Cafe Logo 1", client_name: "Independent Project", category: "Branding & Identity", subtitle: "Logo Design", description: "Visual archive showcase item.", featured_image_url: "/DreamCreations/6 Project Archive/Branding & Identity/Logo Design/featured_image_9.png", video_url: "" },
 
     // ==================================================
-    // CATEGORY: Graphic Design
-    // ==================================================
-
-    // --------------------------------------------------
-    // SUBTITLE: Infographics
-    // --------------------------------------------------
-    { id: "2dfd50e5-20dc-4900-8d48-872b75003e05", title: "Immunity to Covid 2 01", client_name: "Independent Project", category: "Graphic Design", subtitle: "Infographics", description: "Visual archive showcase item.", featured_image_url: "/images/archive/1784638683873_pipeline_immunitytocovid2-01.png", video_url: "" },
-    { id: "4278bbd4-0c51-40e2-b2a6-92f700c6da2b", title: "Quarrantine inquirer", client_name: "Independent Project", category: "Graphic Design", subtitle: "Infographics", description: "Visual archive showcase item.", featured_image_url: "/images/archive/1784638684878_pipeline_quarrantineinquirer.jpg", video_url: "" },
-
-    // --------------------------------------------------
-    // SUBTITLE: Instructional Posters
-    // --------------------------------------------------
-    { id: "71677785-ac51-4bcf-96ef-982a967d07a6", title: "KYC", client_name: "Independent Project", category: "Graphic Design", subtitle: "Instructional Posters", description: "Visual archive showcase item.", featured_image_url: "/images/archive/1784560471074_pipeline_kyc.png", video_url: "" },
-    { id: "6a6b2631-4df0-4be3-b922-51a02f5df762", title: "KYC Instructional Poster 01 01", client_name: "Independent Project", category: "Graphic Design", subtitle: "Instructional Posters", description: "Visual archive showcase item.", featured_image_url: "/images/archive/1784560467547_pipeline_kycinstructionalposter-01-01.png", video_url: "" },
-    { id: "fc46ef64-1cf9-4f02-9aea-3897981f4de2", title: "KYC Verification 01", client_name: "Independent Project", category: "Graphic Design", subtitle: "Instructional Posters", description: "Visual archive showcase item.", featured_image_url: "/images/archive/1784560470398_pipeline_kycverification-01.png", video_url: "" },
-    { id: "62da75bf-a2af-4af0-8dcb-0b5495d86d4b", title: "KYC Verification 2 01", client_name: "Independent Project", category: "Graphic Design", subtitle: "Instructional Posters", description: "Visual archive showcase item.", featured_image_url: "/images/archive/1784560469856_pipeline_kycverification2-01.png", video_url: "" },
-
-    // --------------------------------------------------
-    // SUBTITLE: Promotional Graphics
-    // --------------------------------------------------
-    { id: "7e0521ed-25fb-46fc-9a27-d67e3aa42fd7", title: "MOCASA", client_name: "Independent Project", category: "Graphic Design", subtitle: "Promotional Graphics", description: "Visual archive showcase item.", featured_image_url: "/images/archive/1784209115093_pipeline_mocasa.png", video_url: "" },
-    { id: "1c4b6f52-348c-45ee-b6ef-0b99a99908a6", title: "MOCASA Cover", client_name: "Independent Project", category: "Graphic Design", subtitle: "Promotional Graphics", description: "Visual archive showcase item.", featured_image_url: "/images/archive/1784209129589_pipeline_mocasacover.png", video_url: "" },
-
-    // ==================================================
     // CATEGORY: Illustration
     // ==================================================
 
@@ -219,15 +195,35 @@ export const offlineProjects = [
     { id: "48020604-8dfa-44d3-a6d7-824ab3effedb", title: "VA 3", client_name: "Independent Project", category: "Illustration", subtitle: "Vector Artwork", description: "Visual archive showcase item.", featured_image_url: "/DreamCreations/6 Project Archive/Illustration/Vector Artwork/featured_image_2.jpg", video_url: "" },
 
     // ==================================================
-    // CATEGORY: Marketing & Corporate Graphics
+    // CATEGORY: Marketing & Corporate
     // ==================================================
 
     // --------------------------------------------------
     // SUBTITLE: Event Signage
     // --------------------------------------------------
-    { id: "ee660238-b0e1-4ccc-a4b1-fc7989bccf5c", title: "Tarp 6", client_name: "Independent Project", category: "Marketing & Corporate Graphics", subtitle: "Event Signage", description: "Visual archive showcase item.", featured_image_url: "/images/archive/1784639759001_pipeline_tarp_6.png", video_url: "" },
-    { id: "524d133a-9c0a-43d4-8dfc-22b6aafc9f1e", title: "Tarp 7", client_name: "Independent Project", category: "Marketing & Corporate Graphics", subtitle: "Event Signage", description: "Visual archive showcase item.", featured_image_url: "/images/archive/1784639759890_pipeline_tarp_7.png", video_url: "" },
-    { id: "b541893c-ae4f-42fd-a268-148de7012db8", title: "Tarp 8", client_name: "Independent Project", category: "Marketing & Corporate Graphics", subtitle: "Event Signage", description: "Visual archive showcase item.", featured_image_url: "/images/archive/1784639761165_pipeline_tarp_8.png", video_url: "" },
+    { id: "ee660238-b0e1-4ccc-a4b1-fc7989bccf5c", title: "Tarp 6", client_name: "Independent Project", category: "Marketing & Corporate Graphics", subtitle: "Event Signage", description: "Visual archive showcase item.", featured_image_url: "/DreamCreations/6 Project Archive/Marketing & Corporate/Event Signage/featured_image_2.png", video_url: "" },
+    { id: "524d133a-9c0a-43d4-8dfc-22b6aafc9f1e", title: "Tarp 7", client_name: "Independent Project", category: "Marketing & Corporate Graphics", subtitle: "Event Signage", description: "Visual archive showcase item.", featured_image_url: "/DreamCreations/6 Project Archive/Marketing & Corporate/Event Signage/featured_image_1.png", video_url: "" },
+    { id: "b541893c-ae4f-42fd-a268-148de7012db8", title: "Tarp 8", client_name: "Independent Project", category: "Marketing & Corporate Graphics", subtitle: "Event Signage", description: "Visual archive showcase item.", featured_image_url: "/DreamCreations/6 Project Archive/Marketing & Corporate/Event Signage/featured_image.png", video_url: "" },
+
+    // --------------------------------------------------
+    // SUBTITLE: Infographics
+    // --------------------------------------------------
+    { id: "2dfd50e5-20dc-4900-8d48-872b75003e05", title: "Immunity to Covid 2 01", client_name: "Independent Project", category: "Graphic Design", subtitle: "Infographics", description: "Visual archive showcase item.", featured_image_url: "/DreamCreations/6 Project Archive/Marketing & Corporate/Infographics/featured_image.jpg", video_url: "" },
+    { id: "4278bbd4-0c51-40e2-b2a6-92f700c6da2b", title: "Quarrantine inquirer", client_name: "Independent Project", category: "Graphic Design", subtitle: "Infographics", description: "Visual archive showcase item.", featured_image_url: "/DreamCreations/6 Project Archive/Marketing & Corporate/Infographics/featured_image.png", video_url: "" },
+
+    // --------------------------------------------------
+    // SUBTITLE: Instructional Posters
+    // --------------------------------------------------
+    { id: "71677785-ac51-4bcf-96ef-982a967d07a6", title: "KYC", client_name: "Independent Project", category: "Graphic Design", subtitle: "Instructional Posters", description: "Visual archive showcase item.", featured_image_url: "/DreamCreations/6 Project Archive/Marketing & Corporate/Instructional Posters/featured_image.png", video_url: "" },
+    { id: "6a6b2631-4df0-4be3-b922-51a02f5df762", title: "KYC Instructional Poster 01 01", client_name: "Independent Project", category: "Graphic Design", subtitle: "Instructional Posters", description: "Visual archive showcase item.", featured_image_url: "/DreamCreations/6 Project Archive/Marketing & Corporate/Instructional Posters/featured_image_2.png", video_url: "" },
+    { id: "fc46ef64-1cf9-4f02-9aea-3897981f4de2", title: "KYC Verification 01", client_name: "Independent Project", category: "Graphic Design", subtitle: "Instructional Posters", description: "Visual archive showcase item.", featured_image_url: "/DreamCreations/6 Project Archive/Marketing & Corporate/Instructional Posters/featured_image_3.png", video_url: "" },
+    { id: "62da75bf-a2af-4af0-8dcb-0b5495d86d4b", title: "KYC Verification 2 01", client_name: "Independent Project", category: "Graphic Design", subtitle: "Instructional Posters", description: "Visual archive showcase item.", featured_image_url: "/DreamCreations/6 Project Archive/Marketing & Corporate/Instructional Posters/featured_image_1.png", video_url: "" },
+
+    // --------------------------------------------------
+    // SUBTITLE: Promotional Graphics
+    // --------------------------------------------------
+    { id: "7e0521ed-25fb-46fc-9a27-d67e3aa42fd7", title: "MOCASA", client_name: "Independent Project", category: "Graphic Design", subtitle: "Promotional Graphics", description: "Visual archive showcase item.", featured_image_url: "/DreamCreations/6 Project Archive/Marketing & Corporate/Promotional Graphics/featured_image_1.png", video_url: "" },
+    { id: "1c4b6f52-348c-45ee-b6ef-0b99a99908a6", title: "MOCASA Cover", client_name: "Independent Project", category: "Graphic Design", subtitle: "Promotional Graphics", description: "Visual archive showcase item.", featured_image_url: "/DreamCreations/6 Project Archive/Marketing & Corporate/Promotional Graphics/featured_image.png", video_url: "" },
 
     // ==================================================
     // CATEGORY: Marketing Materials
