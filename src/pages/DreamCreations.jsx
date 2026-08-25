@@ -341,7 +341,7 @@ export default function DreamCreations() {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   // Ide-detect kung PC o Mobile para mapuno talaga ang screen
   const getInitialBatchSize = () => typeof window !== 'undefined' && window.innerWidth > 768 ? 24 : 12;
-  const [visiblePhotoCount, setVisiblePhotoCount] = useState(getInitialBatchSize());
+const [visiblePhotoCount, setVisiblePhotoCount] = useState(getInitialBatchSize());
 
   const [isFlipbookOpen, setIsFlipbookOpen] = useState(false);
   const [flipbookPage, setFlipbookCurrentPage] = useState(0); 
@@ -1661,30 +1661,62 @@ export default function DreamCreations() {
             {/* Scrollable Container */}
             <div id="photography-scroll-container" className="absolute inset-0 w-full h-full overflow-y-auto overflow-x-hidden z-10 scroll-smooth custom-scrollbar">
               
-              {/* Dynamic Height */}
+              {/* Dynamic Height based on batches */}
               <div className="relative w-full" style={{ height: `${Math.ceil(visiblePhotoCount / getInitialBatchSize()) * 100}vh` }}>
                 {photographyShots.slice(0, visiblePhotoCount).map((shot, idx) => {
                   const batchSize = getInitialBatchSize();
                   const batchIndex = Math.floor(idx / batchSize);
+                  const idxInBatch = idx % batchSize;
                   
-                  // Dynamic Scatter Computation para kumalat sa buong screen width & pababa
-                  const mappedX = `${((shot.x || Math.random() * 100) / 100) * 80 - 40}vw`; 
-                  const mappedY = `${50 + (((shot.y || Math.random() * 100) / 100) * 80 - 40) + (batchIndex * 100)}vh`;
+                  // HYBRID LOGIC: Divide screen into zones so there are no empty gaps
+                  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+                  const cols = isMobile ? 3 : 6;
+                  const rows = Math.ceil(batchSize / cols);
+                  
+                  const col = idxInBatch % cols;
+                  const row = Math.floor(idxInBatch / cols);
+
+                  const cellWidth = 100 / cols;
+                  const cellHeight = 100 / rows;
+
+                  const baseX = (col * cellWidth) + (cellWidth / 2);
+                  const baseY = (row * cellHeight) + (cellHeight / 2);
+
+                  // MASSIVE STABLE OFFSETS: Destroys the grid look to make it messy
+                  const offsetX = ((idx * 37) % cellWidth) - (cellWidth / 2);
+                  const offsetY = ((idx * 43) % cellHeight) - (cellHeight / 2);
+
+                  // BOUNDARY CLAMPING: Prevents cut-offs at the edges of the screen
+                  let finalX = baseX + offsetX;
+                  finalX = Math.max(15, Math.min(85, finalX)); // Strictly keep between 15vw and 85vw
+
+                  let localY = baseY + offsetY;
+                  localY = Math.max(15, Math.min(85, localY)); // Keep away from extreme top/bottom
+                  const finalY = localY + (batchIndex * 100);
+
+                  // EXTREME ROTATION: -45 to +45 degrees for a realistic thrown/messy look
+                  const rotation = shot.rot || (((idx * 53) % 90) - 45);
+
+                  const leftPos = `${finalX}vw`;
+                  const topPos = `${finalY}vh`;
 
                   return (
                     <motion.div 
                       key={shot.id || idx} 
                       drag 
                       dragConstraints={{ left: -1000, right: 1000, top: -1000, bottom: 1000 }} 
-                      // STATIC ENTRANCE: Wala nang zoom o opacity animation sa pag-load
-                      initial={{ opacity: 1, scale: 1, x: mappedX, y: mappedY, rotate: shot.rot || (Math.random() * 30 - 15) }} 
-                      animate={{ opacity: 1, scale: 1, x: mappedX, y: mappedY, rotate: shot.rot || (Math.random() * 30 - 15) }} 
+                      initial={{ rotate: rotation }} 
+                      animate={{ rotate: rotation }} 
                       transition={{ type: "spring", damping: 25, stiffness: 120 }} 
-                      whileHover={{ scale: 1.15, rotate: 0, zIndex: 50, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9)" }} 
+                      whileHover={{ scale: 1.15, zIndex: 50, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9)" }} 
                       whileTap={{ scale: 1.15, zIndex: 50 }} 
-                      className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 p-2 pb-8 md:p-3 md:pb-10 bg-[#f8f8f8] shadow-[0_15px_35px_rgba(0,0,0,0.6)] cursor-grab active:cursor-grabbing rounded-sm pointer-events-auto" 
+                      className="absolute p-2 pb-8 md:p-3 md:pb-10 bg-[#f8f8f8] shadow-[0_15px_35px_rgba(0,0,0,0.6)] cursor-grab active:cursor-grabbing rounded-sm pointer-events-auto -translate-x-1/2 -translate-y-1/2" 
                       onClick={() => setSelectedPhoto(shot.url)} 
-                      style={{ zIndex: 10 + idx }}
+                      style={{ 
+                        left: leftPos, 
+                        top: topPos, 
+                        zIndex: 10 + idx 
+                      }}
                     >
                       <img 
                         src={shot.url} 
@@ -1709,10 +1741,9 @@ export default function DreamCreations() {
                 <button 
                   onClick={() => {
                     setVisiblePhotoCount(prev => prev + getInitialBatchSize());
-                    // Auto-scroll down smoothly to the next batch
                     setTimeout(() => {
                       const container = document.getElementById('photography-scroll-container');
-                      if (container) container.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' });
+                      if (container) container.scrollBy({ top: window.innerHeight * 0.9, behavior: 'smooth' });
                     }, 100);
                   }} 
                   className="text-white/80 hover:text-[#1095d2] font-bold text-sm md:text-base tracking-widest uppercase transition-colors pointer-events-auto cursor-pointer flex flex-col items-center gap-2 drop-shadow-[0_0_15px_rgba(16,149,210,0.8)]"
