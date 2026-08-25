@@ -339,7 +339,9 @@ export default function DreamCreations() {
   const [photographyShots, setPhotographyShots] = useState(offlinePhotography);
   const [isPhotographyOpen, setIsPhotographyOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
-  const [visiblePhotoCount, setVisiblePhotoCount] = useState(8); // Controls how many photos are shown initially
+  // Ide-detect kung PC o Mobile para mapuno talaga ang screen
+  const getInitialBatchSize = () => typeof window !== 'undefined' && window.innerWidth > 768 ? 24 : 12;
+  const [visiblePhotoCount, setVisiblePhotoCount] = useState(getInitialBatchSize());
 
   const [isFlipbookOpen, setIsFlipbookOpen] = useState(false);
   const [flipbookPage, setFlipbookCurrentPage] = useState(0); 
@@ -354,7 +356,7 @@ export default function DreamCreations() {
     setPreviewImage(null);
     setIsPhotographyOpen(false);
     setIsFlipbookOpen(false);
-    setVisiblePhotoCount(8);
+    setVisiblePhotoCount(getInitialBatchSize());
   });
 
   // ================= GSAP DOM REFRESHER =================
@@ -1641,50 +1643,90 @@ export default function DreamCreations() {
         )}
       </AnimatePresence>
 
-      {/* ================= POLAROID PHOTOGRAPHY MODAL (UNIFIED SCATTERED LAYOUT) ================= */}
+      {/* ================= POLAROID PHOTOGRAPHY MODAL (SCROLLABLE SCATTERED LAYOUT) ================= */}
       <AnimatePresence>
         {isPhotographyOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.5 } }} className="fixed inset-0 z-[400] flex flex-col items-center justify-between bg-[#050508]/90 backdrop-blur-xl overflow-hidden pointer-events-auto">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.5 } }} className="fixed inset-0 z-[400] bg-[#050508]/90 backdrop-blur-xl pointer-events-auto">
             <div className="absolute inset-0 pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16, 149, 210, 0.15), transparent 70%)' }} />
-            <button onClick={() => { setIsPhotographyOpen(false); setVisiblePhotoCount(8); }} className="absolute top-6 right-6 md:top-8 md:right-8 z-[500] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 backdrop-blur-md pointer-events-auto"><X size={20} className="md:w-6 md:h-6" /></button>
-            <div className="absolute top-6 left-6 md:top-8 md:left-8 z-[500] pointer-events-auto">
+            
+            {/* Close Button */}
+            <button onClick={() => { setIsPhotographyOpen(false); setVisiblePhotoCount(getInitialBatchSize()); }} className="fixed top-6 right-6 md:top-8 md:right-8 z-[500] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer border border-white/10 backdrop-blur-md pointer-events-auto"><X size={20} className="md:w-6 md:h-6" /></button>
+            
+            {/* Title */}
+            <div className="fixed top-6 left-6 md:top-8 md:left-8 z-[500] pointer-events-auto">
               <h2 className="text-xl md:text-3xl font-black text-white tracking-widest uppercase drop-shadow-md">Captured Dreams</h2>
               <p className="text-[#1095d2] font-mono text-[10px] md:text-xs mt-0.5 drop-shadow-md">Select a polaroid to view full frame.</p>
             </div>
-            <div className="absolute inset-0 w-full h-full flex items-center justify-center z-10 overflow-hidden pointer-events-none">
-              {photographyShots.slice(0, visiblePhotoCount).map((shot, idx) => {
-                const mappedX = `${((shot.x || 0) / 100) * 45}vw`;
-                const mappedY = `${((shot.y || 0) / 50) * 45}vh`;
-                return (
-                  <motion.div key={shot.id || idx} drag dragConstraints={{ left: -1000, right: 1000, top: -1000, bottom: 1000 }} initial={{ opacity: 1, scale: 1, x: mappedX, y: mappedY, rotate: shot.rot || 0 }} animate={{ opacity: 1, scale: 1, x: mappedX, y: mappedY, rotate: shot.rot || 0 }} transition={{ type: "spring", damping: 20, stiffness: 100, delay: idx * 0.05 }} whileHover={{ scale: 1.15, rotate: 0, zIndex: 50, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9)" }} whileTap={{ scale: 1.15, zIndex: 50 }} className="absolute p-2 pb-8 md:p-3 md:pb-10 bg-[#f8f8f8] shadow-[0_15px_35px_rgba(0,0,0,0.6)] cursor-grab active:cursor-grabbing rounded-sm pointer-events-auto" onClick={() => setSelectedPhoto(shot.url)} style={{ zIndex: 10 + idx }}>
-                    <img 
-                      src={shot.url} 
-                      alt={shot.title || "Shot"} 
-                      className="w-28 h-28 sm:w-40 sm:h-40 md:w-56 md:h-56 object-cover rounded-sm shadow-[0_0_15px_rgba(0,0,0,0.8)] pointer-events-none" 
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "/images/photo-placeholder.jpg"; // Local fallback
-                      }}
-                    />
-                    <p className="absolute bottom-2 md:bottom-3 left-0 w-full text-center text-black/60 font-mono text-[9px] sm:text-[10px] md:text-xs font-bold pointer-events-none truncate px-2">{shot.title || "Captured Dream"}</p>
-                  </motion.div>
-                );
-              })}
-              {photographyShots.length === 0 && ( <div className="text-white/40 text-xs font-mono py-12 pointer-events-auto">No photography shots added yet.</div> )}
-              {visiblePhotoCount < photographyShots.length && (
-                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[500] pointer-events-auto">
-                  <button 
-                    onClick={() => setVisiblePhotoCount(prev => prev + 6)} 
-                    className="px-6 py-3 rounded-full bg-[#1095d2] hover:bg-[#0d7eb5] text-white font-bold text-sm shadow-[0_0_20px_rgba(16,149,210,0.5)] transition-colors cursor-pointer"
-                  >
-                    See More
-                  </button>
-                </div>
-              )}
+
+            {/* Scrollable Container */}
+            <div id="photography-scroll-container" className="absolute inset-0 w-full h-full overflow-y-auto overflow-x-hidden z-10 scroll-smooth custom-scrollbar">
+              
+              {/* Dynamic Height */}
+              <div className="relative w-full" style={{ height: `${Math.ceil(visiblePhotoCount / getInitialBatchSize()) * 100}vh` }}>
+                {photographyShots.slice(0, visiblePhotoCount).map((shot, idx) => {
+                  const batchSize = getInitialBatchSize();
+                  const batchIndex = Math.floor(idx / batchSize);
+                  
+                  // Dynamic Scatter Computation para kumalat sa buong screen width & pababa
+                  const mappedX = `${((shot.x || Math.random() * 100) / 100) * 80 - 40}vw`; 
+                  const mappedY = `${50 + (((shot.y || Math.random() * 100) / 100) * 80 - 40) + (batchIndex * 100)}vh`;
+
+                  return (
+                    <motion.div 
+                      key={shot.id || idx} 
+                      drag 
+                      dragConstraints={{ left: -1000, right: 1000, top: -1000, bottom: 1000 }} 
+                      // STATIC ENTRANCE: Wala nang zoom o opacity animation sa pag-load
+                      initial={{ opacity: 1, scale: 1, x: mappedX, y: mappedY, rotate: shot.rot || (Math.random() * 30 - 15) }} 
+                      animate={{ opacity: 1, scale: 1, x: mappedX, y: mappedY, rotate: shot.rot || (Math.random() * 30 - 15) }} 
+                      transition={{ type: "spring", damping: 25, stiffness: 120 }} 
+                      whileHover={{ scale: 1.15, rotate: 0, zIndex: 50, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.9)" }} 
+                      whileTap={{ scale: 1.15, zIndex: 50 }} 
+                      className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 p-2 pb-8 md:p-3 md:pb-10 bg-[#f8f8f8] shadow-[0_15px_35px_rgba(0,0,0,0.6)] cursor-grab active:cursor-grabbing rounded-sm pointer-events-auto" 
+                      onClick={() => setSelectedPhoto(shot.url)} 
+                      style={{ zIndex: 10 + idx }}
+                    >
+                      <img 
+                        src={shot.url} 
+                        alt={shot.title || "Shot"} 
+                        className="w-28 h-28 sm:w-40 sm:h-40 md:w-56 md:h-56 object-cover rounded-sm shadow-[0_0_15px_rgba(0,0,0,0.8)] pointer-events-none" 
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/images/photo-placeholder.jpg"; 
+                        }}
+                      />
+                      <p className="absolute bottom-2 md:bottom-3 left-0 w-full text-center text-black/60 font-mono text-[9px] sm:text-[10px] md:text-xs font-bold pointer-events-none truncate px-2">{shot.title || "Captured Dream"}</p>
+                    </motion.div>
+                  );
+                })}
+                {photographyShots.length === 0 && ( <div className="text-white/40 text-xs font-mono py-20 text-center w-full absolute top-1/2 pointer-events-auto">No photography shots added yet.</div> )}
+              </div>
             </div>
+
+            {/* SEE MORE - Text with Faded Black/Blue Shadow Background */}
+            {visiblePhotoCount < photographyShots.length && (
+              <div className="fixed bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#020617] via-[#050b14]/80 to-transparent z-[500] pointer-events-none flex items-end justify-center pb-8">
+                <button 
+                  onClick={() => {
+                    setVisiblePhotoCount(prev => prev + getInitialBatchSize());
+                    // Auto-scroll down smoothly to the next batch
+                    setTimeout(() => {
+                      const container = document.getElementById('photography-scroll-container');
+                      if (container) container.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' });
+                    }, 100);
+                  }} 
+                  className="text-white/80 hover:text-[#1095d2] font-bold text-sm md:text-base tracking-widest uppercase transition-colors pointer-events-auto cursor-pointer flex flex-col items-center gap-2 drop-shadow-[0_0_15px_rgba(16,149,210,0.8)]"
+                >
+                  <span>See More</span>
+                  <span className="text-xl animate-bounce leading-none text-[#1095d2]">↓</span>
+                </button>
+              </div>
+            )}
+
+            {/* Selected Photo Modal */}
             <AnimatePresence>
               {selectedPhoto && (
-                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="absolute inset-0 z-[600] flex items-center justify-center bg-black/95 p-4 md:p-12 cursor-pointer backdrop-blur-md pointer-events-auto" onClick={() => setSelectedPhoto(null)}>
+                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="fixed inset-0 z-[600] flex items-center justify-center bg-black/95 p-4 md:p-12 cursor-pointer backdrop-blur-md pointer-events-auto" onClick={() => setSelectedPhoto(null)}>
                   <img src={selectedPhoto} alt="Selected Zoom" className="max-w-full max-h-[85vh] object-contain drop-shadow-[0_0_40px_rgba(16,149,210,0.2)]" />
                   <p className="absolute bottom-6 text-white/50 text-[10px] md:text-xs font-mono tracking-widest uppercase drop-shadow-md">Click anywhere to close</p>
                 </motion.div>
@@ -1693,7 +1735,7 @@ export default function DreamCreations() {
           </motion.div>
         )}
       </AnimatePresence>
-
+      
       {/* 🚀 Custom 3D Spaceship Cursor */}
       <motion.div className="fixed top-0 left-0 w-16 h-16 z-[9999] pointer-events-none drop-shadow-[0_20px_20px_rgba(16,149,210,0.6)]" style={{ x: smoothX, y: smoothY, rotateX: rotateX, rotateY: rotateY, rotateZ: rotateZ, perspective: 800 }}>
         <motion.div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-4 h-6 bg-gradient-to-t from-transparent via-orange-500 to-yellow-300 rounded-full blur-[2px] z-0" animate={{ y: [0, 10], scale: [1, 1.5], opacity: [0.8, 0] }} transition={{ duration: 0.3, repeat: Infinity, ease: "easeOut" }} />
