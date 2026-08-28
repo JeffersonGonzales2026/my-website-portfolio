@@ -48,7 +48,7 @@ const defaultTimelineData = [
 ];
 
 export default function CareerTimeline({ homeData }) {
-  const timelineData = homeData?.career_timeline || defaultTimelineData;
+  const timelineData = homeData?.career_timeline?.length > 0 ? homeData.career_timeline : defaultTimelineData;
 
   return (
     <section className="max-w-4xl mx-auto px-6 py-20 relative z-10">

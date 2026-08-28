@@ -133,7 +133,7 @@ const teamMembers = [
   {
     id: 2,
     name: "Open Position",
-    photo: "", 
+    photo: "/DreamCreations/3 Creators/Anonymous.jpg", 
     positions: ["-"],
     bio: "Waiting for the next talented individual to fill this space. If you are driven by design and innovation, there might be a seat for you here.",
     skills: ["-", "-", "-"],
@@ -329,7 +329,7 @@ export default function DreamCreations() {
   ]);
 
   const [bannerUrl, setBannerUrl] = useState("/Logo Banner.png");
-  const [founderPhoto, setFounderPhoto] = useState("");
+  const [founderPhoto, setFounderPhoto] = useState("/DreamCreations/2 Founder/Founder.png");
   const [founderExp, setFounderExp] = useState(10);
   const [founderProjects, setFounderProjects] = useState(2000);
   const [teamList, setTeamList] = useState(teamMembers);
@@ -407,12 +407,21 @@ const [visiblePhotoCount, setVisiblePhotoCount] = useState(getInitialBatchSize()
   const goNextPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext(); };
   const goPrevPage = () => { if (flipBookRef.current) flipBookRef.current.pageFlip().flipPrev(); };
   const onPageFlip = (e) => { setFlipbookCurrentPage(e.data); };
-  const getFlipbookUrl = (pageIndex, prefix = 'page-', ext = 'jpg') => `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/${prefix}${pageIndex}.${ext}`;
+  const getFlipbookUrl = (pageIndex, prefix = 'page-', ext = 'jpg') => {
+  const fullPath = `${prefix}${pageIndex}.${ext}`;
+  
+  // If prefix is already a relative local path or external URL, return as-is
+  if (prefix.startsWith('/') || prefix.startsWith('http')) {
+    return fullPath;
+  }
+  
+  return `https://ddiffnvaonxrxnxzirav.supabase.co/storage/v1/object/public/portfolio_media/${fullPath}`;
+};
 
   const [pageResume, setPageResume] = useState({
   title: "Dream Creations Portfolio",
-  file_url: "/Contacts/Gonzales_Jefferson_Graphic Artist.pdf",
-  pdf_url: "/Contacts/Gonzales_Jefferson_Graphic Artist.pdf"
+  file_url: "/Contacts/Gonzales_Jefferson_Graphic_Artist.pdf",
+  pdf_url: "/Contacts/Gonzales_Jefferson_Graphic_Artist.pdf"
 });
   const [randomGlowIndex, setRandomGlowIndex] = useState(null);
 
@@ -668,26 +677,24 @@ const [visiblePhotoCount, setVisiblePhotoCount] = useState(getInitialBatchSize()
 
   // ================= FIXED EXACT SCROLL WITH GLOW EFFECT =================
   const handleSubtitleModalClick = (subtitleName) => {
-    // 1. Force unlock screen scrolling immediately (since modal locks it)
-    document.body.style.overflow = '';
-    document.documentElement.style.overflow = '';
-
-    // 2. Close active popups
+    // 1. Close active popups first
     setActiveCreationPopup(null);
     setActivePortfolioSubtitle(null); 
     
-    // 3. Find element and scroll exactly to it
+    // 2. Bigyan ng time ang React na tanggalin ang screen lock
     setTimeout(() => { 
       const targetId = subtitleName.toLowerCase().replace(/\s+/g, '-');
       const targetElement = document.getElementById(targetId);
       
       if (targetElement) {
-        // Calculate precise offset so it's comfortably visible in the viewport
-        const yPosition = targetElement.getBoundingClientRect().top + window.scrollY - 150;
-        
+        const offsetY = 120; // Pwede mong i-adjust kung gaano kataas/kababa ang bagsak
+        const elementPosition = targetElement.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - offsetY;
+
+        // FIX: Ginawang 'auto' imbes na 'smooth' para hindi ma-trap sa GSAP scroll animation
         window.scrollTo({
-          top: yPosition,
-          behavior: 'smooth'
+          top: offsetPosition,
+          behavior: 'auto' 
         });
         
         // Add a visual glowing highlight to the specific card
@@ -706,10 +713,14 @@ const [visiblePhotoCount, setVisiblePhotoCount] = useState(getInitialBatchSize()
         }, 2000);
 
       } else {
-        // Fallback kung sakaling wala
-        scrollToSection('portfolio-directory');
+        // Instant jump din para sa fallback
+        const dir = document.getElementById('portfolio-directory');
+        if (dir) {
+          const dirPos = dir.getBoundingClientRect().top + window.scrollY - 100;
+          window.scrollTo({ top: dirPos, behavior: 'auto' });
+        }
       }
-    }, 150); // Very snappy delay
+    }, 300); // 300ms is perfectly safe
   };
 
   const filteredProjects = activePortfolioSubtitle && activePortfolioSubtitle !== 'All Projects'

@@ -210,6 +210,7 @@ const PRESET_PIPELINE_ARCHITECTURE = [
     items: [
       { name: "PostgreSQL", imageSrc: "AI Developer/2 Development Architecture/1783788257058.svg" },
       { name: "Supabase", imageSrc: "AI Developer/2 Development Architecture/1783787728900.png" },
+      { name: "Cloudinary", imageSrc: "AI Developer/2 Development Architecture/cloudinary.webp" },
       { name: "Prisma ORM (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822436275_o1xu1.png" },
       { name: "Drizzle ORM (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822421404_e9scm.png" }
     ]
@@ -256,10 +257,10 @@ const PRESET_PIPELINE_ARCHITECTURE = [
     items: [
       { name: "GitHub", imageSrc: "AI Developer/2 Development Architecture/github-white-icon.webp" },
       { name: "Vercel Analytics", imageSrc: "AI Developer/2 Development Architecture/1785822434901_wh7yk.png" },
+      { name: "EmailJS", imageSrc: "AI Developer/2 Development Architecture/logo.png" },
       { name: "Sentry (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822433622_7h83s.jfif" },
       { name: "Google Analytics (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822433197_bmscy.svg" },
-      { name: "UptimeRobot (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822431972_qpkch.svg" },
-      { name: "EmailJS", imageSrc: "AI Developer/2 Development Architecture/logo.png" }
+      { name: "UptimeRobot (Learning)", imageSrc: "AI Developer/2 Development Architecture/1785822431972_qpkch.svg" }
     ]
   }
 ];
@@ -275,6 +276,7 @@ const defaultWebExperiences = [
   "Bento Grid Layouts",
   "Animated SVG",
   "Responsive Design",
+  "Cinematic 3D Animation (Learning)",
   "3D Web Experiences (Learning)",
   "Three.js (Learning)",
   "React Three Fiber (Learning)",
@@ -745,11 +747,11 @@ export default function AiDeveloper() {
                 <motion.div variants={cardPop} key={idx} className="p-6 rounded-2xl bg-slate-950/60 border border-slate-900 flex flex-col hover:border-purple-500/50 hover:bg-purple-500/5 transition-all group shadow-lg backdrop-blur-sm">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 rounded-xl border border-slate-800 bg-black flex items-center justify-center relative overflow-hidden shrink-0 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-                      {ai.customImage ? (
-                        <img src={ai.customImage} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10"
+                      {(ai.customImage || ai.imageSrc) ? (
+                        <img src={ai.customImage || ai.imageSrc} alt={ai.name} className="w-8 h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10"
                              onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
                       ) : null}
-                      <Settings size={20} className={`text-slate-700 absolute inset-0 m-auto z-0 ${ai.customImage ? 'hidden' : 'block'}`} />
+                      <Settings size={20} className={`text-slate-700 absolute inset-0 m-auto z-0 ${(ai.customImage || ai.imageSrc) ? 'hidden' : 'block'}`} />
                     </div>
                     <h4 className={`text-base font-bold transition-colors ${ai.name.includes("Learning") ? "text-purple-300/80 group-hover:text-purple-300" : "text-white group-hover:text-purple-400"}`}>
                       {ai.name}
@@ -879,8 +881,8 @@ export default function AiDeveloper() {
                           <div key={j} className="flex flex-col items-center gap-2 md:gap-3 w-[70px] sm:w-20 md:w-28 group cursor-pointer">
                             
                             <div className={`w-14 h-14 sm:w-16 sm:h-16 md:w-28 md:h-28 rounded-2xl md:rounded-[2rem] flex items-center justify-center border transition-all duration-300 shadow-lg relative ${isLearning ? 'bg-purple-950/30 border-purple-800/50 group-hover:border-purple-400 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-[#0b0f19] border-slate-700 group-hover:border-cyan-400 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}>
-                              {tool.customImage ? (
-                                <img src={tool.customImage} alt={cleanName} className="w-8 h-8 sm:w-10 sm:h-10 md:w-16 md:h-16 object-contain drop-shadow-md group-hover:scale-110 transition-transform" onError={(e) => e.target.style.display='none'} />
+                              {(tool.customImage || tool.imageSrc) ? (
+                                <img src={tool.customImage || tool.imageSrc} alt={cleanName} className="w-8 h-8 sm:w-10 sm:h-10 md:w-16 md:h-16 object-contain drop-shadow-md group-hover:scale-110 transition-transform" onError={(e) => e.target.style.display='none'} />
                               ) : (
                                 <Settings className={`w-7 h-7 sm:w-8 sm:h-8 md:w-16 md:h-16 group-hover:scale-110 transition-transform ${isLearning ? 'text-purple-500' : 'text-cyan-500'}`} />
                               )}

@@ -121,97 +121,97 @@ const defaultToolsTechnologies = [
   { 
     category: "Office Productivity", 
     tools: [
-      { name: "MS Excel", imageSrc: "Data Analyst/3 Software Ecosystem/1783787178293.png" },
-      { name: "MS Word", imageSrc: "Data Analyst/3 Software Ecosystem/1783787301785.png" },
-      { name: "Microsoft PowerPoint", imageSrc: "Data Analyst/3 Software Ecosystem/microsoft-powerpoint-logo-png_seeklogo-653447.png" },
-      { name: "Microsoft Outlook (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515381422_yog9r.webp" }
+      { name: "MS Excel", imageSrc: "/Data Analyst/3 Software Ecosystem/1783787178293.png" },
+      { name: "MS Word", imageSrc: "/Data Analyst/3 Software Ecosystem/1783787301785.png" },
+      { name: "Microsoft PowerPoint", imageSrc: "/Data Analyst/3 Software Ecosystem/microsoft-powerpoint-logo-png_seeklogo-653447.png" },
+      { name: "Microsoft Outlook (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515381422_yog9r.webp" }
     ] 
   },
   { 
     category: "Business Intelligence", 
     tools: [
-      { name: "Microsoft Power BI (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515380926_p2g4s.webp" },
-      { name: "Tableau (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515380364_q0jac.png" },
-      { name: "Looker Studio (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/looker-studio-logo-png_seeklogo-617989.png" }
+      { name: "Microsoft Power BI (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515380926_p2g4s.webp" },
+      { name: "Tableau (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515380364_q0jac.png" },
+      { name: "Looker Studio (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/looker-studio-logo-png_seeklogo-617989.png" }
     ] 
   },
   { 
     category: "Database", 
     tools: [
-      { name: "ODBC", imageSrc: "Data Analyst/3 Software Ecosystem/1783787622802.png" },
-      { name: "Supabase", imageSrc: "Data Analyst/3 Software Ecosystem/1783787728900.png" },
-      { name: "PostgreSQL", imageSrc: "Data Analyst/3 Software Ecosystem/Postgresql_elephant.svg.webp" },
-      { name: "MySQL", imageSrc: "Data Analyst/3 Software Ecosystem/1785515379321_qq6ll.png" },
-      { name: "SQL Server (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515378794_a23m0.png" }
+      { name: "ODBC", imageSrc: "/Data Analyst/3 Software Ecosystem/1783787622802.png" },
+      { name: "Supabase", imageSrc: "/Data Analyst/3 Software Ecosystem/1783787728900.png" },
+      { name: "PostgreSQL", imageSrc: "/Data Analyst/3 Software Ecosystem/Postgresql_elephant.svg.webp" },
+      { name: "MySQL", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515379321_qq6ll.png" },
+      { name: "SQL Server (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515378794_a23m0.png" }
     ] 
   },
   { 
     category: "Programming", 
     tools: [
-      { name: "Python", imageSrc: "Data Analyst/3 Software Ecosystem/1783788360639.png" },
-      { name: "Visual Studio Code", imageSrc: "Data Analyst/3 Software Ecosystem/1785515378284_tf06x.webp" },
-      { name: "Jupyter Notebook (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515377772_5tgcs.webp" }
+      { name: "Python", imageSrc: "/Data Analyst/3 Software Ecosystem/1783788360639.png" },
+      { name: "Visual Studio Code", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515378284_tf06x.webp" },
+      { name: "Jupyter Notebook (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515377772_5tgcs.webp" }
     ] 
   },
   { 
     category: "Data Engineering", 
     tools: [
-      { name: "Apache Airflow (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515377249_67btt.png" },
-      { name: "dbt (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/dbt-logo-png_seeklogo-431111.png" },
-      { name: "Apache Spark (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515376265_uuwr8.webp" }
+      { name: "Apache Airflow (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515377249_67btt.png" },
+      { name: "dbt (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/dbt-logo-png_seeklogo-431111.png" },
+      { name: "Apache Spark (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515376265_uuwr8.webp" }
     ] 
   },
   { 
     category: "Cloud", 
     tools: [
-      { name: "Microsoft Azure (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515375434_6rf24.webp" },
-      { name: "Google Cloud Platform (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515374914_zkspd.png" },
-      { name: "Amazon Web Services (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515373995_9stgt.webp" }
+      { name: "Microsoft Azure (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515375434_6rf24.webp" },
+      { name: "Google Cloud Platform (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515374914_zkspd.png" },
+      { name: "Amazon Web Services (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515373995_9stgt.webp" }
     ] 
   },
   { 
     category: "Data Visualization", 
     tools: [
-      { name: "Plotly (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515372962_imt46.png" },
-      { name: "Matplotlib (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515372413_e9cxr.png" }
+      { name: "Plotly (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515372962_imt46.png" },
+      { name: "Matplotlib (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515372413_e9cxr.png" }
     ] 
   },
   { 
     category: "AI Assistance", 
     tools: [
-      { name: "ChatGPT", imageSrc: "Data Analyst/3 Software Ecosystem/1783788491981.png" },
-      { name: "Claude", imageSrc: "Data Analyst/3 Software Ecosystem/1783788569385.png" },
-      { name: "Gemini", imageSrc: "Data Analyst/3 Software Ecosystem/1783788645402.webp" },
-      { name: "GitHub Copilot", imageSrc: "Data Analyst/3 Software Ecosystem/1783788774161.png" }
+      { name: "ChatGPT", imageSrc: "/Data Analyst/3 Software Ecosystem/1783788491981.png" },
+      { name: "Claude", imageSrc: "/Data Analyst/3 Software Ecosystem/1783788569385.png" },
+      { name: "Gemini", imageSrc: "/Data Analyst/3 Software Ecosystem/1783788645402.webp" },
+      { name: "GitHub Copilot", imageSrc: "/Data Analyst/3 Software Ecosystem/1783788774161.png" }
     ] 
   },
   { 
     category: "Version Control", 
     tools: [
-      { name: "Git", imageSrc: "Data Analyst/3 Software Ecosystem/1785515369896_6zhvz.webp" },
-      { name: "GitHub", imageSrc: "Data Analyst/3 Software Ecosystem/github-white-icon.webp" }
+      { name: "Git", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515369896_6zhvz.webp" },
+      { name: "GitHub", imageSrc: "/Data Analyst/3 Software Ecosystem/github-white-icon.webp" }
     ] 
   },
   { 
     category: "API & Development", 
     tools: [
-      { name: "Postman (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/free-postman-logo-icon-svg-download-png-2945092.webp" },
-      { name: "Insomnia (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515367287_hj98a.png" }
+      { name: "Postman (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/free-postman-logo-icon-svg-download-png-2945092.webp" },
+      { name: "Insomnia (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515367287_hj98a.png" }
     ] 
   },
   { 
     category: "Project Management", 
     tools: [
-      { name: "Trello", imageSrc: "Data Analyst/3 Software Ecosystem/1785515362039_7p00b.png" },
-      { name: "Notion", imageSrc: "Data Analyst/3 Software Ecosystem/1785515353266_ktyft.png" },
-      { name: "Jira (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785515334878_6un5e.webp" }
+      { name: "Trello", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515362039_7p00b.png" },
+      { name: "Notion", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515353266_ktyft.png" },
+      { name: "Jira (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785515334878_6un5e.webp" }
     ] 
   },
   { 
     category: "Automation", 
     tools: [
-      { name: "Zapier (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1785756489729_yvxk2.png" },
-      { name: "n8n (Learning)", imageSrc: "Data Analyst/3 Software Ecosystem/1783867915185.png" }
+      { name: "Zapier (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1785756489729_yvxk2.png" },
+      { name: "n8n (Learning)", imageSrc: "/Data Analyst/3 Software Ecosystem/1783867915185.png" }
     ] 
   }
 ];
@@ -245,7 +245,7 @@ const defaultShowcaseData = {
       findings: "Identified newly endorsed, and duplicate accounts before import and worklist updates.",
       frequency: "Daily",
       objective: "Managed Bank  Endorsements, validated accounts using advanced Excel, performed system imports, and maintained worklists under the supervision of a Senior Data Analyst.",
-      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/Anydesk.webp,Data Analyst/2 Analytics Portfolio/2 Reports/System.png,Data Analyst/2 Analytics Portfolio/2 Reports/System.png,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png",
+      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/Anydesk.webp,Data Analyst/2 Analytics Portfolio/2 Reports/System.png,Data Analyst/2 Analytics Portfolio/2 Reports/System.png,Data Analyst/2 Analytics Portfolio/2 Reports/System.png,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png",
       recommendations: "Automate repetitive Excel tasks, such as formatting, account validation, and worklist preparation, to improve processing efficiency and reduce manual effort."
     },
     {
@@ -309,7 +309,7 @@ const defaultShowcaseData = {
       findings: "Extracted and reconciled bank payment records, identified payment updates and discrepancies through comparison with previous records, validated payment amounts and calculations, and identified errors requiring correction before final reporting.",
       frequency: "Weekly",
       objective: "Extract and reconcile payment records from bank-generated data to support monitoring, payment validation, and operational reporting. under the supervision of a Senior Data Analyst.",
-      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/ODBC.png,Data Analyst/2 Analytics Portfolio/2 Reports/UiPath.pngData Analyst/2 Analytics Portfolio/2 Reports/Anydesk.webp,Data Analyst/2 Analytics Portfolio/2 Reports/Google Sheets.png,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png,Data Analyst/2 Analytics Portfolio/2 Reports/Bank Portal.png",
+      tools_icons: "Data Analyst/2 Analytics Portfolio/2 Reports/Microsoft Excel.webp,Data Analyst/2 Analytics Portfolio/2 Reports/ODBC.png,Data Analyst/2 Analytics Portfolio/2 Reports/UiPath.png,Data Analyst/2 Analytics Portfolio/2 Reports/Anydesk.webp,Data Analyst/2 Analytics Portfolio/2 Reports/Google Sheets.png,Data Analyst/2 Analytics Portfolio/2 Reports/Lark.png,Data Analyst/2 Analytics Portfolio/2 Reports/Bank Portal.png",
       recommendations: "Automate payment extraction, reconciliation, calculation, and validation to reduce repetitive Excel work, minimize manual errors, and improve the efficiency of daily payment reporting."
     },
     {
@@ -1023,17 +1023,17 @@ export default function DataAnalyst() {
                       className="flex flex-col items-center gap-3 w-20 sm:w-24 group"
                     >
                       <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center border border-slate-800 bg-slate-900/50 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 overflow-hidden hover:border-emerald-500/40 relative">
-                        <img 
-                          src={tool.customImage} 
-                          alt={tool.name} 
-                          className="w-8 h-8 sm:w-10 sm:h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10" 
-                          onError={(e) => { 
-                              e.target.style.display = 'none'; 
-                              e.target.nextSibling.style.display = 'block'; 
-                          }}
-                        />
-                        <Settings size={20} className="text-slate-600 hidden absolute inset-0 m-auto z-0" />
-                      </div>
+                            <img 
+                              src={tool.customImage || tool.imageSrc} 
+                              alt={tool.name} 
+                              className="w-8 h-8 sm:w-10 sm:h-10 object-contain opacity-70 group-hover:opacity-100 transition-opacity absolute inset-0 m-auto z-10" 
+                              onError={(e) => { 
+                                  e.target.style.display = 'none'; 
+                                  e.target.nextSibling.style.display = 'block'; 
+                              }}
+                            />
+                            <Settings size={20} className="text-slate-600 hidden absolute inset-0 m-auto z-0" />
+                          </div>
                       <span className="text-[10px] text-center font-semibold text-slate-400 group-hover:text-emerald-300 transition-colors leading-tight">
                         {tool.name}
                       </span>
@@ -1088,7 +1088,6 @@ export default function DataAnalyst() {
       <section className="w-full px-6 pt-10 pb-6 z-10 relative flex justify-center border-t border-slate-800/50 bg-slate-900/20">
         <motion.a
           href={pageResume?.file_url || pageResume?.pdf_url || "/resume/Data_Analyst_Resume.pdf"}
-          download="Jefferson_Gonzales_Data_Analyst_Resume.pdf"
           target="_blank"
           rel="noopener noreferrer"
           initial={{ opacity: 0, y: 20 }}

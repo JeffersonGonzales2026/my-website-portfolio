@@ -44,7 +44,7 @@ function Counter({ num, suffix }) {
 
 export default function QuickStats({ homeData }) {
   // Reads dynamic items array passed from CMS if it exists, otherwise falls back to defaults
-  const statsData = homeData?.quick_stats || defaultStatsData;
+const statsData = homeData?.quick_stats?.length > 0 ? homeData.quick_stats : defaultStatsData;
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-12 relative z-10">
