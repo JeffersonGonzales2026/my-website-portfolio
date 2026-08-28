@@ -24,9 +24,11 @@ async function uploadFile(relativePath) {
 
   const isVideo = cleanPath.match(/\.(mp4|webm|mov|ogg)$/i);
 
-  // BULLETPROOF WINDOWS FIX: Kukunin nito eksakto ang folder name kahit anong OS pa ang gamit mo!
-  // Example result: "6 Project Archive/Branding & Identity/Logo Design"
+  // BULLETPROOF WINDOWS FIX + CLOUDINARY INVALID CHARACTER FIX
   let folderPath = cleanPath.split('/').slice(2, -1).join('/');
+  
+  // MAGIC FIX: Papalitan niya ang bawal na "&" ng "and" para tanggapin ng Cloudinary!
+  folderPath = folderPath.replace(/&/g, 'and');
 
   try {
     console.log(`🚀 Uploading to Cloudinary Folder: portfolio_media/${folderPath}`);
@@ -62,7 +64,7 @@ async function processFile(filePath) {
   }
 
   if (urlsToReplace.length === 0) {
-    console.log('⚠️ No local links found! Please make sure your file has /DreamCreations/ links.');
+    console.log('✅ No local links found! Everything is already on Cloudinary.');
     return;
   }
 
@@ -77,13 +79,9 @@ async function processFile(filePath) {
 }
 
 async function start() {
-  // 1. I-process LANG ang Photography
   await processFile(path.join(process.cwd(), 'src', 'data', 'offlinePhotography.js'));
-  
-  // 2. Naka-comment out ito para hindi na galawin ang Archive (dahil okay na ito!)
-  // await processFile(path.join(process.cwd(), 'src', 'data', 'offlineArchive.js'));
-  
-  console.log('\n✨ PHOTOGRAPHY UPLOAD COMPLETE! ✨\n');
+  await processFile(path.join(process.cwd(), 'src', 'data', 'offlineArchive.js'));
+  console.log('\n✨ FINISHED UPLOADING REMAINING FILES! ✨\n');
 }
 
 start();
