@@ -5,8 +5,8 @@ import path from 'path';
 // 1. ILAGAY ANG CREDENTIALS MO RITO
 cloudinary.config({
   cloud_name: 'mivrxrre',
-  api_key: '866252688267333',
-  api_secret: 'rKoLMpg8WpSM9qjvRyO1-igjipc',
+  api_key: 'YOUR_API_KEY_HERE',
+  api_secret: 'YOUR_API_SECRET_HERE',
   secure: true
 });
 
