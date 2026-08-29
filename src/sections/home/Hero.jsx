@@ -8,7 +8,7 @@ export default function Hero({ homeData }) {
   const navigate = useNavigate();
   
   const titles = [
-    "Graphic Designer",
+    "Graphic Artist",
     "Owner & Team Manager",
     "Data Analyst",
     "Automation Specialist",
